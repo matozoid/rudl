@@ -45,8 +45,8 @@ if RUDL.versions.include? 'SDL_mixer'
 			"ship boom"	=> Sound.new('media/crapola_ship_boom.wav'),
 			"shoot"		=> Sound.new('media/crapola_shoot.wav')
 		}
-		$sound.each do |sound|
-			sound[1].volume=0.2 # The music is just one channel, these sounds are much louder
+		$sound.each_value do |sound|
+			sound.volume=0.2 # The music is just one channel, these sounds are much louder
 		end
 	rescue
 		$sound_on=false
@@ -61,7 +61,7 @@ end
 # Give the monitor some time to switch modes.
 Timer.delay(1000)
 
-# Converts all images to match the display's color type, 
+# Converts all images to match the display's color type,
 # and set black to be the transparent color.
 # Precalcs the rotated rocks
 $rotated_rocks=[]
@@ -88,7 +88,7 @@ class Sprite
 
 	def Sprite.update
 		bulletrect=nil
-		
+
 		@@spritelist.each do |sprite|
 			sprite.update
 		end
@@ -114,7 +114,7 @@ class Sprite
 			25.times do Explosion.new(enemy.rect) end
 		end
 	end
-	
+
 	def Sprite.draw
 		@@spritelist.each do |sprite|
 			sprite.draw
@@ -327,8 +327,8 @@ class Ship < Sprite
 		if keystate[K_RIGHT] && @rect.x<300
 			@rect.x+=2
 		end
-		
-		if keystate[K_LCTRL] 
+
+		if keystate[K_LCTRL]
 			if !@endlessbulletstreamstopper
 				Bullet.new(@rect)
 
