@@ -24,7 +24,9 @@ start = now = totaltime = 0
         now = Timer.ticks
         totaltime += now - start
         win.update
-        EventQueue.pump
+        EventQueue.get.each do |ev|
+            exit if ev.is_a? QuitEvent
+        end
     end
 end
 
