@@ -3,6 +3,9 @@ RUDL - a C library wrapping SDL for use in Ruby.
 Copyright (C) 2001, 2002, 2003  Danny van Bruggen
 
 $Log: rudl_video_surface.c,v $
+Revision 1.35  2004/01/21 22:02:14  tsuihark
+Converted to Dokumentat format.
+
 Revision 1.34  2004/01/06 18:01:39  tsuihark
 Removed a few warnings
 
@@ -59,13 +62,12 @@ Moved SDL_LockSurface after the coordinate check in internal_(nonlocking_)get
 #endif
 
 ///////////////////////////////// SURFACE
-/*
-=begin
-<<< docs/head
-= Surface
-A (({Surface})) is a two dimensional array of pixels with some information about those pixels.
+/**
+@file Video
+@class RUDL::Surface
+A @Surface is a two dimensional array of pixels with some information about those pixels.
 This might not seem like much, but it is just about the most important class in RUDL.
-=end */
+*/
 
 // SUPPORT:
 
@@ -110,49 +112,60 @@ static VALUE surface_set_palette(VALUE self, VALUE firstValue, VALUE colors);
 
 // METHODS:
 
-/*
-=begin
-== Class Methods
---- Surface.new( size )
---- Surface.new( size, surface )
---- Surface.new( size, flags )
---- Surface.new( size, flags, surface )
---- Surface.new( size, flags, depth )
---- Surface.new( size, flags, depth, masks )
-All these methods create a new (({Surface})) with ((|size|)) = [w, h].
-If only ((|size|)) is supplied, the rest of the arguments will be set to reasonable values.
+/**
+@section Initializers
+@method new( size ) => Surface
+@method new( size, surface ) => Surface
+@method new( size, flags ) => Surface
+@method new( size, flags, surface ) => Surface
+@method new( size, flags, depth ) => Surface
+@method new( size, flags, depth, masks ) => Surface
+All these methods create a new @Surface@ with @size = [w, h].
+If only @size is supplied, the rest of the arguments will be set to reasonable values.
 If a surface is supplied, it is used to copy the values from that aren't given.
 
-((|flags|)) is, according to SDL's documentation:
-* SWSURFACE: SDL will create the surface in system memory. This improves the performance of pixel level access, however you may not be able to take advantage of some types of hardware blitting.
-* HWSURFACE: SDL will attempt to create the surface in video memory. This will allow SDL to take advantage of Video->Video blits (which are often accelerated).
-* SRCCOLORKEY: This flag turns on colourkeying for blits from this surface. If HWSURFACE is also specified and colourkeyed blits are hardware-accelerated, then SDL will attempt to place the surface in video memory. Use Surface#set_colorkey to set or clear this flag after surface creation.
-* SRCALPHA: This flag turns on alpha-blending for blits from this surface. If HWSURFACE is also specified and alpha-blending blits are hardware-accelerated, then the surface will be placed in video memory if possible. Use Surface#set_alpha to set or clear this flag after surface creation. For a 32 bitdepth surface, an alpha mask will automatically be added, in other cases, you will have to specify a mask.
+@flags is, according to SDL's documentation:
+<ul>
+<li>SWSURFACE:
+	SDL will create the surface in system memory. 
+	This improves the performance of pixel level access, 
+	however you may not be able to take advantage of some types of hardware blitting.
+<li>HWSURFACE: 
+	SDL will attempt to create the surface in video memory. 
+	This will allow SDL to take advantage of Video->Video blits (which are often accelerated).
+<li>SRCCOLORKEY: 
+	This flag turns on colourkeying for blits from this surface. 
+	If HWSURFACE is also specified and colourkeyed blits are hardware-accelerated, 
+	then SDL will attempt to place the surface in video memory. 
+	Use @Surface@set_colorkey to set or clear this flag after surface creation.
+<li>SRCALPHA: 
+	This flag turns on alpha-blending for blits from this surface. 
+	If HWSURFACE is also specified and alpha-blending blits are hardware-accelerated, 
+	then the surface will be placed in video memory if possible. 
+	Use @Surface@set_alpha to set or clear this flag after surface creation. 
+	For a 32 bitdepth surface, an alpha mask will automatically be added, 
+	in other cases, you will have to specify a mask.
+</ul>
 
-((|depth|)) is bitdepth, like 8, 15, 16, 24 or 32.
+@depth is bitdepth, like 8, 15, 16, 24 or 32.
 
-((|masks|)) describes the format for the pixels and is an array of [R, G, B, A]
+@masks describes the format for the pixels and is an array of [R, G, B, A]
 containing 32 bit values with bits set where the colorcomponent should be stored.
 For example: [0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF] describes a 32 bit color
 with red in the highest values and an alpha channel. If it is not specified, the following
 defaults are used:
 
-RRGGGBB (8bpp)
-
+<pre>RRGGGBB (8bpp)
 RRRR GGGGBBBB (12bpp)
-
 RRRRRGG GGGBBBBB (15bpp)
-
 RRRRRGGG GGGBBBBB (16bpp)
-
 RRRRRRRR GGGGGGGG BBBBBBBB (24 bpp)
-
 ........ RRRRRRRR GGGGGGGG BBBBBBBB (32 bpp)
-
 RRRRRRRR GGGGGGGG BBBBBBBB AAAAAAAA (32 bpp, SRCALPHA set)
+</pre>
 
 Normally this shouldn't have to be of interest.
-=end */
+*/
 VALUE surface_new(int argc, VALUE* argv, VALUE self)
 {
     Uint32 flags = 0;
@@ -235,21 +248,17 @@ VALUE surface_new(int argc, VALUE* argv, VALUE self)
     return newsurfaceobj;
 }
 
-/*
-=begin
---- Surface.load_new( filename )
---- String.to_surface
+/**
+@method load_new( filename ) => Surface
 This creates a (({Surface})) with an image in it,
-loaded from disk from ((|filename|)) by using load_new
-or loaded by treating ((|String|)) as the image data when using to_surface.
-In the last case, the ((|string|)) should be in some supported format,
-just like the file for load_new should be.
+loaded from disk from ((|filename|)) by using load_new.
+The file should be in a supported file format.
 If the SDL_image library was found during RUDL's installation,
 it will load the following formats:
 BMP, PNM, XPM, XCF, PCX, GIF, JPEG, TIFF, PNG, TGA and LBM.
 If the SDL_image library was not found, only simple BMP loading is supported.
 Simple means: not all BMP files can be loaded.
-=end */
+*/
 static VALUE surface_load_new(VALUE self, VALUE filename)
 {
     SDL_Surface* surface=NULL;
@@ -263,6 +272,13 @@ static VALUE surface_load_new(VALUE self, VALUE filename)
     return createSurfaceObject(surface);
 }
 
+/**
+@method String.to_surface => Surface
+This creates a @Surface with an image in it,
+loaded by treating @String as the image data when using @to_surface.
+The @string should be in a supported file format,
+just like the file for @load_new should be.
+*/
 static VALUE string_to_surface(VALUE self)
 {
     SDL_RWops* rwops=NULL;
@@ -290,18 +306,24 @@ void dont_free(void*_)
     DEBUG_S("dont_free");
 }
 
-/*
-=begin
---- Surface.shared_new( surface )
+/**
+@method shared_new( surface ) => Surface
 This method is two things:
-(1) a way to share the same bunch of data (width, height, bpp, pixeldata) between two Surface objects. Please don't use it this way if there isn't a very good reason for it.
-(2) a way to import foreign objects that wrap an SDL_Surface*. If that doesn't mean anything to you, please ignore this point. It takes the pointer from the foreign object and creates a new Surface that wraps it.
-Garbage collection problems should be prevented by giving the new surface
-a reference to ((|surface|))
 
-Note that if the original surface is destroyed by a call to Surface#destroy,
+<ol>
+<li>a way to share the same bunch of data (width, height, bpp, pixeldata) between two Surface objects. 
+	Please don't use it this way if there isn't a very good reason for it.
+<li>a way to import foreign objects that wrap an SDL_Surface*. 
+	If that doesn't mean anything to you, please ignore this point. 
+	It takes the pointer from the foreign object and creates a new Surface that wraps it.
+</ol>
+
+Garbage collection problems should be prevented by giving the new surface
+a reference to @surface
+
+Note that if the original surface is destroyed by a call to @Surface.destroy,
 the shared ones will be invalidated too!
-=end */
+*/
 static VALUE surface_shared_new(VALUE self, VALUE other)
 {
     VALUE new_surface=createSurfaceObject(DATA_PTR(other));
@@ -310,15 +332,12 @@ static VALUE surface_shared_new(VALUE self, VALUE other)
     return new_surface;
 }
 
-/*
-=begin
-== Instance Methods
---- Surface#share( other_surface )
-Like Surface.shared_new, but this works on an existing surface.
-It will destroy this surface, then make it share ((|other_surface|))'s data.
-
-Returns self.
-=end */
+/**
+@section Methods
+@method share( other_surface ) => self
+Like @Surface.shared_new, but this works on an existing surface.
+It will destroy this surface, then make it share @other_surface 's data.
+*/
 static VALUE surface_share(VALUE self, VALUE other)
 {
     if(DATA_PTR(self)!=DATA_PTR(other)){
@@ -330,18 +349,15 @@ static VALUE surface_share(VALUE self, VALUE other)
     return self;
 }
 
-/*
-=begin
---- Surface#immodest_export( other_surface )
+/**
+@method immodest_export( other_surface ) => self
 Like Surface.share, but this works the other way around.
 It will destroy the ((|other_surface|)), then make it share the data in itself
 and setting a reference on ((|other_surface|)) back to ((|self|)).
 It's called immodest because it interferes with another object, bluntly
 assuming it contains a SDL_Surface pointer and changing it to something
 else...
-
-Returns self.
-=end */
+*/
 static VALUE surface_immodest_export(VALUE self, VALUE other)
 {
     if(DATA_PTR(self)!=DATA_PTR(other)){
@@ -353,14 +369,11 @@ static VALUE surface_immodest_export(VALUE self, VALUE other)
     return self;
 }
 
-/*
-=begin
---- Surface#destroy
+/**
+@method destroy => nil
 Frees memory used by this surface.
 The surface is no longer useable after this call.
-
-Returns nil.
-=end */
+*/
 static VALUE surface_destroy(VALUE self)
 {
     if(RDATA(self)->dfree!=dont_free){
@@ -374,17 +387,16 @@ static VALUE surface_destroy(VALUE self)
     return Qnil;
 }
 
-/*
-=begin
---- Surface#blit( source, coordinate )
---- Surface#blit( source, coordinate, sourceRect )
-This method blits (copies, pastes, draws) ((|source|)) onto the (({Surface})) it is called on.
-((|coordinate|)) is the position [x, y] where ((|source|)) will end up in the destination (({Surface})).
-((|sourcerect|)) is the area in the ((|source|)) bitmap that you want blitted.
-Not supplying it will blit the whole ((|source|)).
+/**
+@method blit( source, coordinate ) => Array
+@method blit( source, coordinate, sourceRect ) => Array
+This method blits (copies, pastes, draws) @source onto the @Surface it is called on.
+@coordinate is the position [x, y] where @source will end up in the destination @Surface.
+@sourcerect is the area in the @source bitmap that you want blitted.
+Not supplying it will blit the whole @source.
 
 Returns the rectangle array ([x,y,w,h]) in (({Surface})) that was changed.
-=end */
+*/
 static VALUE surface_blit(int argc, VALUE* argv, VALUE self)
 {
     SDL_Surface* src;
@@ -415,21 +427,19 @@ static VALUE surface_blit(int argc, VALUE* argv, VALUE self)
     return new_rect_from_SDL_Rect(&dest_rect);
 }
 
-/*
-=begin
---- Surface#convert
---- Surface#convert_alpha
+/**
+@method convert => Surface
+@method convert! => self
 Creates a new version of the surface in the current display's format,
 making it faster to blit.
+*/
+/**
+@method convert_alpha => Surface
+@method convert_alpha! => self
+Like @convert, creates a new version of the surface in the current display's format,
+making it faster to blit.
 The alpha version optimizes for fast alpha blitting.
-
-Returns the converted surface.
---- Surface#convert!
---- Surface#convert_alpha!
-Like convert and convert_alpha, but these change the surface itself.
-
-Returns self.
-=end */
+*/
 static VALUE surface_convert(VALUE self)
 {
     GET_SURFACE;
@@ -484,75 +494,80 @@ static VALUE surface_convert_alpha_(VALUE self)
     }
 }
 
-/*
-=begin
---- Surface#lock
---- Surface#must_lock
---- Surface#unlock
---- Surface#locked?
+/**
+@section Locking
 These methods control the locking of surfaces.
 If you ever encounter a locking error,
 you might try these out.
 Locking errors are expected when trying to access video hardware.
-Keep (({Surface}))s locked for as short a time as possible.
-* must_lock returns true when a surface needs locking for pixel access.
-* lock locks the surface and returns self.
-* unlock unlocks it again and returns self.
-* locked? returns true when the surface is locked.
-=end */
+Keep a @Surface locked for as short a time as possible.
+*/
+/**
+@method lock => self
+@Lock locks the surface.
+*/
 static VALUE surface_lock(VALUE self)
 {
     if(SDL_LockSurface(retrieveSurfacePointer(self)) == -1) SDL_RAISE;
     return self;
 }
 
+/**
+@method must_lock => boolean
+@must_lock returns true when a surface needs locking for pixel access.
+*/
 static VALUE surface_must_lock(VALUE self)
 {
     return INT2BOOL(SDL_MUSTLOCK(retrieveSurfacePointer(self)));
 }
 
+/**
+@method unlock => self
+unlock unlocks a surface that was locked with @lock and returns self.
+*/
 static VALUE surface_unlock(VALUE self)
 {
     SDL_UnlockSurface(retrieveSurfacePointer(self));
     return self;
 }
 
+/**
+@method locked? => boolean
+@locked? returns true when the surface is locked.
+*/
 static VALUE surface_locked_(VALUE self)
 {
     return INT2BOOL(retrieveSurfacePointer(self)->locked);
 }
 
-/*
-=begin
---- Surface#save_bmp( filename )
+/**
+@section Methods
+@method save_bmp( filename ) => self
 This is the only method in RUDL which stores surface data.
-Pass ((|save_bmp|)) the ((|filename|)) and the surface data will be saved to that file.
-It returns self.
-=end */
+Pass @save_bmp the @filename and the surface data will be saved to that file.
+*/
 static VALUE surface_save_bmp(VALUE self, VALUE filename)
 {
     if(SDL_SaveBMP(retrieveSurfacePointer(self), STR2CSTR(filename))==-1) SDL_RAISE;
     return self;
 }
 
-/*
-=begin
---- Surface#w
---- Surface#h
---- Surface#size
---- Surface#rect
+/**
+@section Size methods
 These methods return the size of the surface.
-w returns width,
-h returns height,
-size returns [w, h] and rect returns an array of [0, 0, w, h].
-=end */
+*/
+/**
+@method size => Array[w,h]
+*/
 static VALUE surface_size(VALUE self)
 {
     SDL_Surface* surface=retrieveSurfacePointer(self);
 
     return rb_ary_new3(2, UINT2NUM(surface->w), UINT2NUM(surface->h));
 }
-
+/**
+@method rect => Array[0, 0, w, h]
+*/
 static VALUE surface_rect(VALUE self)
 {
     SDL_Rect rect;
@@ -566,32 +581,38 @@ static VALUE surface_rect(VALUE self)
     return new_rect_from_SDL_Rect(&rect);
 }
 
+/**
+@method w => Number
+Returns width in pixels.
+*/
 static VALUE surface_w(VALUE self)
 {
     return UINT2NUM(retrieveSurfacePointer(self)->w);
 }
 
+/**
+@method h => Number
+Returns height in pixels.
+*/
 static VALUE surface_h(VALUE self)
 {
     return UINT2NUM(retrieveSurfacePointer(self)->h);
 }
 
-/*
-=begin
---- Surface#colorkey
---- Surface#unset_colorkey
---- Surface#set_colorkey( color )
---- Surface#set_colorkey( color, flags )
+/**
+@section Colorkey methods
 These methods control the color that will be completely transparent (it will not be copied
 to the destination surface.)
-The only flag is "RLEACCEL" which will encode the bitmap in a more efficient way for blitting,
+*/
+/**
+@method colorkey => Array[R,G,B]
+@method unset_colorkey => self
+@method set_colorkey( color ) => self
+@method set_colorkey( color, flags ) => self
+The only flag for @flags is <code>RLEACCEL</code> which will encode the bitmap in a more efficient way for blitting,
 by skipping the transparent pixels.
-
-((|set_colorkey|))(nil) removes the color key, same as ((|unset_colorkey|)).
-
-((|colorkey|)) returns the current colorkey color.
-The others return self;
-=end */
+set_colorkey(nil) removes the color key, same as ((|unset_colorkey|)).
+*/
 static VALUE surface_set_colorkey(int argc, VALUE* argv, VALUE self)
 {
     SDL_Surface* surface = retrieveSurfacePointer(self);
@@ -632,14 +653,12 @@ static VALUE surface_colorkey(VALUE self)
     return COLOR2VALUE(surface->format->colorkey, surface);
 }
 
-/*
-=begin
---- Surface#fill( color )
---- Surface#fill( color, rect )
-Fills rectangle ((|rect|)) in the surface with ((|color|)).
-
-Returns self.
-=end */
+/**
+@section Drawing
+@method fill( color ) => self
+@method fill( color, rect ) => self
+Fills rectangle @rect in the surface with @color.
+*/
 static VALUE surface_fill(int argc, VALUE* argv, VALUE self)
 {
     SDL_Rect rectangle;
@@ -659,60 +678,54 @@ static VALUE surface_fill(int argc, VALUE* argv, VALUE self)
     return self;
 }
 
-/*
-=begin
---- Surface#pitch
+/**
+@section Information
+@method pitch
 The surface pitch is the number of bytes used in each scanline.
 This function should rarely needed, mainly for any special-case debugging.
-=end */
+*/
 static VALUE surface_pitch(VALUE self)
 {
     GET_SURFACE;
     return UINT2NUM(surface->pitch);
 }
 
-/*
-=begin
---- Surface#bitsize
+/**
+@method bitsize
 Returns the number of bits used to represent each pixel.
 This value may not exactly fill the number of bytes used per pixel.
 For example a 15 bit Surface still requires a full 2 bytes.
-=end */
+*/
 static VALUE surface_bitsize(VALUE self)
 {
     return UINT2NUM(retrieveSurfacePointer(self)->format->BitsPerPixel);
 }
 
-/*
-=begin
---- Surface#bytesize
+/**
+@method bytesize
 Returns the number of bytes used to store each pixel.
-=end */
+*/
 static VALUE surface_bytesize(VALUE self)
 {
     return UINT2NUM(retrieveSurfacePointer(self)->format->BytesPerPixel);
 }
 
-/*
-=begin
---- Surface#flags
+/**
+@method flags
 Returns the current state flags for the surface.
-=end */
+*/
 static VALUE surface_flags(VALUE self)
 {
     return UINT2NUM(retrieveSurfacePointer(self)->flags);
 }
 
-/*
-=begin
---- Surface#losses
+/**
+@method losses => Array[redloss, greenloss, blueloss, alphaloss]
 Returns the bitloss for each color plane.
 The loss is the number of bits removed for each colorplane from a full 8 bits of
 resolution. A value of 8 usually indicates that colorplane is not used
-(like the alpha)
-
-Returns an array of [redloss, greenloss, blueloss, alphaloss]
-=end */
+(like the alpha plane) 
+*/
 static VALUE surface_losses(VALUE self)
 {
     SDL_Surface* surface=retrieveSurfacePointer(self);
@@ -723,13 +736,12 @@ static VALUE surface_losses(VALUE self)
             UINT2NUM(surface->format->Aloss));
 }
 
-/*
-=begin
---- Surface#shifts
-Returns the bitshifts [redshift, greenshift, blueshift, alphashift] used for each color plane.
+/**
+@method shifts => Array[redshift, greenshift, blueshift, alphashift]
+Returns the bitshifts used for each color plane.
 The shift is determine how many bits left-shifted a colorplane value is in a
 mapped color value.
-=end */
+*/
 static VALUE surface_shifts(VALUE self)
 {
     SDL_Surface* surface=retrieveSurfacePointer(self);
@@ -740,13 +752,12 @@ static VALUE surface_shifts(VALUE self)
             UINT2NUM(surface->format->Ashift));
 }
 
-/*
-=begin
---- Surface#masks
-Returns the bitmasks [redmask, greenmask, bluemask, alphamask] for each color plane.
+/**
+@method masks => Array[redmask, greenmask, bluemask, alphamask]
+Returns the bitmasks for each color plane.
 The bitmask is used to isolate each colorplane value from a mapped color value.
 A value of zero means that colorplane is not used (like alpha)
-=end */
+*/
 static VALUE surface_masks(VALUE self)
 {
     SDL_Surface* surface=retrieveSurfacePointer(self);
@@ -757,13 +768,13 @@ static VALUE surface_masks(VALUE self)
             UINT2NUM(surface->format->Amask));
 }
 
-/*
-=begin
---- Surface#palette
---- Surface#set_palette( first, colors )
-These methods return or set the 256 color palette that is part of 8 bit (({Surface}))s.
-((|first|)) is the first color to change.
-((|colors|)) and the return value of ((|palette|)) are arrays of colors like
+/**
+@section Palette manipulation
+@method palette => Array[[R,G,B], [R,G,B],....]
+@method set_palette( first, colors ) => self
+These methods return or set the 256 color palette that is part of 8 bit @Surface s.
+@first is the first color to change.
+@colors and the return value of @palette are arrays of colors like
 [[50,80,120], [255,255,0]]
 =end */
 static VALUE surface_palette(VALUE self)
@@ -824,24 +835,25 @@ static VALUE surface_set_palette(VALUE self, VALUE firstValue, VALUE colors)
     return self;
 }
 
-/*
-=begin
---- Surface#alpha
---- Surface#unset_alpha
---- Surface#set_alpha( alpha )
---- Surface#set_alpha( alpha, flags )
-Gets or sets the overall transparency for the (({Surface})).
-An ((|alpha|)) of 0 is fully transparent, an ((|alpha|)) of 255 is fully opaque.
+/**
+@section Alpha methods
+Gets or sets the overall transparency for the @Surface.
+An alpha of 0 is fully transparent, an alpha of 255 is fully opaque.
 If your surface has a pixel alpha channel, it will override the overall surface transparency.
 You'll need to change the actual pixel transparency to make changes.
 If your image also has pixel alpha values and will be used repeatedly, you
-will probably want to pass the ((|RLEACCEL|)) flag to the call.
+will probably want to pass the <code>RLEACCEL</code> flag to the call.
 This will take a short time to compile your surface, and increase the blitting speed.
-
-((|set_alpha|))(nil) removes the per-surface alpha, same as ((|unset_alpha|)).
 Note that the per-surface alpha value of 128 is considered a special case and is
 optimised, so it's much faster than other per-surface values.
-=end */
+*/
+/**
+@method alpha
+@method unset_alpha
+@method set_alpha( alpha )
+@method set_alpha( alpha, flags )
+@set_alpha(nil) removes the per-surface alpha, same as @unset_alpha.
+*/
 static VALUE surface_set_alpha(int argc, VALUE* argv, VALUE self)
 {
     SDL_Surface* surface = retrieveSurfacePointer(self);
@@ -882,14 +894,14 @@ static VALUE surface_alpha(VALUE self)
 }
 
 
-/*
-=begin
---- Surface#clip
---- Surface#unset_clip
---- Surface#clip=( rect )
+/**
+@section Clipping
+@method clip
+@method unset_clip
+@method clip=( rect )
 Retrieves, removes or sets the clipping rectangle for surfaces that are
 blitted to this surface.
-=end */
+*/
 static VALUE surface_unset_clip(VALUE self)
 {
     SDL_SetClipRect(retrieveSurfacePointer(self), NULL);
@@ -909,25 +921,23 @@ static VALUE surface_clip(VALUE self)
     return new_rect_from_SDL_Rect(&(retrieveSurfacePointer(self)->clip_rect));
 }
 
-/*
-=begin
---- Surface#contained_images
-This has been moved to a Ruby file called utility/contained_images.rb
-=end */
-
-/*
-=begin
---- Surface#get( x, y )
---- Surface#get( coordinate )
---- Surface#[ x, y ]
---- Surface#[ coordinate ]
+/**
+@section Drawing
+@method get( x, y )
+@method get( coordinate )
 These methods read single pixels on a surface.
-((|get|)) or ((|[]|)) get the color of a pixel. The coordinate can be given as an [x,y] array or two
-separate numbers. ((|get|)) is an alias for ((|[]|)).
+@get or @[] get the color of a pixel. 
+The coordinate can be given as an [x,y] array or two separate numbers. 
+@get is an alias for @[].
 These methods require the surface to be locked if necessary.
-((|[]=|)) and ((|[]|)) are the only methods in RUDL that take separate x and y coordinates.
-See also: Surface#plot, Surface#[]=
-=end */
+@[]= and @[] are the only methods in RUDL that take separate x and y coordinates.
+See also: @Surface.plot, @Surface.[]=
+*/
+/**
+@method [ x, y ]
+@method [ coordinate ]
+See @get
+*/
 __inline__ Uint32 internal_get(SDL_Surface* surface, Sint16 x, Sint16 y)
 {
     SDL_PixelFormat* format = surface->format;
@@ -1045,21 +1055,36 @@ __inline__ static void copy_surface_to_line(SDL_Surface* surface, int y, Uint8* 
     memcpy(data, get_line_pointer(surface, y), surface->w*surface->format->BytesPerPixel);
 }
 
-
-/*
-=begin
---- Surface#rows
---- Surface#get_row( y )
---- Surface#set_row( y, pixels )
---- Surface#each_row { |row_of_pixels| ... }
---- Surface#each_row! { |row_of_pixels| ... }
-These methods manipulate rows of pixels.
-(({Surface}))#((|rows|)) returns an array of strings with one row of imagedata each.
-((|get_row|)) and ((|set_row|)) get and set a single such row.
-((|each_row|)) and ((|each_row!|)) iterate through the rows,
+/**@section Bacth pixel access
+These methods manipulate the pixels in the Surface.
+The transport medium is a string with binary data in it.
+The data is raw, no fancy color arrays here.
+If bytesize (the amount of bytes used to describe the color of a pixel) is
+four, for example, a (({Surface})) of 5x5 pixels will return a string of length (5x5x4).
+If the colorformat is specified as BGRA, then character zero will be the
+B component, character one the G component etc.
+Eight bit color surfaces store one byte indexes into the palette.
+These methods perform best when the surface's pitch is equal to its width.
+There is not much errorchecking so beware of crashes.
+*/
+/**
+@method rows
+Returns an array of strings with one row of imagedata each.
+*/
+/**
+@method get_row( y )
+Get a single row.
+*/
+/**
+@method set_row( y, pixels )
+Set a single row.
+*/
+/**
+@method each_row { |row_of_pixels| ... }
+@method each_row! { |row_of_pixels| ... }
+@each_row and @each_row! iterate through the rows,
 passing each of them to the supplied codeblock.
-For more info, see (({Surface}))#((|pixels|)).
-=end */
+*/
 static VALUE surface_get_row(VALUE self, VALUE yval)
 {
     int y = NUM2INT(yval);
@@ -1121,20 +1146,24 @@ void define_ruby_row_methods()
     );
 }
 
-/*
-=begin
---- Surface#columns
---- Surface#get_column( x )
---- Surface#set_column( x, pixels )
---- Surface#each_column { |column_of_pixels| ... }
---- Surface#each_column! { |column_of_pixels| ... }
-These methods manipulate columns of pixels.
-(({Surface}))#((|columns|)) returns an array of strings with one column of imagedata each.
-((|get_column|)) and ((|set_column|)) get and set a single such column.
-((|each_column|)) and ((|each_column!|)) iterate through the columns,
+/**
+@method columns
+Returns an array of strings with one column of imagedata each.
+*/
+/**
+@method get_column( x )
+Get a column.
+*/
+/**
+@method set_column( x, pixels )
+Set a column
+*/
+/**
+@method each_column { |column_of_pixels| ... }
+@method each_column! { |column_of_pixels| ... }
+@each_column and @each_column! iterate through the columns,
 passing each of them to the supplied codeblock.
-For more info, see (({Surface}))#((|pixels|)).
-=end */
+*/
 static VALUE surface_get_column(VALUE self, VALUE xval)
 {
     int x = NUM2INT(xval), y, h, pixelsize, pitch;
@@ -1226,21 +1255,11 @@ void define_ruby_column_methods()
     );
 }
 
-/*
-=begin
---- Surface#pixels
---- Surface#pixels=( pixeldata )
+/**
+@method pixels
+@method pixels=( pixeldata )
 These methods get and set all image data at once.
-The transport medium is a string with binary data in it.
-The data is raw, no fancy color arrays here.
-If bytesize (the amount of bytes used to describe the color of a pixel) is
-four, for example, a (({Surface})) of 5x5 pixels will return a string of length (5x5x4).
-If the colorformat is specified as BGRA, then character zero will be the
-B component, character one the G component etc.
-Eight bit color surfaces store one byte indexes into the palette.
-These methods perform best when the surface's pitch is equal to its width.
-There is not much errorchecking so beware of crashes.
-=end */
+*/
 static VALUE surface_pixels(VALUE self)
 {
     Uint32 image_size;
@@ -1289,24 +1308,21 @@ static VALUE surface_set_pixels(VALUE self, VALUE pixels)
     return self;
 }
 
-/*
-=begin
---- Surface#scale2x
---- Surface#scale2x( dest_surface )
---- Surface#scale2x( dest_surface, coordinate )
+/**@section Scaling, Flipping and Rotating
+@method scale2x => Surface
+@method scale2x( dest_surface ) => Surface
+@method scale2x( dest_surface, coordinate ) => Surface
 Scales the surface to double size with the Scale2x algorithm developed
-by Andrea Mazzoleni. See http://scale2x.sourceforge.net/
+by Andrea Mazzoleni.
+See <a href='http://scale2x.sourceforge.net/'>the project page</a>.
 
-Creates a new surface to hold the result, or reuses ((|dest_surface|)),
+Creates a new surface to hold the result, or reuses @dest_surface,
 which must be at least twice as wide and twice as high as this surface,
 and have the same depth.
 
-((|coordinate|)) is the [x, y] coordinate where you want the scaled image
+@coordinate is the [x, y] coordinate where you want the scaled image
 positioned. This way you can draw it directly on screen at the wanted
 position, without having to use a temporary Surface.
-
-Returns the resulting surface.
-=end
 */
 
 #include "scale2x.h"
@@ -1347,13 +1363,9 @@ static VALUE surface_scale2x(int argc, VALUE* argv, VALUE self)
     return dest;
 }
 
-/*
-=begin
---- Surface#mirror_x
---- Surface#mirror_y
-Mirrors the surface, returning a new surface. ((|mirror_x|)) swaps the left side to the right,
-and ((|mirror_y|)) swaps the top side to the bottom.
-=end
+/**
+@method mirror_y => Surface
+Mirrors the surface vertically into a new Surface.
 */
 static VALUE surface_mirror_y(VALUE self)
 {
@@ -1391,6 +1403,10 @@ static VALUE surface_mirror_y(VALUE self)
     return destsurf;
 }
 
+/**
+@method mirror_x => Surface
+Mirrors the surface horizontally into a new @Surface.
+*/
 static VALUE surface_mirror_x(VALUE self)
 {
     SDL_Surface* src = retrieveSurfacePointer(self);
