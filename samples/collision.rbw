@@ -2,7 +2,7 @@
 
 require 'RUDL'; include RUDL; include Constant
 
-display=DisplaySurface.new [400, 400]
+display=DisplaySurface.new [400, 250]
 
 bitmap1=Surface.new [20,20]
 bitmap2=Surface.new [40,40]
@@ -23,18 +23,26 @@ keys=nil
 
 x,y=70,70
 
-begin
-	EventQueue.pump
-	keys=Key.pressed?
-	x-=1 if keys[K_LEFT]
-	x+=1 if keys[K_RIGHT]
-	y-=1 if keys[K_UP]
-	y+=1 if keys[K_DOWN]
-	display.fill [0,0,0]
-	display.blit bitmap1, [x,y]
-	display.blit bitmap2, [100,100]
-	if bitmap1.collision_map.collides_with([x,y], bitmap2.collision_map, [100,100])
-		display.print [0,0], 'collision!', 0xffffffff
-	end
-	display.flip
-end until keys[K_ESCAPE]
+while true
+    ev=EventQueue.poll
+    exit if ev.is_a? QuitEvent
+
+    Timer.delay(5)
+
+    keys=Key.pressed?
+    exit if keys[K_ESCAPE]
+    x-=1 if keys[K_LEFT]
+    x+=1 if keys[K_RIGHT]
+    y-=1 if keys[K_UP]
+    y+=1 if keys[K_DOWN]
+
+    display.fill [0,0,0]
+    display.blit bitmap1, [x,y]
+    display.blit bitmap2, [100,100]
+
+    if bitmap1.collision_map.collides_with([x,y], bitmap2.collision_map, [100,100])
+        display.print [10,10], 'collision!', 0xffffffff
+    end
+
+    display.flip
+end
