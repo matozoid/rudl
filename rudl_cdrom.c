@@ -87,6 +87,7 @@ static VALUE cdrom_count(VALUE self)
 
 /*
 =begin
+== Instance methods
 --- CDROM#eject
 --- CDROM#pause
 --- CDROM#play( track_nr )

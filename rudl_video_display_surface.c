@@ -3,6 +3,9 @@ RUDL - a C library wrapping SDL for use in Ruby.
 Copyright (C) 2001, 2002, 2003  Danny van Bruggen 
 
 $Log: rudl_video_display_surface.c,v $
+Revision 1.13  2003/10/05 16:59:53  tsuihark
+Fixed a lot of documentation
+
 Revision 1.12  2003/09/26 23:06:13  tsuihark
 Fixed damn EOLs and added some headers
 
@@ -252,6 +255,41 @@ static VALUE displaySurface_info(VALUE self)
 {
 	initVideo();
 	return get_video_info();
+}
+
+/*
+=begin
+--- DisplaySurface.gl_set_attribute( name, value )
+Set an attribute of the OpenGL subsystem before intialization.
+
+Returns self.
+=end */
+
+static VALUE displaySurface_gl_set_attribute(VALUE self, VALUE attribute, VALUE value)
+{
+	SDL_VERIFY(SDL_GL_SetAttribute(NUM2INT(attribute), NUM2INT(value))==0);
+	return self;
+}
+
+/*
+=begin
+--- DisplaySurface.gl_get_attribute( name )
+From the SDL documentation:
+
+Get an attribute of the OpenGL subsystem from the windowing
+interface, such as glX. This is of course different from getting
+the values from SDL's internal OpenGL subsystem, which only
+stores the values you request before initialization.
+
+Developers should track the values they pass into SDL_GL_SetAttribute
+themselves if they want to retrieve these values.
+=end */
+static VALUE displaySurface_gl_get_attribute(VALUE self, VALUE attribute)
+{
+	int buf;
+	
+	SDL_VERIFY(SDL_GL_GetAttribute(NUM2INT(attribute), &buf)==0);
+	return INT2NUM(buf);
 }
 
 /*
@@ -608,41 +646,6 @@ static VALUE displaySurface_toggle_fullscreen(VALUE self)
 	return result;
 	//return INT2BOOL(SDL_WM_ToggleFullScreen(retrieveSurfacePointer(self))!=0); <- old code
 }
-/*
-=begin
---- DisplaySurface.gl_set_attribute( name, value )
-Set an attribute of the OpenGL subsystem before intialization.
-
-Returns self.
-=end */
-
-static VALUE displaySurface_gl_set_attribute(VALUE self, VALUE attribute, VALUE value)
-{
-	SDL_VERIFY(SDL_GL_SetAttribute(NUM2INT(attribute), NUM2INT(value))==0);
-	return self;
-}
-
-/*
-=begin
---- DisplaySurface.gl_get_attribute( name )
-From the SDL documentation:
-
-Get an attribute of the OpenGL subsystem from the windowing
-interface, such as glX. This is of course different from getting
-the values from SDL's internal OpenGL subsystem, which only
-stores the values you request before initialization.
-
-Developers should track the values they pass into SDL_GL_SetAttribute
-themselves if they want to retrieve these values.
-=end */
-static VALUE displaySurface_gl_get_attribute(VALUE self, VALUE attribute)
-{
-	int buf;
-	
-	SDL_VERIFY(SDL_GL_GetAttribute(NUM2INT(attribute), &buf)==0);
-	return INT2NUM(buf);
-}
-
 ///////////////////////////////// INIT
 void initVideoDisplaySurfaceClasses()
 {

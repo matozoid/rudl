@@ -220,8 +220,6 @@ static VALUE RUDL_versions(VALUE self)
 Module (({RUDL})) contains all RUDL classes as inner classes.
 It has some class methods of its own too.
 == Class Methods
---- RUDL.version and RUDL.used_libraries
-No longer implemented, use versions instead.
 --- RUDL.versions
 Returns hash of librarynames with their versions that are supported by RUDL.
 This list was determined when RUDL was compiled for a certain system,

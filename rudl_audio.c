@@ -361,6 +361,75 @@ static VALUE sound_import(VALUE self, VALUE sampledata)
 	return newObject;
 }
 
+
+/*
+=begin
+--- Sound.convert( sample, source_format, destination_format )
+Returns a string with the string ((|sample|)) with sampledata in it,
+assumed to be in ((|source_format|)),
+converted to the ((|destination_format|)).
+
+A format is an array with these contents: [frequency, format (like AUDIO_S8), channels].
+=end */
+static __inline__ void unpack_audio_format_array(VALUE array, int* rate, Uint16* format, int* channels)
+{
+	*rate=NUM2INT(rb_ary_entry(array, 0));
+	*format=NUM2Uint16(rb_ary_entry(array, 1));
+	*channels=NUM2INT(rb_ary_entry(array, 2));
+	DEBUG_I(*format);
+	DEBUG_I(*channels);
+	DEBUG_I(*rate);
+}
+
+static __inline__ VALUE pack_audio_format_array(int rate, Uint16 format, int channels)
+{
+	return rb_ary_new3(3, INT2NUM(rate), INT2NUM(format), INT2NUM(channels));
+}
+
+static VALUE sound_convert(int argc, VALUE* argv, VALUE self)
+{
+	int dest_rate;
+	Uint16 dest_format;
+	int dest_channels;
+
+	Uint8* dest_memory;
+	int dest_length;
+
+	int src_rate;
+	Uint16 src_format;
+	int src_channels;
+
+	VALUE src;
+	Uint8* src_memory;
+	int src_length;
+
+	VALUE src_array, dest_array;
+	
+	switch(rb_scan_args(argc, argv, "21", &src, &src_array, &dest_array)){
+		case 2:	{
+			initAudio();
+			dest_array=mixer_get_format(0);
+			break;
+		}
+	}
+
+	src_memory=RSTRING(src)->ptr;
+	src_length=RSTRING(src)->len;
+
+	unpack_audio_format_array(src_array, &src_rate, &src_format, &src_channels);
+	unpack_audio_format_array(dest_array, &dest_rate, &dest_format, &dest_channels);
+
+	// call converter
+	SDL_VERIFY( rudl_convert_audio(
+			src_memory, src_length,
+			&dest_memory, &dest_length,
+			src_format, src_channels, src_rate,
+			dest_format, dest_channels, dest_rate) !=-1);
+
+	// wrap result in a string
+	return rb_str_new(dest_memory, dest_length);
+}
+
 /*
 #=begin
 #--- Sound.mix( destination, source )
@@ -525,74 +594,6 @@ static VALUE sound_export(VALUE self)
 	Mix_Chunk* chunk=retrieveMixChunk(self);
 
 	return rb_str_new(chunk->abuf, chunk->alen);
-}
-
-/*
-=begin
---- Sound.convert( sample, source_format, destination_format )
-Returns a string with the string ((|sample|)) with sampledata in it,
-assumed to be in ((|source_format|)),
-converted to the ((|destination_format|)).
-
-A format is an array with these contents: [frequency, format (like AUDIO_S8), channels].
-=end */
-static __inline__ void unpack_audio_format_array(VALUE array, int* rate, Uint16* format, int* channels)
-{
-	*rate=NUM2INT(rb_ary_entry(array, 0));
-	*format=NUM2Uint16(rb_ary_entry(array, 1));
-	*channels=NUM2INT(rb_ary_entry(array, 2));
-	DEBUG_I(*format);
-	DEBUG_I(*channels);
-	DEBUG_I(*rate);
-}
-
-static __inline__ VALUE pack_audio_format_array(int rate, Uint16 format, int channels)
-{
-	return rb_ary_new3(3, INT2NUM(rate), INT2NUM(format), INT2NUM(channels));
-}
-
-static VALUE sound_convert(int argc, VALUE* argv, VALUE self)
-{
-	int dest_rate;
-	Uint16 dest_format;
-	int dest_channels;
-
-	Uint8* dest_memory;
-	int dest_length;
-
-	int src_rate;
-	Uint16 src_format;
-	int src_channels;
-
-	VALUE src;
-	Uint8* src_memory;
-	int src_length;
-
-	VALUE src_array, dest_array;
-	
-	switch(rb_scan_args(argc, argv, "21", &src, &src_array, &dest_array)){
-		case 2:	{
-			initAudio();
-			dest_array=mixer_get_format(0);
-			break;
-		}
-	}
-
-	src_memory=RSTRING(src)->ptr;
-	src_length=RSTRING(src)->len;
-
-	unpack_audio_format_array(src_array, &src_rate, &src_format, &src_channels);
-	unpack_audio_format_array(dest_array, &dest_rate, &dest_format, &dest_channels);
-
-	// call converter
-	SDL_VERIFY( rudl_convert_audio(
-			src_memory, src_length,
-			&dest_memory, &dest_length,
-			src_format, src_channels, src_rate,
-			dest_format, dest_channels, dest_rate) !=-1);
-
-	// wrap result in a string
-	return rb_str_new(dest_memory, dest_length);
 }
 
 /*
@@ -934,8 +935,8 @@ static VALUE music_set_volume(VALUE self, VALUE volume)
 }
 /*
 =begin
---- Music.play
---- Music.play( loops )
+--- Music#play
+--- Music#play( loops )
 Plays this piece of music, stopping the previously playing one.
 Plays the music one time, or loops+1 times if you pass loops.
 =end */
@@ -958,11 +959,11 @@ static VALUE music_play(int argc, VALUE* argv, VALUE self)
 }
 /*
 =begin
---- Music.stop
---- Music.pause
---- Music.unpause
---- Music.busy?
---- Music.restart
+--- Music#stop
+--- Music#pause
+--- Music#unpause
+--- Music#busy?
+--- Music#restart
 All pretty straight forward, except that they all act on the playing music, not the current one.
 =end */
 static VALUE music_stop(VALUE self)
@@ -995,8 +996,8 @@ static VALUE music_restart(VALUE self)
 }
 /*
 =begin
---- Music.post_end_event
---- Music.post_end_event=( onOrOff )
+--- Music#post_end_event
+--- Music#post_end_event=( onOrOff )
 Returns, or sets whether an EndOfMusicEvent will be posted when the current music stops playing.
 ((|onOrOff|)) is true or false.
 =end */
@@ -1013,7 +1014,7 @@ static VALUE music_get_post_end_event(VALUE self)
 
 /*
 =begin
---- Music.destroy
+--- Music#destroy
 Frees the music from memory,
 thereby rendering the music instance useless.
 =end */

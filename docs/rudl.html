@@ -12,15 +12,14 @@
 <h1>Index</h1>
 <ul><li><a href='rudl.html#label-0'>RUDL</a>
 <ul><li><a href='rudl.html#label-1'>Class Methods</a>
-<ul><li><a href='rudl.html#label-2'><code>version <var>and</var> <var>RUDL</var><var>used_libraries</var></code></a>
-<li><a href='rudl.html#label-3'><code>versions</code></a>
-</ul></ul><li><a href='rudl.html#label-4'>Pit</a>
-<li><a href='rudl.html#label-5'>Version</a>
-<ul><ul><li><a href='rudl.html#label-6'><code>initialize( <var>major</var>=<var>0</var>, <var>minor</var>=<var>0</var>, <var>patch</var>=<var>0</var>, <var>deepest</var>=<var>0</var> )</code></a>
-<li><a href='rudl.html#label-7'><code>&lt;( <var>v</var> )</code></a>
-<li><a href='rudl.html#label-8'><code>to_s</code></a>
-</ul></ul><li><a href='rudl.html#label-9'>SDLError</a>
-<li><a href='rudl.html#label-10'>Constants</a>
+<ul><li><a href='rudl.html#label-2'><code>versions</code></a>
+</ul></ul><li><a href='rudl.html#label-3'>Pit</a>
+<li><a href='rudl.html#label-4'>Version</a>
+<ul><ul><li><a href='rudl.html#label-5'><code>initialize( <var>major</var>=<var>0</var>, <var>minor</var>=<var>0</var>, <var>patch</var>=<var>0</var>, <var>deepest</var>=<var>0</var> )</code></a>
+<li><a href='rudl.html#label-6'><code>&lt;( <var>v</var> )</code></a>
+<li><a href='rudl.html#label-7'><code>to_s</code></a>
+</ul></ul><li><a href='rudl.html#label-8'>SDLError</a>
+<li><a href='rudl.html#label-9'>Constants</a>
 </ul>
 
 <h1><a name="label-0" id="label-0">RUDL</a></h1><!-- RDLabel: "RUDL" -->
@@ -28,11 +27,7 @@
 It has some class methods of its own too.</p>
 <h2><a name="label-1" id="label-1">Class Methods</a></h2><!-- RDLabel: "Class Methods" -->
 <dl>
-<dt><a name="label-2" id="label-2"><code>RUDL.version <var>and</var> <var>RUDL</var>.<var>used_libraries</var></code></a></dt><!-- RDLabel: "RUDL.version and RUDL.used_libraries" -->
-</dl>
-<p>No longer implemented, use versions instead.</p>
-<dl>
-<dt><a name="label-3" id="label-3"><code>RUDL.versions</code></a></dt><!-- RDLabel: "RUDL.versions" -->
+<dt><a name="label-2" id="label-2"><code>RUDL.versions</code></a></dt><!-- RDLabel: "RUDL.versions" -->
 </dl>
 <p>Returns hash of librarynames with their versions that are supported by RUDL.
 This list was determined when RUDL was compiled for a certain system,
@@ -40,29 +35,29 @@ and might change when other libraries have been installed or removed
 and RUDL is recompiled.
 Versions are RUDL::Version objects.
 This includes "RUDL" itself.</p>
-<h1><a name="label-4" id="label-4">Pit</a></h1><!-- RDLabel: "Pit" -->
+<h1><a name="label-3" id="label-3">Pit</a></h1><!-- RDLabel: "Pit" -->
 <p>The <code>Pit</code> is where the things end up that don't fit anywhere else.
 The methods are defined where they fit best.</p>
-<h1><a name="label-5" id="label-5">Version</a></h1><!-- RDLabel: "Version" -->
+<h1><a name="label-4" id="label-4">Version</a></h1><!-- RDLabel: "Version" -->
 <p><code>Version</code> is the class used for version comparisons.
 It defines four version levels: major, minor, patch and deepest.</p>
 <dl>
-<dt><a name="label-6" id="label-6"><code>Version#initialize( <var>major</var>=<var>0</var>, <var>minor</var>=<var>0</var>, <var>patch</var>=<var>0</var>, <var>deepest</var>=<var>0</var> )</code></a></dt><!-- RDLabel: "Version#initialize" -->
+<dt><a name="label-5" id="label-5"><code>Version#initialize( <var>major</var>=<var>0</var>, <var>minor</var>=<var>0</var>, <var>patch</var>=<var>0</var>, <var>deepest</var>=<var>0</var> )</code></a></dt><!-- RDLabel: "Version#initialize" -->
 </dl>
 <p>Initializes a new Version object.</p>
 <dl>
-<dt><a name="label-7" id="label-7"><code>Version#&lt;( <var>v</var> )</code></a></dt><!-- RDLabel: "Version#<" -->
+<dt><a name="label-6" id="label-6"><code>Version#&lt;( <var>v</var> )</code></a></dt><!-- RDLabel: "Version#<" -->
 </dl>
 <p>Compares this version number with the one in <var>v</var>.
 Returns <var>true</var> if older.</p>
 <dl>
-<dt><a name="label-8" id="label-8"><code>Version#to_s</code></a></dt><!-- RDLabel: "Version#to_s" -->
+<dt><a name="label-7" id="label-7"><code>Version#to_s</code></a></dt><!-- RDLabel: "Version#to_s" -->
 </dl>
 <p>Returns the version as a string: "major.minor.patch.deepest"</p>
-<h1><a name="label-9" id="label-9">SDLError</a></h1><!-- RDLabel: "SDLError" -->
+<h1><a name="label-8" id="label-8">SDLError</a></h1><!-- RDLabel: "SDLError" -->
 <p>SDLError is the class that is thrown when SDL or RUDL find an SDL-specific
 problem.</p>
-<h1><a name="label-10" id="label-10">Constants</a></h1><!-- RDLabel: "Constants" -->
+<h1><a name="label-9" id="label-9">Constants</a></h1><!-- RDLabel: "Constants" -->
 <p>All for the hacked <var>init_subsystem</var> and <var>quit_subsystem</var>,
 which should officially never be needed:
 INIT_TIMER, INIT_AUDIO, INIT_VIDEO, INIT_CDROM, INIT_JOYSTICK, INIT_NOPARACHUTE, INIT_EVERYTHING</p>

@@ -1,3 +1,87 @@
-<TITLE>How to...</TITLE><link rel=stylesheet type='text/css' href='rudl.css'>
+<TITLE>How to...</TITLE>
+<link rel=stylesheet type='text/css' href='rudl.css'>
 
-<H1>How to install RUDL</H1><H2>Linux</H2><P>Like other extensions:<P>ruby extconf.rb<P>should create a makefile, or complain.If it says it can't find things,it will point to a URL that contains the wanted libraries.RUDL doesn't <I>need</I> everything, just SDL actually,but it will be severely handicapped without all libraries.If it complains, and you wished it would say a little more, you can edit extconf.rband uncomment the DEBUG-flag.<P>make<P>And now, as root:<P>make install<P>That's it.<H2>Windows</H2><P>Don't trust this chapter, this is changing rapidly.<H3>Source</H3><P>Source is now compiled with the Microsoft Visual C 6 command line tools.They need to be set up with the "vcvars32" batchfile in VC's bin directory.<P>This could be useful for creating a smaller RUDL library, depending on less libraries.<P>What is needed is the header files and libraries that RUDL wants to link with.These are available on request since I'm too lazy to package them :)The rest looks like unix: "ruby extconf.rb" "nmake" "nmake install"<H3>Binary</H3><P>This explains how to get RUDL installed on Windows.Developers are advised to create a package with their program, SDL, and RUDL in itso average users won't have to install RUDL seperately.<P>Starting with 0.6, there will be binary versions.These binaries <I>don't</I> work with the <A HREF="http://www.pragmaticprogrammer.com/ruby/downloads/ruby-install.html">Cygwin based Ruby installer</A>(Ruby 1.6.5 is the last version to be Cygwin based).<OL><LI>Grab <A HREF="http://www.pragmaticprogrammer.com/ruby/downloads/ruby-install.html">One Click Ruby 1.7.x Installer</A>.Install it.It might be necessary to reboot.<LI>Alternatively, grab <A HREF="http://www.dm4lab.to/~usa/ruby/index_en.html">U. Nakamura's Visual C Ruby</A>.It is reported to work.<LI>Grab <A HREF="http://froukepc.dhs.org/rudl/download/binary/">the latest binary RUDL setup</A>.<LI>Unzip RUDL to a place you like.<LI>Run install-on-windows.rb.I suggest copying the dll's to the Ruby bin dir when it asks for that.<LI>Try one of the samples in the RUDL/samples directory.</ol><p>If you decided that Ruby 1.7 is too unstable and you downloaded 1.6 instead,you'll get trouble using RUDL.This can be solved by downloading a lib only 1.6 RUDL.You can put the RUDL.so in the directory where you unpacked the RUDL setup and rerun install-on-windows.<P>If it doesn't run, contact me.
+<H1>How to get and install RUDL</H1>
+
+<H2>Linux</H2>
+
+<p>Download the latest source package from 
+<a href='http://sourceforge.net/project/showfiles.php?group_id=42958'>the RUDL SourceForge files page</a>
+<p>Continue with the general setup.
+
+<H2>Windows</H2>
+
+<P>This chapter may be outdated at any time.
+
+<h3>Binary</h3>
+
+<p>This explains how to get RUDL installed on Windows.
+Developers are advised to create a package with their program, SDL, and RUDL in it
+so average users won't have to install RUDL seperately.
+
+<ol>
+	<li>Grab <A HREF="http://rubyinstaller.sourceforge.net/">One Click Ruby 1.8.x Installer</A>
+	if you don't have it.
+	Install it.
+	It might be necessary to reboot.
+	<li>Alternatively, grab <A HREF="http://www.dm4lab.to/~usa/ruby/index_en.html"> U. Nakamura's Visual C Ruby</A>.
+	It is reported to work.
+	<li>Grab the latest binary RUDL setup version from
+	<a href='http://sourceforge.net/project/showfiles.php?group_id=42958'>the RUDL SourceForge files page</a>
+	<li>Unzip RUDL to a place you like.
+	<li>Run install-on-windows.rb.
+	We suggest copying the dll's to the Ruby bin dir when it asks for that.
+	<li>Try one of the samples in the RUDL/samples directory.
+	<li>That's it.
+	If it doesn't run, contact us.
+</ol>
+
+<p>If you want to use another version of Ruby, you'll get trouble using RUDL.
+This is because the RUDL.so library is statically linked with msvcrt-ruby18.lib (or something of that kind) and that lib
+changes a lot between Ruby versions.
+This can be solved by downloading a lib only RUDL, if it exists for your version.
+(If it doesn't, it can be created on request)
+You can put the RUDL.so in the directory where you unpacked the RUDL setup and rerun install-on-windows.
+	
+<h3>Source</h3>
+
+<p>Compiling from source could be useful for creating a smaller RUDL library, depending on less libraries.
+
+<p>Source is now compiled with the Microsoft Visual C 6 command line tools.
+They need to be set up with the "vcvars32" batchfile in VC's bin directory,
+you need to add RUDL's lib and include to the LIB and INCLUDE in the batch file.
+
+<p><i>Windows environment variables example</p>
+
+<p>With Visual Studio in D:\Program Files\VStudio\, 
+and the include and lib dirs beneath the RUDL dir: d:\rubyspul\rudl\.
+
+<code><br>
+include=D:\Program Files\VStudio\VC98\Include;d:\rubyspul\rudl\include<br>
+lib=D:\Program Files\VStudio\VC98\Lib;d:\rubyspul\rudl\lib<br>
+MSDevDir=D:\Program Files\VStudio\Common\MSDev98<br>
+Path=D:\Program Files\VStudio\Common\MSDev98\BIN;D:\Program Files\VStudio\VC98\BIN;D:\Program Files\VStudio\Common\MSDev98\TOOLS<br>
+</code></i>
+
+<p>Continue with the general setup.
+
+<h3>Creating an installable version of your project</h3>
+
+<p>... to do.
+
+<h2>General setup</h2>
+
+<p><ol>
+	<li><b>ruby extconf.rb</b> in the RUDL root should create a makefile, or complain.
+	If it says it can't find things,
+	it will point to a URL that contains the wanted libraries.
+	RUDL doesn't <I>need</I> everything, 
+	just SDL actually.
+	If it complains, and you wished it would say a little more, 
+	you can edit extconf.rb and uncomment the DEBUG-flag.
+	<li><b>make</b>
+	<li>And now, as root:
+	<b>make install</b>
+	<li>That's it.
+	You can now try the samples.
+</ol>

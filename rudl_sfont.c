@@ -104,7 +104,6 @@ static VALUE sfont_print(VALUE self, VALUE surface, VALUE coord, VALUE text)
 
 /*
 =begin
-== Instance Methods
 --- BitmapFont#print_centered( surface, y, text )
 Puts ((|text|)) on ((|surface|)) at y-coordinate ((|y|)) in the horizontal center of the screen.
 =end */
@@ -121,7 +120,6 @@ static void add_sfont_print_centered()
 
 /*
 =begin
-== Instance Methods
 --- BitmapFont#size( text )
 Returns the size [width, heigth] in pixels that ((|text|)) will take when written.
 =end */
