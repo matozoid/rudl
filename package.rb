@@ -110,6 +110,7 @@ def zipit(what)
 
     files.reject_list! [
         /\.(obj|def|exp|pdb)$/,
+        /^\.\#/,        # backups created by (Win)CVS
         "makefile",
         "mkmf.log",
         /^package.*\.rb$/,
