@@ -3,8 +3,11 @@
 
 <H1>How to use RUDL</H1>
 <H2>Accessing RUDL</H2>
-<P>First steps: all of it is in a library called RUDL, so do a<P>require 'RUDL'<P>
-before you start using any of it.
+<P>First steps: all of it is in a library called RUDL, so do a
+<pre>require "RUDL"</pre>
+<p>before you start using any of it. Also make sure to type "RUDL" in upper case,
+otherwise it won't work.
+<p>
 Eveything is namespaced by using a module.
 What that means is that there are two ways of accessing the things in RUDL.
 First, you can refer to any object in RUDL by sticking<P>RUDL::<P>in front of it,
@@ -29,8 +32,8 @@ Use the samples!
 
 <P>When a coordinate, size or such is needed, RUDL works with array's of two numbers like [10, 42].
 
-<P>When a rectangle is needed one uses an array of four numbers, 
-representing x, y from the top left corner of the screen, and w, h for width and height: 
+<P>When a rectangle is needed one uses an array of four numbers,
+representing x, y from the top left corner of the screen, and w, h for width and height:
 [x, y, width, height].
 Ruby's Array class is extended with a lot of methods to enable things like[5, 10, 30, 30].y (which will be 10)
 
