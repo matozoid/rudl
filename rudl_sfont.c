@@ -48,8 +48,26 @@ static SFont_FontInfo* retrieveFontInfoPointer(VALUE font)
 
 = BitmapFont
 BitmapFont is made with the SFont library and prints text with bitmaps.
-It is maintained by Karl Bartel on ((<URL:http://www.linux-games.com/sfont/>)).
-On his site, you can find fonts and some help.
+It is maintained by Karl Bartel on ((<URL:http://www.linux-games.com/>)).
+
+Here is Karl's README:
+
+FileFormat:
+
+The font file can be any type image file. The characters start with
+ASCII symbol #33. They are seperated by pink(255,0,255) lines at the top
+of the image. The space between these lines is the width of the caracter.
+Just take a look at the image, and you'll be able to understand what I tried
+to explain here.
+
+Example for the font file format is in this picture: ((<URL:sfont.gif>))
+
+The easiest way to create a new font is to use the GIMP's Logo function.
+Use the following string as text (ASCII 33-127 with escape sequences and
+spaces between the letters):
+
+! \" # $ % & ' ( ) * + , - . / 0 1 2 3 4 5 6 7 8 9 : ; < = > ? @ A B C D E F G H I J K L M N O P Q R S T U V W X Y Z [ \\ ] ^ _ ` a b c d e f g h i j k l m n o p q r s t u v w x y z { | } ~
+
 == Class Methods
 --- BitmapFont.new( surface )
 Creates a new SFont from the drawn characters in ((|surface|)).
