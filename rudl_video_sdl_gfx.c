@@ -436,5 +436,4 @@ void initVideoSDLGFXClasses()
 	#endif
 	#ifdef HAVE_SDL_IMAGEFILTER_H
 	#endif
-
 }
