@@ -7,7 +7,34 @@ require 'mkmf'
 
 #When compiling under plain Windows, double quote your command line options!
 
+# Why isn't this in mkmf.rb?
+def have_flag_old(flag)
+	if $configure_args['--'+flag]
+		$defs.push("-D#{flag.upcase}")
+		return true
+	end
+	return false
+end
+
+def have_flag(flag, default)
+	return false if arg_config("--no-#{flag}")
+	return false unless val = arg_config("--#{flag}", default)
+	flag = "-D" << flag.tr('-a-z', '_A-Z')
+	flag << "=#{val}" if String === val
+	$defs.push(flag)
+	true
+end
+
 sdl_config = with_config("sdl-config", "sdl-config")
+
+debug_version=have_flag('debug', false)
+
+if debug_version
+	puts '*** DEBUG VERSION ***' 
+	$defs.push('-DDEBUG_RUDL')
+else
+	puts 'for a debug version, pass --debug to extconf.rb'
+end
 
 dir_config('mixer')
 dir_config('image')
@@ -54,13 +81,18 @@ have_header('SDL_mixer.h') if have_library('SDL_mixer','Mix_OpenAudio')
 puts ' - More than just a lousy BMP reader: SDL_image from http://www.libsdl.org/projects/SDL_image/'
 have_header('SDL_image.h') if have_library('SDL_image','IMG_Load')
 
-puts ' - Truetype fonts: SDL_ttf from http://www.libsdl.org/projects/SDL_ttf/index.html'
+puts ' - Truetype fonts: SDL_ttf from http://www.libsdl.org/projects/SDL_ttf/'
 have_header('SDL_ttf.h') if have_library('freetype','FT_Init_FreeType') and have_library('SDL_ttf','TTF_Init')
+
+if debug_version
+	puts ' - Memory checking: Fortify from http://www.geocities.com/SiliconValley/Horizon/8596/'
+	puts '    (Make sure fortify.c is in this directory before running extconf.rb)'
+	$defs.push('-DFORTIFY') if have_header('fortify.h')
+end
 
 puts '* Checking for required files'
 puts ' - SDL from http://www.libsdl.org/download-1.2.html'
 if have_library('SDL', 'SDL_Quit') and 
-		have_library('SDLmain') and 
 		have_header('SDL.h')
 
 	create_makefile('RUDL')

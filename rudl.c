@@ -77,6 +77,7 @@ static VALUE RUDL_at_exit(VALUE obj)
 #endif
 	quitVideo();
 	quitTTF();
+	DEBUG_S("Quitting the rest of it");
 	SDL_Quit();
 	return Qnil;
 }
@@ -289,7 +290,7 @@ DECKLSPECKL void Init_RUDL()
 	initTimerClasses();
 	initVideoClasses();
 	initSFontClasses();
-	//initMappyClasses();
+	initOverlay();
 	initSDL();
 }
 

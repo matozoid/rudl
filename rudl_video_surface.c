@@ -158,10 +158,17 @@ static VALUE surface_new(int argc, VALUE* argv, VALUE self)
 /*
 =begin
 --- Surface.load_new( filename )
-This creates a (({Surface})) with an image in it, loaded from ((|filename|)).
-If the SDL_image library was found during RUDL's installation, it will load many formats, like
-BMP, PNM, XPM, PCX, GIF, JPEG, PNG and TGA.
+--- String.to_surface
+This creates a (({Surface})) with an image in it, 
+loaded from disk from ((|filename|)) by using load_new
+or loaded by treating ((|String|)) as the image data when using to_surface.
+In the last case, the ((|string|)) should be in some supported format, 
+just like the file for load_new should be.
+If the SDL_image library was found during RUDL's installation, 
+it will load the following formats:
+BMP, PNM, XPM, XCF, PCX, GIF, JPEG, TIFF, PNG, TGA and LBM.
 If the SDL_image library was not found, only simple BMP loading is supported.
+Simple means: not all BMP files can be loaded.
 =end */
 static VALUE surface_load_new(VALUE self, VALUE filename)
 {
@@ -172,6 +179,26 @@ static VALUE surface_load_new(VALUE self, VALUE filename)
 #else
 	surface=SDL_LoadBMP(STR2CSTR(filename));
 #endif
+	if(!surface) SDL_RAISE;
+	return createSurfaceObject(surface);
+}
+
+static VALUE string_to_surface(VALUE self)
+{
+	SDL_RWops* rwops=NULL;
+	SDL_Surface* surface=NULL;
+
+	initVideo();
+
+	rwops=SDL_RWFromMem(RSTRING(self)->ptr, RSTRING(self)->len);
+
+#ifdef HAVE_SDL_IMAGE_H
+	surface=IMG_Load_RW(rwops, 0);
+#else
+	surface=SDL_LoadBMP_RW(rwops, 0);
+#endif
+
+	SDL_FreeRW(rwops);
 	if(!surface) SDL_RAISE;
 	return createSurfaceObject(surface);
 }
@@ -345,11 +372,10 @@ static VALUE surface_locked_(VALUE self)
 
 /*
 =begin
---- Surface#save_bmp( filename ) => self
+--- Surface#save_bmp( filename )
 This is the only method in RUDL which stores surface data.
-Pass it the filename and the surface data will be saved to that file.
-
-Returns self;
+Pass ((|save_bmp|)) the ((|filename|)) and the surface data will be saved to that file.
+It returns self.
 =end */
 static VALUE surface_save_bmp(VALUE self, VALUE filename)
 {
@@ -721,7 +747,8 @@ static VALUE surface_clip(VALUE self)
 /*
 =begin
 --- Surface#subsurface
-Not implemented
+Not implemented.
+Does anybody have a real need for this?
 =end */
 static VALUE surface_subsurface(VALUE self)
 {
@@ -1213,11 +1240,10 @@ static VALUE surface_set_pixels(VALUE self, VALUE pixels)
 ///////////////////////////////// INIT
 void initVideoSurfaceClasses()
 {
-	DEBUG_S("initVideoSurfaceClasses()");
-
 	classSurface=rb_define_class_under(moduleRUDL, "Surface", rb_cObject);
 	rb_define_singleton_method(classSurface, "new", surface_new, -1);
 	rb_define_singleton_method(classSurface, "load_new", surface_load_new, 1);
+	rb_define_method(rb_cString, "to_surface", string_to_surface, 0);
 	rb_define_method(classSurface, "destroy", surface_destroy, 0);
 	rb_define_method(classSurface, "save_bmp", surface_save_bmp, 1);
 

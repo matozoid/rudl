@@ -10,14 +10,18 @@ void initJoystick()
 	}
 
 	if(!SDL_WasInit(SDL_INIT_JOYSTICK)){
-		DEBUG_S("Initializing joystick subsystem");
+		DEBUG_S("Starting joystick subsystem");
 		SDL_VERIFY(SDL_Init(SDL_INIT_JOYSTICK)!=-1);
 	}
 }
 
 void quitJoystick()
 {
-	rb_eval_string("ObjectSpace.each_object(RUDL::Joystick) {|x| x.close_hack}");
+	if(SDL_WasInit(SDL_INIT_JOYSTICK)){
+		DEBUG_S("Stopping joystick subsystem");
+		rb_eval_string("ObjectSpace.each_object(RUDL::Joystick) {|x| x.close_hack}");
+		SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
+	}
 }
 /*
 =begin
@@ -171,7 +175,6 @@ static VALUE joystick_close_hack(VALUE self)
 
 void initJoystickClasses()
 {
-	DEBUG_S("initJoystickClasses()");
 	classJoystick=rb_define_class_under(moduleRUDL, "Joystick", rb_cObject);
 	rb_define_singleton_method(classJoystick, "new", joystick_new, 1);
 	rb_define_singleton_method(classJoystick, "count", joystick_count, 0);

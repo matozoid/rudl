@@ -149,7 +149,6 @@ static VALUE sfont_size(VALUE self, VALUE ruby_text)
 
 void initSFontClasses()
 {
-	DEBUG_S("initSFontClasses()");
 	classSFont=rb_define_class_under(moduleRUDL, "SFont", rb_cObject);
 	rb_define_singleton_method(classSFont, "new", sfont_new, 1);
 	rb_define_method(classSFont, "print", sfont_print, 3);

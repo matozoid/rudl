@@ -295,7 +295,6 @@ static VALUE smpeg_setFilter(VALUE self,VALUE filter)
 
 void initMovieClasses()
 {
-	DEBUG_S("initMovieClasses()");
 	classMovie= rb_define_class_under(moduleRUDL,"Movie",rb_cObject);
 
 	filters[NULL_FILTER] = SMPEGfilter_null();

@@ -126,7 +126,6 @@ __inline__ void PARAMETER2COORD(VALUE parameter, Sint16* x, Sint16* y)
 ///////////////////////////////// INIT
 void initVideoClasses()
 {
-	DEBUG_S("initVideoClasses()");
 	initVideoSurfaceClasses();
 	initVideoDisplaySurfaceClasses();
 	initVideoRectClasses();
@@ -179,9 +178,8 @@ This event signals that the user or the program itself has requested to be termi
 === SDL constants:
 SWSURFACE, HWSURFACE, RESIZABLE, ASYNCBLIT, OPENGL, ANYFORMAT, HWPALETTE, DOUBLEBUF, 
 FULLSCREEN, HWACCEL, SRCCOLORKEY, RLEACCELOK, RLEACCEL, SRCALPHA, PREALLOC, NOFRAME
-=== OpenGL constants:
-(There is no OpenGL support yet)
 
+=== OpenGL constants:
 GL_RED_SIZE, GL_GREEN_SIZE, GL_BLUE_SIZE, GL_ALPHA_SIZE, GL_BUFFER_SIZE, 
 GL_DOUBLEBUFFER, GL_DEPTH_SIZE, GL_STENCIL_SIZE, GL_ACCUM_RED_SIZE, GL_ACCUM_GREEN_SIZE, 
 GL_ACCUM_BLUE_SIZE, GL_ACCUM_ALPHA_SIZE

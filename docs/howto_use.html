@@ -40,6 +40,10 @@ representing x,y from the top left corner of the screen,
 and w,h for width and height: [x, y, width, height].
 Ruby's Array class is extended with a lot of methods to enable things like
 [5,10,30,30].y (which will be 10)
+<p>No checks are done on array length when a method receives a coordinate or rectangle,
+this enables you to pass a rectangle to a method that wants a coordinate.
+Only the first two elements will be used
+(pass [3,4,6,7] and the coordinate will be [3,4])
 <P>When a color is needed, always use an array of [red, green, blue],
 a [red, green, blue, alpha] array or a hexadecimal 32 bit number: 0xFF8040EE.
 Return values are arrays, I don't know if sometimes returning three, sometimes

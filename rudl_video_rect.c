@@ -103,7 +103,8 @@ __inline__ static void normalize(VALUE self)
 <<< docs/head
 = Rect
 Rect has been discarded.
-It's methods have moved to the standard Array.
+Its methods have moved to the standard Array.
+All these methods are now written in C.
 = Array
 The standard Ruby array class has been extended to provide 
 methods for using it as a rectangle.
@@ -124,7 +125,7 @@ struct ExtRect{
 
 /*
 =begin
---- Array.collide_lists( l1, l2 ) BOGUS
+--- Array.collide_lists( l1, l2 )
 This method looks through list ((|l1|)),
 checking collisions with every object in list ((|l2|)).
 It does this by calling "rect" on all objects, expecting an array of [x,y,w,h] back,
@@ -430,8 +431,67 @@ static VALUE rb_array_contains(VALUE self, VALUE thing)
 }
 /*
 =begin
+--- Array#same_size( rect )
+Returns whether ((|rect|)) is the same area as ((|self|)).
+=end */
+static VALUE rb_array_same_size(VALUE self, VALUE rect)
+{
+	GET_X();
+	GET_Y();
+	GET_W();
+	GET_H();
+	double x2,y2,w2,h2;
+
+	if(self==rect){
+		return Qtrue;
+	}
+	
+	Check_Type(rect, T_ARRAY);
+	
+	return(x==array_get_x(rect) && y==array_get_y(rect) && w==array_get_w(rect) && h==array_get_h(rect));
+}
+/*
+=begin
+--- Array#copy_from( rect )
+Sets ((|self|)) to the same position and size as ((|rect|)).
+This is meant for optimizations.
+Returns ((|self|)).
+=end */
+static VALUE rb_array_copy_from(VALUE self, VALUE rect)
+{
+	if(self==rect){
+		return Qtrue;
+	}
+	
+	Check_Type(rect, T_ARRAY);
+	
+	SET_X(array_get_x(rect));
+	SET_Y(array_get_y(rect));
+	SET_W(array_get_w(rect));
+	SET_H(array_get_h(rect));
+
+	return self;
+}
+/*
+=begin
+--- Array#set_coordinates( x, y, w, h )
+Sets all properties at once.
+This is meant for optimizations.
+Returns ((|self|)).
+=end */
+static VALUE rb_array_set_coordinates(VALUE self, VALUE x, VALUE y, VALUE w, VALUE h)
+{
+	array_set_x_value(self, x);
+	array_set_y_value(self, y);
+	array_set_w_value(self, w);
+	array_set_h_value(self, h);
+
+	return self;
+}
+/*
+=begin
 --- Array#find_overlapping_rect( rects )
-Returns the first rectangle in the array to overlap the base rectangle.
+Returns the first rectangle in the ((|rects|)) array to overlap the base rectangle.
 Once an overlap is found, this will stop checking the remaining array.
 If no overlap is found, it will return false.
 =end */
@@ -582,8 +642,6 @@ static VALUE rb_array_overlaps(VALUE self, VALUE otherRect)
 ///////////////////////////////// INIT
 void initVideoRectClasses()
 {
-	DEBUG_S("initVideoRectClasses()");
-
 	rb_define_singleton_method(rb_cArray, "collide_lists", rb_array_collide_lists, 2);
 	rb_define_singleton_method(rb_cArray, "union_list", rb_array_union_list, 1);
 
@@ -619,9 +677,12 @@ void initVideoRectClasses()
 	rb_define_method(rb_cArray, "union", rb_array_union, 1);
 	rb_define_method(rb_cArray, "union!", rb_array_union_bang, 1);
 
-	rb_define_method(rb_cArray, "contains", rb_array_contains, 1);
-
-	rb_define_method(rb_cArray, "overlaps", rb_array_overlaps, 1);
+	rb_define_method(rb_cArray, "contains?", rb_array_contains, 1);
+	rb_define_method(rb_cArray, "same_size?", rb_array_same_size, 1);
+	rb_define_method(rb_cArray, "overlaps?", rb_array_overlaps, 1);
+	
+	rb_define_method(rb_cArray, "set_coordinates", rb_array_set_coordinates, 4);
+	rb_define_method(rb_cArray, "copy_from", rb_array_copy_from, 1);
 
 	rb_define_method(rb_cArray, "find_overlapping_rect", rb_array_find_overlapping_rect, 1);
 	rb_define_method(rb_cArray, "find_overlapping_rects", rb_array_find_overlapping_rects, 1);

@@ -257,7 +257,6 @@ static VALUE cdrom_track_start(VALUE self, VALUE trackValue)
 //////////////////
 void initCDClasses()
 {
-	DEBUG_S("initCDClasses()");
 	classCDROM=rb_define_class_under(moduleRUDL, "CDROM", rb_cObject);
 	rb_define_singleton_method(classCDROM, "new", cdrom_new, 1);
 	rb_define_singleton_method(classCDROM, "destroy", cdrom_destroy, 0);

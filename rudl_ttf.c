@@ -13,6 +13,7 @@ void initTTF()
 {
 #ifdef HAVE_SDL_TTF_H
 	if(!ttf_inited){
+		DEBUG_S("Starting TTF");
 		if(TTF_Init()) TTF_RAISE;
 		ttf_inited=true;
 	}
@@ -23,6 +24,7 @@ void quitTTF()
 {
 #ifdef HAVE_SDL_TTF_H
 	if(ttf_inited){
+		DEBUG_S("Stopping TTF");
 		TTF_Quit();
 	}
 #endif
@@ -270,7 +272,6 @@ static VALUE truetypefont_size(VALUE self, VALUE text)
 void initTrueTypeFontClasses()
 {
 #ifdef HAVE_SDL_TTF_H
-	DEBUG_S("initTrueTypeFontClasses()");
 	classTTF=rb_define_class_under(moduleRUDL, "TrueTypeFont", rb_cObject);
 	rb_define_singleton_method(classTTF, "new", truetypefont_new, 2);
 	rb_define_method(classTTF, "ascent", truetypefont_ascent, 0);

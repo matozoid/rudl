@@ -113,37 +113,14 @@ static VALUE key_set_repeat(VALUE self, VALUE delay, VALUE interval)
 
 void initKeyClasses()
 {
-	DEBUG_S("initKeyClasses()");
 	classKey=rb_define_class_under(moduleRUDL, "Key", rb_cObject);
-	rb_define_singleton_method(classKey, "focused?", key_getFocused, 0);
-	rb_define_singleton_method(classKey, "modifiers", key_getModifiers, 0);
-	rb_define_singleton_method(classKey, "pressed?", key_getPressed, 0);
-	rb_define_singleton_method(classKey, "name", key_name, 1);
-	rb_define_singleton_method(classKey, "modifiers=", key_setModifiers, 1);
-	rb_define_singleton_method(classKey, "set_repeat", key_set_repeat, 2);
+	rb_define_singleton_and_instance_method(classKey, "focused?", key_getFocused, 0);
+	rb_define_singleton_and_instance_method(classKey, "modifiers", key_getModifiers, 0);
+	rb_define_singleton_and_instance_method(classKey, "pressed?", key_getPressed, 0);
+	rb_define_singleton_and_instance_method(classKey, "name", key_name, 1);
+	rb_define_singleton_and_instance_method(classKey, "modifiers=", key_setModifiers, 1);
+	rb_define_singleton_and_instance_method(classKey, "set_repeat", key_set_repeat, 2);
 
-	rb_eval_string(
-			"module RUDL class Key				\n"
-			"	def focused?					\n"
-			"		Key::focused?				\n"
-			"	end								\n"
-			"	def modifiers					\n"
-			"		Key::modifiers				\n"
-			"	end								\n"
-			"	def pressed?					\n"
-			"		Key::pressed?				\n"
-			"	end								\n"
-			"	def name(*a)					\n"
-			"		Key::name(*a)				\n"
-			"	end								\n"
-			"	def modifiers=(a)				\n"
-			"		Key::modifiers=(a)			\n"
-			"	end								\n"
-			"	def set_repeat(*a)				\n"
-			"		Key::name(*a)				\n"
-			"	end								\n"
-			"end end							\n"
-	);
 /*
 =begin
 = KeyUpEvent

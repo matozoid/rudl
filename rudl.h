@@ -2,11 +2,12 @@
 #ifndef _RUDL_H
 #define _RUDL_H
 
+//
 #define RUDLVERSION_MAJOR 0
 #define RUDLVERSION_MINOR 7
 #define RUDLVERSION_PATCH 0
-#define DEBUG_RUDL
 
+//
 #include "ruby.h"
 #include "rubyio.h"
 
@@ -36,6 +37,9 @@ extern "C" {
 	#define SDL_VERIFY(____x) {if(!(____x)){SDL_RAISE;}}
 #endif
 
+#define SDL_RAISE		{rb_raise(classSDLError, SDL_GetError());}
+#define SDL_RAISE_S(____s)	{rb_raise(classSDLError, ____s);}
+
 #ifdef WIN32
 	#define DECKLSPECKL __declspec(dllexport)
 #else
@@ -60,9 +64,6 @@ extern VALUE moduleConstant;
 
 extern VALUE rb_range_first(VALUE obj); // Why no predefined range-access functions?
 extern VALUE rb_range_last(VALUE obj);
-
-#define SDL_RAISE		{rb_raise(classSDLError, SDL_GetError());}
-#define SDL_RAISE_S(____s)	{rb_raise(classSDLError, ____s);}
 
 #define NUM2BOOL(____b)	((____b)==Qtrue? true:false)
 #define INT2BOOL(____b)	((____b) ? Qtrue : Qfalse)

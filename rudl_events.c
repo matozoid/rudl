@@ -300,7 +300,6 @@ static VALUE eventqueue_wait(VALUE self)
 
 void initEventsClasses()
 {
-	DEBUG_S("initEventsClasses()");
 	classEventQueue=rb_define_module_under(moduleRUDL, "EventQueue");
 	rb_define_singleton_and_instance_method(classEventQueue, "get", eventqueue_get, -1);
 	rb_define_singleton_and_instance_method(classEventQueue, "peek", eventqueue_peek, -1);

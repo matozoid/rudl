@@ -10,6 +10,7 @@
 <A HREF="index.html">Back to index</A>
 
 
+<p>This page describes the various classes that access SDL_mixer.</p>
 <h1><a name="label:0" id="label:0">Channel</a></h1><!-- RDLabel: "Channel" -->
 <p>A Channel is an interface object to one of the mixer's channels.
 It can be used for manipulating sound on a particular channel.</p>
@@ -34,23 +35,86 @@ Volumes range from 0.0 to 1.0.</p>
 <dt><a name="label:8" id="label:8"><code>Channel#pause</code></a><!-- RDLabel: "Channel#pause" -->
 <dt><a name="label:9" id="label:9"><code>Channel#unpause</code></a><!-- RDLabel: "Channel#unpause" -->
 <dt><a name="label:10" id="label:10"><code>Channel#play( <var>sound</var>, <var>loops</var>, <var>maxtime</var> )</code></a><!-- RDLabel: "Channel#play" -->
-<dt><a name="label:11" id="label:11"><code>Channel#stop</code></a><!-- RDLabel: "Channel#stop" -->
+<dt><a name="label:11" id="label:11"><code>Channel#play( <var>sound</var>, <var>loops</var> )</code></a><!-- RDLabel: "Channel#play" -->
+<dt><a name="label:12" id="label:12"><code>Channel#play( <var>sound</var> )</code></a><!-- RDLabel: "Channel#play" -->
+<dt><a name="label:13" id="label:13"><code>Channel#stop</code></a><!-- RDLabel: "Channel#stop" -->
 </dl>
 <p>These are pretty self-explanatory.
 play plays <code>Sound</code> sound 1+loops times, for a maximum time of maxtime milliseconds.</p>
-<h1><a name="label:12" id="label:12">Sound</a></h1><!-- RDLabel: "Sound" -->
+<dl>
+<dt><a name="label:14" id="label:14"><code>Channel#set_panning( <var>left</var>, <var>right</var> )</code></a><!-- RDLabel: "Channel#set_panning" -->
+</dl>
+<p>Set the panning of a channel. The left and right channels are specified
+as numbers between 0.0 and 1.0, quietest to loudest, respectively.
+Technically, this is just individual volume control for a sample with
+two (stereo) channels, so it can be used for more than just panning.
+If you want real panning, call it like this:</p>
+<pre>channel.set_panning(left, 1.0-left);</pre>
+<p>...which isn't so hard.</p>
+<p>Returns self.</p>
+<dl>
+<dt><a name="label:15" id="label:15"><code>Channel#set_position( <var>angle</var>, <var>distance</var> )</code></a><!-- RDLabel: "Channel#set_position" -->
+</dl>
+<p>Set the position of a channel. <var>angle</var> is an number from 0 to 360, that
+specifies the location of the sound in relation to the listener. <var>angle</var>
+will be reduced as neccesary (540 becomes 180 degrees, -100 becomes 260).
+Angle 0 is due north, and rotates clockwise as the value increases.
+For efficiency, the precision of this effect may be limited (angles 1
+through 7 might all produce the same effect, 8 through 15 are equal, etc).</p>
+<p><var>distance</var> is a number between 0.0 and 1.0 that specifies the space
+between the sound and the listener. The larger the number, the further
+away the sound is. Using 1.0 does not guarantee that the channel will be
+culled from the mixing process or be completely silent. For efficiency,
+the precision of this effect may be limited (distance 0 through 0.1 might
+all produce the same effect, 0.1 through 0.2 are equal, etc). Setting <var>angle</var>
+and <var>distance</var> to 0 unregisters this effect, since the data would be
+unchanged.</p>
+<p>Returns self.</p>
+<dl>
+<dt><a name="label:16" id="label:16"><code>Channel#set_distance( <var>distance</var> )</code></a><!-- RDLabel: "Channel#set_distance" -->
+</dl>
+<p><var>distance</var> is a number between 0.0 and 1.0 that specifies the space
+between the sound and the listener. The larger the number, the further
+away the sound is. Using 1.0 does not guarantee that the channel will be
+culled from the mixing process or be completely silent. For efficiency,
+the precision of this effect may be limited (distance 0 through 0.1 might
+all produce the same effect, 0.1 through 0.2 are equal, etc). Setting 
+<var>distance</var> to 0 unregisters this effect, since the data would be
+unchanged.</p>
+<p>Returns self.</p>
+<dl>
+<dt><a name="label:17" id="label:17"><code>Channel#reverse_stereo( <var>reverse</var> )</code></a><!-- RDLabel: "Channel#reverse_stereo" -->
+</dl>
+<p>Causes a channel to reverse its stereo. This is handy if the user has his
+speakers hooked up backwards, or you would like to have a minor bit of
+psychedelia in your sound code.  :)  Calling this function with <var>reverse</var>
+set to true reverses the chunks's usual channels. If <var>reverse</var> is false,
+the effect is unregistered.</p>
+<p>Returns self.</p>
+<h1><a name="label:18" id="label:18">Sound</a></h1><!-- RDLabel: "Sound" -->
 <p>Sound is a single sample.
 It is loaded from a WAV file.</p>
-<h2><a name="label:13" id="label:13">Class Methods</a></h2><!-- RDLabel: "Class Methods" -->
+<h2><a name="label:19" id="label:19">Class Methods</a></h2><!-- RDLabel: "Class Methods" -->
 <dl>
-<dt><a name="label:14" id="label:14"><code>Sound.new( <var>filename</var> )</code></a><!-- RDLabel: "Sound.new" -->
+<dt><a name="label:20" id="label:20"><code>Sound.new</code></a><!-- RDLabel: "Sound.new" -->
+<dt><a name="label:21" id="label:21"><code>Sound.new( <var>filename</var> )</code></a><!-- RDLabel: "Sound.new" -->
+<dt><a name="label:22" id="label:22"><code>Sound.load_new( <var>filename</var> )</code></a><!-- RDLabel: "Sound.load_new" -->
 </dl>
-<p>Creates a new <code>Sound</code> object with the sound in file <var>filename</var>.</p>
-<h2><a name="label:15" id="label:15">Instance Methods</a></h2><!-- RDLabel: "Instance Methods" -->
+<p>Creates a new <code>Sound</code> object with the sound in file <var>filename</var>.</p>
 <dl>
-<dt><a name="label:16" id="label:16"><code>Sound#fade_out( <var>milliseconds</var> )</code></a><!-- RDLabel: "Sound#fade_out" -->
-<dt><a name="label:17" id="label:17"><code>Sound#volume</code></a><!-- RDLabel: "Sound#volume" -->
-<dt><a name="label:18" id="label:18"><code>Sound#volume=( <var>loudness</var> )</code></a><!-- RDLabel: "Sound#volume=" -->
+<dt><a name="label:23" id="label:23"><code>Sound.import( <var>sampledata</var> )</code></a><!-- RDLabel: "Sound.import" -->
+</dl>
+<p>This method imports raw sampledata.
+If it is not in the Mixer's format, use <code>Mixer.convert</code> first.</p>
+<dl>
+<dt><a name="label:24" id="label:24"><code>String.to_sound</code></a><!-- RDLabel: "String.to_sound" -->
+</dl>
+<p>Creates a new <code>Sound</code> object with the sound (in .WAV format) in the string.</p>
+<h2><a name="label:25" id="label:25">Instance Methods</a></h2><!-- RDLabel: "Instance Methods" -->
+<dl>
+<dt><a name="label:26" id="label:26"><code>Sound#fade_out( <var>milliseconds</var> )</code></a><!-- RDLabel: "Sound#fade_out" -->
+<dt><a name="label:27" id="label:27"><code>Sound#volume</code></a><!-- RDLabel: "Sound#volume" -->
+<dt><a name="label:28" id="label:28"><code>Sound#volume=( <var>loudness</var> )</code></a><!-- RDLabel: "Sound#volume=" -->
 </dl>
 <p>These are volume methods.
 fade_out fades all instances of this sound that are playing to silence in <var>milliseconds</var> milliseconds.
@@ -58,95 +122,142 @@ volume returns the current volume.
 volume= sets the volume to loudness.
 Volumes range from 0.0 to 1.0.</p>
 <dl>
-<dt><a name="label:19" id="label:19"><code>Channel#play( <var>loops</var>, <var>maxtime</var> )</code></a><!-- RDLabel: "Channel#play" -->
+<dt><a name="label:29" id="label:29"><code>Sound#play( <var>loops</var>, <var>maxtime</var> )</code></a><!-- RDLabel: "Sound#play" -->
 </dl>
 <p>Starts playing a song on an available channel.
 If no channels are available, it will not play and return <var>nil</var>.
 Loops controls how many extra times the sound will play, a negative loop will play
 indefinitely, it defaults to 0.
 Maxtime is the number of total milliseconds that the sound will play.
-It defaults to forever (-1).
-Returns a channel object for the channel that is selected to play the sound.</p>
+It defaults to forever (-1).</p>
+<p>Returns a channel object for the channel that is selected to play the sound.
+Returns nil if for some reason no channel is found.</p>
 <dl>
-<dt><a name="label:20" id="label:20"><code>Channel#stop</code></a><!-- RDLabel: "Channel#stop" -->
+<dt><a name="label:30" id="label:30"><code>Sound#stop</code></a><!-- RDLabel: "Sound#stop" -->
 </dl>
 <p>Stops all channels playing this <code>Sound</code>.</p>
-<h1><a name="label:21" id="label:21">Mixer</a></h1><!-- RDLabel: "Mixer" -->
-<p>Mixer is the main sound class.
-Since there is only one of these, all methods are class methods.</p>
-<h2><a name="label:22" id="label:22">Class Methods</a></h2><!-- RDLabel: "Class Methods" -->
 <dl>
-<dt><a name="label:23" id="label:23"><code>Mixer.init</code></a><!-- RDLabel: "Mixer.init" -->
-<dt><a name="label:24" id="label:24"><code>Mixer.init( <var>frequency</var> )</code></a><!-- RDLabel: "Mixer.init" -->
-<dt><a name="label:25" id="label:25"><code>Mixer.init( <var>frequency</var>, <var>size</var> )</code></a><!-- RDLabel: "Mixer.init" -->
-<dt><a name="label:26" id="label:26"><code>Mixer.init( <var>frequency</var>, <var>size</var>, <var>stereo</var> )</code></a><!-- RDLabel: "Mixer.init" -->
+<dt><a name="label:31" id="label:31"><code>Sound#to_s</code></a><!-- RDLabel: "Sound#to_s" -->
+</dl>
+<p>Returns a string with the sampledata.</p>
+<dl>
+<dt><a name="label:32" id="label:32"><code>Sound.convert( <var>sample</var>, <var>source_format</var>, <var>destination_format</var> )</code></a><!-- RDLabel: "Sound.convert" -->
+</dl>
+<p>Returns a string with the string <var>sample</var> with sampledata in it,
+assumed to be in <var>source_format</var>,
+converted to the <var>destination_format</var>.</p>
+<p>A format is an array with these contents: [frequency, format (like AUDIO_S8), channels].</p>
+<dl>
+<dt><a name="label:33" id="label:33"><code>Sound#format</code></a><!-- RDLabel: "Sound#format" -->
+</dl>
+<p>Returns the format of the <code>Sound</code>, which is always the same as the Mixer's format.
+See <code>Mixer.format</code></p>
+<h1><a name="label:34" id="label:34">Mixer</a></h1><!-- RDLabel: "Mixer" -->
+<p>Mixer is the main sound class.</p>
+<h2><a name="label:35" id="label:35">Class and instance Methods</a></h2><!-- RDLabel: "Class and instance Methods" -->
+<dl>
+<dt><a name="label:36" id="label:36"><code>Mixer.new</code></a><!-- RDLabel: "Mixer.new" -->
+<dt><a name="label:37" id="label:37"><code>Mixer.new( <var>frequency</var> )</code></a><!-- RDLabel: "Mixer.new" -->
+<dt><a name="label:38" id="label:38"><code>Mixer.new( <var>frequency</var>, <var>format</var> )</code></a><!-- RDLabel: "Mixer.new" -->
+<dt><a name="label:39" id="label:39"><code>Mixer.new( <var>frequency</var>, <var>format</var>, <var>stereo</var> )</code></a><!-- RDLabel: "Mixer.new" -->
+<dt><a name="label:40" id="label:40"><code>Mixer.new( <var>frequency</var>, <var>format</var>, <var>stereo</var>, <var>buffersize</var> )</code></a><!-- RDLabel: "Mixer.new" -->
 </dl>
 <p>Initializes the sound system.
-This call is not neccesary, the mixer will call <code>Mixer.init</code> when it is needed.
-When you disagree with the defaults (at the time of writing: 16 bit, 22kHz, stereo)
+This call is not neccesary, the mixer will call <code>Mixer.new</code> when it is needed.
+When you disagree with the defaults (at the time of writing: 16 bit, 22kHz, stereo, 4096)
 you can set them yourself, but do this <em>before</em> using any sound related method!</p>
 <ul>
 <li><var>frequency</var> is a number like 11025, 22050 or 44100.</li>
-<li><var>size</var> is AUDIO_S8 for 8 bit samples or AUDIO_S16SYS for 16 bit samples.</li>
-<li><var>stereo</var> is 1 (mono) or 2 (stereo.)</li>
+<li><var>format</var> is AUDIO_S8 for 8 bit samples or AUDIO_S16SYS for 16 bit samples.
+  Other possibilities are listed at the bottom of this page.</li>
+<li><var>channels</var> is 1 (mono) or 2 (stereo.)</li>
+<li><var>buffersize</var> is how many samples are calculated in one go.
+  4096 by default.
+  Set higher if your sound stutters.</li>
 </ul>
+<p><code>Mixer.new</code> will return a Mixer object, but if you don't want it, you can
+discard it and use class methods instead.</p>
 <dl>
-<dt><a name="label:27" id="label:27"><code>Mixer.destroy</code></a><!-- RDLabel: "Mixer.destroy" -->
+<dt><a name="label:41" id="label:41"><code>Mixer.destroy</code></a><!-- RDLabel: "Mixer.destroy" -->
+<dt><a name="label:42" id="label:42"><code>Mixer#destroy</code></a><!-- RDLabel: "Mixer#destroy" -->
 </dl>
 <p>(was Mixer.quit)
 Uninitializes the Mixer.
 If you really want to do this, then be warned that all Music objects will be destroyed too!</p>
 <dl>
-<dt><a name="label:28" id="label:28"><code>Mixer.fade_out( <var>millisecs</var> )</code></a><!-- RDLabel: "Mixer.fade_out" -->
+<dt><a name="label:43" id="label:43"><code>Mixer.fade_out( <var>millisecs</var> )</code></a><!-- RDLabel: "Mixer.fade_out" -->
+<dt><a name="label:44" id="label:44"><code>Mixer#fade_out( <var>millisecs</var> )</code></a><!-- RDLabel: "Mixer#fade_out" -->
 </dl>
 <p>Fades away all sound to silence in millisecs milliseconds.</p>
 <dl>
-<dt><a name="label:29" id="label:29"><code>Mixer.find_free_channel</code></a><!-- RDLabel: "Mixer.find_free_channel" -->
-<dt><a name="label:30" id="label:30"><code>Mixer.find_oldest_channel</code></a><!-- RDLabel: "Mixer.find_oldest_channel" -->
+<dt><a name="label:45" id="label:45"><code>Mixer.find_free_channel</code></a><!-- RDLabel: "Mixer.find_free_channel" -->
+<dt><a name="label:46" id="label:46"><code>Mixer.find_oldest_channel</code></a><!-- RDLabel: "Mixer.find_oldest_channel" -->
+<dt><a name="label:47" id="label:47"><code>Mixer#find_free_channel</code></a><!-- RDLabel: "Mixer#find_free_channel" -->
+<dt><a name="label:48" id="label:48"><code>Mixer#find_oldest_channel</code></a><!-- RDLabel: "Mixer#find_oldest_channel" -->
 </dl>
 <p>Both functions search for a channel that can be used to play new sounds on.
 find_free_channel finds a channel that is not playing anything and returns nil 
 if there is no such channel.
 find_oldest_channel finds the channel that has been playing for the longest time.</p>
 <dl>
-<dt><a name="label:31" id="label:31"><code>Mixer.busy?</code></a><!-- RDLabel: "Mixer.busy?" -->
+<dt><a name="label:49" id="label:49"><code>Mixer.busy?</code></a><!-- RDLabel: "Mixer.busy?" -->
+<dt><a name="label:50" id="label:50"><code>Mixer#busy?</code></a><!-- RDLabel: "Mixer#busy?" -->
 </dl>
-<p>Returns the number of current active channels. This is not the
-total channels, but the number of channels that are currently
-playing sound.</p>
+<p>Returns the number of current active channels.
+This is not the total channels, 
+but the number of channels that are currently playing sound.</p>
 <dl>
-<dt><a name="label:32" id="label:32"><code>Mixer.num_channels</code></a><!-- RDLabel: "Mixer.num_channels" -->
-<dt><a name="label:33" id="label:33"><code>Mixer.num_channels=( <var>amount</var> )</code></a><!-- RDLabel: "Mixer.num_channels=" -->
+<dt><a name="label:51" id="label:51"><code>Mixer.num_channels</code></a><!-- RDLabel: "Mixer.num_channels" -->
+<dt><a name="label:52" id="label:52"><code>Mixer.num_channels=( <var>amount</var> )</code></a><!-- RDLabel: "Mixer.num_channels=" -->
+<dt><a name="label:53" id="label:53"><code>Mixer#num_channels</code></a><!-- RDLabel: "Mixer#num_channels" -->
+<dt><a name="label:54" id="label:54"><code>Mixer#num_channels=( <var>amount</var> )</code></a><!-- RDLabel: "Mixer#num_channels=" -->
 </dl>
 <p>Gets or sets the current number of channels available for the mixer.
 This value defaults to 8 when the mixer is first initialized.
-RUDL imposes a channel limit of 256.</p>
+RUDL imposes a channel limit of 256.</p>
+<p>These channels are not the same thing as in <code>Mixer.init</code>.</p>
 <dl>
-<dt><a name="label:34" id="label:34"><code>Mixer.pause</code></a><!-- RDLabel: "Mixer.pause" -->
-<dt><a name="label:35" id="label:35"><code>Mixer.unpause</code></a><!-- RDLabel: "Mixer.unpause" -->
-<dt><a name="label:36" id="label:36"><code>Mixer.stop</code></a><!-- RDLabel: "Mixer.stop" -->
+<dt><a name="label:55" id="label:55"><code>Mixer.pause</code></a><!-- RDLabel: "Mixer.pause" -->
+<dt><a name="label:56" id="label:56"><code>Mixer.unpause</code></a><!-- RDLabel: "Mixer.unpause" -->
+<dt><a name="label:57" id="label:57"><code>Mixer.stop</code></a><!-- RDLabel: "Mixer.stop" -->
+<dt><a name="label:58" id="label:58"><code>Mixer#pause</code></a><!-- RDLabel: "Mixer#pause" -->
+<dt><a name="label:59" id="label:59"><code>Mixer#unpause</code></a><!-- RDLabel: "Mixer#unpause" -->
+<dt><a name="label:60" id="label:60"><code>Mixer#stop</code></a><!-- RDLabel: "Mixer#stop" -->
 </dl>
 <p>These work on all channels at once.</p>
 <dl>
-<dt><a name="label:37" id="label:37"><code>Mixer.reserved=( <var>amount</var> )</code></a><!-- RDLabel: "Mixer.reserved=" -->
+<dt><a name="label:61" id="label:61"><code>Mixer.reserved=( <var>amount</var> )</code></a><!-- RDLabel: "Mixer.reserved=" -->
+<dt><a name="label:62" id="label:62"><code>Mixer#reserved=( <var>amount</var> )</code></a><!-- RDLabel: "Mixer#reserved=" -->
 </dl>
 <p>This sets aside the first <var>amount</var> channels.
 They can only be played on by directly creating a Channel object and playing on it.
 No other function will take these channels for playing.</p>
-<h1><a name="label:38" id="label:38">Music</a></h1><!-- RDLabel: "Music" -->
-<p>This encapsulates a song.
-For some reason, SDL will only play one song at a time, and even though most of the Music methods
-are instance methods, some will act on the playing Music only.</p>
-<h2><a name="label:39" id="label:39">Class Methods</a></h2><!-- RDLabel: "Class Methods" -->
 <dl>
-<dt><a name="label:40" id="label:40"><code>Music.new( <var>filename</var> )</code></a><!-- RDLabel: "Music.new" -->
+<dt><a name="label:63" id="label:63"><code>Mixer.driver</code></a><!-- RDLabel: "Mixer.driver" -->
+<dt><a name="label:64" id="label:64"><code>Mixer#driver</code></a><!-- RDLabel: "Mixer#driver" -->
+</dl>
+<p>Returns the name of the driver doing the sound output.</p>
+<dl>
+<dt><a name="label:65" id="label:65"><code>Mixer.format</code></a><!-- RDLabel: "Mixer.format" -->
+<dt><a name="label:66" id="label:66"><code>Mixer#format</code></a><!-- RDLabel: "Mixer#format" -->
+</dl>
+<p>These get the parameters that Mixer is playing at.
+It returns an array of [format (like AUDIO_S8), channels, frequency].
+See also <code>Mixer.init</code>.</p>
+<h1><a name="label:67" id="label:67">Music</a></h1><!-- RDLabel: "Music" -->
+<p>This encapsulates a song.
+For some reason, SDL will only play one song at a time, and even though most of the 
+Music methods are instance methods, some will act on the playing Music only.</p>
+<h2><a name="label:68" id="label:68">Class Methods</a></h2><!-- RDLabel: "Class Methods" -->
+<dl>
+<dt><a name="label:69" id="label:69"><code>Music.new( <var>filename</var> )</code></a><!-- RDLabel: "Music.new" -->
 </dl>
 <p>Creates a new Music object from a MOD, XM, MIDI, MP3 or OGG file (I think.)</p>
-<h2><a name="label:41" id="label:41">Instance Methods</a></h2><!-- RDLabel: "Instance Methods" -->
+<h2><a name="label:70" id="label:70">Instance Methods</a></h2><!-- RDLabel: "Instance Methods" -->
 <dl>
-<dt><a name="label:42" id="label:42"><code>Music#volume</code></a><!-- RDLabel: "Music#volume" -->
-<dt><a name="label:43" id="label:43"><code>Music#volume=( <var>loudness</var> )</code></a><!-- RDLabel: "Music#volume=" -->
-<dt><a name="label:44" id="label:44"><code>Music#fade_out( <var>milliseconds</var> )</code></a><!-- RDLabel: "Music#fade_out" -->
+<dt><a name="label:71" id="label:71"><code>Music#volume</code></a><!-- RDLabel: "Music#volume" -->
+<dt><a name="label:72" id="label:72"><code>Music#volume=( <var>loudness</var> )</code></a><!-- RDLabel: "Music#volume=" -->
+<dt><a name="label:73" id="label:73"><code>Music#fade_out( <var>milliseconds</var> )</code></a><!-- RDLabel: "Music#fade_out" -->
 </dl>
 <p>Volume methods:
 fade_out fades out <em>the currently playing music</em> to silence in <var>milliseconds</var> milliseconds.
@@ -154,27 +265,36 @@ volume and volume= get and set the volume.
 Volume ranges from 0.0 to 1.0.
 These methods work on the currently playing music.</p>
 <dl>
-<dt><a name="label:45" id="label:45"><code>Music.play</code></a><!-- RDLabel: "Music.play" -->
-<dt><a name="label:46" id="label:46"><code>Music.play( <var>loops</var> )</code></a><!-- RDLabel: "Music.play" -->
+<dt><a name="label:74" id="label:74"><code>Music.play</code></a><!-- RDLabel: "Music.play" -->
+<dt><a name="label:75" id="label:75"><code>Music.play( <var>loops</var> )</code></a><!-- RDLabel: "Music.play" -->
 </dl>
 <p>Plays this piece of music, stopping the previously playing one.
 Plays the music one time, or loops+1 times if you pass loops.</p>
 <dl>
-<dt><a name="label:47" id="label:47"><code>Music.stop</code></a><!-- RDLabel: "Music.stop" -->
-<dt><a name="label:48" id="label:48"><code>Music.pause</code></a><!-- RDLabel: "Music.pause" -->
-<dt><a name="label:49" id="label:49"><code>Music.unpause</code></a><!-- RDLabel: "Music.unpause" -->
-<dt><a name="label:50" id="label:50"><code>Music.busy?</code></a><!-- RDLabel: "Music.busy?" -->
-<dt><a name="label:51" id="label:51"><code>Music.restart</code></a><!-- RDLabel: "Music.restart" -->
+<dt><a name="label:76" id="label:76"><code>Music.stop</code></a><!-- RDLabel: "Music.stop" -->
+<dt><a name="label:77" id="label:77"><code>Music.pause</code></a><!-- RDLabel: "Music.pause" -->
+<dt><a name="label:78" id="label:78"><code>Music.unpause</code></a><!-- RDLabel: "Music.unpause" -->
+<dt><a name="label:79" id="label:79"><code>Music.busy?</code></a><!-- RDLabel: "Music.busy?" -->
+<dt><a name="label:80" id="label:80"><code>Music.restart</code></a><!-- RDLabel: "Music.restart" -->
 </dl>
 <p>All pretty straight forward, except that they all act on the playing music, not the current one.</p>
 <dl>
-<dt><a name="label:52" id="label:52"><code>Music.post_end_event</code></a><!-- RDLabel: "Music.post_end_event" -->
-<dt><a name="label:53" id="label:53"><code>Music.post_end_event=( <var>onOrOff</var> )</code></a><!-- RDLabel: "Music.post_end_event=" -->
+<dt><a name="label:81" id="label:81"><code>Music.post_end_event</code></a><!-- RDLabel: "Music.post_end_event" -->
+<dt><a name="label:82" id="label:82"><code>Music.post_end_event=( <var>onOrOff</var> )</code></a><!-- RDLabel: "Music.post_end_event=" -->
 </dl>
 <p>Returns, or sets whether an EndOfMusicEvent will be posted when the current music stops playing.
 <var>onOrOff</var> is true or false.</p>
-<h1><a name="label:54" id="label:54">EndOfMusicEvent</a></h1><!-- RDLabel: "EndOfMusicEvent" -->
+<dl>
+<dt><a name="label:83" id="label:83"><code>Music.destroy</code></a><!-- RDLabel: "Music.destroy" -->
+</dl>
+<p>Frees the music from memory,
+thereby rendering the music instance useless.</p>
+<h1><a name="label:84" id="label:84">EndOfMusicEvent</a></h1><!-- RDLabel: "EndOfMusicEvent" -->
 <p>This event is posted when the current music has ended.</p>
+<h1><a name="label:85" id="label:85">Constants</a></h1><!-- RDLabel: "Constants" -->
+<p>These are for indicating an audio format:
+AUDIO_U8, AUDIO_S8, AUDIO_U16LSB, AUDIO_S16LSB, AUDIO_U16MSB, AUDIO_S16MSB, 
+AUDIO_U16, AUDIO_S16, AUDIO_U16SYS, AUDIO_S16SYS</p>
 
 </body>
 </html>

@@ -64,3 +64,8 @@ else
 		p Joystick.new(i)
 	}
 end
+
+begin
+	puts "Audio driver: #{Mixer.driver}"
+#rescue
+end

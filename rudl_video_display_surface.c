@@ -635,8 +635,6 @@ static VALUE displaySurface_gl_get_attribute(VALUE self, VALUE attribute)
 ///////////////////////////////// INIT
 void initVideoDisplaySurfaceClasses()
 {
-	DEBUG_S("initVideoDisplaySurfaceClasses()");
-
 	classDisplaySurface=rb_define_class_under(moduleRUDL, "DisplaySurface", classSurface);
 	rb_define_singleton_method(classDisplaySurface, "new", displaySurface_new, -1);
 	rb_define_singleton_method(classDisplaySurface, "modes", displaySurface_modes, -1);

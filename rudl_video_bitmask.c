@@ -31,7 +31,7 @@ bitmask *SCAM_mask_from_image_SDL(SDL_Surface *surface, Uint32 colorkey)
 =begin
 <<< docs/head
 = CollisionMap
-This code is "bitmask" from ((<URL:http://www.ifm.liu.se/~ulfek/bitmask/Bitmask.html>))
+This code is "bitmask" from ((<URL:http://www.ifm.liu.se/~ulfek/>))
 
 This class contains a map of all the visible pixels in a surface.
 (That's the ones that don't have the color key's color)
@@ -199,8 +199,6 @@ static VALUE collision_map_array_get(VALUE self, VALUE x, VALUE y)
 ///////////////////////////////// INIT
 void initVideoSGEClasses()
 {
-	DEBUG_S("initVideoSGEClasses()");
-
 	rb_eval_string(
 		"module RUDL class Surface			\n"
 		"	attr_accessor :collision_map	\n"

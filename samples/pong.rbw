@@ -129,7 +129,7 @@ class Player
 	end
 
 	def collide(ball_pos, ball_dir)
-		if [@x, @y, 8, $BatSize].overlaps [ball_pos[0], ball_pos[1], 8, 8]
+		if [@x, @y, 8, $BatSize].overlaps? [ball_pos[0], ball_pos[1], 8, 8]
 			if @side==0
 				ball_dir[0]=ball_dir[0].abs
 			else

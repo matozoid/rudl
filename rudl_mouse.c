@@ -163,7 +163,6 @@ static VALUE mouse_set_cursor(VALUE self, VALUE hotspot, VALUE xormasks, VALUE a
 
 void initMouseClasses()
 {
-	DEBUG_S("initMouseClasses()");
 	classMouse=rb_define_module_under(moduleRUDL, "Mouse");
 	//rb_define_singleton_method(classMouse, "cursor", mouse_cursor, 0);
 	rb_define_singleton_and_instance_method(classMouse, "set_cursor", mouse_set_cursor, 3);

@@ -12,57 +12,75 @@
 
 <h1><a name="label:0" id="label:0">Key</a></h1><!-- RDLabel: "Key" -->
 <p>The Key class gives access to the keyboard without events.</p>
+<p>You can either call the class methods: "Key.something" directly, 
+or instantiate the class and lug along a reference to it and call
+instance methods on that: "k=Key.new" "k.something" (they will call
+class methods under the hood, so it's exactly the same)</p>
 <p>EventQueue.pump will update the state of Key,
 so if no keys seem to be pressed, call pump.</p>
-<h2><a name="label:1" id="label:1">Class Methods</a></h2><!-- RDLabel: "Class Methods" -->
+<h2><a name="label:1" id="label:1">Class and instance Methods</a></h2><!-- RDLabel: "Class and instance Methods" -->
 <dl>
 <dt><a name="label:2" id="label:2"><code>Key.focused?</code></a><!-- RDLabel: "Key.focused?" -->
+<dt><a name="label:3" id="label:3"><code>Key#focused?</code></a><!-- RDLabel: "Key#focused?" -->
 </dl>
 <p>Returns true when the application has the keyboard input focus.</p>
 <dl>
-<dt><a name="label:3" id="label:3"><code>Key.modifiers</code></a><!-- RDLabel: "Key.modifiers" -->
+<dt><a name="label:4" id="label:4"><code>Key.modifiers</code></a><!-- RDLabel: "Key.modifiers" -->
+<dt><a name="label:5" id="label:5"><code>Key#modifiers</code></a><!-- RDLabel: "Key#modifiers" -->
 </dl>
 <p>Returns the current modifier keys state.</p>
 <dl>
-<dt><a name="label:4" id="label:4"><code>Key.pressed?</code></a><!-- RDLabel: "Key.pressed?" -->
+<dt><a name="label:6" id="label:6"><code>Key.pressed?</code></a><!-- RDLabel: "Key.pressed?" -->
+<dt><a name="label:7" id="label:7"><code>Key#pressed?</code></a><!-- RDLabel: "Key#pressed?" -->
 </dl>
 <p>Returns a hash containing all keys that are set, set to true.
 So, if K_b is pressed, the hash will contain a key,value pair of K_b =&gt; true.</p>
 <dl>
-<dt><a name="label:5" id="label:5"><code>Key.name( <var>key</var> )</code></a><!-- RDLabel: "Key.name" -->
+<dt><a name="label:8" id="label:8"><code>Key.name( <var>key</var> )</code></a><!-- RDLabel: "Key.name" -->
+<dt><a name="label:9" id="label:9"><code>Key#name( <var>key</var> )</code></a><!-- RDLabel: "Key#name" -->
 </dl>
 <p>Returns a string describing constant <var>key</var></p>
 <dl>
-<dt><a name="label:6" id="label:6"><code>Key.modifiers=( <var>modifiers</var> )</code></a><!-- RDLabel: "Key.modifiers=" -->
+<dt><a name="label:10" id="label:10"><code>Key.modifiers=( <var>modifiers</var> )</code></a><!-- RDLabel: "Key.modifiers=" -->
+<dt><a name="label:11" id="label:11"><code>Key#modifiers=( <var>modifiers</var> )</code></a><!-- RDLabel: "Key#modifiers=" -->
 </dl>
 <p>Sets the keyboard modifier state.</p>
 <dl>
-<dt><a name="label:7" id="label:7"><code>Key.set_repeat( <var>delay</var>, <var>interval</var> )</code></a><!-- RDLabel: "Key.set_repeat" -->
+<dt><a name="label:12" id="label:12"><code>Key.set_repeat( <var>delay</var>, <var>interval</var> )</code></a><!-- RDLabel: "Key.set_repeat" -->
+<dt><a name="label:13" id="label:13"><code>Key#set_repeat( <var>delay</var>, <var>interval</var> )</code></a><!-- RDLabel: "Key#set_repeat" -->
 </dl>
 <p>Sets the keyboard to wait for <var>delay</var> milliseconds before starting repeat with 
 <var>interval</var> delay between repeats.
 Set both to zero to disable repeat.</p>
-<h1><a name="label:8" id="label:8">KeyUpEvent</a></h1><!-- RDLabel: "KeyUpEvent" -->
+<h1><a name="label:14" id="label:14">KeyUpEvent</a></h1><!-- RDLabel: "KeyUpEvent" -->
 <p>This event is posted when a key is released.</p>
 <dl>
-<dt><a name="label:9" id="label:9"><code>KeyUpEvent#key</code></a><!-- RDLabel: "KeyUpEvent#key" -->
+<dt><a name="label:15" id="label:15"><code>KeyUpEvent#key</code></a><!-- RDLabel: "KeyUpEvent#key" -->
 </dl>
 <p>The keycode for the released key.</p>
 <dl>
-<dt><a name="label:10" id="label:10"><code>KeyUpEvent#mod</code></a><!-- RDLabel: "KeyUpEvent#mod" -->
+<dt><a name="label:16" id="label:16"><code>KeyUpEvent#mod</code></a><!-- RDLabel: "KeyUpEvent#mod" -->
 </dl>
-<p>The modifier keys state.</p>
-<h1><a name="label:11" id="label:11">KeyDownEvent</a></h1><!-- RDLabel: "KeyDownEvent" -->
-<p>This event is posted (once) when a key is pressed.</p>
+<p>The modifier keys state.</p>
 <dl>
-<dt><a name="label:12" id="label:12"><code>KeyUpEvent#key</code></a><!-- RDLabel: "KeyUpEvent#key" -->
+<dt><a name="label:17" id="label:17"><code>KeyUpEvent#unicode</code></a><!-- RDLabel: "KeyUpEvent#unicode" -->
+</dl>
+<p>The Unicode version of the key.</p>
+<h1><a name="label:18" id="label:18">KeyDownEvent</a></h1><!-- RDLabel: "KeyDownEvent" -->
+<p>This event is posted when a key is pressed and when it gets repeated (see Key#set_repeat).</p>
+<dl>
+<dt><a name="label:19" id="label:19"><code>KeyDownEvent#key</code></a><!-- RDLabel: "KeyDownEvent#key" -->
 </dl>
 <p>The keycode for the pressed key.</p>
 <dl>
-<dt><a name="label:13" id="label:13"><code>KeyUpEvent#mod</code></a><!-- RDLabel: "KeyUpEvent#mod" -->
+<dt><a name="label:20" id="label:20"><code>KeyDownEvent#mod</code></a><!-- RDLabel: "KeyDownEvent#mod" -->
 </dl>
 <p>The modifier keys state.</p>
-<h1><a name="label:14" id="label:14">Constants</a></h1><!-- RDLabel: "Constants" -->
+<dl>
+<dt><a name="label:21" id="label:21"><code>KeyDownEvent#unicode</code></a><!-- RDLabel: "KeyDownEvent#unicode" -->
+</dl>
+<p>The Unicode version of the key.</p>
+<h1><a name="label:22" id="label:22">Constants</a></h1><!-- RDLabel: "Constants" -->
 <p>Keycodes in one handy big mess:</p>
 <p>K_UNKNOWN, K_FIRST, K_BACKSPACE, K_TAB, K_CLEAR, K_RETURN, K_PAUSE, K_ESCAPE, K_SPACE, K_EXCLAIM, K_QUOTEDBL, 
 K_HASH, K_DOLLAR, K_AMPERSAND, K_QUOTE, K_LEFTPAREN, K_RIGHTPAREN, K_ASTERISK, K_PLUS, K_COMMA, 
