@@ -1,10 +1,12 @@
 =begin
----------------------------------------------------------------------
+@file Samples
+@class MoveSp
+(This was written by Nauglin)
+
 This is a porting from the Ohai's script to RUDL. The Ohai's original 
 code is at the end. I've tried this to be the most similar as posible 
 to the original, but RUDL and Ruby/SDL are different approaches to 
-SDL, so...   [-nauglin-]
----------------------------------------------------------------------
+SDL, so...
 =end
 
 
@@ -148,13 +150,11 @@ true until [QuitEvent, KeyDownEvent].include? EventQueue.poll.class
 
 __END__
 
-=begin
----------------------------------------------------------------------
-This is the Ohai's original code.  I've put some minnor changes for 
-testing speed, but they're commented. Just uncomment'em to get fps 
-calculation.   [-nauglin-]
----------------------------------------------------------------------
-=end
+#---------------------------------------------------------------------
+#This is the Ohai's original code.  I've put some minnor changes for 
+#testing speed, but they're commented. Just uncomment'em to get fps 
+#calculation.   [-nauglin-]
+#---------------------------------------------------------------------
 
 
 require 'sdl'

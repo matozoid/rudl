@@ -1,7 +1,9 @@
 =begin
+@file Samples
+@class Bobs
 (adapted from a Pygame demo example thing)
-Name:unlimited 'bobs' - korruptor, http://www.korruptor.demon.co.uk
-Desc:
+
+unlimited 'bobs' - <a href='http://www.korruptor.demon.co.uk'>korruptor</a>
 
 I first saw this in the Dragons MegaDemo on the A500 back in '89 and it blew me away.
 How gutted I was when Wayne "tripix" Keenan told me how easy it was and knocked up an

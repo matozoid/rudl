@@ -1,6 +1,9 @@
 #!/usr/local/bin/ruby
-
-# This sample demonstrates some utility functions in RUDL.
+=begin
+@file Samples
+@class Info
+This sample demonstrates some utility functions in RUDL.
+=end
 
 require 'RUDL'
 include RUDL

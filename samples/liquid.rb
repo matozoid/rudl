@@ -1,5 +1,8 @@
 =begin
----------------------------------------------------------------------
+@file Samples
+@class Liquid
+(Written by Nauglin)
+
 This is a porting from the pygame script to RUDL. The original pygame
 code is at the end, followed by the BlitzBasic source from where the
 pygame was implemented. The Ruby version seems to be visibly slower
@@ -15,9 +18,6 @@ Maybe someone more used to Ruby could try to accelerate the loops.
 If so, please let us see the resultant code.
 
 NOTE: You'll need a 690x530x16bpp BMP for the script to work.
-
-   [- nauglin -]
----------------------------------------------------------------------
 =end
 
 require 'RUDL'; include RUDL; include Constant

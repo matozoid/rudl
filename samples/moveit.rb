@@ -1,5 +1,8 @@
 =begin
----------------------------------------------------------------------
+@file Samples
+@class MoveIt
+(This was written by Nauglin)
+
 This is a porting from the pygame script to RUDL. The original pygame 
 code is at the end. I've found the RUDL version running at similar speed 
 than the pygame one.
@@ -21,9 +24,6 @@ someone more used to Ruby could try to improve all of this. If so, please
 let us see the resultant code.
 
 NOTE: You'll need a 690x530x16bpp BMP for the script to work.
-
-   [- nauglin -]
----------------------------------------------------------------------
 =end
 
 #-- require and include everything
