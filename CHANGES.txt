@@ -1,6 +1,7 @@
 
 newest
 ------
+ + added Surface#mirror_x and mirror_y
  + added DisplaySurface.set_icon for setting the window icon
  + added Surface#scale2x
  + added VideoExposeEvent which occurs when the window is uncovered
