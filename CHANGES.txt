@@ -1,16 +1,22 @@
 
 newest
 ------
- + added Surface#mirror_x and mirror_y
  + added DisplaySurface.set_icon for setting the window icon
+ + added Surface#mirror_x and mirror_y
  + added Surface#scale2x
  + added VideoExposeEvent which occurs when the window is uncovered
+   (it was previously a nil event)
+
  * fixed a couple typos that caused compilation errors on Linux
+ * fixed window clipping after a resize (no need to do it manually any more)
  * Surface#[] and []= now accept an [x,y] array as well as separate x,y coordinates.
    They are now the same methods as Surface#get and Surface#plot, respectively.
+ * changed the default window title to "RUDL window"
  * Surface#set_colorkey(nil) now does the same as unset_colorkey, and
    set_alpha(nil) does the same as unset_alpha.
  * Surface.new now copies the palette if a 8-bit surface was supplied
+ * Fixed segfault when calling set_palette(0, nil) (e.g. when trying to copy
+   the palette from a 16/24-bit surface)
 
 
 0.7.1
