@@ -2,6 +2,7 @@ require 'getoptlong'
 require 'ftools'
 require 'pp'
 
+ARGV=['--verbose', '--project-name=rudl', '--output-dir=docs', 'dokumentat.rb', 'dokme/*.c', 'dokme/dokmetoo/*.c']
 =begin
 --- Organizing documentation:
 A hierarchy is project.class_or_module.method.parameter.
@@ -9,7 +10,6 @@ Incompletely specified hierarchies will be completed by searching to the left
 through the hierarchy currently being processed:rightmost: parameters of this method
 then: methods of this class or module
 then: go through nested classes and modules, looking at methods (or class and module names??)then: go through all project names known
-
 @file some.hierarchy (controls placement in files)
 @class class_name (starts or continues documenting a class, include the whole hierarchy please)
 @module module_name (starts or continues documenting a module, include the whole hierarchy please)
@@ -23,7 +23,8 @@ Text before the first organizational tag will be put in index.html
 --- Formatting:
 All HTML, except @something.
 
-/** starts a dokumentat block
+/** @section Crap
+starts a dokumentat block
 @something tells us what we're documenting
 @something continue adding these until you're done
 The first line that doesn't start with @ is the documentation itself. 
@@ -33,6 +34,9 @@ If you want to start documenting something else, close the comment and start ove
 --- Example:
 /**
 Welcome to RUDL.
+*/
+/**@file Another.File
+Weehee
 */
 /**
 @file Audio
@@ -84,6 +88,33 @@ $verbose=false
 $open_tag='/**'
 $close_tag='*/'
 
+# Removes all 
+class Array
+	def remove_starting_at_class(cls)
+		idx=-1
+		each do |o|
+			if o.is_a? cls
+				if idx==-1
+					replace([])
+					return
+				end
+				replace(self[0..idx])
+				return
+			end
+			idx+=1
+		end
+	end
+	
+	def contains_class?(cls)
+		each do |o|
+			if o.is_a? cls
+				return true
+			end
+		end
+		false
+	end
+end
+
 class TagPosition
 	attr_reader :project_name, :file_name, :tag_name
 	
@@ -103,6 +134,11 @@ index: {
 
 =end
 
+=begin
+@class Entry
+An entry in the TOC. Subclasses specify specific kinds of entries.
+An entry holds all entries below it in @children.
+=end
 class Entry
 	attr_reader :children
 	attr_reader :name
@@ -129,7 +165,7 @@ class Entry
 		if @text
 			@text=@text+text
 		else
-			@text=''
+			@text=text
 		end
 	end
 	
@@ -144,6 +180,23 @@ class RootEntry < Entry
 end
 
 class ProjectEntry < Entry
+	def write(output_directory)
+		# Write every child entry to index.html, except for FileEntries, which will make their own file.
+		#File.open(output_directory+'/index.html', 'w') do |file|
+		#	file.write "<html>\n<head>\n<title>#{@name}</title>\n</head>\n<body>\n"
+		#	file.write "<h1>Files</h1>\n"
+			children.sort.each do |child|
+		#		if child.is_a? FileEntry
+		#			file.write "<p><h2><a href='#{child.name.downcase}.html'>#{child.name}</a></h2>\n"
+					child.write(output_directory)
+		#		else
+		#			child.write(file)
+		#		end
+			end
+		#	file.write "<p>#{@text}"
+		#	file.write "\n</body>\n</html>\n"
+		#end
+	end
 end
 
 class FileEntry < Entry
@@ -157,29 +210,41 @@ end
 
 class ClassEntry < Entry
 	def write(file)
-		file.write("<h2>#{@name}</h2>\n")
+		file.write("<h2>Class #{@name}</h2>\n")
 		file.write("#{@text}")
+		children.sort.each do |child|
+			child.write(file)
+		end
 	end
 end
 
 class ModuleEntry < Entry
 	def write(file)
-		file.write("<h2>#{@name}</h2>\n")
+		file.write("<h2>Module #{@name}</h2>\n")
 		file.write("#{@text}")
+		children.sort.each do |child|
+			child.write(file)
+		end
 	end
 end
 
 class SectionEntry < Entry
 	def write(file)
-		file.write("<h3>#{@name}</h3>\n")
+		file.write("<h3>Section #{@name}</h3>\n")
 		file.write("#{@text}")
+		children.sort.each do |child|
+			child.write(file)
+		end
 	end
 end
 
 class MethodEntry < Entry
 	def write(file)
-		file.write("<h3>#{@name}</h3>\n")
+		file.write("<h4>Method #{@name}</h4>\n")
 		file.write("#{@text}")
+		children.sort.each do |child|
+			child.write(file)
+		end
 	end
 end
 
@@ -202,24 +267,28 @@ class Path
 		@path.push(entry)	end
 	
 	def goto_file_level
-		@path=@path[0..1] # bad, should be search for class
+		@path.remove_starting_at_class(FileEntry)
 	end
 	
 	def goto_section_level
-		@path=@path[0..2] # bad
+		@path.remove_starting_at_class(SectionEntry)
 	end
 	
 	def goto_class_level
+		@path.remove_starting_at_class(ModuleEntry)
+		@path.remove_starting_at_class(ClassEntry)
 	end
 	
 	def goto_method_level
+		@path.remove_starting_at_class(MethodEntry)
 	end
 	
 	def backup_to(path, class_type)
 		while(@path.length>0 && @path[@path.length-1]!=class_type)
 			p @path
 			@path=@path[0..-2]
-		end	end
+		end
+	end
 	
 	def deepest_node
 		@path[-1]
@@ -232,8 +301,10 @@ class Dokumentat
 		say "Starting project #{project_name}"
 		@project_name=project_name
 		@project=ProjectEntry.new(@project_name)
-		@root=RootEntry.new("root")
+		@root=RootEntry.new('root')
+		@index_file=FileEntry.new('index')
 		@root.children.push(@project)
+		@project.children.push(@index_file)
 	end
 	
 	def process_dir(source_path)
@@ -241,6 +312,7 @@ class Dokumentat
 		files.each do |file_name|
 			path=Path.new(@root)
 			path.goto(@project)
+			path.goto(@index_file)
 			process_file(file_name, path)
 		end
 	end
@@ -257,34 +329,35 @@ class Dokumentat
 						section_mode=false
 					end
 					if section_mode
-						type, text=(line.match /@([^ ]*) (.*)/)[1..2]
+						type, name=(line.match /@([^ ]*) (.*)/)[1..2]
 						case type.downcase
 							when 'file'
 								path.goto_file_level
-								path.goto(FileEntry.new(text))
+								path.goto(FileEntry.new(name))
 							when 'section'
 								path.goto_section_level
-								path.goto(SectionEntry.new(text))
+								path.goto(SectionEntry.new(name))
 							when 'method'
 								path.goto_method_level
-								path.goto(MethodEntry.new(text))
+								path.goto(MethodEntry.new(name))
 							when 'class'
 								path.goto_class_level
-								path.goto(ClassEntry.new(text))
+								path.goto(ClassEntry.new(name))
 							when 'module'
 								path.goto_class_level
-								path.goto(ModuleEntry.new(text))
+								path.goto(ModuleEntry.new(name))
 							else
 								say "Unknown section: #{line}"
 						end
 					else
 						if line.strip.length==0
-							text=text+'\n<p>'
+							text+="\n<p>"
 						else
-							text=text+line
+							text+=line+"\n"
 						end
 					end
 				end
+				text.gsub! /@([^\W]*)/, '<b>\1</b>'
 				path.deepest_node.add_text(text)
 			end
 		end
@@ -341,6 +414,5 @@ def main
 	dokumentat.write(output_dir)
 end
 
-ARGV=['--verbose', '--project-name=rudl', '--output-dir=docs', 'dokumentat.rb', 'dokme/*.c', 'dokme/dokmetoo/*.c']
 
 main
