@@ -21,7 +21,6 @@ to a target surface.
 #include "rudl_ttf.h"
 
 #ifdef HAVE_SDL_TTF_H
-static bool ttf_inited=false;
 #include "rudl_video.h"
 #endif
 
@@ -31,11 +30,10 @@ static bool ttf_inited=false;
 void initTTF()
 {
 #ifdef HAVE_SDL_TTF_H
-    if(!ttf_inited){
+    if(!TTF_WasInit()){
 
         DEBUG_S("Starting TTF");
         if(TTF_Init()) TTF_RAISE;
-        ttf_inited=true;
     }
 #endif
 }
@@ -43,7 +41,7 @@ void initTTF()
 void quitTTF()
 {
 #ifdef HAVE_SDL_TTF_H
-    if(ttf_inited){
+    if(TTF_WasInit()){
 
         DEBUG_S("Stopping TTF");
         TTF_Quit();
@@ -311,7 +309,7 @@ void initTrueTypeFontClasses()
     rb_eval_string(
             "module RUDL class TrueTypeFont             \n"
             "   def inspect                             \n"
-            "       \"<TrueTypeFont: #{size}pt, #{h}pix>\"  \n"
+            "       \"<TrueTypeFont: #{h}pix>\"  \n"
             "   end                                     \n"
             "end end                                    \n"
     );
