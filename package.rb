@@ -1,9 +1,7 @@
 # package.rb
 # ----------
 
-# todo: tar.gz for sources
-
-# by Rennex on 24 Sep 2003
+# by Rennex on 1 Oct 2003
 
 
 # settings
@@ -112,15 +110,27 @@ def zipit(what)
     ]
 
     if not $list
-        outfile = "#$destdir/rudl-#$version-#{what}.zip"
-
-        Dir.mkdir($destdir) unless File.exists?($destdir)
-        File.delete(outfile) if File.exists?(outfile)
-
         # zip em up! one at a time, to avoid truncated command lines
-        puts "Zipping #{outfile}..."
-        files.each do |filename|
-            system("zip -9 -q #{outfile} \"#{filename}\"")
+        if what == "setup"
+            outfile = "#$destdir/rudl-#$version-setup.zip"
+            Dir.mkdir($destdir) unless File.exists?($destdir)
+            File.delete(outfile) if File.exists?(outfile)
+
+            puts "Zipping #{outfile}..."
+            files.each do |filename|
+                system("zip -9 -q #{outfile} \"#{filename}\"")
+            end
+        else
+            outfile = "#$destdir/rudl-#$version-source.tar"
+
+            puts "Tarring #{outfile}..."
+            system("tar -cf #{outfile} \"#{files.shift}\"")
+            files.each do |filename|
+                system("tar -rf #{outfile} \"#{filename}\"")
+            end
+
+            puts "GZipping #{outfile}.gz..."
+            system("gzip -f9 #{outfile}")
         end
     else
         puts files
