@@ -1,0 +1,25 @@
+
+newest
+------
+ + added CHANGES.txt
+ + added DisplaySurface.set_icon for setting the window icon
+ + added Surface#scale2x
+ + added VideoExposeEvent which occurs when the window is uncovered
+ * fixed a couple typos that caused compilation errors on Linux
+ * Surface#[] and []= now accept an [x,y] array as well as separate x,y coordinates.
+   They are now the same methods as Surface#get and Surface#plot, respectively.
+ * Surface#set_colorkey(nil) now does the same as unset_colorkey, and
+   set_alpha(nil) does the same as unset_alpha.
+ * Surface.new now copies the palette if a 8-bit surface was supplied
+
+
+0.7.1
+-----
+ * little bug fixes
+ * adapted for Ruby 1.8
+
+
+0.7
+---
+ * ancient history :)
+
