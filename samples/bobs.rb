@@ -28,55 +28,55 @@ DEG2RAD = PI/180
 
 # ------------------------------------------------------------------------------------
 def main
-	surfaces= []
-    
-	# Initialise pygame, and grab an 8bit display.
-	screen= DisplaySurface.new RES,FULLSCREEN, 8
-	bob= Surface.load_new 'media/bob.gif'
-       
-        # load a sprite and set the palette
-        bob.set_colorkey [255,255,255]
-        screen.set_palette 0, bob.palette
+    surfaces= []
 
-        # Create 25 blank surfaces to draw on.
-        (0..25).each do |i|
-		surfaces.push(Surface.new(RES,0,8))
-		surfaces[i].set_palette 0, bob.palette
-	end
-        xang    = 0.0
-        yang    = 0.0
-        surf    = 0
-       
-        # Fruity loops...
-        while true
-   
-		# Have we received an event to quit the program?
-		EventQueue.get.each do |event|
-			if [QuitEvent, KeyDownEvent, MouseButtonDownEvent].include? event.class
-				exit
-			end
-		end
+    # Initialise pygame, and grab an 8bit display.
+    screen= DisplaySurface.new RES,FULLSCREEN, 8
+    bob= Surface.load_new 'media/bob.gif'
 
-		# Get some x/y positions
-		x = (RES[0]/2)*sin((xang*DEG2RAD)*0.75)
-		y = (RES[1]/2)*cos((yang*DEG2RAD)*0.67)
- 
-		# Inc the angle of the sine
-		xang += 1.17
-		yang += 1.39
-       
-		# blit our 'bob' on the 'active' surface
-		surfaces[surf].blit(bob,[x+(RES[0]/2)-32,y+(RES[1]/2)-32])
-           
-		# blit the active surface to the screen
-		screen.blit(surfaces[surf],[0,0])
+    # load a sprite and set the palette
+    bob.set_colorkey [255,255,255]
+    screen.set_palette 0, bob.palette
 
-		# display the results
-		screen.flip
+    # Create 25 blank surfaces to draw on.
+    (0..25).each do |i|
+        surfaces.push(Surface.new(RES,0,8))
+        surfaces[i].set_palette 0, bob.palette
+    end
+    xang = 0.0
+    yang = 0.0
+    surf = 0
 
-		# inc the active surface number
-		surf = (surf+1) % 25
-	end
+    # Fruity loops...
+    while true
+
+        # Have we received an event to quit the program?
+        EventQueue.get.each do |event|
+            if [QuitEvent, KeyDownEvent, MouseButtonDownEvent].include? event.class
+                exit
+            end
+        end
+
+        # Get some x/y positions
+        x = (RES[0]/2)*sin((xang*DEG2RAD)*0.75)
+        y = (RES[1]/2)*cos((yang*DEG2RAD)*0.67)
+
+        # Inc the angle of the sine
+        xang += 1.17
+        yang += 1.39
+
+        # blit our 'bob' on the 'active' surface
+        surfaces[surf].blit(bob,[x+(RES[0]/2)-32,y+(RES[1]/2)-32])
+
+        # blit the active surface to the screen
+        screen.blit(surfaces[surf],[0,0])
+
+        # display the results
+        screen.flip
+
+        # inc the active surface number
+        surf = (surf+1) % 25
+    end
 end
 
 main
