@@ -3,6 +3,9 @@ RUDL - a C library wrapping SDL for use in Ruby.
 Copyright (C) 2001, 2002, 2003  Danny van Bruggen
 
 $Log: rudl_video_surface.c,v $
+Revision 1.21  2003/09/29 12:43:21  rennex
+Moved SDL_LockSurface after the coordinate check in internal_(nonlocking_)get
+
 Revision 1.20  2003/09/29 12:38:12  rennex
 Added missing SDL_UnlockSurface in internal_(nonlocking_)get when coordinate is out of range.
 
@@ -984,17 +987,16 @@ These methods require the surface to be locked if neccesary.
 __inline__ Uint32 internal_get(SDL_Surface* surface, Sint16 x, Sint16 y)
 {
 	SDL_PixelFormat* format = surface->format;
-	Uint8* pixels = (Uint8*)surface->pixels;
+	Uint8* pixels;
 	Uint32 color;
 	Uint8* pix;
 
-	SDL_LockSurface(surface);
-	pixels = (Uint8*)surface->pixels;
-
 	if(x < 0 || x >= surface->w || y < 0 || y >= surface->h){
-		SDL_UnlockSurface(surface);
 		return 0;
 	}
+
+	SDL_LockSurface(surface);
+	pixels = (Uint8*)surface->pixels;
 
 	RUDL_ASSERT(format->BytesPerPixel>=1, "Color depth too small for surface (<1)");
 	RUDL_ASSERT(format->BytesPerPixel<=4, "Color depth too large for surface (>4)");
@@ -1025,17 +1027,16 @@ __inline__ Uint32 internal_get(SDL_Surface* surface, Sint16 x, Sint16 y)
 __inline__ Uint32 internal_nonlocking_get(SDL_Surface* surface, Sint16 x, Sint16 y)
 {
 	SDL_PixelFormat* format = surface->format;
-	Uint8* pixels = (Uint8*)surface->pixels;
+	Uint8* pixels;
 	Uint32 color;
 	Uint8* pix;
 
-	SDL_LockSurface(surface);
-	pixels = (Uint8*)surface->pixels;
-
 	if(x < 0 || x >= surface->w || y < 0 || y >= surface->h){
-		SDL_UnlockSurface(surface);
 		return 0;
 	}
+
+	SDL_LockSurface(surface);
+	pixels = (Uint8*)surface->pixels;
 
 	RUDL_ASSERT(format->BytesPerPixel>=1, "Color depth too small for surface (<1)");
 	RUDL_ASSERT(format->BytesPerPixel<=4, "Color depth too large for surface (>4)");
