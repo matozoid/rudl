@@ -8,7 +8,7 @@ SHOW_FPS = false
 # Just give credit where it's due
 #
 # Basically a proof-of-concept that rapid game development is a dream using RUDL
-# I created the entire game and included utility classes in under 30 hours, even though I was doing many
+# I created the entire game and included utility classes in well under 30 hours, even though I was doing many
 # things for the first time (Physics engine, combining vector and bitmap graphics, timing, etc.)
 #
 # More a prototype than a finished product, but that was my intent.
