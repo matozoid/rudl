@@ -1,1 +1,2 @@
-Installation instructions are in docs/index.html, header "How to... install"
+
+Installation instructions are in docs/index.html.
