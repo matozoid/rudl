@@ -10,10 +10,10 @@ colorkey = nil
 
 if ARGV.size > 0
     iconfile = ARGV[0]
-    colorkey = ARGV[1].hex if ARGV.size > 1
+    colorkey = eval("["+ARGV[1]+"]") if ARGV.size > 1
 else
     iconfile = "apple.bmp"
-    colorkey = 0x0000ff
+    colorkey = [0,0,255]
 end
 
 icon = Surface.load_new(iconfile)
