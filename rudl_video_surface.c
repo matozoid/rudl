@@ -3,6 +3,9 @@ RUDL - a C library wrapping SDL for use in Ruby.
 Copyright (C) 2001, 2002, 2003  Danny van Bruggen
 
 $Log: rudl_video_surface.c,v $
+Revision 1.26  2003/12/09 01:38:54  rennex
+Added the scale2x method (currently only for 32bit surfaces)
+
 Revision 1.25  2003/11/28 22:24:58  rennex
 Fixed bugs that caused errors on Linux.
 
@@ -17,19 +20,6 @@ Some 16 bit + alpha stuff
 
 Revision 1.21  2003/09/29 12:43:21  rennex
 Moved SDL_LockSurface after the coordinate check in internal_(nonlocking_)get
-
-Revision 1.20  2003/09/29 12:38:12  rennex
-Added missing SDL_UnlockSurface in internal_(nonlocking_)get when coordinate is out of range.
-
-Revision 1.19  2003/09/26 23:23:43  tsuihark
-Fixed documentation issue
-
-Revision 1.18  2003/09/26 22:52:03  tsuihark
-Fixed damn EOLs
-
-Revision 1.17  2003/09/26 22:43:16  tsuihark
-Added CVS headers
-
 
 */
 #include "rudl_events.h"
@@ -880,7 +870,7 @@ This has been moved to a Ruby file called utility/contained_images.rb
 These methods read single pixels on a surface.
 ((|get|)) or ((|[]|)) get the color of a pixel.
 These methods require the surface to be locked if neccesary.
-((|[]=|)) and ((|[]|)) are the only methods in RUDL that take a seperate ((|x|)) and ((|y|)) coordinate.
+((|[]=|)) and ((|[]|)) are the only methods in RUDL that take a separate ((|x|)) and ((|y|)) coordinate.
 =end */
 __inline__ Uint32 internal_get(SDL_Surface* surface, Sint16 x, Sint16 y)
 {
@@ -1232,6 +1222,146 @@ static VALUE surface_set_pixels(VALUE self, VALUE pixels)
     return self;
 }
 
+/*
+=begin
+--- Surface#scale2x
+--- Surface#scale2x( dest_surface )
+Scales the surface to double size with the Scale2x algorithm.
+
+Creates a new surface to hold the result, or reuses ((|dest_surface|)),
+which must be at least twice as wide and twice as high as this surface,
+and have the same depth.
+
+Returns the resulting surface.
+=end
+
+Starting from this pattern:
+
+src0:   B
+src1: D E F
+src2:   H
+
+The central pixel E is expanded in 4 new pixels:
+
+dest0: E0 E1
+dest1: E2 E3
+
+with these rules (in C language):
+
+E0 = D == B && B != F && D != H ? D : E;
+E1 = B == F && B != D && F != H ? F : E;
+E2 = D == H && D != B && H != F ? D : E;
+E3 = H == F && D != H && B != F ? F : E;
+
+*/
+/* this function processes only one row of the input bitmap */
+static void scale2x_row_32bit(Uint32* dest0, Uint32* dest1, Uint32* src0, Uint32* src1, Uint32* src2, int srcw)
+{
+    Uint32 b,d,e,f,h;
+
+    /* set up for the first pixel */
+    /* since there is no pixel to the left, we reuse this first pixel */
+    e = f = *src1++;
+
+    /* this handles all pixels except the last one */
+    for (srcw--; srcw > 0; srcw--) {
+        b = *src0++;
+        d = e; e = f; f = *src1++;
+        h = *src2++;
+
+        *dest0++ = d == b && b != f && d != h ? d : e;
+        *dest0++ = b == f && b != d && f != h ? f : e;
+        *dest1++ = d == h && d != b && h != f ? d : e;
+        *dest1++ = h == f && d != h && b != f ? f : e;
+    }
+
+    /* last pixel - since there is no pixel to the right, we reuse this last pixel */
+    b = *src0;
+    d = e; e = f;
+    h = *src2;
+
+    *dest0++ = d == b && b != f && d != h ? d : e;
+    *dest0++ = b == f && b != d && f != h ? f : e;
+    *dest1++ = d == h && d != b && h != f ? d : e;
+    *dest1++ = h == f && d != h && b != f ? f : e;
+
+    return;
+}
+
+/* this function feeds all rows of the bitmap to the row processing function */
+static void scale2x_32bit(SDL_Surface* src, SDL_Surface* dest)
+{
+    Uint32* srcpix = src->pixels;
+    Uint32* destpix = dest->pixels;
+    int srcpitch = src->pitch / sizeof(Uint32);
+    int destpitch = dest->pitch / sizeof(Uint32);
+    int w = src->w, h = src->h;
+    Uint32 *dest0, *dest1, *src0, *src1, *src2;
+
+    /* set up destination line pointers */
+    dest0 = destpix; dest1 = destpix + destpitch;
+
+    /* set up source line pointers */
+    /* since there's no line above, we reuse this first line */
+    src0 = src1 = srcpix; src2 = srcpix + srcpitch;
+
+    /* all but the last row */
+    for (h--; h > 0; h--) {
+        scale2x_row_32bit(dest0, dest1, src0, src1, src2, w);
+        /* move both destination line pointers down 2 rows */
+        dest0 = dest1 + destpitch;
+        dest1 = dest0 + destpitch;
+        /* shift all source lines down */
+        src0 = src1;
+        src1 = src2;
+        src2 += srcpitch;
+    }
+
+    /* last row - since there is no line below, we reuse this last line */
+    scale2x_row_32bit(dest0, dest1, src0, src1, src1, w);
+
+    return;
+}
+
+static VALUE surface_scale2x(int argc, VALUE* argv, VALUE self)
+{
+    VALUE dest;
+    SDL_Surface* srcsurface = retrieveSurfacePointer(self);
+    SDL_Surface* destsurface;
+    int bpp = srcsurface->format->BytesPerPixel;
+    int w = srcsurface->w, h = srcsurface->h;
+
+    rb_scan_args(argc, argv, "01", &dest);
+
+    RUDL_VERIFY(w>=2 && h>=2, "Source surface not large enough");
+    RUDL_VERIFY(bpp == 4, "Bitmap must be 32bit for now");
+
+    /* were we given a destination surface? */
+    if (argc == 1) {
+        destsurface = retrieveSurfacePointer(dest);
+        RUDL_VERIFY(destsurface->format->BytesPerPixel == bpp, "Destination surface has wrong depth");
+        RUDL_VERIFY(destsurface->w >= 2*w && destsurface->h >= 2*h,
+            "Destination surface is too small");
+    } else {
+        /* nope, create a new one */
+        VALUE newargv[] = {rb_ary_new3(2, INT2FIX(2*w), INT2FIX(2*h)), self};
+        dest = surface_new(2, newargv, classSurface);
+        destsurface = retrieveSurfacePointer(dest);
+    }
+
+    /* lock'n'...just do it! */
+    SDL_LockSurface(srcsurface);
+    SDL_LockSurface(destsurface);
+
+    scale2x_32bit(srcsurface, destsurface);
+
+    SDL_UnlockSurface(srcsurface);
+    SDL_UnlockSurface(destsurface);
+
+    return dest;
+}
+
+
 ///////////////////////////////// INIT
 void initVideoSurfaceClasses()
 {
@@ -1302,6 +1432,8 @@ void initVideoSurfaceClasses()
     rb_define_method(classSurface, "get_column", surface_get_column, 1);
     rb_define_method(classSurface, "set_column", surface_set_column, 2);
     define_ruby_column_methods();
+
+    rb_define_method(classSurface, "scale2x", surface_scale2x, -1);
 
     id_shared_surface_reference=rb_intern("__shared_surface_reference");
 
