@@ -77,8 +77,8 @@ Example paths:
 </ul>
 
 <p>Those are in addition to what's already in the variables, of course.
-In Windows 2000 or XP, you can edit them from Control Panel -> System ->
-Advanced -> Environment Variables. You might have to reboot, or at least
+In Windows 2000 or XP, you can edit them from Control Panel &rarr; System &rarr;
+Advanced &rarr; Environment Variables. You might have to reboot, or at least
 restart any command line prompts for the changes to take effect. Check
 them with the command <code>echo %PATH%</code>, etc.
 
@@ -91,10 +91,11 @@ them with the command <code>echo %PATH%</code>, etc.
     (the compiler itself)
 <li><a href="http://www.microsoft.com/msdownload/platformsdk/sdkupdate/">Microsoft Platform SDK</a>
     (Core SDK)
-<li>.NET Framework 1.1 SDK from <a href="http://msdn.microsoft.com/">msdn.microsoft.com</a>
+<li>.NET Framework 1.1 SDK from <a href="http://msdn.microsoft.com/">msdn.microsoft.com</a><br>
     - NOTE: RUDL doesn't use .NET, and the only reason to get this huge SDK seems to be to get MSVCRT.lib.
 <li>MinGW32-make from the <a href="http://www.mingw.org/download.shtml">MinGW site</a>
-    (search for mingw32-make-*.exe)
+    (search for mingw32-make-*.exe)<br>
+    Install, rename mingw32-make.exe to nmake.exe and copy it somewhere on your command path.
 </ul>
 
 <p>You need to make sure that some environment variables are set up correctly. Here's a
@@ -146,7 +147,8 @@ list of the variables, with default installation paths:
     the right locations. See also the generated <code>mkmf.log</code>
     <li><code>make</code>
     <li>And now, as root: <code>make install</code><br>
-        (on Windows, run instead <code>ruby install-on-windows.rb</code>)
+        (on Windows, you need to run <code>ruby&nbsp;install-on-windows.rb</code>
+        - it does the same as <code>make&nbsp;install</code> and then copies the SDL DLLs in place)
 </ol>
 <p>That's it. You can now try the samples.
 </body>
