@@ -7,8 +7,8 @@ require "ftools"
 
 # settings
 $destdir        = "rudl_packages"
-$version        = "0.7.1"
-$target_ruby    = "1.8-10"
+$version        = "0.8"
+$target_ruby    = "1.8.2"
 
 # print warning to fend off mugglers
 puts "This will create a RUDL package."
