@@ -92,11 +92,11 @@ Negative values will shrink the rectangle.</p>
 There may be an area inside the new rectangle that is not covered by the inputs.
 Rectangles are pre-normalized.</p>
 <dl>
-<dt><a name="label:30" id="label:30"><code>Array#contains( <var>thing</var> )</code></a><!-- RDLabel: "Array#contains" -->
+<dt><a name="label:30" id="label:30"><code>Array#contains?( <var>thing</var> )</code></a><!-- RDLabel: "Array#contains?" -->
 </dl>
 <p>Returns whether thing ([x, y, w, h] or [x, y]) fits completely within the rectangle.</p>
 <dl>
-<dt><a name="label:31" id="label:31"><code>Array#same_size( <var>rect</var> )</code></a><!-- RDLabel: "Array#same_size" -->
+<dt><a name="label:31" id="label:31"><code>Array#same_size?( <var>rect</var> )</code></a><!-- RDLabel: "Array#same_size?" -->
 </dl>
 <p>Returns whether <var>rect</var> is the same area as <var>self</var>.</p>
 <dl>
@@ -136,9 +136,20 @@ If the two rectangles do not overlaps to begin with, you will get a rectangle wi
 If the given rectangle is too large for the base rectangle in an axis, 
 it will be centered on that axis.</p>
 <dl>
-<dt><a name="label:40" id="label:40"><code>Array#overlaps( <var>rect</var> )</code></a><!-- RDLabel: "Array#overlaps" -->
+<dt><a name="label:40" id="label:40"><code>Array#overlaps?( <var>rect</var> )</code></a><!-- RDLabel: "Array#overlaps?" -->
 </dl>
 <p>Returns true if any area of the two rectangles overlapss.</p>
+<dl>
+<dt><a name="label:41" id="label:41"><code>Pit.cross_lines( <var>a</var>, <var>b</var>, <var>c</var>, <var>d</var> )</code></a><!-- RDLabel: "Pit.cross_lines" -->
+</dl>
+<pre>Returns the coordinate where lines ((|a|)) to ((|b|)) and ((|c|)) to ((|d|)) cross, 
+an array of [x,y,x2,y2] if they are parallel and overlapping,
+an array of [x,y] if they are parallel and touch at only one point,
+or false if they don't cross.
+((|a|)), ((|b|)), ((|c|)) and ((|d|)) are coordinates as always: [x,y]
+
+The results may have small precision errors,
+so don't use it to compare directly with other numbers.</pre>
 
 </body>
 </html>

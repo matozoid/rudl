@@ -56,16 +56,47 @@ it will load the following formats:
 BMP, PNM, XPM, XCF, PCX, GIF, JPEG, TIFF, PNG, TGA and LBM.
 If the SDL_image library was not found, only simple BMP loading is supported.
 Simple means: not all BMP files can be loaded.</p>
-<h2><a name="label:10" id="label:10">Instance Methods</a></h2><!-- RDLabel: "Instance Methods" -->
 <dl>
-<dt><a name="label:11" id="label:11"><code>Surface#destroy</code></a><!-- RDLabel: "Surface#destroy" -->
+<dt><a name="label:10" id="label:10"><code>Surface.shared_new( <var>surface</var> )</code></a><!-- RDLabel: "Surface.shared_new" -->
+</dl>
+<p>This method is two things:
+1. a way to share the same bunch of data (width, height, bpp, pixeldata) </p>
+<pre>between two Surface objects.
+Please don't use it this way if there isn't a very good reason for it.</pre>
+<p>2. a way to import foreign objects that wrap an SDL_Surface*.</p>
+<pre>If that doesn't mean anything to you, please ignore this point.
+It takes the pointer from the foreign object and creates a new Surface
+that wraps it.
+Garbage collection problems should be prevented by giving the new surface
+a reference to ((|surface|))</pre>
+<p>Note that if the original surface is destroyed by a call to Surface#destroy,
+the shared ones will be invalidated too!</p>
+<h2><a name="label:11" id="label:11">Instance Methods</a></h2><!-- RDLabel: "Instance Methods" -->
+<dl>
+<dt><a name="label:12" id="label:12"><code>Surface#share( <var>other_surface</var> )</code></a><!-- RDLabel: "Surface#share" -->
+</dl>
+<p>Like Surface.shared_new, but this works on an existing surface.
+It will destroy this surface, then make it share <var>other_surface</var>'s data.</p>
+<p>Returns self.</p>
+<dl>
+<dt><a name="label:13" id="label:13"><code>Surface#immodest_export( <var>other_surface</var> )</code></a><!-- RDLabel: "Surface#immodest_export" -->
+</dl>
+<p>Like Surface.share, but this works the other way around.
+It will destroy the <var>other_surface</var>, then make it share the data in itself
+and setting a reference on <var>other_surface</var> back to <var>self</var>.
+It's called immodest because it interferes with another object, bluntly
+assuming it contains a SDL_Surface pointer and changing it to something
+else...</p>
+<p>Returns self.</p>
+<dl>
+<dt><a name="label:14" id="label:14"><code>Surface#destroy</code></a><!-- RDLabel: "Surface#destroy" -->
 </dl>
 <p>Frees memory used by this surface.
 The surface is no longer useable after this call.</p>
 <p>Returns nil.</p>
 <dl>
-<dt><a name="label:12" id="label:12"><code>Surface#blit( <var>source</var>, <var>coordinate</var> )</code></a><!-- RDLabel: "Surface#blit" -->
-<dt><a name="label:13" id="label:13"><code>Surface#blit( <var>source</var>, <var>coordinate</var>, <var>sourceRect</var> )</code></a><!-- RDLabel: "Surface#blit" -->
+<dt><a name="label:15" id="label:15"><code>Surface#blit( <var>source</var>, <var>coordinate</var> )</code></a><!-- RDLabel: "Surface#blit" -->
+<dt><a name="label:16" id="label:16"><code>Surface#blit( <var>source</var>, <var>coordinate</var>, <var>sourceRect</var> )</code></a><!-- RDLabel: "Surface#blit" -->
 </dl>
 <p>This method blits (copies, pastes, draws) <var>source</var> onto the <code>Surface</code> it is called on.
 <var>coordinate</var> is the position [x, y] where <var>source</var> will end up in the destination <code>Surface</code>.
@@ -73,24 +104,24 @@ The surface is no longer useable after this call.</p>
 Not supplying it will blit the whole <var>source</var>.</p>
 <p>Returns the rectangle array ([x,y,w,h]) in <code>Surface</code> that was changed.</p>
 <dl>
-<dt><a name="label:14" id="label:14"><code>Surface#convert</code></a><!-- RDLabel: "Surface#convert" -->
-<dt><a name="label:15" id="label:15"><code>Surface#convert_alpha</code></a><!-- RDLabel: "Surface#convert_alpha" -->
+<dt><a name="label:17" id="label:17"><code>Surface#convert</code></a><!-- RDLabel: "Surface#convert" -->
+<dt><a name="label:18" id="label:18"><code>Surface#convert_alpha</code></a><!-- RDLabel: "Surface#convert_alpha" -->
 </dl>
 <p>Creates a new version of the surface in the current display's format, 
 making it faster to blit.
 The alpha version optimizes for fast alpha blitting.</p>
 <p>Returns the converted surface.</p>
 <dl>
-<dt><a name="label:16" id="label:16"><code>Surface#convert!</code></a><!-- RDLabel: "Surface#convert!" -->
-<dt><a name="label:17" id="label:17"><code>Surface#convert_alpha!</code></a><!-- RDLabel: "Surface#convert_alpha!" -->
+<dt><a name="label:19" id="label:19"><code>Surface#convert!</code></a><!-- RDLabel: "Surface#convert!" -->
+<dt><a name="label:20" id="label:20"><code>Surface#convert_alpha!</code></a><!-- RDLabel: "Surface#convert_alpha!" -->
 </dl>
 <p>Like convert and convert_alpha, but these change the surface itself.</p>
 <p>Returns self.</p>
 <dl>
-<dt><a name="label:18" id="label:18"><code>Surface#lock</code></a><!-- RDLabel: "Surface#lock" -->
-<dt><a name="label:19" id="label:19"><code>Surface#must_lock</code></a><!-- RDLabel: "Surface#must_lock" -->
-<dt><a name="label:20" id="label:20"><code>Surface#unlock</code></a><!-- RDLabel: "Surface#unlock" -->
-<dt><a name="label:21" id="label:21"><code>Surface#locked?</code></a><!-- RDLabel: "Surface#locked?" -->
+<dt><a name="label:21" id="label:21"><code>Surface#lock</code></a><!-- RDLabel: "Surface#lock" -->
+<dt><a name="label:22" id="label:22"><code>Surface#must_lock</code></a><!-- RDLabel: "Surface#must_lock" -->
+<dt><a name="label:23" id="label:23"><code>Surface#unlock</code></a><!-- RDLabel: "Surface#unlock" -->
+<dt><a name="label:24" id="label:24"><code>Surface#locked?</code></a><!-- RDLabel: "Surface#locked?" -->
 </dl>
 <p>These methods control the locking of surfaces.
 If you ever encounter a locking error,
@@ -104,26 +135,26 @@ Keep <code>Surface</code>s locked for as short a time as possible.</p>
 <li>locked? returns true when the surface is locked.</li>
 </ul>
 <dl>
-<dt><a name="label:22" id="label:22"><code>Surface#save_bmp( <var>filename</var> )</code></a><!-- RDLabel: "Surface#save_bmp" -->
+<dt><a name="label:25" id="label:25"><code>Surface#save_bmp( <var>filename</var> )</code></a><!-- RDLabel: "Surface#save_bmp" -->
 </dl>
 <p>This is the only method in RUDL which stores surface data.
 Pass <var>save_bmp</var> the <var>filename</var> and the surface data will be saved to that file.
 It returns self.</p>
 <dl>
-<dt><a name="label:23" id="label:23"><code>Surface#w</code></a><!-- RDLabel: "Surface#w" -->
-<dt><a name="label:24" id="label:24"><code>Surface#h</code></a><!-- RDLabel: "Surface#h" -->
-<dt><a name="label:25" id="label:25"><code>Surface#size</code></a><!-- RDLabel: "Surface#size" -->
-<dt><a name="label:26" id="label:26"><code>Surface#rect</code></a><!-- RDLabel: "Surface#rect" -->
+<dt><a name="label:26" id="label:26"><code>Surface#w</code></a><!-- RDLabel: "Surface#w" -->
+<dt><a name="label:27" id="label:27"><code>Surface#h</code></a><!-- RDLabel: "Surface#h" -->
+<dt><a name="label:28" id="label:28"><code>Surface#size</code></a><!-- RDLabel: "Surface#size" -->
+<dt><a name="label:29" id="label:29"><code>Surface#rect</code></a><!-- RDLabel: "Surface#rect" -->
 </dl>
 <p>These methods return the size of the surface.
 w returns width, 
 h returns height, 
 size returns [w, h] and rect returns an array of [0, 0, w, h].</p>
 <dl>
-<dt><a name="label:27" id="label:27"><code>Surface#colorkey</code></a><!-- RDLabel: "Surface#colorkey" -->
-<dt><a name="label:28" id="label:28"><code>Surface#unset_colorkey</code></a><!-- RDLabel: "Surface#unset_colorkey" -->
-<dt><a name="label:29" id="label:29"><code>Surface#set_colorkey( <var>color</var> )</code></a><!-- RDLabel: "Surface#set_colorkey" -->
-<dt><a name="label:30" id="label:30"><code>Surface#set_colorkey( <var>color</var>, <var>flags</var> )</code></a><!-- RDLabel: "Surface#set_colorkey" -->
+<dt><a name="label:30" id="label:30"><code>Surface#colorkey</code></a><!-- RDLabel: "Surface#colorkey" -->
+<dt><a name="label:31" id="label:31"><code>Surface#unset_colorkey</code></a><!-- RDLabel: "Surface#unset_colorkey" -->
+<dt><a name="label:32" id="label:32"><code>Surface#set_colorkey( <var>color</var> )</code></a><!-- RDLabel: "Surface#set_colorkey" -->
+<dt><a name="label:33" id="label:33"><code>Surface#set_colorkey( <var>color</var>, <var>flags</var> )</code></a><!-- RDLabel: "Surface#set_colorkey" -->
 </dl>
 <p>These methods control the color that will be completely transparent (it will not be copied 
 to the destination surface.)
@@ -132,32 +163,32 @@ by skipping the transparent pixels.</p>
 <p><var>colorkey</var> returns the current colorkey color.
 The others return self;</p>
 <dl>
-<dt><a name="label:31" id="label:31"><code>Surface#fill( <var>color</var> )</code></a><!-- RDLabel: "Surface#fill" -->
-<dt><a name="label:32" id="label:32"><code>Surface#fill( <var>color</var>, <var>rect</var> )</code></a><!-- RDLabel: "Surface#fill" -->
+<dt><a name="label:34" id="label:34"><code>Surface#fill( <var>color</var> )</code></a><!-- RDLabel: "Surface#fill" -->
+<dt><a name="label:35" id="label:35"><code>Surface#fill( <var>color</var>, <var>rect</var> )</code></a><!-- RDLabel: "Surface#fill" -->
 </dl>
 <p>Fills rectangle <var>rect</var> in the surface with <var>color</var>.</p>
 <p>Returns self.</p>
 <dl>
-<dt><a name="label:33" id="label:33"><code>Surface#pitch</code></a><!-- RDLabel: "Surface#pitch" -->
+<dt><a name="label:36" id="label:36"><code>Surface#pitch</code></a><!-- RDLabel: "Surface#pitch" -->
 </dl>
 <p>The surface pitch is the number of bytes used in each scanline.
 This function should rarely needed, mainly for any special-case debugging.</p>
 <dl>
-<dt><a name="label:34" id="label:34"><code>Surface#bitsize</code></a><!-- RDLabel: "Surface#bitsize" -->
+<dt><a name="label:37" id="label:37"><code>Surface#bitsize</code></a><!-- RDLabel: "Surface#bitsize" -->
 </dl>
 <p>Returns the number of bits used to represent each pixel.
 This value may not exactly fill the number of bytes used per pixel.
 For example a 15 bit Surface still requires a full 2 bytes.</p>
 <dl>
-<dt><a name="label:35" id="label:35"><code>Surface#bytesize</code></a><!-- RDLabel: "Surface#bytesize" -->
+<dt><a name="label:38" id="label:38"><code>Surface#bytesize</code></a><!-- RDLabel: "Surface#bytesize" -->
 </dl>
 <p>Returns the number of bytes used to store each pixel.</p>
 <dl>
-<dt><a name="label:36" id="label:36"><code>Surface#flags</code></a><!-- RDLabel: "Surface#flags" -->
+<dt><a name="label:39" id="label:39"><code>Surface#flags</code></a><!-- RDLabel: "Surface#flags" -->
 </dl>
 <p>Returns the current state flags for the surface.</p>
 <dl>
-<dt><a name="label:37" id="label:37"><code>Surface#losses</code></a><!-- RDLabel: "Surface#losses" -->
+<dt><a name="label:40" id="label:40"><code>Surface#losses</code></a><!-- RDLabel: "Surface#losses" -->
 </dl>
 <p>Returns the bitloss for each color plane.
 The loss is the number of bits removed for each colorplane from a full 8 bits of
@@ -165,30 +196,30 @@ resolution. A value of 8 usually indicates that colorplane is not used
 (like the alpha)</p>
 <p>Returns an array of [redloss, greenloss, blueloss, alphaloss]</p>
 <dl>
-<dt><a name="label:38" id="label:38"><code>Surface#shifts</code></a><!-- RDLabel: "Surface#shifts" -->
+<dt><a name="label:41" id="label:41"><code>Surface#shifts</code></a><!-- RDLabel: "Surface#shifts" -->
 </dl>
 <p>Returns the bitshifts [redshift, greenshift, blueshift, alphashift] used for each color plane.
 The shift is determine how many bits left-shifted a colorplane value is in a
 mapped color value.</p>
 <dl>
-<dt><a name="label:39" id="label:39"><code>Surface#masks</code></a><!-- RDLabel: "Surface#masks" -->
+<dt><a name="label:42" id="label:42"><code>Surface#masks</code></a><!-- RDLabel: "Surface#masks" -->
 </dl>
 <p>Returns the bitmasks [redmask, greenmask, bluemask, alphamask] for each color plane.
 The bitmask is used to isolate each colorplane value from a mapped color value.
 A value of zero means that colorplane is not used (like alpha)</p>
 <dl>
-<dt><a name="label:40" id="label:40"><code>Surface#palette</code></a><!-- RDLabel: "Surface#palette" -->
-<dt><a name="label:41" id="label:41"><code>Surface#set_palette( <var>first</var>, <var>colors</var> )</code></a><!-- RDLabel: "Surface#set_palette" -->
+<dt><a name="label:43" id="label:43"><code>Surface#palette</code></a><!-- RDLabel: "Surface#palette" -->
+<dt><a name="label:44" id="label:44"><code>Surface#set_palette( <var>first</var>, <var>colors</var> )</code></a><!-- RDLabel: "Surface#set_palette" -->
 </dl>
 <p>These methods return or set the 256 color palette that is part of 8 bit <code>Surface</code>s.
 <var>first</var> is the first color to change.
 <var>colors</var> and the return value of <var>palette</var> are arrays of colors like
 [[50,80,120], [255,255,0]]</p>
 <dl>
-<dt><a name="label:42" id="label:42"><code>Surface#alpha</code></a><!-- RDLabel: "Surface#alpha" -->
-<dt><a name="label:43" id="label:43"><code>Surface#unset_alpha</code></a><!-- RDLabel: "Surface#unset_alpha" -->
-<dt><a name="label:44" id="label:44"><code>Surface#set_alpha( <var>alpha</var> )</code></a><!-- RDLabel: "Surface#set_alpha" -->
-<dt><a name="label:45" id="label:45"><code>Surface#set_alpha( <var>alpha</var>, <var>flags</var> )</code></a><!-- RDLabel: "Surface#set_alpha" -->
+<dt><a name="label:45" id="label:45"><code>Surface#alpha</code></a><!-- RDLabel: "Surface#alpha" -->
+<dt><a name="label:46" id="label:46"><code>Surface#unset_alpha</code></a><!-- RDLabel: "Surface#unset_alpha" -->
+<dt><a name="label:47" id="label:47"><code>Surface#set_alpha( <var>alpha</var> )</code></a><!-- RDLabel: "Surface#set_alpha" -->
+<dt><a name="label:48" id="label:48"><code>Surface#set_alpha( <var>alpha</var>, <var>flags</var> )</code></a><!-- RDLabel: "Surface#set_alpha" -->
 </dl>
 <p>Gets or sets the overall transparency for the <code>Surface</code>.
 An <var>alpha</var> of 0 is fully transparent, an <var>alpha</var> of 255 is fully opaque.
@@ -198,37 +229,32 @@ If your image also has pixel alpha values and will be used repeatedly, you
 will probably want to pass the <var>RLEACCEL</var> flag to the call.
 This will take a short time to compile your surface, and increase the blitting speed.</p>
 <dl>
-<dt><a name="label:46" id="label:46"><code>Surface#clip</code></a><!-- RDLabel: "Surface#clip" -->
-<dt><a name="label:47" id="label:47"><code>Surface#unset_clip</code></a><!-- RDLabel: "Surface#unset_clip" -->
-<dt><a name="label:48" id="label:48"><code>Surface#clip=( <var>rect</var> )</code></a><!-- RDLabel: "Surface#clip=" -->
+<dt><a name="label:49" id="label:49"><code>Surface#clip</code></a><!-- RDLabel: "Surface#clip" -->
+<dt><a name="label:50" id="label:50"><code>Surface#unset_clip</code></a><!-- RDLabel: "Surface#unset_clip" -->
+<dt><a name="label:51" id="label:51"><code>Surface#clip=( <var>rect</var> )</code></a><!-- RDLabel: "Surface#clip=" -->
 </dl>
 <p>Retrieves, removes or sets the clipping rectangle for surfaces that are
 blitted to this surface.</p>
 <dl>
-<dt><a name="label:49" id="label:49"><code>Surface#subsurface</code></a><!-- RDLabel: "Surface#subsurface" -->
-</dl>
-<p>Not implemented.
-Does anybody have a real need for this?</p>
-<dl>
-<dt><a name="label:50" id="label:50"><code>Surface#contained_images</code></a><!-- RDLabel: "Surface#contained_images" -->
+<dt><a name="label:52" id="label:52"><code>Surface#contained_images</code></a><!-- RDLabel: "Surface#contained_images" -->
 </dl>
 <p>Returns an array of surfaces that are found by parsing this surface in a certain way.
 An example is in the samples directory, in crapola.rbw.
 This is not part of SDL, it is RUDL-specific.</p>
 <dl>
-<dt><a name="label:51" id="label:51"><code>Surface#get( <var>coordinate</var> )</code></a><!-- RDLabel: "Surface#get" -->
-<dt><a name="label:52" id="label:52"><code>Surface#[ <var>x</var>, <var>y</var> ]</code></a><!-- RDLabel: "Surface#[ x, y ]" -->
+<dt><a name="label:53" id="label:53"><code>Surface#get( <var>coordinate</var> )</code></a><!-- RDLabel: "Surface#get" -->
+<dt><a name="label:54" id="label:54"><code>Surface#[ <var>x</var>, <var>y</var> ]</code></a><!-- RDLabel: "Surface#[ x, y ]" -->
 </dl>
 <p>These methods read single pixels on a surface.
 <var>get</var> or <var>[]</var> get the color of a pixel.
 These methods require the surface to be locked if neccesary.
 <var>[]=</var> and <var>[]</var> are the only methods in RUDL that take a seperate <var>x</var> and <var>y</var> coordinate.</p>
 <dl>
-<dt><a name="label:53" id="label:53"><code>Surface#rows</code></a><!-- RDLabel: "Surface#rows" -->
-<dt><a name="label:54" id="label:54"><code>Surface#get_row( <var>y</var> )</code></a><!-- RDLabel: "Surface#get_row" -->
-<dt><a name="label:55" id="label:55"><code>Surface#set_row( <var>y</var>, <var>pixels</var> )</code></a><!-- RDLabel: "Surface#set_row" -->
-<dt><a name="label:56" id="label:56"><code>Surface#each_row { |<var>row_of_pixels</var>| ... }</code></a><!-- RDLabel: "Surface#each_row" -->
-<dt><a name="label:57" id="label:57"><code>Surface#each_row! { |<var>row_of_pixels</var>| ... }</code></a><!-- RDLabel: "Surface#each_row!" -->
+<dt><a name="label:55" id="label:55"><code>Surface#rows</code></a><!-- RDLabel: "Surface#rows" -->
+<dt><a name="label:56" id="label:56"><code>Surface#get_row( <var>y</var> )</code></a><!-- RDLabel: "Surface#get_row" -->
+<dt><a name="label:57" id="label:57"><code>Surface#set_row( <var>y</var>, <var>pixels</var> )</code></a><!-- RDLabel: "Surface#set_row" -->
+<dt><a name="label:58" id="label:58"><code>Surface#each_row { |<var>row_of_pixels</var>| ... }</code></a><!-- RDLabel: "Surface#each_row" -->
+<dt><a name="label:59" id="label:59"><code>Surface#each_row! { |<var>row_of_pixels</var>| ... }</code></a><!-- RDLabel: "Surface#each_row!" -->
 </dl>
 <p>These methods manipulate rows of pixels.
 <code>Surface</code>#<var>rows</var> returns an array of strings with one row of imagedata each.
@@ -237,11 +263,11 @@ These methods require the surface to be locked if neccesary.
 passing each of them to the supplied codeblock.
 For more info, see <code>Surface</code>#<var>pixels</var>.</p>
 <dl>
-<dt><a name="label:58" id="label:58"><code>Surface#columns</code></a><!-- RDLabel: "Surface#columns" -->
-<dt><a name="label:59" id="label:59"><code>Surface#get_column( <var>x</var> )</code></a><!-- RDLabel: "Surface#get_column" -->
-<dt><a name="label:60" id="label:60"><code>Surface#set_column( <var>x</var>, <var>pixels</var> )</code></a><!-- RDLabel: "Surface#set_column" -->
-<dt><a name="label:61" id="label:61"><code>Surface#each_column { |<var>column_of_pixels</var>| ... }</code></a><!-- RDLabel: "Surface#each_column" -->
-<dt><a name="label:62" id="label:62"><code>Surface#each_column! { |<var>column_of_pixels</var>| ... }</code></a><!-- RDLabel: "Surface#each_column!" -->
+<dt><a name="label:60" id="label:60"><code>Surface#columns</code></a><!-- RDLabel: "Surface#columns" -->
+<dt><a name="label:61" id="label:61"><code>Surface#get_column( <var>x</var> )</code></a><!-- RDLabel: "Surface#get_column" -->
+<dt><a name="label:62" id="label:62"><code>Surface#set_column( <var>x</var>, <var>pixels</var> )</code></a><!-- RDLabel: "Surface#set_column" -->
+<dt><a name="label:63" id="label:63"><code>Surface#each_column { |<var>column_of_pixels</var>| ... }</code></a><!-- RDLabel: "Surface#each_column" -->
+<dt><a name="label:64" id="label:64"><code>Surface#each_column! { |<var>column_of_pixels</var>| ... }</code></a><!-- RDLabel: "Surface#each_column!" -->
 </dl>
 <p>These methods manipulate columns of pixels.
 <code>Surface</code>#<var>columns</var> returns an array of strings with one column of imagedata each.
@@ -250,8 +276,8 @@ For more info, see <code>Surface</code>#<var>pixels</var>.</p>
 passing each of them to the supplied codeblock.
 For more info, see <code>Surface</code>#<var>pixels</var>.</p>
 <dl>
-<dt><a name="label:63" id="label:63"><code>Surface#pixels</code></a><!-- RDLabel: "Surface#pixels" -->
-<dt><a name="label:64" id="label:64"><code>Surface#pixels=( <var>pixeldata</var> )</code></a><!-- RDLabel: "Surface#pixels=" -->
+<dt><a name="label:65" id="label:65"><code>Surface#pixels</code></a><!-- RDLabel: "Surface#pixels" -->
+<dt><a name="label:66" id="label:66"><code>Surface#pixels=( <var>pixeldata</var> )</code></a><!-- RDLabel: "Surface#pixels=" -->
 </dl>
 <p>These methods get and set all image data at once.
 The transport medium is a string with binary data in it.
