@@ -1,154 +1,154 @@
+
+D:\Rubyspul\rudl\docs>ruby c:\pad\rd2.rb ../rudl_video_rect.c     
 <?xml version="1.0" ?>
 <!DOCTYPE html 
   PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>../rudl_video_rect.c</title>
+<title>Untitled</title>
 </head>
 <body>
-<A HREF="index.html">Back to index</A>
 
-
-<h1><a name="label:0" id="label:0">Rect</a></h1><!-- RDLabel: "Rect" -->
+<h1><a name="label-0" id="label-0">Rect</a></h1><!-- RDLabel: "Rect" -->
 <p>Rect has been discarded.
 Its methods have moved to the standard Array.
-All these methods are now written in C.</p>
-<h1><a name="label:1" id="label:1">Array</a></h1><!-- RDLabel: "Array" -->
+All these methods are now written in C.</p>
+<h1><a name="label-1" id="label-1">Array</a></h1><!-- RDLabel: "Array" -->
 <p>The standard Ruby array class has been extended to provide 
 methods for using it as a rectangle.
 Arrays like these have entries 0, 1, 2 and 3 set to floating point values for
-x, y, width and height.</p>
-<p>[10,15,20,25] would be a 20x25 rectangle at position 10,15.</p>
-<p>So far these methods are mostly untested.</p>
-<h2><a name="label:2" id="label:2">Class Methods</a></h2><!-- RDLabel: "Class Methods" -->
+x, y, width and height.</p>
+<p>[10,15,20,25] would be a 20x25 rectangle at position 10,15.</p>
+<p>So far these methods are mostly untested.</p>
+<h2><a name="label-2" id="label-2">Class Methods</a></h2><!-- RDLabel: "Class Methods" -->
 <dl>
-<dt><a name="label:3" id="label:3"><code>Array.collide_lists( <var>l1</var>, <var>l2</var> )</code></a><!-- RDLabel: "Array.collide_lists" -->
+<dt><a name="label-3" id="label-3"><code>Array.collide_lists( <var>l1</var>, <var>l2</var> )</code></a></dt><!-- RDLabel: "Array.collide_lists" -->
 </dl>
 <p>This method looks through list <var>l1</var>,
 checking collisions with every object in list <var>l2</var>.
 It does this by calling "rect" on all objects, expecting an array of [x,y,w,h] back,
 defining the area this object is in.
 It yields (object_from_l1, object_from_l2) for every collision it detects.
-A more advanced collision detection method can be found in CollisionMap.</p>
+A more advanced collision detection method can be found in CollisionMap.</p>
 <dl>
-<dt><a name="label:4" id="label:4"><code>Array.union_list( <var>array_of_rects</var> )</code></a><!-- RDLabel: "Array.union_list" -->
+<dt><a name="label-4" id="label-4"><code>Array.union_list( <var>array_of_rects</var> )</code></a></dt><!-- RDLabel: "Array.union_list" -->
 </dl>
 <p>Returns a new array representing a rectangle covering all rectangles
-in <var>array_of_rects</var>.</p>
+in <var>array_of_rects</var>.</p>
 <dl>
-<dt><a name="label:5" id="label:5"><code>Array#x</code></a><!-- RDLabel: "Array#x" -->
-<dt><a name="label:6" id="label:6"><code>Array#x=( <var>x</var> )</code></a><!-- RDLabel: "Array#x=" -->
-<dt><a name="label:7" id="label:7"><code>Array#y</code></a><!-- RDLabel: "Array#y" -->
-<dt><a name="label:8" id="label:8"><code>Array#y=( <var>y</var> )</code></a><!-- RDLabel: "Array#y=" -->
-<dt><a name="label:9" id="label:9"><code>Array#w</code></a><!-- RDLabel: "Array#w" -->
-<dt><a name="label:10" id="label:10"><code>Array#w=( <var>w</var> )</code></a><!-- RDLabel: "Array#w=" -->
-<dt><a name="label:11" id="label:11"><code>Array#h</code></a><!-- RDLabel: "Array#h" -->
-<dt><a name="label:12" id="label:12"><code>Array#h=( <var>h</var> )</code></a><!-- RDLabel: "Array#h=" -->
+<dt><a name="label-5" id="label-5"><code>Array#x</code></a></dt><!-- RDLabel: "Array#x" -->
+<dt><a name="label-6" id="label-6"><code>Array#x=( <var>x</var> )</code></a></dt><!-- RDLabel: "Array#x=" -->
+<dt><a name="label-7" id="label-7"><code>Array#y</code></a></dt><!-- RDLabel: "Array#y" -->
+<dt><a name="label-8" id="label-8"><code>Array#y=( <var>y</var> )</code></a></dt><!-- RDLabel: "Array#y=" -->
+<dt><a name="label-9" id="label-9"><code>Array#w</code></a></dt><!-- RDLabel: "Array#w" -->
+<dt><a name="label-10" id="label-10"><code>Array#w=( <var>w</var> )</code></a></dt><!-- RDLabel: "Array#w=" -->
+<dt><a name="label-11" id="label-11"><code>Array#h</code></a></dt><!-- RDLabel: "Array#h" -->
+<dt><a name="label-12" id="label-12"><code>Array#h=( <var>h</var> )</code></a></dt><!-- RDLabel: "Array#h=" -->
 </dl>
 <p>These can be set and read at will.
-<var>w</var> and <var>h</var> have <var>width</var> and <var>height</var> as aliases.</p>
-<h2><a name="label:13" id="label:13">Instance methods</a></h2><!-- RDLabel: "Instance methods" -->
+<var>w</var> and <var>h</var> have <var>width</var> and <var>height</var> as aliases.</p>
+<h2><a name="label-13" id="label-13">Instance methods</a></h2><!-- RDLabel: "Instance methods" -->
 <dl>
-<dt><a name="label:14" id="label:14"><code>Array#left</code></a><!-- RDLabel: "Array#left" -->
-<dt><a name="label:15" id="label:15"><code>Array#left=( <var>left</var> )</code></a><!-- RDLabel: "Array#left=" -->
-<dt><a name="label:16" id="label:16"><code>Array#right</code></a><!-- RDLabel: "Array#right" -->
-<dt><a name="label:17" id="label:17"><code>Array#right=( <var>right</var> )</code></a><!-- RDLabel: "Array#right=" -->
-<dt><a name="label:18" id="label:18"><code>Array#top</code></a><!-- RDLabel: "Array#top" -->
-<dt><a name="label:19" id="label:19"><code>Array#top=( <var>top</var> )</code></a><!-- RDLabel: "Array#top=" -->
-<dt><a name="label:20" id="label:20"><code>Array#bottom</code></a><!-- RDLabel: "Array#bottom" -->
-<dt><a name="label:21" id="label:21"><code>Array#bottom=( <var>bottom</var> )</code></a><!-- RDLabel: "Array#bottom=" -->
+<dt><a name="label-14" id="label-14"><code>Array#left</code></a></dt><!-- RDLabel: "Array#left" -->
+<dt><a name="label-15" id="label-15"><code>Array#left=( <var>left</var> )</code></a></dt><!-- RDLabel: "Array#left=" -->
+<dt><a name="label-16" id="label-16"><code>Array#right</code></a></dt><!-- RDLabel: "Array#right" -->
+<dt><a name="label-17" id="label-17"><code>Array#right=( <var>right</var> )</code></a></dt><!-- RDLabel: "Array#right=" -->
+<dt><a name="label-18" id="label-18"><code>Array#top</code></a></dt><!-- RDLabel: "Array#top" -->
+<dt><a name="label-19" id="label-19"><code>Array#top=( <var>top</var> )</code></a></dt><!-- RDLabel: "Array#top=" -->
+<dt><a name="label-20" id="label-20"><code>Array#bottom</code></a></dt><!-- RDLabel: "Array#bottom" -->
+<dt><a name="label-21" id="label-21"><code>Array#bottom=( <var>bottom</var> )</code></a></dt><!-- RDLabel: "Array#bottom=" -->
 </dl>
 <p>These can be set and read at will.
-Differences with x, y, w and h are:</p>
+Differences with x, y, w and h are:</p>
 <ul>
-<li><var>right</var> and <var>bottom</var> are screen coordinates.</li>
+<li><p><var>right</var> and <var>bottom</var> are screen coordinates.</p>
+<pre>((|right|)) is ((|x|))+((|w|)) and ((|bottom|)) is ((|y|))+((|h|)).</pre></li>
 </ul>
-<pre>((|right|)) is ((|x|))+((|w|)) and ((|bottom|)) is ((|y|))+((|h|)).</pre>
 <dl>
-<dt><a name="label:22" id="label:22"><code>Array#normalize</code></a><!-- RDLabel: "Array#normalize" -->
-<dt><a name="label:23" id="label:23"><code>Array#normalize!</code></a><!-- RDLabel: "Array#normalize!" -->
+<dt><a name="label-22" id="label-22"><code>Array#normalize</code></a></dt><!-- RDLabel: "Array#normalize" -->
+<dt><a name="label-23" id="label-23"><code>Array#normalize!</code></a></dt><!-- RDLabel: "Array#normalize!" -->
 </dl>
 <p>If w and h aren't positive,
-this will change them to positive and keep the rectangle covering the same space.</p>
+this will change them to positive and keep the rectangle covering the same space.</p>
 <dl>
-<dt><a name="label:24" id="label:24"><code>Array#move( <var>delta</var> )</code></a><!-- RDLabel: "Array#move" -->
-<dt><a name="label:25" id="label:25"><code>Array#move!( <var>delta</var> )</code></a><!-- RDLabel: "Array#move!" -->
+<dt><a name="label-24" id="label-24"><code>Array#move( <var>delta</var> )</code></a></dt><!-- RDLabel: "Array#move" -->
+<dt><a name="label-25" id="label-25"><code>Array#move!( <var>delta</var> )</code></a></dt><!-- RDLabel: "Array#move!" -->
 </dl>
-<p>Returns a new rectangle which is the base rectangle moved by the given amount.</p>
+<p>Returns a new rectangle which is the base rectangle moved by the given amount.</p>
 <dl>
-<dt><a name="label:26" id="label:26"><code>Array#inflate( <var>sizes</var> )</code></a><!-- RDLabel: "Array#inflate" -->
-<dt><a name="label:27" id="label:27"><code>Array#inflate!( <var>sizes</var> )</code></a><!-- RDLabel: "Array#inflate!" -->
+<dt><a name="label-26" id="label-26"><code>Array#inflate( <var>sizes</var> )</code></a></dt><!-- RDLabel: "Array#inflate" -->
+<dt><a name="label-27" id="label-27"><code>Array#inflate!( <var>sizes</var> )</code></a></dt><!-- RDLabel: "Array#inflate!" -->
 </dl>
 <p>Returns a rectangle which has the sizes changed by the given amounts.
 <var>sizes</var> is an array of [dx, dy].
 The rectangle shrinks and expands around the rectangle's center.
-Negative values will shrink the rectangle.</p>
+Negative values will shrink the rectangle.</p>
 <dl>
-<dt><a name="label:28" id="label:28"><code>Array#union( <var>rect</var> )</code></a><!-- RDLabel: "Array#union" -->
-<dt><a name="label:29" id="label:29"><code>Array#union!( <var>rect</var> )</code></a><!-- RDLabel: "Array#union!" -->
+<dt><a name="label-28" id="label-28"><code>Array#union( <var>rect</var> )</code></a></dt><!-- RDLabel: "Array#union" -->
+<dt><a name="label-29" id="label-29"><code>Array#union!( <var>rect</var> )</code></a></dt><!-- RDLabel: "Array#union!" -->
 </dl>
 <p>Returns a new rectangle that completely covers the given rectangle(s).
 There may be an area inside the new rectangle that is not covered by the inputs.
-Rectangles are pre-normalized.</p>
+Rectangles are pre-normalized.</p>
 <dl>
-<dt><a name="label:30" id="label:30"><code>Array#contains?( <var>thing</var> )</code></a><!-- RDLabel: "Array#contains?" -->
+<dt><a name="label-30" id="label-30"><code>Array#contains?( <var>thing</var> )</code></a></dt><!-- RDLabel: "Array#contains?" -->
 </dl>
-<p>Returns whether thing ([x, y, w, h] or [x, y]) fits completely within the rectangle.</p>
+<p>Returns whether thing ([x, y, w, h] or [x, y]) fits completely within the rectangle.</p>
 <dl>
-<dt><a name="label:31" id="label:31"><code>Array#same_size?( <var>rect</var> )</code></a><!-- RDLabel: "Array#same_size?" -->
+<dt><a name="label-31" id="label-31"><code>Array#same_size?( <var>rect</var> )</code></a></dt><!-- RDLabel: "Array#same_size?" -->
 </dl>
-<p>Returns whether <var>rect</var> is the same area as <var>self</var>.</p>
+<p>Returns whether <var>rect</var> is the same area as <var>self</var>.</p>
 <dl>
-<dt><a name="label:32" id="label:32"><code>Array#copy_from( <var>rect</var> )</code></a><!-- RDLabel: "Array#copy_from" -->
+<dt><a name="label-32" id="label-32"><code>Array#copy_from( <var>rect</var> )</code></a></dt><!-- RDLabel: "Array#copy_from" -->
 </dl>
 <p>Sets <var>self</var> to the same position and size as <var>rect</var>.
 This is meant for optimizations.
-Returns <var>self</var>.</p>
+Returns <var>self</var>.</p>
 <dl>
-<dt><a name="label:33" id="label:33"><code>Array#set_coordinates( <var>x</var>, <var>y</var>, <var>w</var>, <var>h</var> )</code></a><!-- RDLabel: "Array#set_coordinates" -->
+<dt><a name="label-33" id="label-33"><code>Array#set_coordinates( <var>x</var>, <var>y</var>, <var>w</var>, <var>h</var> )</code></a></dt><!-- RDLabel: "Array#set_coordinates" -->
 </dl>
 <p>Sets all properties at once.
 This is meant for optimizations.
-Returns <var>self</var>.</p>
+Returns <var>self</var>.</p>
 <dl>
-<dt><a name="label:34" id="label:34"><code>Array#find_overlapping_rect( <var>rects</var> )</code></a><!-- RDLabel: "Array#find_overlapping_rect" -->
+<dt><a name="label-34" id="label-34"><code>Array#find_overlapping_rect( <var>rects</var> )</code></a></dt><!-- RDLabel: "Array#find_overlapping_rect" -->
 </dl>
 <p>Returns the first rectangle in the <var>rects</var> array to overlap the base rectangle.
 Once an overlap is found, this will stop checking the remaining array.
-If no overlap is found, it will return false.</p>
+If no overlap is found, it will return false.</p>
 <dl>
-<dt><a name="label:35" id="label:35"><code>Array#find_overlapping_rects( <var>rects</var> )</code></a><!-- RDLabel: "Array#find_overlapping_rects" -->
+<dt><a name="label-35" id="label-35"><code>Array#find_overlapping_rects( <var>rects</var> )</code></a></dt><!-- RDLabel: "Array#find_overlapping_rects" -->
 </dl>
 <p>Returns an array with the rectangles in the list to overlaps the base rectangle.
-If no overlaps is found, it will return [].</p>
+If no overlaps is found, it will return [].</p>
 <dl>
-<dt><a name="label:36" id="label:36"><code>Array#clip( <var>rect</var> )</code></a><!-- RDLabel: "Array#clip" -->
-<dt><a name="label:37" id="label:37"><code>Array#clip!( <var>rect</var> )</code></a><!-- RDLabel: "Array#clip!" -->
+<dt><a name="label-36" id="label-36"><code>Array#clip( <var>rect</var> )</code></a></dt><!-- RDLabel: "Array#clip" -->
+<dt><a name="label-37" id="label-37"><code>Array#clip!( <var>rect</var> )</code></a></dt><!-- RDLabel: "Array#clip!" -->
 </dl>
 <p>Returns a new rectangle that is the given rectangle cropped to the inside of the base rectangle.
-If the two rectangles do not overlaps to begin with, you will get a rectangle with 0 size.</p>
+If the two rectangles do not overlaps to begin with, you will get a rectangle with 0 size.</p>
 <dl>
-<dt><a name="label:38" id="label:38"><code>Array#clamp( <var>rect</var> )</code></a><!-- RDLabel: "Array#clamp" -->
-<dt><a name="label:39" id="label:39"><code>Array#clamp!( <var>rect</var> )</code></a><!-- RDLabel: "Array#clamp!" -->
+<dt><a name="label-38" id="label-38"><code>Array#clamp( <var>rect</var> )</code></a></dt><!-- RDLabel: "Array#clamp" -->
+<dt><a name="label-39" id="label-39"><code>Array#clamp!( <var>rect</var> )</code></a></dt><!-- RDLabel: "Array#clamp!" -->
 </dl>
 <p>Returns a new rectangle that is moved to be completely inside the base rectangle.
 If the given rectangle is too large for the base rectangle in an axis, 
-it will be centered on that axis.</p>
+it will be centered on that axis.</p>
 <dl>
-<dt><a name="label:40" id="label:40"><code>Array#overlaps?( <var>rect</var> )</code></a><!-- RDLabel: "Array#overlaps?" -->
+<dt><a name="label-40" id="label-40"><code>Array#overlaps?( <var>rect</var> )</code></a></dt><!-- RDLabel: "Array#overlaps?" -->
 </dl>
-<p>Returns true if any area of the two rectangles overlapss.</p>
+<p>Returns true if any area of the two rectangles overlapss.</p>
 <dl>
-<dt><a name="label:41" id="label:41"><code>Pit.cross_lines( <var>a</var>, <var>b</var>, <var>c</var>, <var>d</var> )</code></a><!-- RDLabel: "Pit.cross_lines" -->
+<dt><a name="label-41" id="label-41"><code>Pit.cross_lines( <var>a</var>, <var>b</var>, <var>c</var>, <var>d</var> )</code></a></dt><!-- RDLabel: "Pit.cross_lines" -->
 </dl>
 <p>Returns the coordinate where lines <var>a</var> to <var>b</var> and <var>c</var> to <var>d</var> cross, 
 an array of [x,y,x2,y2] if they are parallel and overlapping,
 an array of [x,y] if they are parallel and touch at only one point,
 or false if they don't cross.
-<var>a</var>, <var>b</var>, <var>c</var> and <var>d</var> are coordinates as always: [x,y]</p>
+<var>a</var>, <var>b</var>, <var>c</var> and <var>d</var> are coordinates as always: [x,y]</p>
 <p>The results may have small precision errors,
-so don't use it to compare directly with other numbers.</p>
+so don't use it to compare directly with other numbers.</p>
 
 </body>
 </html>

@@ -1,30 +1,30 @@
+
+D:\Rubyspul\rudl\docs>ruby c:\pad\rd2.rb ../rudl_video_sdl_gfx.c     
 <?xml version="1.0" ?>
 <!DOCTYPE html 
   PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>../rudl_video_sdl_gfx.c</title>
+<title>Untitled</title>
 </head>
 <body>
-<A HREF="index.html">Back to index</A>
 
-
-<h1><a name="label:0" id="label:0">SDL_gfx functions</a></h1><!-- RDLabel: "SDL_gfx functions" -->
+<h1><a name="label-0" id="label-0">SDL_gfx functions</a></h1><!-- RDLabel: "SDL_gfx functions" -->
 <p>SDL_gfx was written by Andreas Schiffler.
-See <a href="http://de.ferzkopp.net/">&lt;URL:http://de.ferzkopp.net/&gt;</a></p>
-<h2><a name="label:1" id="label:1">SDL_gfx: SDL_rotozoom</a></h2><!-- RDLabel: "SDL_gfx: SDL_rotozoom" -->
+See <a href="http://de.ferzkopp.net/">&lt;URL:http://de.ferzkopp.net/&gt;</a></p>
+<h2><a name="label-1" id="label-1">SDL_gfx: SDL_rotozoom</a></h2><!-- RDLabel: "SDL_gfx: SDL_rotozoom" -->
 <dl>
-<dt><a name="label:2" id="label:2"><code>Surface#rotozoom( <var>angle</var>, <var>zoom</var>, <var>smooth</var> )</code></a><!-- RDLabel: "Surface#rotozoom" -->
+<dt><a name="label-2" id="label-2"><code>Surface#rotozoom( <var>angle</var>, <var>zoom</var>, <var>smooth</var> )</code></a></dt><!-- RDLabel: "Surface#rotozoom" -->
 </dl>
 <p>Returns a new surface that is rotated <var>angle</var> degrees and zoomed
 <var>zoom</var> times (fractions are OK).
 This method returns a 32 bit surface.
 Exception: for now it returns an 8 bit surface when fed an 8 bit surface.
 If <var>smooth</var> is true and the surface is not 8 bits,
-bilinear interpolation will be applied, resulting in a smoother image.</p>
+bilinear interpolation will be applied, resulting in a smoother image.</p>
 <dl>
-<dt><a name="label:3" id="label:3"><code>Surface#zoom( <var>zoom_horizontal</var>, <var>zoom_vertical</var>, <var>smooth</var> )</code></a><!-- RDLabel: "Surface#zoom" -->
+<dt><a name="label-3" id="label-3"><code>Surface#zoom( <var>zoom_horizontal</var>, <var>zoom_vertical</var>, <var>smooth</var> )</code></a></dt><!-- RDLabel: "Surface#zoom" -->
 </dl>
 <p>Returns a new surface that is zoomed.
 1.0 doesn't zoom, bigger than 1.0 zooms in, smaller than 1.0 zooms out.
@@ -32,76 +32,76 @@ This method returns a 32 bit surface.
 Exception: for now it returns an 8 bit surface when fed an 8 bit surface.
 If <var>smooth</var> is true and the surface is not 8 bits,
 bilinear interpolation will be applied, resulting in a smoother image.
-(The last two methods are from Andreas Schiffler's SDL_rotozoom, aschiffler@home.com)</p>
-<h2><a name="label:4" id="label:4">SDL_gfx: SDL_gfxPrimitives</a></h2><!-- RDLabel: "SDL_gfx: SDL_gfxPrimitives" -->
+(The last two methods are from Andreas Schiffler's SDL_rotozoom, aschiffler@home.com)</p>
+<h2><a name="label-4" id="label-4">SDL_gfx: SDL_gfxPrimitives</a></h2><!-- RDLabel: "SDL_gfx: SDL_gfxPrimitives" -->
 <p>For these methods, "antialiased" means that drawing is done with many shades of the
-requested color to simulate </p>
+requested color to simulate </p>
 <dl>
-<dt><a name="label:5" id="label:5"><code>Surface#plot( <var>coordinate</var>, <var>color</var> )</code></a><!-- RDLabel: "Surface#plot" -->
-<dt><a name="label:6" id="label:6"><code>Surface#[ <var>x</var>, <var>y</var> ]= <var>color</var></code></a><!-- RDLabel: "Surface#[ x, y ]= color" -->
+<dt><a name="label-5" id="label-5"><code>Surface#plot( <var>coordinate</var>, <var>color</var> )</code></a></dt><!-- RDLabel: "Surface#plot" -->
+<dt><a name="label-6" id="label-6"><code>Surface#[ <var>x</var>, <var>y</var> ]= <var>color</var></code></a></dt><!-- RDLabel: "Surface#[ x, y ]= color" -->
 </dl>
 <p>These methods access single pixels on a surface.
 <var>plot</var> or <var>[]=</var> set a pixel to <var>color</var> at <var>coordinate</var>.
 <var>get</var> or <var>[]</var> get the color of a pixel.
 These methods require the surface to be locked if neccesary.
-<var>[]=</var> and <var>[]</var> are the only methods in RUDL that take a seperate x and y coordinate.</p>
+<var>[]=</var> and <var>[]</var> are the only methods in RUDL that take a seperate x and y coordinate.</p>
 <dl>
-<dt><a name="label:7" id="label:7"><code>Surface#horizontal_line( <var>coord</var>, <var>endx</var>, <var>color</var> )</code></a><!-- RDLabel: "Surface#horizontal_line" -->
+<dt><a name="label-7" id="label-7"><code>Surface#horizontal_line( <var>coord</var>, <var>endx</var>, <var>color</var> )</code></a></dt><!-- RDLabel: "Surface#horizontal_line" -->
 </dl>
 <dl>
-<dt><a name="label:8" id="label:8"><code>Surface#vertical_line( <var>coord</var>, <var>endy</var>, <var>color</var> )</code></a><!-- RDLabel: "Surface#vertical_line" -->
+<dt><a name="label-8" id="label-8"><code>Surface#vertical_line( <var>coord</var>, <var>endy</var>, <var>color</var> )</code></a></dt><!-- RDLabel: "Surface#vertical_line" -->
 </dl>
 <dl>
-<dt><a name="label:9" id="label:9"><code>Surface#rectangle( <var>rect</var>, <var>color</var> )</code></a><!-- RDLabel: "Surface#rectangle" -->
+<dt><a name="label-9" id="label-9"><code>Surface#rectangle( <var>rect</var>, <var>color</var> )</code></a></dt><!-- RDLabel: "Surface#rectangle" -->
 </dl>
 <dl>
-<dt><a name="label:10" id="label:10"><code>Surface#filled_rectangle( <var>rect</var>, <var>color</var> )</code></a><!-- RDLabel: "Surface#filled_rectangle" -->
+<dt><a name="label-10" id="label-10"><code>Surface#filled_rectangle( <var>rect</var>, <var>color</var> )</code></a></dt><!-- RDLabel: "Surface#filled_rectangle" -->
 </dl>
 <dl>
-<dt><a name="label:11" id="label:11"><code>Surface#line( <var>coord1</var>, <var>coord2</var>, <var>color</var> )</code></a><!-- RDLabel: "Surface#line" -->
+<dt><a name="label-11" id="label-11"><code>Surface#line( <var>coord1</var>, <var>coord2</var>, <var>color</var> )</code></a></dt><!-- RDLabel: "Surface#line" -->
 </dl>
 <dl>
-<dt><a name="label:12" id="label:12"><code>Surface#antialiased_line( <var>coord1</var>, <var>coord2</var>, <var>color</var> )</code></a><!-- RDLabel: "Surface#antialiased_line" -->
+<dt><a name="label-12" id="label-12"><code>Surface#antialiased_line( <var>coord1</var>, <var>coord2</var>, <var>color</var> )</code></a></dt><!-- RDLabel: "Surface#antialiased_line" -->
 </dl>
 <dl>
-<dt><a name="label:13" id="label:13"><code>Surface#circle( <var>coord</var>, <var>radius</var>, <var>color</var> )</code></a><!-- RDLabel: "Surface#circle" -->
+<dt><a name="label-13" id="label-13"><code>Surface#circle( <var>coord</var>, <var>radius</var>, <var>color</var> )</code></a></dt><!-- RDLabel: "Surface#circle" -->
 </dl>
 <dl>
-<dt><a name="label:14" id="label:14"><code>Surface#filled_circle( <var>coord</var>, <var>radius</var>, <var>color</var> )</code></a><!-- RDLabel: "Surface#filled_circle" -->
+<dt><a name="label-14" id="label-14"><code>Surface#filled_circle( <var>coord</var>, <var>radius</var>, <var>color</var> )</code></a></dt><!-- RDLabel: "Surface#filled_circle" -->
 </dl>
 <dl>
-<dt><a name="label:15" id="label:15"><code>Surface#antialiased_circle( <var>coord</var>, <var>radius</var>, <var>color</var> )</code></a><!-- RDLabel: "Surface#antialiased_circle" -->
+<dt><a name="label-15" id="label-15"><code>Surface#antialiased_circle( <var>coord</var>, <var>radius</var>, <var>color</var> )</code></a></dt><!-- RDLabel: "Surface#antialiased_circle" -->
 </dl>
 <dl>
-<dt><a name="label:16" id="label:16"><code>Surface#filled_pie( <var>coord</var>, <var>radius</var>, <var>start</var>, <var>end</var>, <var>color</var> )</code></a><!-- RDLabel: "Surface#filled_pie" -->
+<dt><a name="label-16" id="label-16"><code>Surface#filled_pie( <var>coord</var>, <var>radius</var>, <var>start</var>, <var>end</var>, <var>color</var> )</code></a></dt><!-- RDLabel: "Surface#filled_pie" -->
 </dl>
 <dl>
-<dt><a name="label:17" id="label:17"><code>Surface#ellipse( <var>coord</var>, <var>radius_x</var>, <var>radius_y</var>, <var>color</var> )</code></a><!-- RDLabel: "Surface#ellipse" -->
+<dt><a name="label-17" id="label-17"><code>Surface#ellipse( <var>coord</var>, <var>radius_x</var>, <var>radius_y</var>, <var>color</var> )</code></a></dt><!-- RDLabel: "Surface#ellipse" -->
 </dl>
 <dl>
-<dt><a name="label:18" id="label:18"><code>Surface#antialiased_ellipse( <var>coord</var>, <var>radius_x</var>, <var>radius_y</var>, <var>color</var> )</code></a><!-- RDLabel: "Surface#antialiased_ellipse" -->
+<dt><a name="label-18" id="label-18"><code>Surface#antialiased_ellipse( <var>coord</var>, <var>radius_x</var>, <var>radius_y</var>, <var>color</var> )</code></a></dt><!-- RDLabel: "Surface#antialiased_ellipse" -->
 </dl>
 <dl>
-<dt><a name="label:19" id="label:19"><code>Surface#filled_ellipse( <var>coord</var>, <var>radius_x</var>, <var>radius_y</var>, <var>color</var> )</code></a><!-- RDLabel: "Surface#filled_ellipse" -->
+<dt><a name="label-19" id="label-19"><code>Surface#filled_ellipse( <var>coord</var>, <var>radius_x</var>, <var>radius_y</var>, <var>color</var> )</code></a></dt><!-- RDLabel: "Surface#filled_ellipse" -->
 </dl>
 <p>These methods are thought to be self-explanatory.
 Filled_rectangle is a lot like fill.
 Fill comes from SDL, filled_rectangle from SDL_gfx,
-choose whichever you like best.</p>
+choose whichever you like best.</p>
 <dl>
-<dt><a name="label:20" id="label:20"><code>Surface#polygon( <var>coord_list</var>, <var>color</var> )</code></a><!-- RDLabel: "Surface#polygon" -->
+<dt><a name="label-20" id="label-20"><code>Surface#polygon( <var>coord_list</var>, <var>color</var> )</code></a></dt><!-- RDLabel: "Surface#polygon" -->
 </dl>
 <dl>
-<dt><a name="label:21" id="label:21"><code>Surface#filled_polygon( <var>coord_list</var>, <var>color</var> )</code></a><!-- RDLabel: "Surface#filled_polygon" -->
+<dt><a name="label-21" id="label-21"><code>Surface#filled_polygon( <var>coord_list</var>, <var>color</var> )</code></a></dt><!-- RDLabel: "Surface#filled_polygon" -->
 </dl>
 <dl>
-<dt><a name="label:22" id="label:22"><code>Surface#antialiased_polygon( <var>coord_list</var>, <var>color</var>)</code></a><!-- RDLabel: "Surface#antialiased_polygon" -->
+<dt><a name="label-22" id="label-22"><code>Surface#antialiased_polygon( <var>coord_list</var>, <var>color</var>)</code></a></dt><!-- RDLabel: "Surface#antialiased_polygon" -->
 </dl>
-<p>The polygon methods take an array of [x,y], like [[10,10],[40,60],[16,66]].</p>
+<p>The polygon methods take an array of [x,y], like [[10,10],[40,60],[16,66]].</p>
 <dl>
-<dt><a name="label:23" id="label:23"><code>Surface#print( <var>coord</var>, <var>text</var>, <var>color</var> )</code></a><!-- RDLabel: "Surface#print" -->
+<dt><a name="label-23" id="label-23"><code>Surface#print( <var>coord</var>, <var>text</var>, <var>color</var> )</code></a></dt><!-- RDLabel: "Surface#print" -->
 </dl>
-<p>Puts <var>text</var> on the surface in a monospaced 8x8 standard old ASCII font.</p>
+<p>Puts <var>text</var> on the surface in a monospaced 8x8 standard old ASCII font.</p>
 
 </body>
 </html>

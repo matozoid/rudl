@@ -1,161 +1,161 @@
+
+D:\Rubyspul\rudl\docs>ruby c:\pad\rd2.rb ../rudl_video_display_surface.c     
 <?xml version="1.0" ?>
 <!DOCTYPE html 
   PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>../rudl_video_display_surface.c</title>
+<title>Untitled</title>
 </head>
 <body>
-<A HREF="index.html">Back to index</A>
 
-
-<h1><a name="label:0" id="label:0">DisplaySurface &lt; Surface</a></h1><!-- RDLabel: "DisplaySurface < Surface" -->
+<h1><a name="label-0" id="label-0">DisplaySurface &lt; Surface</a></h1><!-- RDLabel: "DisplaySurface < Surface" -->
 <p>The DisplaySurface is the surface that represents the window or the full screen that you
 will be drawing and blitting on.
 Since it is inherited from Surface, it can be used just like an ordinary surface.
-You will need to create a DisplaySurface to show anything on your screen.</p>
-<h2><a name="label:1" id="label:1">Class Methods</a></h2><!-- RDLabel: "Class Methods" -->
+You will need to create a DisplaySurface to show anything on your screen.</p>
+<h2><a name="label-1" id="label-1">Class Methods</a></h2><!-- RDLabel: "Class Methods" -->
 <dl>
-<dt><a name="label:2" id="label:2"><code>DisplaySurface.new( [<var>w</var>,<var>h</var>] )</code></a><!-- RDLabel: "DisplaySurface.new" -->
-<dt><a name="label:3" id="label:3"><code>DisplaySurface.new( [<var>w</var>,<var>h</var>], <var>flags</var> )</code></a><!-- RDLabel: "DisplaySurface.new" -->
-<dt><a name="label:4" id="label:4"><code>DisplaySurface.new( [<var>w</var>,<var>h</var>], <var>flags</var>, <var>depth</var> )</code></a><!-- RDLabel: "DisplaySurface.new" -->
+<dt><a name="label-2" id="label-2"><code>DisplaySurface.new( [<var>w</var>,<var>h</var>] )</code></a></dt><!-- RDLabel: "DisplaySurface.new" -->
+<dt><a name="label-3" id="label-3"><code>DisplaySurface.new( [<var>w</var>,<var>h</var>], <var>flags</var> )</code></a></dt><!-- RDLabel: "DisplaySurface.new" -->
+<dt><a name="label-4" id="label-4"><code>DisplaySurface.new( [<var>w</var>,<var>h</var>], <var>flags</var>, <var>depth</var> )</code></a></dt><!-- RDLabel: "DisplaySurface.new" -->
 </dl>
-<p>Return value: the new DisplaySurface object</p>
+<p>Return value: the new DisplaySurface object</p>
 <ul>
-<li><var>[w,h]</var> is the requested size for the new display.</li>
-<li><p><var>flags</var> is a combination of the following:</p>
+<li><var>[w,h]</var> is the requested size for the new display.</li>
+<li><var>flags</var> is a combination of the following:
 <ul>
-<li>SWSURFACE, to create the display in normal memory,</li>
-<li>HWSURFACE, to create the display in the memory of your video hardware, if possible,</li>
+<li>SWSURFACE, to create the display in normal memory,</li>
+<li>HWSURFACE, to create the display in the memory of your video hardware, if possible,</li>
 <li>ASYNCBLIT, to (i quote) "enable the use of asynchronous to the display surface.
-    This will usually slow down blitting on single CPU machines, but may provide a speed increase on SMP systems."</li>
-<li>RESIZABLE, to make a resizable display (see events to find the event that it sends),</li>
-<li>HWPALETTE, to grab the system palette,</li>
-<li>DOUBLEBUF, to enable double buffered hardware pageflipping. Use <var>flip</var> with this.</li>
-<li>FULLSCREEN, attempts to grab all of the screen,</li>
-<li>NOFRAME, in RUDL 0.3 and up, leaves the frame off the window.</li>
-<li>OPENGL, to create an OpenGL window.</li>
+    This will usually slow down blitting on single CPU machines, but may provide a speed increase on SMP systems."</li>
+<li>RESIZABLE, to make a resizable display (see events to find the event that it sends),</li>
+<li>HWPALETTE, to grab the system palette,</li>
+<li>DOUBLEBUF, to enable double buffered hardware pageflipping. Use <var>flip</var> with this.</li>
+<li>FULLSCREEN, attempts to grab all of the screen,</li>
+<li>NOFRAME, in RUDL 0.3 and up, leaves the frame off the window.</li>
+<li>OPENGL, to create an OpenGL window.</li>
 </ul></li>
 <li><var>depth</var> selects the bits per pixel value (8 is 256 colors, 16 is thousands of colors, 
-  24 and 32 are millions of colors). If it is not supplied, a good one will be selected for you.</li>
+  24 and 32 are millions of colors). If it is not supplied, a good one will be selected for you.</li>
 </ul>
 <dl>
-<dt><a name="label:5" id="label:5"><code>DisplaySurface.destroy</code></a><!-- RDLabel: "DisplaySurface.destroy" -->
+<dt><a name="label-5" id="label-5"><code>DisplaySurface.destroy</code></a></dt><!-- RDLabel: "DisplaySurface.destroy" -->
 </dl>
 <p>Destroys the display, removing the window or returning from fullscreen mode.
-Do not call methods on a destroyed DisplaySurface</p>
+Do not call methods on a destroyed DisplaySurface</p>
 <dl>
-<dt><a name="label:6" id="label:6"><code>DisplaySurface.modes</code></a><!-- RDLabel: "DisplaySurface.modes" -->
-<dt><a name="label:7" id="label:7"><code>DisplaySurface.modes( <var>bitdepth</var> )</code></a><!-- RDLabel: "DisplaySurface.modes" -->
-<dt><a name="label:8" id="label:8"><code>DisplaySurface.modes( <var>bitdepth</var>, <var>flags</var> )</code></a><!-- RDLabel: "DisplaySurface.modes" -->
+<dt><a name="label-6" id="label-6"><code>DisplaySurface.modes</code></a></dt><!-- RDLabel: "DisplaySurface.modes" -->
+<dt><a name="label-7" id="label-7"><code>DisplaySurface.modes( <var>bitdepth</var> )</code></a></dt><!-- RDLabel: "DisplaySurface.modes" -->
+<dt><a name="label-8" id="label-8"><code>DisplaySurface.modes( <var>bitdepth</var>, <var>flags</var> )</code></a></dt><!-- RDLabel: "DisplaySurface.modes" -->
 </dl>
 <p>Lists available modes for a certain <var>bitdepth</var> and optionally only those modes that 
 can do <var>flags</var>.
 Flags are like those in DisplaySurface.new.
 No flags is the same as passing FULLSCREEN.
 Returns an array with arrays of [w, h], or nil.
-nil means any mode is ok, an empty array means <var>no</var> mode is supported.</p>
+nil means any mode is ok, an empty array means <var>no</var> mode is supported.</p>
 <dl>
-<dt><a name="label:9" id="label:9"><code>DisplaySurface.mode_ok?</code></a><!-- RDLabel: "DisplaySurface.mode_ok?" -->
+<dt><a name="label-9" id="label-9"><code>DisplaySurface.mode_ok?</code></a></dt><!-- RDLabel: "DisplaySurface.mode_ok?" -->
 </dl>
 <p>Like DisplaySurface.new, but doesn't set the mode, only returns true if the mode can be set,
-and false if it can't.</p>
+and false if it can't.</p>
 <dl>
-<dt><a name="label:10" id="label:10"><code>DisplaySurface.best_mode_info</code></a><!-- RDLabel: "DisplaySurface.best_mode_info" -->
+<dt><a name="label-10" id="label-10"><code>DisplaySurface.best_mode_info</code></a></dt><!-- RDLabel: "DisplaySurface.best_mode_info" -->
 </dl>
-<p>This method return a hash filled with information about the video hardware.</p>
-<p>These entries are true or false:</p>
+<p>This method return a hash filled with information about the video hardware.</p>
+<p>These entries are true or false:</p>
 <ul>
-<li>hardware surfaces available</li>
-<li>window manager available</li>
-<li>hardware to hardware blits accelerated</li>
-<li>hardware to hardware colorkey blits accelerated</li>
-<li>hardware to hardware alpha blits accelerated</li>
-<li>software to hardware blits accelerated</li>
-<li>software to hardware colorkey blits accelerated</li>
-<li>software to hardware alpha blits accelerated</li>
-<li>color fills accelerated</li>
+<li>hardware surfaces available</li>
+<li>window manager available</li>
+<li>hardware to hardware blits accelerated</li>
+<li>hardware to hardware colorkey blits accelerated</li>
+<li>hardware to hardware alpha blits accelerated</li>
+<li>software to hardware blits accelerated</li>
+<li>software to hardware colorkey blits accelerated</li>
+<li>software to hardware alpha blits accelerated</li>
+<li>color fills accelerated</li>
 </ul>
-<p>This is in kilobytes:</p>
+<p>This is in kilobytes:</p>
 <ul>
-<li>video memory</li>
+<li>video memory</li>
 </ul>
 <p>There is currently no difference between best_mode_info and info, 
 except that one is a class method and the other an instance method, 
-but there may be differences in the future.</p>
-<h2><a name="label:11" id="label:11">Instance Methods</a></h2><!-- RDLabel: "Instance Methods" -->
+but there may be differences in the future.</p>
+<h2><a name="label-11" id="label-11">Instance Methods</a></h2><!-- RDLabel: "Instance Methods" -->
 <dl>
-<dt><a name="label:12" id="label:12"><code>DisplaySurface#info</code></a><!-- RDLabel: "DisplaySurface#info" -->
+<dt><a name="label-12" id="label-12"><code>DisplaySurface#info</code></a></dt><!-- RDLabel: "DisplaySurface#info" -->
 </dl>
-<p>See DisplaySurface.best_mode_info</p>
+<p>See DisplaySurface.best_mode_info</p>
 <dl>
-<dt><a name="label:13" id="label:13"><code>DisplaySurface#driver</code></a><!-- RDLabel: "DisplaySurface#driver" -->
+<dt><a name="label-13" id="label-13"><code>DisplaySurface#driver</code></a></dt><!-- RDLabel: "DisplaySurface#driver" -->
 </dl>
-<p>Returns the name of the videodriver that is being used.</p>
+<p>Returns the name of the videodriver that is being used.</p>
 <dl>
-<dt><a name="label:14" id="label:14"><code>DisplaySurface#update</code></a><!-- RDLabel: "DisplaySurface#update" -->
-<dt><a name="label:15" id="label:15"><code>DisplaySurface#update( <var>rect</var> )</code></a><!-- RDLabel: "DisplaySurface#update" -->
+<dt><a name="label-14" id="label-14"><code>DisplaySurface#update</code></a></dt><!-- RDLabel: "DisplaySurface#update" -->
+<dt><a name="label-15" id="label-15"><code>DisplaySurface#update( <var>rect</var> )</code></a></dt><!-- RDLabel: "DisplaySurface#update" -->
 </dl>
 <p>This call will update a section (or sections) of the display screen.
 You must update an area of your display when you change its contents.
 <var>rect</var> is, starting from v0.4, an array of rectangles.
-If passed with no arguments, this will update the entire display surface.</p>
-<p>This call cannot be used on OPENGL displays, and will generate an exception.</p>
+If passed with no arguments, this will update the entire display surface.</p>
+<p>This call cannot be used on OPENGL displays, and will generate an exception.</p>
 <dl>
-<dt><a name="label:16" id="label:16"><code>DisplaySurface#flip</code></a><!-- RDLabel: "DisplaySurface#flip" -->
+<dt><a name="label-16" id="label-16"><code>DisplaySurface#flip</code></a></dt><!-- RDLabel: "DisplaySurface#flip" -->
 </dl>
 <p>This will update the contents of the entire display.
 If your display mode is using the flags HWSURFACE and DOUBLEBUF, this
 will wait for a vertical retrace (if the video driver supports it) 
 and swap the surfaces.
 If you are using a different type of display mode, it will simply update
-the entire contents of the surface.</p>
+the entire contents of the surface.</p>
 <dl>
-<dt><a name="label:17" id="label:17"><code>DisplaySurface#active?</code></a><!-- RDLabel: "DisplaySurface#active?" -->
+<dt><a name="label-17" id="label-17"><code>DisplaySurface#active?</code></a></dt><!-- RDLabel: "DisplaySurface#active?" -->
 </dl>
-<p>Returns true if the application is active.</p>
+<p>Returns true if the application is active.</p>
 <dl>
-<dt><a name="label:18" id="label:18"><code>DisplaySurface#caption</code></a><!-- RDLabel: "DisplaySurface#caption" -->
-<dt><a name="label:19" id="label:19"><code>DisplaySurface#set_caption( <var>title</var> )</code></a><!-- RDLabel: "DisplaySurface#set_caption" -->
-<dt><a name="label:20" id="label:20"><code>DisplaySurface#set_caption( <var>title</var>, <var>icontitle</var> )</code></a><!-- RDLabel: "DisplaySurface#set_caption" -->
+<dt><a name="label-18" id="label-18"><code>DisplaySurface#caption</code></a></dt><!-- RDLabel: "DisplaySurface#caption" -->
+<dt><a name="label-19" id="label-19"><code>DisplaySurface#set_caption( <var>title</var> )</code></a></dt><!-- RDLabel: "DisplaySurface#set_caption" -->
+<dt><a name="label-20" id="label-20"><code>DisplaySurface#set_caption( <var>title</var>, <var>icontitle</var> )</code></a></dt><!-- RDLabel: "DisplaySurface#set_caption" -->
 </dl>
 <p>caption= sets the title of the window (if the application runs in a window) to title.
 Sets the title of the icon that shows when the application is iconified to icontitle,
 or title if icontitle is not supplied.
-caption returns the title and icontitle of the window.</p>
+caption returns the title and icontitle of the window.</p>
 <dl>
-<dt><a name="label:21" id="label:21"><code>DisplaySurface#iconify</code></a><!-- RDLabel: "DisplaySurface#iconify" -->
+<dt><a name="label-21" id="label-21"><code>DisplaySurface#iconify</code></a></dt><!-- RDLabel: "DisplaySurface#iconify" -->
 </dl>
 <p>Iconifies the application.
-Returns true if it is succesfull.</p>
+Returns true if it is succesfull.</p>
 <dl>
-<dt><a name="label:22" id="label:22"><code>DisplaySurface#gamma=([<var>r</var>,<var>g</var>,<var>b</var>])</code></a><!-- RDLabel: "DisplaySurface#gamma=" -->
-<dt><a name="label:23" id="label:23"><code>DisplaySurface#gamma=(<var>intensity</var>)</code></a><!-- RDLabel: "DisplaySurface#gamma=" -->
+<dt><a name="label-22" id="label-22"><code>DisplaySurface#gamma=([<var>r</var>,<var>g</var>,<var>b</var>])</code></a></dt><!-- RDLabel: "DisplaySurface#gamma=" -->
+<dt><a name="label-23" id="label-23"><code>DisplaySurface#gamma=(<var>intensity</var>)</code></a></dt><!-- RDLabel: "DisplaySurface#gamma=" -->
 </dl>
 <p>Sets the gamma value for the display when this is supported.
-Intensity is a shortcut for values where r=g=b.</p>
+Intensity is a shortcut for values where r=g=b.</p>
 <dl>
-<dt><a name="label:24" id="label:24"><code>DisplaySurface#toggle_fullscreen</code></a><!-- RDLabel: "DisplaySurface#toggle_fullscreen" -->
+<dt><a name="label-24" id="label-24"><code>DisplaySurface#toggle_fullscreen</code></a></dt><!-- RDLabel: "DisplaySurface#toggle_fullscreen" -->
 </dl>
 <p>Toggles between fullscreen and windowed mode.
 The code is experimental,
-please report problems if found.</p>
+please report problems if found.</p>
 <dl>
-<dt><a name="label:25" id="label:25"><code>DisplaySurface.gl_set_attribute( <var>name</var>, <var>value</var> )</code></a><!-- RDLabel: "DisplaySurface.gl_set_attribute" -->
+<dt><a name="label-25" id="label-25"><code>DisplaySurface.gl_set_attribute( <var>name</var>, <var>value</var> )</code></a></dt><!-- RDLabel: "DisplaySurface.gl_set_attribute" -->
 </dl>
-<p>Set an attribute of the OpenGL subsystem before intialization.</p>
-<p>Returns self.</p>
+<p>Set an attribute of the OpenGL subsystem before intialization.</p>
+<p>Returns self.</p>
 <dl>
-<dt><a name="label:26" id="label:26"><code>DisplaySurface.gl_get_attribute( <var>name</var> )</code></a><!-- RDLabel: "DisplaySurface.gl_get_attribute" -->
+<dt><a name="label-26" id="label-26"><code>DisplaySurface.gl_get_attribute( <var>name</var> )</code></a></dt><!-- RDLabel: "DisplaySurface.gl_get_attribute" -->
 </dl>
-<p>From the SDL documentation:</p>
+<p>From the SDL documentation:</p>
 <p>Get an attribute of the OpenGL subsystem from the windowing
 interface, such as glX. This is of course different from getting
 the values from SDL's internal OpenGL subsystem, which only
-stores the values you request before initialization.</p>
+stores the values you request before initialization.</p>
 <p>Developers should track the values they pass into SDL_GL_SetAttribute
-themselves if they want to retrieve these values.</p>
+themselves if they want to retrieve these values.</p>
 
 </body>
 </html>
