@@ -57,13 +57,15 @@ puts '* Checking for optional files'
 puts ' - smpeg, video playing library'
 have_header('smpeg/smpeg.h') if have_library('smpeg')
 
-puts ' - pthreads, multithreading library (not used in RUDL, but has to be linked if SDL uses it)'
-have_library('pthread')
+if !windows
+	puts ' - pthreads, multithreading library (not used in RUDL, but has to be linked if SDL uses it)'
+	have_library('pthread')
+end
 
 puts ' - Drawing: SDL_gfx from http://www.ferzkopp.net/'
 have_header('SDL_gfxPrimitives.h') and
 	have_header('SDL_framerate.h') and
-	have_header('SDL_gfxPrimitives_font.h') and
+#	have_header('SDL_gfxPrimitives_font.h') and # Don't seem to be using this.
 	have_header('SDL_imageFilter.h') and
 	have_header('SDL_rotozoom.h') if have_library('SDL_gfx')
 
@@ -76,7 +78,7 @@ have_header('SDL_image.h') if have_library('SDL_image','IMG_Load')
 puts ' - Truetype fonts: SDL_ttf from http://www.libsdl.org/projects/SDL_ttf/'
 have_header('SDL_ttf.h') if have_library('freetype','FT_Init_FreeType') and have_library('SDL_ttf','TTF_Init')
 
-puts ' - Flexible networking: SDL_net from http://www.libsdl.org/projects/SDL_net'
+#puts ' - Flexible networking: SDL_net from http://www.libsdl.org/projects/SDL_net'
 #have_header('SDL_net.h') if have_library('SDL_net', 'SDLNet_Init')
 
 if debug_version
