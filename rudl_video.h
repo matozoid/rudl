@@ -29,7 +29,7 @@ extern void initVideoDisplaySurfaceClasses();
 extern void initVideoSurfaceClasses();
 extern void initVideoRectClasses();
 extern void initVideoSDLGFXClasses();
-extern void initVideoSGEClasses();
+extern void initVideoBitmaskClasses();
 extern void initVideo();
 extern void quitVideo();
 

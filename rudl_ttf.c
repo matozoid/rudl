@@ -13,6 +13,7 @@ void initTTF()
 {
 #ifdef HAVE_SDL_TTF_H
 	if(!ttf_inited){
+
 		DEBUG_S("Starting TTF");
 		if(TTF_Init()) TTF_RAISE;
 		ttf_inited=true;
@@ -24,6 +25,7 @@ void quitTTF()
 {
 #ifdef HAVE_SDL_TTF_H
 	if(ttf_inited){
+
 		DEBUG_S("Stopping TTF");
 		TTF_Quit();
 	}
@@ -32,16 +34,21 @@ void quitTTF()
 
 void VALUE2SDL_COLOR(VALUE colorObject, SDL_Color* color)
 {
+
 	VALUE tmp;
 	if(rb_obj_is_kind_of(colorObject, rb_cArray)){
 		switch(RARRAY(colorObject)->len){
 			case 4:	
 			case 3:	
+
 				tmp=rb_ary_entry(colorObject, 0);
+
 				color->r=(Uint8)NUM2UINT(tmp),
 				tmp=rb_ary_entry(colorObject, 1);
+
 				color->g=(Uint8)NUM2UINT(tmp),
 				tmp=rb_ary_entry(colorObject, 2);
+
 				color->b=(Uint8)NUM2UINT(tmp);
 				break;
 			default:
@@ -56,6 +63,7 @@ void VALUE2SDL_COLOR(VALUE colorObject, SDL_Color* color)
 /*
 =begin
 <<< docs/head
+
 = TrueTypeFont
 == Class Methods
 --- TrueTypeFont.new( filename, size )
@@ -272,6 +280,7 @@ static VALUE truetypefont_size(VALUE self, VALUE text)
 void initTrueTypeFontClasses()
 {
 #ifdef HAVE_SDL_TTF_H
+
 	classTTF=rb_define_class_under(moduleRUDL, "TrueTypeFont", rb_cObject);
 	rb_define_singleton_method(classTTF, "new", truetypefont_new, 2);
 	rb_define_method(classTTF, "ascent", truetypefont_ascent, 0);
@@ -279,6 +288,7 @@ void initTrueTypeFontClasses()
 	rb_define_method(classTTF, "italic?", truetypefont_italic_, 0);
 	rb_define_method(classTTF, "descent", truetypefont_descent, 0);
 	rb_define_method(classTTF, "h", truetypefont_h, 0);
+
 	rb_define_method(classTTF, "linesize", truetypefont_linesize, 0);
 	rb_define_method(classTTF, "underline?", truetypefont_underline_, 0);
 	rb_define_method(classTTF, "render", truetypefont_render, -1);
@@ -287,9 +297,9 @@ void initTrueTypeFontClasses()
 	rb_define_method(classTTF, "underline=", truetypefont_underline__, 1);
 	rb_define_method(classTTF, "size", truetypefont_size, 1);
 
+
 	// Backward compatability:
 	rb_alias(classTTF, rb_intern("height"), rb_intern("h"));
-
 	rb_eval_string(
 			"module RUDL class TrueTypeFont				\n"
 			"	def inspect								\n"

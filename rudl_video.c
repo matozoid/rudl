@@ -130,7 +130,7 @@ void initVideoClasses()
 	initVideoDisplaySurfaceClasses();
 	initVideoRectClasses();
 	initVideoSDLGFXClasses();
-	initVideoSGEClasses();
+	initVideoBitmaskClasses();
 	
 /*
 =begin

@@ -1,7 +1,7 @@
-# $Revision: 1.16 $
-# $Date: 2003/09/26 21:00:24 $
-# $Author: rennex $
 # $Log: extconf.rb,v $
+# Revision 1.17  2003/09/26 22:59:45  tsuihark
+# Fixed damn EOLs and old SGE reference.
+#
 # Revision 1.16  2003/09/26 21:00:24  rennex
 # Me too, testing that is! ;)
 #

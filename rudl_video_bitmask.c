@@ -16,6 +16,7 @@ bitmask *SCAM_mask_from_image_SDL(SDL_Surface *surface, Uint32 colorkey)
 		for (y=0; y<surface->h; y++){
 			for (x=0; x<surface->w; x++){
 				if(internal_nonlocking_get(surface, x, y)!=colorkey){
+
 					bitmask_setbit(b, x, y);
 				}
 			}
@@ -209,7 +210,7 @@ static VALUE collision_map_size(VALUE self)
 }
 
 ///////////////////////////////// INIT
-void initVideoSGEClasses()
+void initVideoBitmaskClasses()
 {
 	classCollisionMap=rb_define_class_under(moduleRUDL, "CollisionMap", rb_cObject);
 	rb_define_singleton_method(classCollisionMap, "new", collision_map_new, 1);
@@ -233,3 +234,4 @@ void initVideoSGEClasses()
 	);
 
 }
+
