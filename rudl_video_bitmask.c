@@ -32,7 +32,7 @@ bitmask *SCAM_mask_from_image_SDL(SDL_Surface *surface, Uint32 colorkey)
 =begin
 <<< docs/head
 = CollisionMap
-This code is "bitmask" from ((<URL:http://www.ifm.liu.se/~ulfek/bitmask/Bitmask.html>))
+This code is "bitmask" from ((<URL:http://www.ifm.liu.se/~ulfek/projects/2d_Collision_Detection.html>))
 
 This class contains a map of all the visible pixels in a surface.
 (That's the ones that don't have the color key's color)
@@ -87,7 +87,6 @@ static VALUE collision_map_new(VALUE self, VALUE par1)
 		SDL_RAISE_S("Collision map could not be created");
 		return Qnil;
 	}
-
 }
 
 /*
