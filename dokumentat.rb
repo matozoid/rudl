@@ -173,37 +173,48 @@ module Output
 	def Output.stylesheet
 <<SHEET
 body {
-	margin-left: 6% !important;
-	margin-right: 4% !important;
+    margin-left: 8% !important;
+    margin-right: 10% !important;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
-body, h1, h2, h3, h4, h5, h6, p {
-	font-family: "Arial", "Helvetica", "sans-serif";
+h1, h2, h3 {
+    font-family: serif;
+    font-variant: small-caps;
 }
 
-h1{
-	text-align: center;
-	border-top: solid thick;
-	margin-top: 2em;
-}
-
-code {
-	font-weight: bold;
+h1 {
+    text-align: center;
+    border-top: solid thick;
+    margin: 1em 0em 1em 0em;
 }
 
 h2 {
-	margin-top: 3em;
-	border-top: solid thin;
+    margin-top: 3em;
+    border-top: solid thin;
 }
 
 h4 {
-	margin-top: 2em;
-	border-top: solid thin;
-	border-top-style: dotted;
+    margin: 2.5em 0em 0em 1.5em;
+    border-top: solid thin;
+    border-top-style: dotted;
+    font-family: Verdana, sans-serif;
+    font-size: 10pt;
+}
+
+p {
+    font-family: Tahoma, sans-serif;
+    font-size: 10pt;
+    margin: 0.7em 0em 0.7em 3em;
+}
+
+code {
+    font-weight: bold;
+    font-style: italic;
 }
 
 ul, ol li {
-	margin-bottom: 0.5em;
+    margin-bottom: 0.5em;
 }
 SHEET
 	end
@@ -221,7 +232,7 @@ HEADER
 	end
 
 	def Output.html_footer
-		"\n</body>\n</html>\n"
+        "\n<br><br><br><br>\n</body>\n</html>\n"
 	end
 
 	def Output.format_link(target, text)
@@ -229,30 +240,30 @@ HEADER
 	end
 
 	def Output.format_invalid_link(text)
-		"<b>#{text}</b>"
+		"<code>#{text}</code>"
 	end
 
 	def Output.format_class(class_name)
-		"<h2>#{class_name}</h2>\n"
+		"<h1>#{class_name}</h1>\n"
 	end
 
 	def Output.format_module(module_name)
-		"<h2>#{module_name}</h2>\n"
+		"<h1>#{module_name}</h1>\n"
 	end
 
 	def Output.format_section(section_name)
-		"<h3>#{section_name}</h3>\n"
+		"<h2>#{section_name}</h2>\n"
 	end
 
-	def Output.format_method(name, parameter_lists)
-		output="<h4>"
-		parameter_lists.each do |list|
-			output+="#{name}#{list}<br>\n"
+	def Output.format_method(names_list)
+		output = "<h4>" + names_list.shift
+		names_list.each do |name|
+			output += "<br>\n#{name}"
 		end
-		output+="</h4>\n"
+		output += "</h4>\n"
 		output
 	end
-	
+
 	def Output.format_TOC_header
 		'<h1>Index</h1>'
 	end
@@ -260,7 +271,7 @@ HEADER
 	def Output.format_TOC_list(entries)
 		"<ul>\n#{entries}\n</ul>\n"
 	end
-	
+
 	def Output.format_TOC_top_entry(name, link)
 		"<li><h3><a href='#{link}'>#{name}</a></h3></li>\n"
 	end
@@ -326,7 +337,8 @@ An entry in the TOC. Subclasses specify specific kinds of entries.
 An entry holds all entries below it in @children.
 =end
 class Entry
-	attr_reader :children
+	include Comparable
+    attr_reader :children
 	attr_reader :name
 	attr_accessor :parent
 
@@ -336,9 +348,9 @@ class Entry
 		@children=[]
 		@text=nil
 	end
-	
+
 	def escaped_name
-		name.dup.downcase.tr ' ,\\/', '____'
+		name.downcase.tr ' ,\\/', '____'
 	end
 
 	# If an entry (like MethodEntry) can contain more than one line (for parameter lists),
@@ -350,10 +362,6 @@ class Entry
 		@name<=>other.name
 	end
 
-	def ==(other)
-		@name==other.name
-	end
-	
 	def link
 		""
 	end
@@ -376,7 +384,7 @@ class Entry
 			child.write(output_directory)
 		end
 	end
-	
+
 	def toc_entries
 		entries=Output::format_TOC_entry(name, link)
 		children.each do |child|
@@ -384,6 +392,7 @@ class Entry
 		end
 		entries
 	end
+
 end
 
 class RootEntry < Entry
@@ -402,15 +411,15 @@ end
 class FileEntry < Entry
 	def is_index_file?
 		@name.downcase=="index"	end
-	
+
 	def to_filename
 		"#{escaped_name}.html"
 	end
-	
+
 	def link
 		to_filename
 	end
-	
+
 	def write(output_directory)
 		File.open(output_directory+'/'+to_filename, 'w') do |file|
 			file.write(Output::html_header(@name))
@@ -449,14 +458,14 @@ class ClassEntry < Entry
 			child.write(file)
 		end
 	end
-	
+
 end
 
 class ModuleEntry < Entry
 	def link
 		@parent.link+"#"+escaped_name
 	end
-	
+
 	def write(file)
 		file.write(Output::format_module(@name))
 		file.write(Output::format_text(@text))
@@ -481,29 +490,24 @@ class SectionEntry < Entry
 end
 
 class MethodEntry < Entry
-	def link
+    def link
 		@parent.link+"#"+escaped_name
 	end
 
 	def initialize(name)
-		@parameterlists=[]
+		@fullnames = []
 		super(reenter(name))
 	end
 
 	def reenter(name)
-		methodname, parameterlist=name.split('(') # uglyyyyyyyyyy, could theoretically split more than twice
-		if parameterlist
-			parameterlist='('+parameterlist
-		else
-			parameterlist=''
-		end
-		parameterlist.gsub(/->/, '&rarr;')
-		@parameterlists.push(parameterlist)
-		methodname
+        @fullnames.push(name.gsub(/->/, '&rarr;'))
+
+        # return the name, minus anything after "(", "?", "!" or "="
+        name.sub(/(\(|\?|\!|=).*/, "")
 	end
 
 	def write(file)
-		file.write(Output::format_method(@name, @parameterlists))
+		file.write(Output::format_method(@fullnames))
 		file.write(Output::format_text(@text))
 		children.sort.each do |child|
 			child.write(file)
@@ -522,14 +526,14 @@ class Path
 
 	def goto(name, search_entry)
 		last_in_path=@path[-1]
-		if last_in_path.children.include?(search_entry)
-			entry=last_in_path.children[last_in_path.children.index(search_entry)]
+		if (i = last_in_path.children.index(search_entry))
+			entry = last_in_path.children[i]
 			entry.reenter(name)
 		else
-			entry=search_entry
+			entry = search_entry
 			last_in_path.children.push entry
 		end
-		entry.parent=last_in_path
+		entry.parent = last_in_path
 		@path.push(entry)	end
 
 	def goto_file_level
@@ -663,7 +667,7 @@ def main
 	extras_dir=nil
 	project_name=nil
 	output_dir='docs'
-	
+
 	output_dir=ENV['DOKUMENTAT'] if ENV['DOKUMENTAT']
 
 	options.each do |opt, arg|
