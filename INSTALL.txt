@@ -1,0 +1,7 @@
+As with all (most?) Ruby extension libraries:
+
+ruby extconf.rb
+
+make
+
+make install
