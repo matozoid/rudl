@@ -3,11 +3,16 @@ RUDL - a C library wrapping SDL for use in Ruby.
 Copyright (C) 2001, 2002, 2003  Danny van Bruggen
 
 $Log: rudl_video_surface.c,v $
+Revision 1.29  2003/12/16 01:04:15  rennex
+Added target coordinate for scale2x and reorganized that code a little
+
 Revision 1.28  2003/12/09 15:09:01  rennex
 Added Scale2x support for 24-bit surfaces
 
 Revision 1.27  2003/12/09 14:22:17  rennex
-Added Scale2x support for 8-bit and 16-bit surfaces. Made set_colorkey(nil) and set_alpha(nil) work. Made Surface.new copy the palette if a 8-bit surface was given.
+Added Scale2x support for 8-bit and 16-bit surfaces.
+Made set_colorkey(nil) and set_alpha(nil) work.
+Made Surface.new copy the palette if a 8-bit surface was given.
 
 Revision 1.26  2003/12/09 01:38:54  rennex
 Added the scale2x method (currently only for 32bit surfaces)
@@ -1252,6 +1257,7 @@ static VALUE surface_set_pixels(VALUE self, VALUE pixels)
 =begin
 --- Surface#scale2x
 --- Surface#scale2x( dest_surface )
+--- Surface#scale2x( dest_surface, coordinate )
 Scales the surface to double size with the Scale2x algorithm developed
 by Andrea Mazzoleni. See http://scale2x.sourceforge.net/
 
@@ -1259,54 +1265,40 @@ Creates a new surface to hold the result, or reuses ((|dest_surface|)),
 which must be at least twice as wide and twice as high as this surface,
 and have the same depth.
 
+((|coordinate|)) is the [x, y] coordinate where you want the scaled image
+positioned. This way you can draw it directly on screen at the wanted
+position, without having to use a temporary Surface.
+
 Returns the resulting surface.
 =end
 */
 
-#define PIXEL Uint8
-#define SCALE2XROWFUNC scale2x_row_8bit
-#define SCALE2XFUNC scale2x_8bit
 #include "scale2x.h"
-#undef PIXEL
-#undef SCALE2XROWFUNC
-#undef SCALE2XFUNC
-
-#define PIXEL Uint16
-#define SCALE2XROWFUNC scale2x_row_16bit
-#define SCALE2XFUNC scale2x_16bit
-#include "scale2x.h"
-#undef PIXEL
-#undef SCALE2XROWFUNC
-#undef SCALE2XFUNC
-
-#define PIXEL Uint32
-#define SCALE2XROWFUNC scale2x_row_32bit
-#define SCALE2XFUNC scale2x_32bit
-#include "scale2x.h"
-#undef PIXEL
-#undef SCALE2XROWFUNC
-#undef SCALE2XFUNC
-
-#include "scale2x_24bit.h"
 
 static VALUE surface_scale2x(int argc, VALUE* argv, VALUE self)
 {
-    VALUE dest;
+    VALUE dest, coord;
     SDL_Surface* srcsurface = retrieveSurfacePointer(self);
     SDL_Surface* destsurface;
-    int bpp = srcsurface->format->BytesPerPixel;
+    int bipp = srcsurface->format->BitsPerPixel;
     int w = srcsurface->w, h = srcsurface->h;
+    Sint16 x = 0, y = 0;
 
-    rb_scan_args(argc, argv, "01", &dest);
+    rb_scan_args(argc, argv, "02", &dest, &coord);
 
     RUDL_VERIFY(w>=2 && h>=2, "Source surface not large enough");
 
+    /* were we given a target coordinate? */
+    if (argc == 2) {
+        PARAMETER2COORD(coord, &x, &y);
+        RUDL_VERIFY(x>=0 && y>=0, "Destination coordinate cannot be negative");
+    }
+
     /* were we given a destination surface? */
-    if (argc == 1) {
+    if (argc > 0) {
         destsurface = retrieveSurfacePointer(dest);
-        RUDL_VERIFY(destsurface->format->BytesPerPixel == bpp, "Destination surface has wrong depth");
-        RUDL_VERIFY(destsurface->w >= 2*w && destsurface->h >= 2*h,
-            "Destination surface is too small");
+        RUDL_VERIFY(destsurface->format->BitsPerPixel == bipp, "Destination surface has wrong depth");
+        RUDL_VERIFY(destsurface->w >= x+2*w && destsurface->h >= y+2*h, "Destination surface is too small");
     } else {
         /* nope, create a new one */
         VALUE newargv[] = {rb_ary_new3(2, INT2FIX(2*w), INT2FIX(2*h)), self};
@@ -1314,31 +1306,7 @@ static VALUE surface_scale2x(int argc, VALUE* argv, VALUE self)
         destsurface = retrieveSurfacePointer(dest);
     }
 
-    /* lock surfaces to ensure access to pixels */
-    SDL_LockSurface(srcsurface);
-    SDL_LockSurface(destsurface);
-
-    /* choose the right function for this depth */
-    switch (bpp) {
-        case 1:
-            scale2x_8bit(srcsurface, destsurface);
-            break;
-
-        case 2:
-            scale2x_16bit(srcsurface, destsurface);
-            break;
-
-        case 3:
-            scale2x_24bit(srcsurface, destsurface);
-            break;
-
-        case 4:
-            scale2x_32bit(srcsurface, destsurface);
-            break;
-    }
-
-    SDL_UnlockSurface(srcsurface);
-    SDL_UnlockSurface(destsurface);
+    scale2x(srcsurface, destsurface, x, y);
 
     return dest;
 }
