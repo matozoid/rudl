@@ -116,6 +116,11 @@ Not implemented yet.
 =end
 
 =begin
+@section 7.1 Linking to difficult places
+*Describe what to do with links to things with spaces in them, maybe add a wildcard system?*
+=end
+
+=begin
 @section 8. Parameters
 <code>--project-name</code> specifies the name of your project.
 This documentation was generated with project name "dokumentat"
@@ -153,6 +158,7 @@ ARGV=[
 	'--verbose',
 	'--project-name=dokumentat',
 #   '--output-dir=docs',
+	'D:\Rubyspul\rudl\rudl_ttf.c',
 	'dokumentat.rb'
 ] if ARGV.empty?
 
@@ -279,6 +285,14 @@ HEADER
 	def Output.format_TOC_entry(name, link)
 		"<li><a href='#{link}'>#{name}</a></li>\n"
 	end
+	
+	def Output.format_start_of_normal_paragraph()
+		"\n<p>"
+	end
+	
+	def Output.format_end_of_normal_paragraph()
+		'<p>'
+	end
 
 	def Output.format_text(text)
 		if text
@@ -350,6 +364,7 @@ class Entry
 	end
 
 	def escaped_name
+		# Should become a lot safer.
 		name.downcase.tr ' ,\\/', '____'
 	end
 
@@ -368,14 +383,14 @@ class Entry
 
 	def add_text(text)
 		if text.strip.length==0
-			text+="</p>\n<p>"
+			text+=Output.format_end_of_normal_paragraph+Output.format_start_of_normal_paragraph
 		else
-			text+="\n"
+			text+="\n" # This is no HTML formatting, so I'll leave it here
 		end
 		if @text
 			@text=@text+text
 		else
-			@text="<p>#{text}"
+			@text=Output.format_start_of_normal_paragraph+text
 		end
 	end
 
@@ -500,7 +515,7 @@ class MethodEntry < Entry
 	end
 
 	def reenter(name)
-		@fullnames.push(name.gsub(/->/, '&rarr;'))
+		@fullnames.push(name.gsub(/->/, '&rArr;'))
 
 		# return the name, minus anything after "(", "?", "!" or "="
 		name.sub(/(\(|\?|\!|=).*/, "")
@@ -585,6 +600,7 @@ class Dokumentat
 	end
 
 	def process_dir(source_path)
+		source_path.tr! "\\", "/" # Hmmm, odd that Dir doesn't do backslashes
 		files=Dir[source_path]
 		files.each do |file_name|
 			path=Path.new(@root)
@@ -601,7 +617,7 @@ class Dokumentat
 			case file_name.downcase
 				when /\.rbw?$/
 					commentmatcher=@matchers[:ruby]
-				when /\.c?$/
+				when /\.c.*$/
 					commentmatcher=@matchers[:c]
 				else
 					say "Unknown extension"
