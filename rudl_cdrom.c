@@ -52,7 +52,7 @@ A class for playing audio CD's.
 --- CDROM.new( number )
 Creates a new CDROM access object for unit ((|number|)).
 There can only be one CDROM object per unit.
-Unit 0 is the default unit.
+Numbering starts at 0.
 =end */
 
 static VALUE cdrom_new(VALUE self, VALUE number)
@@ -123,7 +123,7 @@ static VALUE cdrom_play(VALUE self, VALUE trackValue)
 	offset = cdrom->track[track].offset;
 	length = cdrom->track[track].length;
 
-	SDL_VERIFY(SDL_CDPlay(cdrom, offset, length)!=-1);
+	SDL_VERIFY(SDL_CDPlay(cdrom, offset, length-1)!=-1);
 	return self;
 }
 
