@@ -68,14 +68,25 @@ def zipit(what)
     # exclude the defaults
     files.reject_list!(ignoretypes)
 
-    # which archive are we creating?
-    case what
-        when "source"
-            files.reject_list! [ /^dll\//i, /^lib\//i, /\.dll$/i, /^RUDL.so$/i ]
-
-        when "setup"
-            files.reject_list! [ /^include\//i, /^lib\//i, /\.(c|h)$/i,
-                                 /^configure$/i, /^make.bat$/i, /^extconf.rb$/i ]
+	# which archive are we creating?
+	case what
+		when "source"
+		files.reject_list! [
+				/^dll\//i,
+				/^lib\//i,
+				/\.dll$/i,
+				/^RUDL.so$/i 
+		]
+	
+	when "setup"
+		files.reject_list! [ 
+				/^include\//i, 
+				/^lib\//i, 
+				/\.(c|h)$/i,
+				/^configure$/i, 
+				/^make.bat$/i, 
+				/^extconf.rb$/i 
+		]
 
         else
             raise "Oh God please no!"
