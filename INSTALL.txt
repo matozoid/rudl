@@ -1,7 +1,21 @@
-As with all (most?) Ruby C extension libraries:
+--- On unix:
 
 ruby extconf.rb
 
 make
 
 make install
+
+--- On Windows, the complete installer version:
+
+double click install-on-windows.rb
+
+--- On Windows, source only:
+
+Set up Microsoft Visual C (I use 6) for commandline compiling with vcvars32.bat
+
+Edit vcvars32.bat to point to a user include and lib directory, which you create.
+
+Put the development versions of the support libraries (SDL, SDL_ttf, smpeg, etc) in the lib and include directories. .h files go in the include dir, others, mostly .lib files, in the lib dir. DLL's should be put in RUDL's dll dir.
+
+Continue as "On unix"
