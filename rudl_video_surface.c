@@ -3,6 +3,9 @@ RUDL - a C library wrapping SDL for use in Ruby.
 Copyright (C) 2001, 2002, 2003  Danny van Bruggen
 
 $Log: rudl_video_surface.c,v $
+Revision 1.27  2003/12/09 14:22:17  rennex
+Added Scale2x support for 8-bit and 16-bit surfaces. Made set_colorkey(nil) and set_alpha(nil) work. Made Surface.new copy the palette if a 8-bit surface was given.
+
 Revision 1.26  2003/12/09 01:38:54  rennex
 Added the scale2x method (currently only for 32bit surfaces)
 
@@ -91,11 +94,11 @@ All these methods create a new (({Surface})) with ((|size|)) = [w, h].
 If only ((|size|)) is supplied, the rest of the arguments will be set to reasonable values.
 If a surface is supplied, it is used to copy the values from that aren't given.
 
-((|flags|)) is, quoted from SDL's documentation:
+((|flags|)) is, according to SDL's documentation:
 * SWSURFACE: SDL will create the surface in system memory. This improves the performance of pixel level access, however you may not be able to take advantage of some types of hardware blitting.
 * HWSURFACE: SDL will attempt to create the surface in video memory. This will allow SDL to take advantage of Video->Video blits (which are often accelerated).
-* SRCCOLORKEY: This flag turns on colourkeying for blits from this surface. If SDL_HWSURFACE is also specified and colourkeyed blits are hardware-accelerated, then SDL will attempt to place the surface in video memory. Use SDL_SetColorKey to set or clear this flag after surface creation.
-* SRCALPHA: This flag turns on alpha-blending for blits from this surface. If SDL_HWSURFACE is also specified and alpha-blending blits are hardware-accelerated, then the surface   will be placed in video memory if possible. Use SDL_SetAlpha to set or clear this flag  after surface creation. For a 32 bitdepth surface, an alpha mask will automatically be  added, in other cases, you will have to specify a mask.
+* SRCCOLORKEY: This flag turns on colourkeying for blits from this surface. If HWSURFACE is also specified and colourkeyed blits are hardware-accelerated, then SDL will attempt to place the surface in video memory. Use Surface#set_colorkey to set or clear this flag after surface creation.
+* SRCALPHA: This flag turns on alpha-blending for blits from this surface. If HWSURFACE is also specified and alpha-blending blits are hardware-accelerated, then the surface will be placed in video memory if possible. Use Surface#set_alpha to set or clear this flag after surface creation. For a 32 bitdepth surface, an alpha mask will automatically be added, in other cases, you will have to specify a mask.
 
 ((|depth|)) is bitdepth, like 8, 15, 16, 24 or 32.
 
@@ -125,14 +128,14 @@ VALUE surface_new(int argc, VALUE* argv, VALUE self)
 {
     Uint32 flags = 0;
     Uint16 width, height;
-    short bpp=0;
+    short bpp = 0;
     Uint32 Rmask, Gmask, Bmask, Amask;
     VALUE tmp;
-    bool wildGuess=false;
-
+    bool wildGuess = false;
     VALUE sizeObject, surfaceOrFlagsObject, surfaceOrDepthObject, masksObject;
-
-    SDL_PixelFormat* pix=NULL;
+    SDL_PixelFormat* pix = NULL;
+    SDL_Surface* oldsurface = NULL;
+    VALUE oldsurfaceobj = 0, newsurfaceobj;
 
     initVideo();
 
@@ -142,42 +145,39 @@ VALUE surface_new(int argc, VALUE* argv, VALUE self)
 
     if(argc>1){
         if(rb_obj_is_kind_of(surfaceOrFlagsObject, classSurface)){ // got surface on pos 1
-            pix=retrieveSurfacePointer(surfaceOrFlagsObject)->format;
-            flags=retrieveSurfacePointer(surfaceOrFlagsObject)->flags;
+            oldsurfaceobj = surfaceOrFlagsObject;
+            oldsurface = retrieveSurfacePointer(oldsurfaceobj);
+            pix = oldsurface->format;
+            flags = oldsurface->flags;
         }else{
-            flags=PARAMETER2FLAGS(surfaceOrFlagsObject);
+            flags = PARAMETER2FLAGS(surfaceOrFlagsObject);
 
-            if(argc>2){ // got surface on pos 2, or depth
+            if(argc>2){     // got surface on pos 2, or depth
 
                 if(rb_obj_is_kind_of(surfaceOrDepthObject, classSurface)){ // got Surface on pos 2
-                    if(argc==3){
-                        pix=retrieveSurfacePointer(surfaceOrDepthObject)->format;
-                    }else{
-                        SDL_RAISE_S("masks are taken from surface");
-                        return Qnil;
-                    }
-                }else{ // got depth
-                    bpp=NUM2Sint16(surfaceOrDepthObject);
-                    if(argc==4){ // got masks
+                    RUDL_VERIFY(argc == 3, "masks are taken from surface");
+                    oldsurfaceobj = surfaceOrDepthObject;
+                    oldsurface = retrieveSurfacePointer(oldsurfaceobj);
+                    pix = oldsurface->format;
+                }else{      // got depth
+                    bpp = NUM2Sint16(surfaceOrDepthObject);
+                    if(argc == 4){  // got masks
                         Check_Type(masksObject, T_ARRAY);
-                        if(RARRAY(masksObject)->len==4){
-                            tmp=rb_ary_entry(masksObject, 0);   Rmask=NUM2UINT(tmp);
-                            tmp=rb_ary_entry(masksObject, 1);   Gmask=NUM2UINT(tmp);
-                            tmp=rb_ary_entry(masksObject, 2);   Bmask=NUM2UINT(tmp);
-                            tmp=rb_ary_entry(masksObject, 3);   Amask=NUM2UINT(tmp);
-                        }else{
-                            SDL_RAISE_S("Need 4 elements in masks array");
-                        }
-                    }else{ // no masks
+                        RUDL_VERIFY(RARRAY(masksObject)->len==4, "Need 4 elements in masks array");
+                        tmp = rb_ary_entry(masksObject, 0);   Rmask = NUM2UINT(tmp);
+                        tmp = rb_ary_entry(masksObject, 1);   Gmask = NUM2UINT(tmp);
+                        tmp = rb_ary_entry(masksObject, 2);   Bmask = NUM2UINT(tmp);
+                        tmp = rb_ary_entry(masksObject, 3);   Amask = NUM2UINT(tmp);
+                    }else{  // no masks
                         setMasksFromBPP(bpp, (flags&SDL_SRCALPHA)>0, &Rmask, &Gmask, &Bmask, &Amask);
                     }
                 }
             }else{
-                wildGuess=true; // only size and flags given
+                wildGuess = true;   // only size and flags given
             }
         }
-    }else{ // only size given... Guess a bit:
-        wildGuess=true;
+    }else{  // only size given... Guess a bit:
+        wildGuess = true;
     }
 
     if(wildGuess){
@@ -196,7 +196,14 @@ VALUE surface_new(int argc, VALUE* argv, VALUE self)
         Amask = pix->Amask;
     }
 
-    return createSurfaceObject(SDL_CreateRGBSurface(flags, width, height, bpp, Rmask, Gmask, Bmask, Amask));
+    newsurfaceobj = createSurfaceObject(SDL_CreateRGBSurface(flags, width, height, bpp, Rmask, Gmask, Bmask, Amask));
+
+    /* paletted (8-bit) surface given to copy values from? then copy the palette */
+    if(oldsurface && oldsurface->format->BytesPerPixel == 1){
+        surface_set_palette(newsurfaceobj, INT2FIX(0), surface_palette(oldsurfaceobj));
+    }
+
+    return newsurfaceobj;
 }
 
 /*
@@ -551,29 +558,37 @@ to the destination surface.)
 The only flag is "RLEACCEL" which will encode the bitmap in a more efficient way for blitting,
 by skipping the transparent pixels.
 
+((|set_colorkey|))(nil) removes the color key, same as ((|unset_colorkey|)).
+
 ((|colorkey|)) returns the current colorkey color.
 The others return self;
 =end */
 static VALUE surface_set_colorkey(int argc, VALUE* argv, VALUE self)
 {
-    SDL_Surface* surface=retrieveSurfacePointer(self);
+    SDL_Surface* surface = retrieveSurfacePointer(self);
     Uint32 flags = 0, color = 0;
     VALUE colorObject, flagsObject;
 
-    switch(rb_scan_args(argc, argv, "11", &colorObject, &flagsObject)){
-        case 2: flags=PARAMETER2FLAGS(flagsObject);
-        case 1: flags|=SDL_SRCCOLORKEY;
-            color=VALUE2COLOR(colorObject, surface->format);
+    switch (rb_scan_args(argc, argv, "11", &colorObject, &flagsObject)) {
+        case 2:
+            flags = PARAMETER2FLAGS(flagsObject);
+        case 1:
+            if (colorObject == Qnil) {
+                flags = 0;
+            } else {
+                flags |= SDL_SRCCOLORKEY;
+                color = VALUE2COLOR(colorObject, surface->format);
+            }
     }
 
-    if(SDL_SetColorKey(surface, flags, color)==-1) SDL_RAISE;
+    if (SDL_SetColorKey(surface, flags, color) == -1) SDL_RAISE;
 
     return self;
 }
 
 static VALUE surface_unset_colorkey(VALUE self)
 {
-    if(SDL_SetColorKey(retrieveSurfacePointer(self), 0, 0)==-1) SDL_RAISE;
+    if (SDL_SetColorKey(retrieveSurfacePointer(self), 0, 0) == -1) SDL_RAISE;
     return self;
 }
 
@@ -793,6 +808,10 @@ You'll need to change the actual pixel transparency to make changes.
 If your image also has pixel alpha values and will be used repeatedly, you
 will probably want to pass the ((|RLEACCEL|)) flag to the call.
 This will take a short time to compile your surface, and increase the blitting speed.
+
+((|set_alpha|))(nil) removes the per-surface alpha, same as ((|unset_alpha|)).
+Note that the per-surface alpha value of 128 is considered a special case and is
+optimised, so it's much faster than other per-surface values.
 =end */
 static VALUE surface_set_alpha(int argc, VALUE* argv, VALUE self)
 {
@@ -802,28 +821,32 @@ static VALUE surface_set_alpha(int argc, VALUE* argv, VALUE self)
 
     VALUE alphaObject, flagsObject;
 
-    switch(rb_scan_args(argc, argv, "11", &alphaObject, &flagsObject)){
+    switch (rb_scan_args(argc, argv, "11", &alphaObject, &flagsObject)) {
         case 2:
-            flags=PARAMETER2FLAGS(flagsObject);
+            flags = PARAMETER2FLAGS(flagsObject);
     }
 
-    alpha=(Uint8)NUM2UINT(alphaObject);
+    if (alphaObject == Qnil) {
+        flags = alpha = 0;
+    } else {
+        alpha = (Uint8) NUM2UINT(alphaObject);
+    }
 
-    if(SDL_SetAlpha(surface, flags, alpha) == -1) SDL_RAISE;
+    if (SDL_SetAlpha(surface, flags, alpha) == -1) SDL_RAISE;
 
     return self;
 }
 
 static VALUE surface_unset_alpha(VALUE self)
 {
-    if(SDL_SetAlpha(retrieveSurfacePointer(self), 0, 0) == -1) SDL_RAISE;
+    if (SDL_SetAlpha(retrieveSurfacePointer(self), 0, 0) == -1) SDL_RAISE;
     return self;
 }
 
 static VALUE surface_alpha(VALUE self)
 {
-    SDL_Surface* surface=retrieveSurfacePointer(self);
-    if(surface->flags&SDL_SRCALPHA){
+    SDL_Surface* surface = retrieveSurfacePointer(self);
+    if(surface->flags & SDL_SRCALPHA){
         return UINT2NUM(surface->format->alpha);
     }
     return Qnil;
@@ -1226,7 +1249,8 @@ static VALUE surface_set_pixels(VALUE self, VALUE pixels)
 =begin
 --- Surface#scale2x
 --- Surface#scale2x( dest_surface )
-Scales the surface to double size with the Scale2x algorithm.
+Scales the surface to double size with the Scale2x algorithm developed
+by Andrea Mazzoleni. See http://scale2x.sourceforge.net/
 
 Creates a new surface to hold the result, or reuses ((|dest_surface|)),
 which must be at least twice as wide and twice as high as this surface,
@@ -1234,94 +1258,31 @@ and have the same depth.
 
 Returns the resulting surface.
 =end
-
-Starting from this pattern:
-
-src0:   B
-src1: D E F
-src2:   H
-
-The central pixel E is expanded in 4 new pixels:
-
-dest0: E0 E1
-dest1: E2 E3
-
-with these rules (in C language):
-
-E0 = D == B && B != F && D != H ? D : E;
-E1 = B == F && B != D && F != H ? F : E;
-E2 = D == H && D != B && H != F ? D : E;
-E3 = H == F && D != H && B != F ? F : E;
-
 */
-/* this function processes only one row of the input bitmap */
-static void scale2x_row_32bit(Uint32* dest0, Uint32* dest1, Uint32* src0, Uint32* src1, Uint32* src2, int srcw)
-{
-    Uint32 b,d,e,f,h;
 
-    /* set up for the first pixel */
-    /* since there is no pixel to the left, we reuse this first pixel */
-    e = f = *src1++;
+#define PIXEL Uint8
+#define SCALE2XROWFUNC scale2x_row_8bit
+#define SCALE2XFUNC scale2x_8bit
+#include "scale2x.h"
+#undef PIXEL
+#undef SCALE2XROWFUNC
+#undef SCALE2XFUNC
 
-    /* this handles all pixels except the last one */
-    for (srcw--; srcw > 0; srcw--) {
-        b = *src0++;
-        d = e; e = f; f = *src1++;
-        h = *src2++;
+#define PIXEL Uint16
+#define SCALE2XROWFUNC scale2x_row_16bit
+#define SCALE2XFUNC scale2x_16bit
+#include "scale2x.h"
+#undef PIXEL
+#undef SCALE2XROWFUNC
+#undef SCALE2XFUNC
 
-        *dest0++ = d == b && b != f && d != h ? d : e;
-        *dest0++ = b == f && b != d && f != h ? f : e;
-        *dest1++ = d == h && d != b && h != f ? d : e;
-        *dest1++ = h == f && d != h && b != f ? f : e;
-    }
-
-    /* last pixel - since there is no pixel to the right, we reuse this last pixel */
-    b = *src0;
-    d = e; e = f;
-    h = *src2;
-
-    *dest0++ = d == b && b != f && d != h ? d : e;
-    *dest0++ = b == f && b != d && f != h ? f : e;
-    *dest1++ = d == h && d != b && h != f ? d : e;
-    *dest1++ = h == f && d != h && b != f ? f : e;
-
-    return;
-}
-
-/* this function feeds all rows of the bitmap to the row processing function */
-static void scale2x_32bit(SDL_Surface* src, SDL_Surface* dest)
-{
-    Uint32* srcpix = src->pixels;
-    Uint32* destpix = dest->pixels;
-    int srcpitch = src->pitch / sizeof(Uint32);
-    int destpitch = dest->pitch / sizeof(Uint32);
-    int w = src->w, h = src->h;
-    Uint32 *dest0, *dest1, *src0, *src1, *src2;
-
-    /* set up destination line pointers */
-    dest0 = destpix; dest1 = destpix + destpitch;
-
-    /* set up source line pointers */
-    /* since there's no line above, we reuse this first line */
-    src0 = src1 = srcpix; src2 = srcpix + srcpitch;
-
-    /* all but the last row */
-    for (h--; h > 0; h--) {
-        scale2x_row_32bit(dest0, dest1, src0, src1, src2, w);
-        /* move both destination line pointers down 2 rows */
-        dest0 = dest1 + destpitch;
-        dest1 = dest0 + destpitch;
-        /* shift all source lines down */
-        src0 = src1;
-        src1 = src2;
-        src2 += srcpitch;
-    }
-
-    /* last row - since there is no line below, we reuse this last line */
-    scale2x_row_32bit(dest0, dest1, src0, src1, src1, w);
-
-    return;
-}
+#define PIXEL Uint32
+#define SCALE2XROWFUNC scale2x_row_32bit
+#define SCALE2XFUNC scale2x_32bit
+#include "scale2x.h"
+#undef PIXEL
+#undef SCALE2XROWFUNC
+#undef SCALE2XFUNC
 
 static VALUE surface_scale2x(int argc, VALUE* argv, VALUE self)
 {
@@ -1334,7 +1295,7 @@ static VALUE surface_scale2x(int argc, VALUE* argv, VALUE self)
     rb_scan_args(argc, argv, "01", &dest);
 
     RUDL_VERIFY(w>=2 && h>=2, "Source surface not large enough");
-    RUDL_VERIFY(bpp == 4, "Bitmap must be 32bit for now");
+    RUDL_VERIFY(bpp != 3, "Bitmap cannot be 24bit for now");
 
     /* were we given a destination surface? */
     if (argc == 1) {
@@ -1349,11 +1310,24 @@ static VALUE surface_scale2x(int argc, VALUE* argv, VALUE self)
         destsurface = retrieveSurfacePointer(dest);
     }
 
-    /* lock'n'...just do it! */
+    /* lock surfaces to ensure access to pixels */
     SDL_LockSurface(srcsurface);
     SDL_LockSurface(destsurface);
 
-    scale2x_32bit(srcsurface, destsurface);
+    /* choose the right function for this depth */
+    switch (bpp) {
+        case 1:
+            scale2x_8bit(srcsurface, destsurface);
+            break;
+
+        case 2:
+            scale2x_16bit(srcsurface, destsurface);
+            break;
+
+        case 4:
+            scale2x_32bit(srcsurface, destsurface);
+            break;
+    }
 
     SDL_UnlockSurface(srcsurface);
     SDL_UnlockSurface(destsurface);
