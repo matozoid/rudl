@@ -275,7 +275,6 @@ This call cannot be used on OPENGL displays, and will generate an exception.
 */
 static VALUE displaySurface_update(int argc, VALUE* argv, VALUE self)
 {
-	SDL_Rect rect;
 	VALUE rectObject;
 	int i, total_rects;
 	SDL_Rect* rects;

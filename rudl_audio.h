@@ -11,3 +11,8 @@ VALUE classEndOfMusicEvent;
 
 extern void initAudioClasses();
 extern void quitAudio();
+extern int rudl_convert_audio(
+		Uint8* source, int source_length,
+		Uint8** destination, int* destination_length,
+		Uint16 src_format, Uint8 src_channels, int src_rate,
+		Uint16 dst_format, Uint8 dst_channels, int dst_rate);

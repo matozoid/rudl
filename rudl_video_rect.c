@@ -445,7 +445,6 @@ static VALUE rb_array_same_size(VALUE self, VALUE rect)
 	GET_Y();
 	GET_W();
 	GET_H();
-	double x2,y2,w2,h2;
 
 	if(self==rect){
 		return Qtrue;
@@ -692,7 +691,6 @@ static VALUE rb_pit_cross_lines(VALUE self, VALUE pa, VALUE pb, VALUE pc, VALUE 
 	double pcy=array_get_y(pc);
 	double pdy=array_get_y(pd);
 	double xk, yk, a, b, c, d;
-	double ymin, ymax;
 
 	double tmp;
 	
@@ -761,7 +759,7 @@ static VALUE rb_pit_cross_lines(VALUE self, VALUE pa, VALUE pb, VALUE pc, VALUE 
 
 		if(pax==pbx){
 			if(pcx==pdx){ // Beide lijnen lopen verticaal
-				return rb_pit_cross_lines_retval((pax==pcx)&&!(pby<pcy || pay>pdy), true, pax, max(pay, pcy), pax, min(pby, pdy));
+				return rb_pit_cross_lines_retval((pax==pcx)&&!(pby<pcy || pay>pdy), true, pax, RUDL_MAX(pay, pcy), pax, RUDL_MIN(pby, pdy));
 			}else{ // alleen de eerste lijn loopt vertikaal
 				c=(pdy-pcy)/(pdx-pcx);	// de helling van de tweede lijn berkenen
 				d=pcy-c*pcx;			// het snijpunt van de tweede lijn met x=0 berekenen 

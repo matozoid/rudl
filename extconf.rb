@@ -8,14 +8,6 @@ require 'mkmf'
 #When compiling under plain Windows, double quote your command line options!
 
 # Why isn't this in mkmf.rb?
-def have_flag_old(flag)
-	if $configure_args['--'+flag]
-		$defs.push("-D#{flag.upcase}")
-		return true
-	end
-	return false
-end
-
 def have_flag(flag, default)
 	return false if arg_config("--no-#{flag}")
 	return false unless val = arg_config("--#{flag}", default)
@@ -30,7 +22,7 @@ sdl_config = with_config("sdl-config", "sdl-config")
 debug_version=have_flag('debug', false)
 
 if debug_version
-	puts '*** DEBUG VERSION ***' 
+	puts '*** DEBUG VERSION ***'
 	$defs.push('-DDEBUG_RUDL')
 else
 	puts 'for a debug version, pass --debug to extconf.rb'
@@ -52,7 +44,7 @@ unix=!windows
 
 $CFLAGS+="-funroll-loops " if !mswin32
 
-$CFLAGS+="-Wall " if cygwin
+$CFLAGS+="-Wall " if unix||cygwin
 $CPPFLAGS+="-GX " if mswin32
 
 if unix
@@ -96,7 +88,7 @@ if have_library('SDL', 'SDL_Quit') and
 		have_header('SDL.h')
 
 	create_makefile('RUDL')
-	puts '* Done! You may now run make (nmake if you are using VC)'
+	puts '* Done! You may now run make.'
 else
 	puts '* Core SDL libraries could not be found...'
 end

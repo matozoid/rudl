@@ -31,6 +31,7 @@ extern void initVideoRectClasses();
 extern void initVideoSDLGFXClasses();
 extern void initVideoSGEClasses();
 extern void initVideo();
+extern void quitVideo();
 
 extern VALUE createSurfaceObject(SDL_Surface* surface);
 extern SDL_Surface* retrieveSurfacePointer(VALUE self);

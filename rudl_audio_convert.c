@@ -31,6 +31,7 @@
 #include "rudl.h"
 #include "SDL_error.h"
 #include "SDL_audio.h"
+#include "rudl_audio.h"
 
 typedef struct rudl_audio_conversion_info {
 	Uint16 format;		// Source audio cvt->format

@@ -4,6 +4,10 @@
 #ifdef HAVE_SDL_MIXER_H
 #include "SDL_mixer.h"
 
+#ifndef MIX_MAJOR_VERSION
+#error Your SDL_mixer lib is too old
+#endif
+
 // Thanks to Ruby-SDL
 #define MAX_CHANNELS 256 /* should be more than enough */
 static VALUE playing_wave[MAX_CHANNELS];
@@ -305,14 +309,6 @@ static VALUE sound_import(VALUE self, VALUE sampledata)
 	Mix_Chunk* chunk=(Mix_Chunk *)malloc(sizeof(Mix_Chunk));
 	VALUE newObject;
 
-	int result;
-	int dest_rate;
-	Uint16 dest_format;
-	int dest_channels;
-
-	char* new_audio;
-	int new_audio_length;
-	
 	initAudio();
 
 	Check_Type(sampledata, T_STRING);

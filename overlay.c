@@ -26,6 +26,8 @@ void __dummyprintf(char *s, ...) { }
 
 #ifdef FORTIFY
 #include "fortify.h"
+#else
+#define Fortify_CheckPointer(____) (1)
 #endif
 
 static __inline__ void* MALLOC(size_t s)
