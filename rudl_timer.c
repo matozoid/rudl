@@ -5,7 +5,7 @@
 
 void initTimer()
 {
-	if(!SDL_WasInit(SDL_INIT_TIMER)){
+	if(!SDL_WasInit(SDL_INIT_TIMER)){
 		DEBUG_S("Starting timer subsystem");
 		SDL_VERIFY(SDL_Init(SDL_INIT_TIMER)!=-1);
 	}
@@ -13,13 +13,13 @@ void initTimer()
 ///////////////////////////////// TIME
 /*
 =begin
-<<< docs/head
+<<< docs/head
 = Timer
 == Class Methods
 --- Timer.delay( milliseconds )
 Will do nothing for ((|milliseconds|)) milliseconds.
 --- Timer.ticks
-Returns the time in milliseconds since RUDL was required.
+Returns the time in milliseconds since RUDL was required.
 =end */
 static VALUE timer_delay(VALUE obj, VALUE delay)
 {
@@ -73,7 +73,7 @@ static VALUE eventTimer_new(VALUE obj, VALUE interval, VALUE id)
 
 	initTimer();
 	
-	timerID=SDL_AddTimer(NUM2INT(interval), timerCallback, (void*)(NUM2INT(id)));
+	timerID=SDL_AddTimer(NUM2INT(interval), timerCallback, (void*)(NUM2INT(id)));
 	SDL_VERIFY(timerID);
 	return Data_Wrap_Struct(classEventTimer, 0, freeEventTimer, timerID);
 }
@@ -90,7 +90,7 @@ static VALUE eventTimer_stop(VALUE obj)
 }
 
 void initTimerClasses()
-{
+{
 	classTimer=rb_define_module_under(moduleRUDL, "Timer");
 	rb_define_singleton_method(classTimer, "delay", timer_delay, 1);
 	rb_define_singleton_method(classTimer, "ticks", timer_getTicks, 0);

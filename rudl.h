@@ -61,6 +61,10 @@ extern void initSDL();
 extern VALUE moduleRUDL;
 extern VALUE classSDLError;
 extern VALUE moduleConstant;
+extern VALUE classPit;
+
+extern VALUE id_new;
+extern VALUE id_clone;
 
 extern VALUE rb_range_first(VALUE obj); // Why no predefined range-access functions?
 extern VALUE rb_range_last(VALUE obj);

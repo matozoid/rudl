@@ -9,23 +9,23 @@ void initJoystick()
 		initVideo();
 	}
 
-	if(!SDL_WasInit(SDL_INIT_JOYSTICK)){
+	if(!SDL_WasInit(SDL_INIT_JOYSTICK)){
 		DEBUG_S("Starting joystick subsystem");
 		SDL_VERIFY(SDL_Init(SDL_INIT_JOYSTICK)!=-1);
 	}
 }
 
 void quitJoystick()
-{
-	if(SDL_WasInit(SDL_INIT_JOYSTICK)){
+{
+	if(SDL_WasInit(SDL_INIT_JOYSTICK)){
 		DEBUG_S("Stopping joystick subsystem");
-		rb_eval_string("ObjectSpace.each_object(RUDL::Joystick) {|x| x.close_hack}");
-		SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
+		rb_eval_string("ObjectSpace.each_object(RUDL::Joystick) {|x| x.close_hack}");
+		SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
 	}
 }
 /*
 =begin
-<<< docs/head
+<<< docs/head
 = Joystick
 == Class Methods
 --- Joystick.new( id )
@@ -43,7 +43,7 @@ static VALUE joystick_new(VALUE self, VALUE id)
 	if(joystick){
 		return Data_Wrap_Struct(classJoystick, 0, 0, joystick);
 	}
-	SDL_RAISE;
+	SDL_RAISE;
 	return Qnil;
 }
 
@@ -174,7 +174,7 @@ static VALUE joystick_close_hack(VALUE self)
 }
 
 void initJoystickClasses()
-{
+{
 	classJoystick=rb_define_class_under(moduleRUDL, "Joystick", rb_cObject);
 	rb_define_singleton_method(classJoystick, "new", joystick_new, 1);
 	rb_define_singleton_method(classJoystick, "count", joystick_count, 0);
@@ -187,14 +187,14 @@ void initJoystickClasses()
 	rb_define_method(classJoystick, "ball", joystick_ball, 1);
 	rb_define_method(classJoystick, "hat", joystick_hat, 1);
 	rb_define_method(classJoystick, "button", joystick_button, 1);
-	rb_define_method(classJoystick, "close_hack", joystick_close_hack, 0);
-
-	rb_eval_string(
-		"module RUDL class Joystick				\n"
-		"	def to_s							\n"
-		"		\"Joystick #{id}, #{axes} axes, #{balls} balls, #{buttons} buttons, #{hats} hats\"	\n"
-		"	end									\n"
-		"end end								\n"
+	rb_define_method(classJoystick, "close_hack", joystick_close_hack, 0);
+
+	rb_eval_string(
+		"module RUDL class Joystick				\n"
+		"	def to_s							\n"
+		"		\"Joystick #{id}, #{axes} axes, #{balls} balls, #{buttons} buttons, #{hats} hats\"	\n"
+		"	end									\n"
+		"end end								\n"
 	);
 	
 /*

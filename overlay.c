@@ -23,9 +23,9 @@ void __dummyprintf(char *s, ...) { }
 #else
 #  define ASSERT(c) 
 #endif
-
-#ifdef FORTIFY
-#include "fortify.h"
+
+#ifdef FORTIFY
+#include "fortify.h"
 #endif
 
 static __inline__ void* MALLOC(size_t s)
@@ -71,29 +71,29 @@ ExtArray;
 
 static __inline__ void
 ExtArray_check_consistency(ExtArray *ea)
-{
-	DEBUG_I(100);
+{
+	DEBUG_I(100);
 	ASSERT(Fortify_CheckPointer(ea->list));
 	if (ea->list)
-	{
+	{
 		ASSERT(Fortify_CheckPointer(ea));
 		ASSERT(Fortify_CheckPointer(ea->list));
 	}
 	else
 	{
-		DEBUG_I(666);
+		DEBUG_I(666);
 		ASSERT(ea->cur == 0);
-		DEBUG_I(667);
+		DEBUG_I(667);
 		ASSERT(ea->max == 0);
-		DEBUG_I(668);
+		DEBUG_I(668);
 	}
-	DEBUG_I(101);
+	DEBUG_I(101);
 	ASSERT(ea->cur <= ea->max);
 	ASSERT(ea->size < 256);
 	ASSERT(ea->size > 0);
 	ASSERT(ea->cur >= 0);
 	ASSERT(ea->max >= 0);
-	DEBUG_I(102);
+	DEBUG_I(102);
 	if (ea->size == sizeof(void*))
 	{
 		int c;
@@ -103,7 +103,7 @@ ExtArray_check_consistency(ExtArray *ea)
 			ASSERT(ea->list[c]);
 		}
 	}
-	DEBUG_I(103);
+	DEBUG_I(103);
 }
 
 static void*
@@ -125,9 +125,9 @@ ExtArray_addr_nocheck(ExtArray *ea, int i)
 
 static __inline__ int
 ExtArray_length(ExtArray *ea)
-{
+{
 	DEBUG_I(15);
-	ExtArray_check_consistency(ea);
+	ExtArray_check_consistency(ea);
 	DEBUG_I(14);
 	return ea->cur;
 }
@@ -733,12 +733,12 @@ Overlay;
 
 static __inline__ ExtArray* 
 Overlay_get_reposition(Overlay *ov)
-{
+{
 	DEBUG_I(22);
 	while (ov->parent){
-		ov = ov->parent;
-		DEBUG_I(13);
-	}
+		ov = ov->parent;
+		DEBUG_I(13);
+	}
 	DEBUG_I(33);
   
   return ov->reposition;
@@ -1022,9 +1022,9 @@ static void
 Overlay_check_delayed_repositioning(Overlay *ov)
 {
   int r;
-  
+  
   //!!!
-  DEBUGF("checking through %d reposition elements (%08x)\n", ExtArray_length(Overlay_get_reposition(ov)), Overlay_get_reposition(ov));
+  DEBUGF("checking through %d reposition elements (%08x)\n", ExtArray_length(Overlay_get_reposition(ov)), Overlay_get_reposition(ov));
   
   /* Check whether any element repositioning has been delayed until now */
   for (r=0; r < ExtArray_length(Overlay_get_reposition(ov)); r++)
@@ -1044,16 +1044,16 @@ Overlay_paint_all(Overlay *ov, void *paint_arg)
 {
   Area *updated, *dirty = Overlay_get_dirty(ov);
   int r;
-  int c;
-
+  int c;
+
   DEBUG_I(1);
   
-  Overlay_check_delayed_repositioning(ov);
+  Overlay_check_delayed_repositioning(ov);
   
   /* Don't bother if there are no dirty rectangles */
   if (Area_length(Overlay_get_dirty(ov)) == 0)
     return;
-
+
   if (ov->show_dirty)
     printf("dirty : ");
   for (c=0; c<Area_length(dirty); c++)
