@@ -29,9 +29,7 @@ void clearGCHack()
 	rb_global_variable( &playing_music );
 }
 
-
 static VALUE mixer_get_format(VALUE self);
-
 
 //////////////////
 Mix_Chunk* retrieveMixChunk(VALUE self);
