@@ -150,10 +150,10 @@ Output is HTML with structural tags only. You should do visual formatting with C
 ############################# START OF CODE
 
 ARGV=[
-    '--verbose',
-    '--project-name=dokumentat',
+	'--verbose',
+	'--project-name=dokumentat',
 #   '--output-dir=docs',
-    'dokumentat.rb'
+	'dokumentat.rb'
 ] if ARGV.empty?
 
 #ARGV=['--verbose', '--project-name=rudl', '--output-dir=docs', 'test.c']
@@ -162,7 +162,7 @@ STYLESHEET_FILENAME='dokumentat.css'
 
 $verbose=false
 def say(text)
-    puts text if $verbose
+	puts text if $verbose
 end
 
 =begin
@@ -171,164 +171,164 @@ end
 This module contains all HTML formatting.
 =end
 module Output
-    def Output.stylesheet
+	def Output.stylesheet
 <<SHEET
 body {
-    margin-left: 8% !important;
-    margin-right: 14% !important;
-    font-family: Arial, Helvetica, sans-serif;
+	margin-left: 8% !important;
+	margin-right: 14% !important;
+	font-family: Arial, Helvetica, sans-serif;
 }
 
 h1, h2, h3 {
-    font-family: serif;
-    font-variant: small-caps;
+	font-family: serif;
+	font-variant: small-caps;
 }
 
 h1 {
-    text-align: center;
-    border-top: solid thick;
-    margin: 1em 0em 1em 0em;
+	text-align: center;
+	border-top: solid thick;
+	margin: 1em 0em 1em 0em;
 }
 
 h2 {
-    margin-top: 3em;
-    border-top: 2px solid;
+	margin-top: 3em;
+	border-top: 2px solid;
 }
 
 h4 {
-    margin: 2.5em 0em 0em 1.5em;
-    border-top: 1px dotted;
-    font-family: Verdana, sans-serif;
-    font-size: 10pt;
+	margin: 2.5em 0em 0em 1.5em;
+	border-top: 1px dotted;
+	font-family: Verdana, sans-serif;
+	font-size: 10pt;
 }
 
 p {
-    font-family: Tahoma, sans-serif;
-    font-size: 10pt;
-    margin: 0.7em 2em 0.7em 3em;
+	font-family: Tahoma, sans-serif;
+	font-size: 10pt;
+	margin: 0.7em 2em 0.7em 3em;
 }
 
 code {
-    font-weight: bold;
-    font-style: italic;
+	font-weight: bold;
+	font-style: italic;
 }
 
 ul, ol li {
-    margin-bottom: 0.5em;
+	margin-bottom: 0.5em;
 }
 SHEET
-    end
+	end
 
-    def Output.html_header(title)
+	def Output.html_header(title)
 <<HEADER
 <html>
 <head>
-    <title>#{title}</title>
-    <link rel='stylesheet' title='Dokumentat' href='../#{STYLESHEET_FILENAME}' media='screen,projection,print' />
+	<title>#{title}</title>
+	<link rel='stylesheet' title='Dokumentat' href='../#{STYLESHEET_FILENAME}' media='screen,projection,print' />
 </head>
 <body>
 
 HEADER
-    end
+	end
 
-    def Output.html_footer
-        "\n<br><br><br><br>\n</body>\n</html>\n"
-    end
+	def Output.html_footer
+		"\n<br><br><br><br>\n</body>\n</html>\n"
+	end
 
-    def Output.format_link(target, text)
-        "<a href='#{target}'>#{text}</a>"
-    end
+	def Output.format_link(target, text)
+		"<a href='#{target}'>#{text}</a>"
+	end
 
-    def Output.format_invalid_link(text)
-        "<code>#{text}</code>"
-    end
+	def Output.format_invalid_link(text)
+		"<a>#{text}</a>"
+	end
 
-    def Output.format_class(class_name)
-        "<h1>#{class_name}</h1>\n"
-    end
+	def Output.format_class(class_name)
+		"<h1>#{class_name}</h1>\n"
+	end
 
-    def Output.format_module(module_name)
-        "<h1>#{module_name}</h1>\n"
-    end
+	def Output.format_module(module_name)
+		"<h1>#{module_name}</h1>\n"
+	end
 
-    def Output.format_section(section_name)
-        "<h2>#{section_name}</h2>\n"
-    end
+	def Output.format_section(section_name)
+		"<h2>#{section_name}</h2>\n"
+	end
 
-    def Output.format_method(names_list)
-        output = "<h4>" + names_list.shift
-        names_list.each do |name|
-            output += "<br>\n#{name}"
-        end
-        output += "</h4>\n"
-        output
-    end
+	def Output.format_method(names_list)
+		output = "<h4>" + names_list.shift
+		names_list.each do |name|
+			output += "<br>\n#{name}"
+		end
+		output += "</h4>\n"
+		output
+	end
 
-    def Output.format_TOC_header
-        '<h1>Index</h1>'
-    end
+	def Output.format_TOC_header
+		'<h1>Index</h1>'
+	end
 
-    def Output.format_TOC_list(entries)
-        "<ul>\n#{entries}\n</ul>\n"
-    end
+	def Output.format_TOC_list(entries)
+		"<ul>\n#{entries}\n</ul>\n"
+	end
 
-    def Output.format_TOC_top_entry(name, link)
-        "<li><h3><a href='#{link}'>#{name}</a></h3></li>\n"
-    end
+	def Output.format_TOC_top_entry(name, link)
+		"<li><h3><a href='#{link}'>#{name}</a></h3></li>\n"
+	end
 
-    def Output.format_TOC_entry(name, link)
-        "<li><a href='#{link}'>#{name}</a></li>\n"
-    end
+	def Output.format_TOC_entry(name, link)
+		"<li><a href='#{link}'>#{name}</a></li>\n"
+	end
 
-    def Output.format_text(text)
-        if text
-            out_text=text.dup
-            # Not really optimal, but I can't figure out the regexp for "No @, no \w, rest is ok, even start of line" followed by "@[^@]"
-            out_text.gsub! /@@/, '_AT_SIGN_'
+	def Output.format_text(text)
+		if text
+			out_text=text.dup
+			# Not really optimal, but I can't figure out the regexp for "No @, no \w, rest is ok, even start of line" followed by "@[^@]"
+			out_text.gsub! /@@/, '_AT_SIGN_'
 
-            # Crosslinks should be implemented here!
-            out_text.gsub! /\B@([^@ \t\n]\S*)/, Output::format_invalid_link('\1')
+			# Crosslinks should be implemented here!
+			out_text.gsub! /\B@([^@ \t\n]\S*)/, Output::format_invalid_link('\1')
 
-            out_text.gsub! /_AT_SIGN_/, '@'
-            "#{out_text}</p>\n\n"
-        end
-    end
+			out_text.gsub! /_AT_SIGN_/, '@'
+			"#{out_text}</p>\n\n"
+		end
+	end
 end
 
 class Array
-    def remove_starting_at_class(cls)
-        idx=-1
-        each do |o|
-            if o.is_a? cls
-                if idx==-1
-                    replace([])
-                    return
-                end
-                replace(self[0..idx])
-                return
-            end
-            idx+=1
-        end
-    end
+	def remove_starting_at_class(cls)
+		idx=-1
+		each do |o|
+			if o.is_a? cls
+				if idx==-1
+					replace([])
+					return
+				end
+				replace(self[0..idx])
+				return
+			end
+			idx+=1
+		end
+	end
 
-    def contains_class?(cls)
-        each do |o|
-            if o.is_a? cls
-                return true
-            end
-        end
-        false
-    end
+	def contains_class?(cls)
+		each do |o|
+			if o.is_a? cls
+				return true
+			end
+		end
+		false
+	end
 end
 
 class TagPosition
-    attr_reader :project_name, :file_name, :tag_name
+	attr_reader :project_name, :file_name, :tag_name
 
-    def initialize(project_name, file_name, tag_name)
-        @project_name=project_name
-        @file_name=file_name
-        @tag_name=tag_name
-    end
+	def initialize(project_name, file_name, tag_name)
+		@project_name=project_name
+		@file_name=file_name
+		@tag_name=tag_name
+	end
 end
 
 =begin
@@ -337,61 +337,61 @@ An entry in the TOC. Subclasses specify specific kinds of entries.
 An entry holds all entries below it in @children.
 =end
 class Entry
-    include Comparable
-    attr_reader :children
-    attr_reader :name
-    attr_accessor :parent
+	include Comparable
+	attr_reader :children
+	attr_reader :name
+	attr_accessor :parent
 
-    # The first time an entry with this name has been found:
-    def initialize(name)
-        @name=name
-        @children=[]
-        @text=nil
-    end
+	# The first time an entry with this name has been found:
+	def initialize(name)
+		@name=name
+		@children=[]
+		@text=nil
+	end
 
-    def escaped_name
-        name.downcase.tr ' ,\\/', '____'
-    end
+	def escaped_name
+		name.downcase.tr ' ,\\/', '____'
+	end
 
-    # If an entry (like MethodEntry) can contain more than one line (for parameter lists),
-    # this method will be called the second time and up.
-    def reenter(name)
-    end
+	# If an entry (like MethodEntry) can contain more than one line (for parameter lists),
+	# this method will be called the second time and up.
+	def reenter(name)
+	end
 
-    def <=>(other)
-        @name<=>other.name
-    end
+	def <=>(other)
+		@name<=>other.name
+	end
 
-    def link
-        ""
-    end
+	def link
+		""
+	end
 
-    def add_text(text)
-        if text.strip.length==0
-            text+="</p>\n<p>"
-        else
-            text+="\n"
-        end
-        if @text
-            @text=@text+text
-        else
-            @text="<p>#{text}"
-        end
-    end
+	def add_text(text)
+		if text.strip.length==0
+			text+="</p>\n<p>"
+		else
+			text+="\n"
+		end
+		if @text
+			@text=@text+text
+		else
+			@text="<p>#{text}"
+		end
+	end
 
-    def write(output_directory)
-        children.each do |child|
-            child.write(output_directory)
-        end
-    end
+	def write(output_directory)
+		children.each do |child|
+			child.write(output_directory)
+		end
+	end
 
-    def toc_entries
-        entries=Output::format_TOC_entry(name, link)
-        children.each do |child|
-            entries+=Output::format_TOC_list(child.toc_entries)
-        end
-        entries
-    end
+	def toc_entries
+		entries=Output::format_TOC_entry(name, link)
+		children.each do |child|
+			entries+=Output::format_TOC_list(child.toc_entries)
+		end
+		entries
+	end
 
 end
 
@@ -399,169 +399,169 @@ class RootEntry < Entry
 end
 
 class ProjectEntry < Entry
-    def write(output_directory)
-        children.sort.each do |child|
-            project_dir="#{output_directory}/#{@name}"
-            File.makedirs(project_dir)
-            child.write(project_dir)
-        end
-    end
+	def write(output_directory)
+		children.sort.each do |child|
+			project_dir="#{output_directory}/#{@name}"
+			File.makedirs(project_dir)
+			child.write(project_dir)
+		end
+	end
 end
 
 class FileEntry < Entry
-    def is_index_file?
-        @name.downcase=="index"    end
+	def is_index_file?
+		@name.downcase=="index"	end
 
-    def to_filename
-        "#{escaped_name}.html"
-    end
+	def to_filename
+		"#{escaped_name}.html"
+	end
 
-    def link
-        to_filename
-    end
+	def link
+		to_filename
+	end
 
-    def write(output_directory)
-        File.open(output_directory+'/'+to_filename, 'w') do |file|
-            file.write(Output::html_header(@name))
-            if is_index_file?
-                file.write Output::format_TOC_header
-                file.write Output::format_TOC_list(top_toc_entries)
-            end
-            file.write(Output::format_text(@text))
-            children.sort.each do |child|
-                child.write(file)
-            end
-            file.write(Output::html_footer)
-        end    end
+	def write(output_directory)
+		File.open(output_directory+'/'+to_filename, 'w') do |file|
+			file.write(Output::html_header(@name))
+			if is_index_file?
+				file.write Output::format_TOC_header
+				file.write Output::format_TOC_list(top_toc_entries)
+			end
+			file.write(Output::format_text(@text))
+			children.sort.each do |child|
+				child.write(file)
+			end
+			file.write(Output::html_footer)
+		end	end
 
-    def top_toc_entries
-        items=""
-        @parent.children.sort.each do |child|
-            if(child.is_a? FileEntry)&&(!child.is_index_file?)
-                items+=Output::format_TOC_top_entry(child.name, child.link)
-                items+=Output::format_TOC_list(child.toc_entries)
-            end
-        end
-        items
-    end
+	def top_toc_entries
+		items=""
+		@parent.children.sort.each do |child|
+			if(child.is_a? FileEntry)&&(!child.is_index_file?)
+				items+=Output::format_TOC_top_entry(child.name, child.link)
+				items+=Output::format_TOC_list(child.toc_entries)
+			end
+		end
+		items
+	end
 end
 
 class ClassEntry < Entry
-    def link
-        @parent.link+"#"+escaped_name
-    end
+	def link
+		@parent.link+"#"+escaped_name
+	end
 
-    def write(file)
-        file.write(Output::format_class(@name))
-        file.write(Output::format_text(@text))
-        children.sort.each do |child|
-            child.write(file)
-        end
-    end
+	def write(file)
+		file.write(Output::format_class(@name))
+		file.write(Output::format_text(@text))
+		children.sort.each do |child|
+			child.write(file)
+		end
+	end
 
 end
 
 class ModuleEntry < Entry
-    def link
-        @parent.link+"#"+escaped_name
-    end
+	def link
+		@parent.link+"#"+escaped_name
+	end
 
-    def write(file)
-        file.write(Output::format_module(@name))
-        file.write(Output::format_text(@text))
-        children.sort.each do |child|
-            child.write(file)
-        end
-    end
+	def write(file)
+		file.write(Output::format_module(@name))
+		file.write(Output::format_text(@text))
+		children.sort.each do |child|
+			child.write(file)
+		end
+	end
 end
 
 class SectionEntry < Entry
-    def link
-        @parent.link+"#"+escaped_name
-    end
+	def link
+		@parent.link+"#"+escaped_name
+	end
 
-    def write(file)
-        file.write(Output::format_section(@name))
-        file.write(Output::format_text(@text))
-        children.sort.each do |child|
-            child.write(file)
-        end
-    end
+	def write(file)
+		file.write(Output::format_section(@name))
+		file.write(Output::format_text(@text))
+		children.sort.each do |child|
+			child.write(file)
+		end
+	end
 end
 
 class MethodEntry < Entry
-    def link
-        @parent.link+"#"+escaped_name
-    end
+	def link
+		@parent.link+"#"+escaped_name
+	end
 
-    def initialize(name)
-        @fullnames = []
-        super(reenter(name))
-    end
+	def initialize(name)
+		@fullnames = []
+		super(reenter(name))
+	end
 
-    def reenter(name)
-        @fullnames.push(name.gsub(/->/, '&rarr;'))
+	def reenter(name)
+		@fullnames.push(name.gsub(/->/, '&rarr;'))
 
-        # return the name, minus anything after "(", "?", "!" or "="
-        name.sub(/(\(|\?|\!|=).*/, "")
-    end
+		# return the name, minus anything after "(", "?", "!" or "="
+		name.sub(/(\(|\?|\!|=).*/, "")
+	end
 
-    def write(file)
-        file.write(Output::format_method(@fullnames))
-        file.write(Output::format_text(@text))
-        children.sort.each do |child|
-            child.write(file)
-        end
-    end
+	def write(file)
+		file.write(Output::format_method(@fullnames))
+		file.write(Output::format_text(@text))
+		children.sort.each do |child|
+			child.write(file)
+		end
+	end
 end
 
 class ParameterEntry < Entry
 end
 
 class Path
-    attr_reader :path
-    def initialize(root)
-        @path=[root]
-    end
+	attr_reader :path
+	def initialize(root)
+		@path=[root]
+	end
 
-    def goto(name, search_entry)
-        last_in_path=@path[-1]
-        if (i = last_in_path.children.index(search_entry))
-            entry = last_in_path.children[i]
-            entry.reenter(name)
-        else
-            entry = search_entry
-            last_in_path.children.push entry
-        end
-        entry.parent = last_in_path
-        @path.push(entry)    end
+	def goto(name, search_entry)
+		last_in_path=@path[-1]
+		if (i = last_in_path.children.index(search_entry))
+			entry = last_in_path.children[i]
+			entry.reenter(name)
+		else
+			entry = search_entry
+			last_in_path.children.push entry
+		end
+		entry.parent = last_in_path
+		@path.push(entry)	end
 
-    def goto_file_level
-        @path.remove_starting_at_class(FileEntry)
-    end
+	def goto_file_level
+		@path.remove_starting_at_class(FileEntry)
+	end
 
-    def goto_section_level
-        @path.remove_starting_at_class(SectionEntry)
-    end
+	def goto_section_level
+		@path.remove_starting_at_class(SectionEntry)
+	end
 
-    def goto_class_level
-        @path.remove_starting_at_class(ModuleEntry)
-        @path.remove_starting_at_class(ClassEntry)
-    end
+	def goto_class_level
+		@path.remove_starting_at_class(ModuleEntry)
+		@path.remove_starting_at_class(ClassEntry)
+	end
 
-    def goto_method_level
-        @path.remove_starting_at_class(MethodEntry)
-    end
+	def goto_method_level
+		@path.remove_starting_at_class(MethodEntry)
+	end
 
-    def backup_to(path, class_type)
-        while(@path.length>0 && @path[@path.length-1]!=class_type)
-            @path=@path[0..-2]
-        end
-    end
+	def backup_to(path, class_type)
+		while(@path.length>0 && @path[@path.length-1]!=class_type)
+			@path=@path[0..-2]
+		end
+	end
 
-    def deepest_node
-        @path[-1]
-    end
+	def deepest_node
+		@path[-1]
+	end
 
 end
 
@@ -570,86 +570,86 @@ end
 The main class.
 =end
 class Dokumentat
-    def initialize(project_name)
-        say "Starting project #{project_name}"
-        @project_name=project_name
-        @project=ProjectEntry.new(@project_name)
-        @root=RootEntry.new('root')
-        @index_file=FileEntry.new('index')
-        @root.children.push(@project)
-        @project.children.push(@index_file)
-        @matchers={
-            :c => /^\w*\/\*\*\s*(.*?)\s*\*\//m,
-            :ruby => /^=begin\s*(.*?)\s*^=end/m
-        }
-    end
+	def initialize(project_name)
+		say "Starting project #{project_name}"
+		@project_name=project_name
+		@project=ProjectEntry.new(@project_name)
+		@root=RootEntry.new('root')
+		@index_file=FileEntry.new('index')
+		@root.children.push(@project)
+		@project.children.push(@index_file)
+		@matchers={
+			:c => /^\w*\/\*\*\s*(.*?)\s*\*\//m,
+			:ruby => /^=begin\s*(.*?)\s*^=end/m
+		}
+	end
 
-    def process_dir(source_path)
-        files=Dir[source_path]
-        files.each do |file_name|
-            path=Path.new(@root)
-            path.goto('', @project)
-            path.goto('', @index_file)
-            process_file(file_name, path)
-        end
-    end
+	def process_dir(source_path)
+		files=Dir[source_path]
+		files.each do |file_name|
+			path=Path.new(@root)
+			path.goto('', @project)
+			path.goto('', @index_file)
+			process_file(file_name, path)
+		end
+	end
 
-    def process_file(file_name, path)
-        say "Processing file #{file_name}"
-        File.open(file_name, 'r') do |file|
-            commentmatcher=nil
-            case file_name.downcase
-                when /\.rbw?$/
-                    commentmatcher=@matchers[:ruby]
-                when /\.c?$/
-                    commentmatcher=@matchers[:c]
-                else
-                    say "Unknown extension"
-                    return
-            end
+	def process_file(file_name, path)
+		say "Processing file #{file_name}"
+		File.open(file_name, 'r') do |file|
+			commentmatcher=nil
+			case file_name.downcase
+				when /\.rbw?$/
+					commentmatcher=@matchers[:ruby]
+				when /\.c?$/
+					commentmatcher=@matchers[:c]
+				else
+					say "Unknown extension"
+					return
+			end
 
-            file.read.scan(commentmatcher)  do |block|
-                lines=block.to_s.split("\n")
-                section_mode=true
-                text=""
-                lines.each do |line|
-                    if line[0]!=?@
-                        section_mode=false
-                    end
-                    if section_mode
-                        type, x, name=(line.match /@([^ ]*)( (.*))?/)[1..3]
-                        case type.downcase
-                            when 'file'
-                                path.goto_file_level
-                                path.goto(name, FileEntry.new(name))
-                            when 'section'
-                                path.goto_section_level
-                                path.goto(name, SectionEntry.new(name))
-                            when 'method'
-                                path.goto_method_level
-                                path.goto(name, MethodEntry.new(name))
-                            when 'class'
-                                path.goto_class_level
-                                path.goto(name, ClassEntry.new(name))
-                            when 'module'
-                                path.goto_class_level
-                                path.goto(name, ModuleEntry.new(name))
-                            else
-                                say "Unknown section: #{line}"
-                        end
-                    else
-                        path.deepest_node.add_text(line)
-                    end
-                end
-            end
-        end
-    end
+			file.read.scan(commentmatcher)  do |block|
+				lines=block.to_s.split("\n")
+				section_mode=true
+				text=""
+				lines.each do |line|
+					if line[0]!=?@
+						section_mode=false
+					end
+					if section_mode
+						type, x, name=(line.match /@([^ ]*)( (.*))?/)[1..3]
+						case type.downcase
+							when 'file'
+								path.goto_file_level
+								path.goto(name, FileEntry.new(name))
+							when 'section'
+								path.goto_section_level
+								path.goto(name, SectionEntry.new(name))
+							when 'method'
+								path.goto_method_level
+								path.goto(name, MethodEntry.new(name))
+							when 'class'
+								path.goto_class_level
+								path.goto(name, ClassEntry.new(name))
+							when 'module'
+								path.goto_class_level
+								path.goto(name, ModuleEntry.new(name))
+							else
+								say "Unknown section: #{line}"
+						end
+					else
+						path.deepest_node.add_text(line)
+					end
+				end
+			end
+		end
+	end
 
-    def write(output_path)
-        say "Writing result to #{output_path}/"
-        File.makedirs(output_path)
-#       pp @root
-        @root.write(output_path)    end
+	def write(output_path)
+		say "Writing result to #{output_path}/"
+		File.makedirs(output_path)
+#	   pp @root
+		@root.write(output_path)	end
 end
 
 =begin
@@ -658,50 +658,50 @@ end
 The main method.
 =end
 def main
-    options = GetoptLong.new(
-        ["--project-name",  "-p",      GetoptLong::REQUIRED_ARGUMENT],
-        ["--output-dir",    "-o",      GetoptLong::REQUIRED_ARGUMENT],
-        ["--verbose",       "-v",      GetoptLong::NO_ARGUMENT ],
-        ["--extras-dir",    "-e",      GetoptLong::REQUIRED_ARGUMENT]
-    )
-    extras_dir=nil
-    project_name=nil
-    output_dir='docs'
+	options = GetoptLong.new(
+		["--project-name",  "-p",	  GetoptLong::REQUIRED_ARGUMENT],
+		["--output-dir",	"-o",	  GetoptLong::REQUIRED_ARGUMENT],
+		["--verbose",	   "-v",	  GetoptLong::NO_ARGUMENT ],
+		["--extras-dir",	"-e",	  GetoptLong::REQUIRED_ARGUMENT]
+	)
+	extras_dir=nil
+	project_name=nil
+	output_dir='docs'
 
-    output_dir=ENV['DOKUMENTAT'] if ENV['DOKUMENTAT']
+	output_dir=ENV['DOKUMENTAT'] if ENV['DOKUMENTAT']
 
-    options.each do |opt, arg|
-        case opt
-            when '--verbose'
-                $verbose=true
-            when '--project-name'
-                project_name=arg
-            when '--output-dir'
-                output_dir=arg
-            when '--extras-dir'
-                $extras_dir=arg
-            else
-                raise "Unknown option: #{opt}"
-        end
-    end
+	options.each do |opt, arg|
+		case opt
+			when '--verbose'
+				$verbose=true
+			when '--project-name'
+				project_name=arg
+			when '--output-dir'
+				output_dir=arg
+			when '--extras-dir'
+				$extras_dir=arg
+			else
+				raise "Unknown option: #{opt}"
+		end
+	end
 
-    File.makedirs(output_dir)
+	File.makedirs(output_dir)
 
-    raise "No project name defined" if(!project_name)
+	raise "No project name defined" if(!project_name)
 
-    if !File.exist?("#{output_dir}/#{STYLESHEET_FILENAME}")
-        File.open("#{output_dir}/#{STYLESHEET_FILENAME}", "w") do |file|
-            file.write(Output::stylesheet)
-        end
-    end
+	if !File.exist?("#{output_dir}/#{STYLESHEET_FILENAME}")
+		File.open("#{output_dir}/#{STYLESHEET_FILENAME}", "w") do |file|
+			file.write(Output::stylesheet)
+		end
+	end
 
-    dokumentat=Dokumentat.new(project_name)
+	dokumentat=Dokumentat.new(project_name)
 
-    ARGV.each do |path|
-        dokumentat.process_dir(path)
-    end
+	ARGV.each do |path|
+		dokumentat.process_dir(path)
+	end
 
-    dokumentat.write(output_dir)
+	dokumentat.write(output_dir)
 end
 
 main
