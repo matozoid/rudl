@@ -1,6 +1,9 @@
 #!/usr/local/bin/ruby
 
 # $Log: makedocs.rb,v $
+# Revision 1.6  2003/10/05 14:01:00  tsuihark
+# Finally did something about the ugly docs
+#
 # Revision 1.5  2003/10/05 13:56:52  tsuihark
 # Finally did something about the ugly docs
 #
@@ -26,7 +29,7 @@ sourcefiles.each {|source|
 		}
 		
 		contents.gsub! /<title>Untitled<\/title>/, "<title>#{basename}<\/title>"
-		contents.gsub! /<head>/, "<link rel=stylesheet type='text/css' href='rudl.css'>"
+		contents.gsub! /<head>/, "<head>\n<link rel=stylesheet type='text/css' href='rudl.css'>"
 		contents.gsub! /<body>/, "<body>\n<a href='index.html'>Back to index</a>\n#{index}"
 		contents.gsub! /<\/body>/, "<a href='index.html'>Back to index</a>\n</body>"
 
