@@ -2,19 +2,13 @@
 #include "rudl_events.h"
 #include "rudl_video.h"
 
-#ifdef HAVE_SDL_ROTOZOOM_H
-#include "SDL_rotozoom.h"
-#endif
-
-#ifdef HAVE_SDL_GFXPRIMITIVES_H
-#include "SDL_gfxPrimitives.h"
-#endif
-
 #ifdef HAVE_SDL_IMAGE_H
 #include "SDL_image.h"
 #endif
 
 extern void add_ruby_to_rect();
+extern void initVideoSDLGFXClasses();
+extern void initVideoSGEClasses();
 
 ID id_rect, id_atx, id_aty, id_atw, id_ath;
 
@@ -64,16 +58,16 @@ Uint32 VALUE2COLOR(VALUE colorObject, SDL_PixelFormat* format)
 		switch(RARRAY(colorObject)->len){
 			case 3:
 				return SDL_MapRGB(format,
-						NUM2UINT(rb_ary_entry(colorObject, 0)),
-						NUM2UINT(rb_ary_entry(colorObject, 1)),
-						NUM2UINT(rb_ary_entry(colorObject, 2)));
+						(Uint8)NUM2UINT(rb_ary_entry(colorObject, 0)),
+						(Uint8)NUM2UINT(rb_ary_entry(colorObject, 1)),
+						(Uint8)NUM2UINT(rb_ary_entry(colorObject, 2)));
 				break;
 			case 4:
 				return SDL_MapRGBA(format,
-						NUM2UINT(rb_ary_entry(colorObject, 0)),
-						NUM2UINT(rb_ary_entry(colorObject, 1)),
-						NUM2UINT(rb_ary_entry(colorObject, 2)),
-						NUM2UINT(rb_ary_entry(colorObject, 3)));
+						(Uint8)NUM2UINT(rb_ary_entry(colorObject, 0)),
+						(Uint8)NUM2UINT(rb_ary_entry(colorObject, 1)),
+						(Uint8)NUM2UINT(rb_ary_entry(colorObject, 2)),
+						(Uint8)NUM2UINT(rb_ary_entry(colorObject, 3)));
 				break;
 			default:
 				rb_raise(rb_eTypeError, "Need colorarray with 3 or 4 elements");
@@ -100,10 +94,10 @@ VALUE COLOR2VALUE(Uint32 color, SDL_Surface* surface)
 
 void RECT2CRECT(VALUE source, SDL_Rect* destination)
 {
-	destination->x=NUM2INT(rb_ivar_get(source, id_atx));
-	destination->y=NUM2INT(rb_ivar_get(source, id_aty));
-	destination->w=NUM2UINT(rb_ivar_get(source, id_atw));
-	destination->h=NUM2UINT(rb_ivar_get(source, id_ath));
+	destination->x=NUM2Sint16(rb_ivar_get(source, id_atx));
+	destination->y=NUM2Sint16(rb_ivar_get(source, id_aty));
+	destination->w=NUM2Uint16(rb_ivar_get(source, id_atw));
+	destination->h=NUM2Uint16(rb_ivar_get(source, id_ath));
 }
 
 void CRECT2RECT(SDL_Rect* source, VALUE destination)
@@ -118,8 +112,8 @@ void PARAMETER2COORD(VALUE parameter, Sint16* x, Sint16* y)
 {
 	if(rb_obj_is_kind_of(parameter, rb_cArray)){
 		if(RARRAY(parameter)->len==2){
-			*x=NUM2INT(rb_ary_entry(parameter, 0));
-			*y=NUM2INT(rb_ary_entry(parameter, 1));
+			*x=NUM2Sint16(rb_ary_entry(parameter, 0));
+			*y=NUM2Sint16(rb_ary_entry(parameter, 1));
 		}else{
 			rb_raise(rb_eTypeError, "Need coordinate array with 2 elements");
 		}
@@ -135,10 +129,10 @@ void PARAMETER2CRECT(VALUE arg1, SDL_Rect* rect)
 	}else{
 		if(rb_obj_is_kind_of(arg1, rb_cArray)){
 			if(RARRAY(arg1)->len==4){
-				rect->x=NUM2INT(rb_ary_entry(arg1, 0));
-				rect->y=NUM2INT(rb_ary_entry(arg1, 1));
-				rect->w=NUM2UINT(rb_ary_entry(arg1, 2));
-				rect->h=NUM2UINT(rb_ary_entry(arg1, 3));
+				rect->x=NUM2Sint16(rb_ary_entry(arg1, 0));
+				rect->y=NUM2Sint16(rb_ary_entry(arg1, 1));
+				rect->w=NUM2Uint16(rb_ary_entry(arg1, 2));
+				rect->h=NUM2Uint16(rb_ary_entry(arg1, 3));
 			}else{
 				rb_raise(rb_eTypeError, "Need rectangle array with 4 elements");
 			}
@@ -250,7 +244,7 @@ static VALUE surface_new(int argc, VALUE* argv, VALUE self)
 						return Qnil;
 					}
 				}else{ // got depth
-					bpp=NUM2INT(surfaceOrDepthObject);
+					bpp=NUM2Sint16(surfaceOrDepthObject);
 					if(argc==4){ // got masks
 						Check_Type(masksObject, T_ARRAY);
 						if(RARRAY(masksObject)->len==4){
@@ -682,9 +676,9 @@ static VALUE surface_set_palette(VALUE self, VALUE firstValue, VALUE colors)
 
 	for(i=0; i<amount; i++){
 		color=rb_ary_entry(colors, i);
-		newPal[i].r=NUM2INT(rb_ary_entry(color, 0));
-		newPal[i].g=NUM2INT(rb_ary_entry(color, 1));
-		newPal[i].b=NUM2INT(rb_ary_entry(color, 2));
+		newPal[i].r=NUM2Uint8(rb_ary_entry(color, 0));
+		newPal[i].g=NUM2Uint8(rb_ary_entry(color, 1));
+		newPal[i].b=NUM2Uint8(rb_ary_entry(color, 2));
 	}
 
 	if(SDL_SetColors(surface, newPal, first, amount)==0) SDL_RAISE;
@@ -719,7 +713,7 @@ static VALUE surface_set_alpha(int argc, VALUE* argv, VALUE self)
 			flags=PARAMETER2FLAGS(flagsObject);
 	}
 
-	alpha=NUM2UINT(alphaObject);
+	alpha=(Uint8)NUM2UINT(alphaObject);
 
 	if(SDL_SetAlpha(surface, flags, alpha) == -1) SDL_RAISE;
 	
@@ -792,11 +786,11 @@ This is not part of SDL, it is RUDL-specific.
 =end */
 static VALUE surface_contained_images(VALUE self)
 {
-	int x=0;
-	int y=0;
-	int w=1;
-	int h=1;
-	int nextRowY=0;
+	Sint16 x=0;
+	Sint16 y=0;
+	Sint16 w=1;
+	Sint16 h=1;
+	Sint16 nextRowY=0;
 	bool rowDone=false;
 	bool linesDone=false;
 	bool nextXFound=false;
@@ -819,7 +813,7 @@ static VALUE surface_contained_images(VALUE self)
 		}
 
 		// Find width
-		while(internal_get(surface, x+w, y)!=cornerColor){
+		while(internal_get(surface, (Sint16)(x+w), y)!=cornerColor){
 			w++;
 			if(x+w>=surface->w){
 				SDL_RAISE_S("No terminating white pixel: aborting");
@@ -827,7 +821,7 @@ static VALUE surface_contained_images(VALUE self)
 		}
 
 		// Find height
-		while(internal_get(surface, x, y+h)!=cornerColor){
+		while(internal_get(surface, x, (Sint16)(y+h))!=cornerColor){
 			h++;
 			if(y+h>=surface->h){
 				SDL_RAISE_S("No terminating white pixel: aborting");
@@ -992,7 +986,7 @@ static VALUE displaySurface_modes(int argc, VALUE* argv, VALUE self)
 		case 2:
 			flags=NUM2UINT(flagsObject);
 		case 1:
-			format.BitsPerPixel=NUM2INT(bppObject);
+			format.BitsPerPixel=(Uint8)NUM2UINT(bppObject);
 			break;
 	}
 	if(format.BitsPerPixel==0){
@@ -1206,15 +1200,15 @@ static VALUE displaySurface_gamma_(VALUE self, VALUE color)
 
 	if(rb_obj_is_kind_of(color, rb_cArray)){
 		if(RARRAY(color)->len==3){
-			r=NUM2DBL(rb_ary_entry(color, 0));
-			g=NUM2DBL(rb_ary_entry(color, 1));
-			b=NUM2DBL(rb_ary_entry(color, 2));
+			r=NUM2FLT(rb_ary_entry(color, 0));
+			g=NUM2FLT(rb_ary_entry(color, 1));
+			b=NUM2FLT(rb_ary_entry(color, 2));
 		}else{
 			SDL_RAISE_S("Want [r,g,b] array");
 			return Qnil;
 		}
 	}else{
-		r=g=b=NUM2DBL(color);
+		r=g=b=NUM2FLT(color);
 	}
 
 	return INT2BOOL(SDL_SetGamma(r, g, b)==0);
@@ -1365,60 +1359,15 @@ static VALUE rect_collide_lists(VALUE self, VALUE list1Value, VALUE list2Value)
 	return self;
 }
 
-///////////////////////////////// SDL_GFX: ROTOZOOM
-#ifdef HAVE_SDL_ROTOZOOM_H
 /*
 =begin
-== SDL_gfx functions
-SDL_gfx was written by Andreas Schiffler.
-See ((<URL:http://de.ferzkopp.net/>))
-=== SDL_gfx: SDL_rotozoom
---- Surface#rotozoom( angle, zoom, smooth )
-Returns a new surface that is rotated ((|angle|)) degrees and zoomed
-((|zoom|)) times (fractions are OK).
-This method returns a 32 bit surface.
-Exception: for now it returns an 8 bit surface when fed an 8 bit surface.
-If ((|smooth|)) is true and the surface is not 8 bits,
-bilinear interpolation will be applied, resulting in a smoother image.
-=end */
-static VALUE surface_rotozoom(VALUE self, VALUE angle, VALUE zoom, VALUE smooth)
-{
-	return createSurfaceObject(rotozoomSurface(retrieveSurfacePointer(self), NUM2DBL(angle), NUM2DBL(zoom), NUM2BOOL(smooth)));
-}
-
-/*
-=begin
---- Surface#zoom( zoom_horizontal, zoom_vertical, smooth )
-Returns a new surface that is zoomed.
-1.0 doesn't zoom, bigger than 1.0 zooms in, smaller than 1.0 zooms out.
-This method returns a 32 bit surface.
-Exception: for now it returns an 8 bit surface when fed an 8 bit surface.
-If ((|smooth|)) is true and the surface is not 8 bits,
-bilinear interpolation will be applied, resulting in a smoother image.
-(The last two methods are from Andreas Schiffler's SDL_rotozoom, aschiffler@home.com)
-=end */
-static VALUE surface_zoom(VALUE self, VALUE zoom_x, VALUE zoom_y, VALUE smooth)
-{
-	return createSurfaceObject(zoomSurface(retrieveSurfacePointer(self), NUM2DBL(zoom_x), NUM2DBL(zoom_y), NUM2BOOL(smooth)));
-}
-#endif
-
-///////////////////////////////// SDL_GFX: GFXPRIMITIVES
-#ifdef HAVE_SDL_GFXPRIMITIVES_H
-/*
-=begin
-=== SDL_gfx: SDL_gfxPrimitives
---- Surface#plot( coordinate, color )
 --- Surface#get( coordinate )
---- Surface#[ x, y ]= color
 --- Surface#[ x, y ]
-These methods access single pixels on a surface.
-((|plot|)) or ((|[]=|)) set a pixel to ((|color|)) at ((|coordinate|)).
+These methods read single pixels on a surface.
 ((|get|)) or ((|[]|)) get the color of a pixel.
 These methods require the surface to be locked if neccesary.
 ((|[]=|)) and ((|[]|)) are the only methods in RUDL that take a seperate x and y coordinate.
 =end */
-
 Uint32 internal_get(SDL_Surface* surface, Sint16 x, Sint16 y)
 {
 	SDL_PixelFormat* format = surface->format;
@@ -1474,297 +1423,16 @@ static VALUE surface_get(VALUE self, VALUE coordinate)
 	return rb_ary_new3(4, UINT2NUM(r), UINT2NUM(g), UINT2NUM(b), UINT2NUM(a));
 }
 
-
-static VALUE surface_plot(VALUE self, VALUE coordinate, VALUE color)
-{
-	Sint16 x,y;
-	PARAMETER2COORD(coordinate, &x, &y);
-	if(pixelColor(retrieveSurfacePointer(self), x, y, VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
-	return self;
-}
-
 static VALUE surface_array_get(VALUE self, VALUE x, VALUE y)
 {
 	SDL_Surface* surface=retrieveSurfacePointer(self);
 	Uint8 r, g, b, a;
 
-	SDL_GetRGBA(internal_get(surface, NUM2INT(x), NUM2INT(y)), surface->format, &r, &g, &b, &a);
+	SDL_GetRGBA(internal_get(surface, NUM2Sint16(x), NUM2Sint16(y)), surface->format, &r, &g, &b, &a);
 
 	return rb_ary_new3(4, UINT2NUM(r), UINT2NUM(g), UINT2NUM(b), UINT2NUM(a));
 }
 
-
-static VALUE surface_array_plot(VALUE self, VALUE x, VALUE y, VALUE color)
-{
-	if(pixelColor(retrieveSurfacePointer(self), NUM2INT(x), NUM2INT(y), VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
-	return self;
-}
-
-/*
-=begin
---- Surface#horizontal_line( coord, endx, color )
---- Surface#vertical_line( coord, endy, color )
---- Surface#rectangle( rect, color )
---- Surface#filled_rectangle( rect, color )
---- Surface#line( coord1, coord2, color )
---- Surface#antialiased_line( coord1, coord2, color )
---- Surface#circle( coord, radius, color )
---- Surface#filled_circle( coord, radius, color )
---- Surface#filled_pie( coord, radius, start, end, color )
---- Surface#ellipse( coord, radius_x, radius_y, color )
---- Surface#antialiased_ellipse( coord, radius_x, radius_y, color )
---- Surface#filled_ellipse( coord, radius_x, radius_y, color )
-These methods are thought to be self-explanatory.
-Filled_rectangle is a lot like fill.
-Fill comes from SDL, filled_rectangle from SDL_gfxPrimitives,
-choose whichever you like best.
---- Surface#polygon( coord_list, color )
---- Surface#filled_polygon( coord_list, color )
---- Surface#antialiased_polygon( coord_list, color)
-The polygon methods take an array of [x,y], like [[10,10],[40,60]].
---- Surface#print( coord, text, color )
-Puts ((|text|)) on the surface in a monospaced standard old ASCII font.
-=end */
-static VALUE surface_horizontal_line(VALUE self, VALUE coord, VALUE endx, VALUE color)
-{
-	Sint16 x,y;
-	PARAMETER2COORD(coord, &x, &y);
-	if(hlineColor(retrieveSurfacePointer(self), x, NUM2INT(endx), y, VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
-	return self;
-}
-
-static VALUE surface_vertical_line(VALUE self, VALUE coord, VALUE endy, VALUE color)
-{
-	Sint16 x,y;
-	PARAMETER2COORD(coord, &x, &y);
-	if(vlineColor(retrieveSurfacePointer(self), x, y, NUM2INT(endy), VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
-	return self;
-}
-
-static VALUE surface_rectangle(VALUE self, VALUE rectObject, VALUE color)
-{
-	SDL_Rect rect;
-	PARAMETER2CRECT(rectObject, &rect);
-	if(rectangleColor(retrieveSurfacePointer(self), rect.x, rect.y, rect.x+rect.w-1, rect.y+rect.h-1, VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
-	return self;
-}
-
-static VALUE surface_filled_rectangle(VALUE self, VALUE rectObject, VALUE color)
-{
-	SDL_Rect rect;
-	PARAMETER2CRECT(rectObject, &rect);
-	if(boxColor(retrieveSurfacePointer(self), rect.x, rect.y, rect.x+rect.w-1, rect.y+rect.h-1, VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
-	return self;
-}
-
-static VALUE surface_line(VALUE self, VALUE coord1, VALUE coord2, VALUE color)
-{
-	Sint16 x1,y1,x2,y2;
-	PARAMETER2COORD(coord1, &x1, &y1);
-	PARAMETER2COORD(coord2, &x2, &y2);
-	if(lineColor(retrieveSurfacePointer(self), x1, y1, x2, y2, VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
-	return self;
-}
-
-static VALUE surface_antialiased_line(VALUE self, VALUE coord1, VALUE coord2, VALUE color)
-{
-	Sint16 x1,y1,x2,y2;
-	PARAMETER2COORD(coord1, &x1, &y1);
-	PARAMETER2COORD(coord2, &x2, &y2);
-	if(aalineColor(retrieveSurfacePointer(self), x1, y1, x2, y2, VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
-	return self;
-}
-
-static VALUE surface_circle(VALUE self, VALUE coord, VALUE r, VALUE color)
-{
-	Sint16 x,y;
-	PARAMETER2COORD(coord, &x, &y);
-	if(circleColor(retrieveSurfacePointer(self), x, y, NUM2INT(r), VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
-	return self;
-}
-
-static VALUE surface_filled_circle(VALUE self, VALUE coord, VALUE r, VALUE color)
-{
-	Sint16 x,y;
-	PARAMETER2COORD(coord, &x, &y);
-	if(filledCircleColor(retrieveSurfacePointer(self), x, y, NUM2INT(r), VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
-	return self;
-}
-
-static VALUE surface_filled_pie(VALUE self, VALUE coord, VALUE r, VALUE start, VALUE end, VALUE color)
-{
-	Sint16 x,y;
-	PARAMETER2COORD(coord, &x, &y);
-	if(filledpieColor(retrieveSurfacePointer(self), x, y, NUM2INT(r), NUM2INT(start), NUM2INT(end), VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
-	return self;
-}
-
-
-
-static VALUE surface_ellipse(VALUE self, VALUE coord, VALUE rx, VALUE ry, VALUE color)
-{
-	Sint16 x,y;
-	PARAMETER2COORD(coord, &x, &y);
-	if(ellipseColor(retrieveSurfacePointer(self), x, y, NUM2INT(rx), NUM2INT(ry), VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
-	return self;
-}
-
-static VALUE surface_antialiased_ellipse(VALUE self, VALUE coord, VALUE rx, VALUE ry, VALUE color)
-{
-	Sint16 x,y;
-	PARAMETER2COORD(coord, &x, &y);
-	if(aaellipseColor(retrieveSurfacePointer(self), x, y, NUM2INT(rx), NUM2INT(ry), VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
-	return self;
-}
-
-static VALUE surface_filled_ellipse(VALUE self, VALUE coord, VALUE rx, VALUE ry, VALUE color)
-{
-	Sint16 x,y;
-	PARAMETER2COORD(coord, &x, &y);
-	if(filledEllipseColor(retrieveSurfacePointer(self), x, y, NUM2INT(rx), NUM2INT(ry), VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
-	return self;
-}
-
-static VALUE surface_polygon(VALUE self, VALUE coordlist, VALUE color)
-{
-	int numpoints=RARRAY(coordlist)->len;
-	Sint16 *x=malloc(sizeof(Sint16)*numpoints);
-	Sint16 *y=malloc(sizeof(Sint16)*numpoints);
-	int i;
-	
-	for(i=0; i<numpoints; i++){
-		x[i]=NUM2INT(rb_ary_entry(rb_ary_entry(coordlist, i), 0));
-		y[i]=NUM2INT(rb_ary_entry(rb_ary_entry(coordlist, i), 1));
-	}
-
-	if(polygonColor(retrieveSurfacePointer(self), x, y, numpoints, VALUE2COLOR_NOMAP(color)))  SDL_RAISE_S("failed");
-	
-	free(x);
-	free(y);
-	return self;
-}
-
-static VALUE surface_filled_polygon(VALUE self, VALUE coordlist, VALUE color)
-{
-	int numpoints=RARRAY(coordlist)->len;
-	Sint16 *x=malloc(sizeof(Sint16)*numpoints);
-	Sint16 *y=malloc(sizeof(Sint16)*numpoints);
-	int i;
-	
-	for(i=0; i<numpoints; i++){
-		x[i]=NUM2INT(rb_ary_entry(rb_ary_entry(coordlist, i), 0));
-		y[i]=NUM2INT(rb_ary_entry(rb_ary_entry(coordlist, i), 1));
-	}
-
-	if(filledPolygonColor(retrieveSurfacePointer(self), x, y, numpoints, VALUE2COLOR_NOMAP(color)))  SDL_RAISE_S("failed");
-	
-	free(x);
-	free(y);
-	return self;
-}
-
-static VALUE surface_antialiased_polygon(VALUE self, VALUE coordlist, VALUE color)
-{
-	int numpoints=RARRAY(coordlist)->len;
-	Sint16 *x=malloc(sizeof(Sint16)*numpoints);
-	Sint16 *y=malloc(sizeof(Sint16)*numpoints);
-	int i;
-	
-	for(i=0; i<numpoints; i++){
-		x[i]=NUM2INT(rb_ary_entry(rb_ary_entry(coordlist, i), 0));
-		y[i]=NUM2INT(rb_ary_entry(rb_ary_entry(coordlist, i), 1));
-	}
-
-	if(aapolygonColor(retrieveSurfacePointer(self), x, y, numpoints, VALUE2COLOR_NOMAP(color)))  SDL_RAISE_S("failed");
-	
-	free(x);
-	free(y);
-	return self;
-}
-
-static VALUE surface_print(VALUE self, VALUE coord, VALUE text, VALUE color)
-{
-	Sint16 x,y;
-	PARAMETER2COORD(coord, &x, &y);
-	if(stringColor(retrieveSurfacePointer(self), x, y, STR2CSTR(text), VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
-	return self;
-}
-#endif
-
-/*
-
-Unsupported for now (don't know how they work yet)
-=== SDL_gfx: SDL_imageFilter
---- Surface#filterMMXdetect
---- Surface#filterEnableMMX( true_or_false )
---- Surface#filterAdd: D = saturation255(S1 + S2)
---- Surface#filterMean: D = S1/2 + S2/2
-SDL_imageFilterSub: D = saturation0(S1 - S2)
-SDL_imageFilterAbsDiff: D = | S1 - S2 |
-SDL_imageFilterMult: D = saturation(S1 * S2)
-SDL_imageFilterMultNor: D = S1 * S2   (non-MMX)
-SDL_imageFilterMultDivby2: D = saturation255(S1/2 * S2)
-SDL_imageFilterMultDivby4: D = saturation255(S1/2 * S2/2)
-SDL_imageFilterBitAnd: D = S1 & S2
-SDL_imageFilterBitOr: D = S1 | S2
-SDL_imageFilterDiv: D = S1 / S2   (non-MMX)
-SDL_imageFilterBitNegation: D = !S
-SDL_imageFilterAddByte: D = saturation255(S + C)
-SDL_imageFilterAddByteToHalf: D = saturation255(S/2 + C)
-SDL_imageFilterSubByte: D = saturation0(S - C)
-SDL_imageFilterShiftRight: D = saturation0(S >> N)
-SDL_imageFilterMultByByte: D = saturation255(S * C)
-SDL_imageFilterShiftRightAndMultByByte: D = saturation255((S >> N) * C)
-SDL_imageFilterShiftLeftByte: D = (S << N)
-SDL_imageFilterShiftLeft: D = saturation255(S << N)
-SDL_imageFilterBinarizeUsingThreshold: D = S >= T ? 255:0
-SDL_imageFilterClipToRange: D = (S >= Tmin) & (S <= Tmax) 255:0
-SDL_imageFilterNormalizeLinear: D = saturation255((Nmax - Nmin)/(Cmax - Cmin)*(S - Cmin) + Nmin)
- !!! NO C-ROUTINE FOR THESE FUNCTIONS YET !!!
-
-SDL_imageFilterConvolveKernel3x3Divide: Dij = saturation0and255( ... )
-SDL_imageFilterConvolveKernel5x5Divide: Dij = saturation0and255( ... )
-SDL_imageFilterConvolveKernel7x7Divide: Dij = saturation0and255( ... )
-SDL_imageFilterConvolveKernel9x9Divide: Dij = saturation0and255( ... )
-SDL_imageFilterConvolveKernel3x3ShiftRight: Dij = saturation0and255( ... )
-SDL_imageFilterConvolveKernel5x5ShiftRight: Dij = saturation0and255( ... )
-SDL_imageFilterConvolveKernel7x7ShiftRight: Dij = saturation0and255( ... )
-SDL_imageFilterConvolveKernel9x9ShiftRight: Dij = saturation0and255( ... )
-SDL_imageFilterSobelX: Dij = saturation255( ... )
-
-int SDL_imageFilterAdd (unsigned char *Src1, unsigned char *Src2, unsigned char *Dest, int length);
-int SDL_imageFilterMean(unsigned char *Src1, unsigned char *Src2, unsigned char *Dest, int length);
-int SDL_imageFilterSub(unsigned char *Src1, unsigned char *Src2, unsigned char *Dest, int length);
-int SDL_imageFilterAbsDiff(unsigned char *Src1, unsigned char *Src2, unsigned char *Dest, int length);
-int SDL_imageFilterMult(unsigned char *Src1, unsigned char *Src2, unsigned char *Dest, int length);
-int SDL_imageFilterMultNor(unsigned char *Src1, unsigned char *Src2, unsigned char *Dest, int length);
-int SDL_imageFilterMultDivby2(unsigned char *Src1, unsigned char *Src2, unsigned char *Dest, int length);
-int SDL_imageFilterMultDivby4(unsigned char *Src1, unsigned char *Src2, unsigned char *Dest, int length);
-int SDL_imageFilterBitAnd(unsigned char *Src1, unsigned char *Src2, unsigned char *Dest, int length);
-int SDL_imageFilterBitOr(unsigned char *Src1, unsigned char *Src2, unsigned char *Dest, int length);
-int SDL_imageFilterDiv(unsigned char *Src1, unsigned char *Src2, unsigned char *Dest, int length);
-int SDL_imageFilterBitNegation(unsigned char *Src1, unsigned char *Dest, int length);
-int SDL_imageFilterAddByte(unsigned char *Src1, unsigned char *Dest, int length, unsigned char C);
-int SDL_imageFilterAddByteToHalf(unsigned char *Src1, unsigned char *Dest, int length, unsigned char C);
-int SDL_imageFilterSubByte(unsigned char *Src1, unsigned char *Dest, int length, unsigned char C);
-int SDL_imageFilterShiftRight(unsigned char *Src1, unsigned char *Dest, int length, unsigned char N);
-int SDL_imageFilterMultByByte(unsigned char *Src1, unsigned char *Dest, int length, unsigned char C);
-int SDL_imageFilterShiftRightAndMultByByte(unsigned char *Src1, unsigned char *Dest, int length, unsigned char N, unsigned char C);
-int SDL_imageFilterShiftLeftByte(unsigned char *Src1, unsigned char *Dest, int length, unsigned char N);
-int SDL_imageFilterShiftLeft(unsigned char *Src1, unsigned char *Dest, int length, unsigned char N);
-int SDL_imageFilterBinarizeUsingThreshold(unsigned char *Src1, unsigned char *Dest, int length, unsigned char T);
-int SDL_imageFilterClipToRange(unsigned char *Src1, unsigned char *Dest, int length, unsigned char Tmin, unsigned char Tmax);
-int SDL_imageFilterNormalizeLinear(unsigned char *Src1, unsigned char *Dest, int length, int Cmin, int Cmax, int Nmin, int Nmax);
-int SDL_imageFilterConvolveKernel3x3Divide(unsigned char *Src, unsigned char *Dest, int rows, int columns, signed short *Kernel, unsigned char Divisor);
-int SDL_imageFilterConvolveKernel5x5Divide(unsigned char *Src, unsigned char *Dest, int rows, int columns, signed short *Kernel, unsigned char Divisor);
-int SDL_imageFilterConvolveKernel7x7Divide(unsigned char *Src, unsigned char *Dest, int rows, int columns, signed short *Kernel, unsigned char Divisor);
-int SDL_imageFilterConvolveKernel9x9Divide(unsigned char *Src, unsigned char *Dest, int rows, int columns, signed short *Kernel, unsigned char Divisor);
-int SDL_imageFilterConvolveKernel3x3ShiftRight(unsigned char *Src, unsigned char *Dest, int rows, int columns, signed short *Kernel, unsigned char NRightShift);
-int SDL_imageFilterConvolveKernel5x5ShiftRight(unsigned char *Src, unsigned char *Dest, int rows, int columns, signed short *Kernel, unsigned char NRightShift);
-int SDL_imageFilterConvolveKernel7x7ShiftRight(unsigned char *Src, unsigned char *Dest, int rows, int columns, signed short *Kernel, unsigned char NRightShift);
-int SDL_imageFilterConvolveKernel9x9ShiftRight(unsigned char *Src, unsigned char *Dest, int rows, int columns, signed short *Kernel, unsigned char NRightShift);
-int SDL_imageFilterSobelX(unsigned char *Src, unsigned char *Dest, int rows, int columns);
-*/
 ///////////////////////////////// INIT
 void initVideoClasses()
 {
@@ -1814,6 +1482,10 @@ void initVideoClasses()
 
 	rb_define_method(classSurface, "subsurface", surface_subsurface, 0);
 
+	rb_define_method(classSurface, "get", surface_get, 1);
+	rb_define_method(classSurface, "[]", surface_array_get, 2);
+	rb_define_method(classSurface, "fill", surface_fill, -1);
+
 	classDisplaySurface=rb_define_class_under(moduleRUDL, "DisplaySurface", classSurface);
 	rb_define_singleton_method(classDisplaySurface, "new", displaySurface_new, -1);
 	rb_define_singleton_method(classDisplaySurface, "modes", displaySurface_modes, -1);
@@ -1830,36 +1502,9 @@ void initVideoClasses()
 	rb_define_method(classDisplaySurface, "toggle_fullscreen", displaySurface_toggle_fullscreen, 0);
 
 	//classSurfaceArray=rb_define_class_under(moduleRUDL, "SurfaceArray", rb_cObject);
-	#ifdef HAVE_SDL_GFXPRIMITIVES_H
-	rb_define_method(classSurface, "get", surface_get, 1);
-	rb_define_method(classSurface, "[]", surface_array_get, 2);
-	rb_define_method(classSurface, "plot", surface_plot, 2);
-	rb_define_method(classSurface, "[]=", surface_array_plot, 3);
-	rb_define_method(classSurface, "fill", surface_fill, -1);
-	rb_define_method(classSurface, "horizontal_line", surface_horizontal_line, 3);
-	rb_define_method(classSurface, "vertical_line", surface_vertical_line, 3);
-	rb_define_method(classSurface, "rectangle", surface_rectangle, 2);
-	rb_define_method(classSurface, "filled_rectangle", surface_filled_rectangle, 2);
-	rb_define_method(classSurface, "line", surface_line, 3);
-	rb_define_method(classSurface, "antialiased_line", surface_antialiased_line, 3);
-	rb_define_method(classSurface, "circle", surface_circle, 3);
-	rb_define_method(classSurface, "filled_circle", surface_filled_circle, 3);
-	rb_define_method(classSurface, "filled_pie", surface_filled_pie, 5);
-	rb_define_method(classSurface, "ellipse", surface_ellipse, 4);
-	rb_define_method(classSurface, "filled_ellipse", surface_filled_ellipse, 4);
-	rb_define_method(classSurface, "antialiased_ellipse", surface_antialiased_ellipse, 4);
-	rb_define_method(classSurface, "polygon", surface_polygon, 2);
-	rb_define_method(classSurface, "filled_polygon", surface_filled_polygon, 2);
-	rb_define_method(classSurface, "antialiased_polygon", surface_antialiased_polygon, 2);
-	rb_define_method(classSurface, "print", surface_print, 3);
-	#endif
-	#ifdef HAVE_SDL_ROTOZOOM_H
-	rb_define_method(classSurface, "rotozoom", surface_rotozoom, 3);
-	rb_define_method(classSurface, "zoom", surface_zoom, 3);
-	#endif
-	#ifdef HAVE_SDL_IMAGEFILTER_H
-	#endif
-
+	initVideoSDLGFXClasses();
+	initVideoSGEClasses();
+	
 	classRect=rb_define_class_under(moduleRUDL, "Rect", rb_cObject);
 	rb_define_singleton_method(classRect, "new", rect_new, -1);
 	rb_define_method(classRect, "overlap", rect_overlap, 1);

@@ -135,8 +135,8 @@ static VALUE mouse_set_cursor(VALUE self, VALUE hotspot, VALUE xormasks, VALUE a
 
 	for(y=0; y<sy; y++){
 		for(x=0; x<sx; x++){
-			xordata[y*sx+x]=NUM2UINT(rb_ary_entry(rb_ary_entry(xormasks, y), x));
-			anddata[y*sx+x]=NUM2UINT(rb_ary_entry(rb_ary_entry(andmasks, y), x));
+			xordata[y*sx+x]=(Uint8)NUM2UINT(rb_ary_entry(rb_ary_entry(xormasks, y), x));
+			anddata[y*sx+x]=(Uint8)NUM2UINT(rb_ary_entry(rb_ary_entry(andmasks, y), x));
 		}
 	}
 

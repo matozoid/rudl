@@ -106,7 +106,7 @@ static VALUE channel_fade_out(VALUE self, VALUE milliseconds)
 
 static VALUE channel_get_volume(VALUE self, VALUE volume)
 {
-	return (DBL2NUM(Mix_Volume(retrieveChannelNumber(self), -1))/128.0);
+	return DBL2NUM((Mix_Volume(retrieveChannelNumber(self), -1))/128.0);
 }
 
 static VALUE channel_set_volume(VALUE self, VALUE volume)
@@ -221,7 +221,7 @@ static VALUE sound_fade_out(VALUE self, VALUE time)
 
 static VALUE sound_get_volume(VALUE self)
 {
-	return DBL2NUM(Mix_VolumeChunk(retrieveMixChunk(self), -1))/128.0;
+	return DBL2NUM((Mix_VolumeChunk(retrieveMixChunk(self), -1))/128.0);
 }
 
 static VALUE sound_set_volume(VALUE self, VALUE volume)
@@ -301,14 +301,14 @@ you can set them yourself, but do this ((*before*)) using any sound related meth
 static VALUE mixer_init(int argc, VALUE* argv, VALUE self)
 {
 	int frequency = MIX_DEFAULT_FREQUENCY;
-	int size = MIX_DEFAULT_FORMAT;
+	Uint16 size = MIX_DEFAULT_FORMAT;
 	int stereo = MIX_DEFAULT_CHANNELS;
 
 	VALUE frequencyValue, sizeValue, stereoValue;
 
 	switch(rb_scan_args(argc, argv, "03", &frequencyValue, &sizeValue, &stereoValue)){
 		case 3:	stereo=NUM2INT(stereoValue);
-		case 2:	size=NUM2INT(sizeValue);
+		case 2:	size=NUM2Uint16(sizeValue);
 		case 1:	frequency=NUM2INT(frequencyValue);
 	}
 

@@ -33,9 +33,9 @@ void VALUE2SDL_COLOR(VALUE colorObject, SDL_Color* color)
 	if(rb_obj_is_kind_of(colorObject, rb_cArray)){
 		switch(RARRAY(colorObject)->len){
 			case 4:	
-			case 3:	color->r=NUM2UINT(rb_ary_entry(colorObject, 0)),
-				color->g=NUM2UINT(rb_ary_entry(colorObject, 1)),
-				color->b=NUM2UINT(rb_ary_entry(colorObject, 2));
+			case 3:	color->r=(Uint8)NUM2UINT(rb_ary_entry(colorObject, 0)),
+				color->g=(Uint8)NUM2UINT(rb_ary_entry(colorObject, 1)),
+				color->b=(Uint8)NUM2UINT(rb_ary_entry(colorObject, 2));
 				break;
 			default:
 				rb_raise(rb_eTypeError, "Need colorarray with 3 or 4 elements");

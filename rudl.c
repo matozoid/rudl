@@ -12,6 +12,10 @@
 #include "rudl_ttf.h"
 #include "rudl_video.h"
 
+#ifdef HAVE_SGE_H
+#include "sge.h"
+#endif
+
 // For getting versions:
 #ifdef HAVE_SDL_MIXER_H
 	#include "SDL_mixer.h"
@@ -37,7 +41,6 @@ QDGlobals qd;
 #endif
 
 ///////////////////////////////// "CORE"
-
 void initSDL()
 {
 	if(!sDLInitWasCalled){
@@ -54,11 +57,6 @@ void initSDL()
 		rb_eval_string("Kernel.at_exit {RUDL.at_exit}");
 		sDLInitWasCalled=true;
 	}
-}
-
-static VALUE RUDL_version(VALUE obj)
-{
-	return rb_float_new(RUDLVERSION);
 }
 
 static VALUE RUDL_at_exit(VALUE obj)
@@ -116,19 +114,42 @@ VALUE RUDL_is_init(VALUE obj, VALUE flags)
 	return UINT2NUM(SDL_WasInit(PARAMETER2FLAGS(flags)));
 }
 
-VALUE RUDL_used_libraries(VALUE self)
+static VALUE RUDL_versions(VALUE self)
 {
-	VALUE retval=rb_hash_new();
+	char versions[8192]; // Ugh
+	sprintf(versions, "{"
+		"'RUDL'=>RUDL::Version.new(%i,%i,%i),"
+	
 #ifdef HAVE_SDL_IMAGE_H
-	rb_hash_aset(retval, CSTR2STR("SDL_image"), DBL2NUM(0.0));
+		"'SDL_image'=>RUDL::Version.new,"
 #endif
 #ifdef HAVE_SDL_MIXER_H
-	rb_hash_aset(retval, CSTR2STR("SDL_mixer"), DBL2NUM(MIX_MAJOR_VERSION+(MIX_MINOR_VERSION/10.)));
+		"'SDL_mixer'=>RUDL::Version.new(%i, %i),"
 #endif
 #ifdef HAVE_SDL_TTF_H
-	rb_hash_aset(retval, CSTR2STR("SDL_ttf"), DBL2NUM(0.0));
+		"'SDL_ttf'=>RUDL::Version.new,"
 #endif
-	return retval;
+#ifdef HAVE_SGE_H
+		"'SGE'=>RUDL::Version.new(%i),"
+#endif
+	"}"
+
+	,RUDLVERSION_MAJOR, RUDLVERSION_MINOR, RUDLVERSION_PATCH
+#ifdef HAVE_SDL_IMAGE_H
+	// no version info
+#endif
+#ifdef HAVE_SDL_MIXER_H
+	,MIX_MAJOR_VERSION ,MIX_MINOR_VERSION
+#endif
+#ifdef HAVE_SDL_TTF_H
+	// no version info
+#endif
+#ifdef HAVE_SGE_H
+	,SGE_VER // This gets interpreted as octal! No idea how to fix this...
+#endif
+	);
+	
+	return rb_eval_string(versions);
 }
 
 //////////////////////////////////
@@ -139,13 +160,14 @@ VALUE RUDL_used_libraries(VALUE self)
 Module (({RUDL})) contains all RUDL classes as inner classes.
 It has some class methods of its own too.
 == Class Methods
---- RUDL.version
-    Returns a Float containing RUDL's version number.
---- RUDL.used_libraries
+--- RUDL.version and RUDL.used_libraries
+    No longer implemented, use versions instead.
+--- RUDL.versions
     Returns hash of librarynames with their versionnumbers that are supported by RUDL.
     This list was determined when RUDL was compiled for a certain system,
     and might change when other libraries have been installed or removed
     and RUDL is recompiled.
+    This includes "RUDL" itself.
 = SDLError
 SDLError is the class that is thrown when SDL or RUDL find an SDL-specific
 problem.
@@ -155,19 +177,42 @@ All for the hacked ((|init|)):
 INIT_TIMER, INIT_AUDIO, INIT_VIDEO, INIT_CDROM, INIT_JOYSTICK, INIT_NOPARACHUTE, INIT_EVERYTHING
 =end */
 
-void Init_RUDL()
+DECKLSPECKL void Init_RUDL()
 {
 	moduleRUDL=rb_define_module("RUDL");
 
-	rb_define_singleton_method(moduleRUDL, "version", RUDL_version, 0);
 	rb_define_singleton_method(moduleRUDL, "at_exit", RUDL_at_exit, 0);
 	rb_define_singleton_method(moduleRUDL, "init_subsystem", RUDL_init, 1);
 	rb_define_singleton_method(moduleRUDL, "quit_subsystem", RUDL_quit, 1);
 	rb_define_singleton_method(moduleRUDL, "is_subsystem_init", RUDL_is_init, 1);
-	rb_define_singleton_method(moduleRUDL, "used_libraries", RUDL_used_libraries, 0);
+	rb_define_singleton_method(moduleRUDL, "versions", RUDL_versions, 0);
 
 	classSDLError=rb_define_class("SDLError", rb_eStandardError);
 	moduleConstant=rb_define_module_under(moduleRUDL, "Constant");
+
+	rb_eval_string(
+		"module RUDL\n"
+		"	class Version\n"
+		"		attr_accessor :major, :minor, :patch, :deepest\n"
+		"		def <(v)\n"
+		"			(@major<v.major) or\n"
+		"			(@major==v.major and @minor<v.minor) or\n"
+		"			(@major==v.major and @minor==v.minor and @patch<v.patch) or\n"
+		"			(@major==v.major and @minor==v.minor and @patch==v.patch and @deepest<v.deepest)\n"
+		"		end\n"
+		"		def initialize(major=0, minor=0, patch=0, deepest=0)\n"
+		"			@major=major\n"
+		"			@minor=minor\n"
+		"			@patch=patch\n"
+		"			@deepest=deepest\n"
+		"		end\n"
+		"		def to_s\n"
+		"			\"#{major}.#{minor}.#{patch}.#{deepest}\""
+		"		end\n"
+		"	end\n"
+		"end\n"
+	);
+
 
 	id_begin=rb_intern("begin");
 	id_end=rb_intern("end");
