@@ -5,7 +5,6 @@
 #include "rudl_events.h"
 #include "rudl_joystick.h"
 #include "rudl_keyboard.h"
-//#include "rudl_mappy.h"
 #include "rudl_mouse.h"
 #include "rudl_sfont.h"
 #include "rudl_timer.h"
@@ -34,6 +33,9 @@
 #endif
 #ifdef HAVE_SDL_ROTOZOOM_H
 	#include "SDL_rotozoom.h"
+#endif
+#ifdef HAVE_SDL_NET_H
+	#include "SDL_net.h"
 #endif
 //
 
@@ -74,6 +76,9 @@ void initSDL()
 static VALUE RUDL_at_exit(VALUE obj)
 {
 	DEBUG_S("Reached RUDL_at_exit");
+#ifdef HAVE_SDL_NET_H
+	quitNet();
+#endif
 	quitJoystick();
 #ifdef HAVE_SDL_MIXER_H
 	quitAudio();
@@ -162,6 +167,9 @@ static VALUE RUDL_versions(VALUE self)
 #ifdef HAVE_SMPEG_SMPEG_H
 		"'smpeg'=>RUDL::Version.new(%i, %i, %i),\n"
 #endif
+#ifdef HAVE_SDL_NET_H
+		"'net'=>RUDL::Version.new,\n"
+#endif
 	"}"
 
 	,RUDLVERSION_MAJOR, RUDLVERSION_MINOR, RUDLVERSION_PATCH
@@ -190,6 +198,9 @@ static VALUE RUDL_versions(VALUE self)
 #endif
 #ifdef HAVE_SMPEG_SMPEG_H
 	,SMPEG_MAJOR_VERSION, SMPEG_MINOR_VERSION, SMPEG_PATCHLEVEL
+#endif
+#ifdef HAVE_SDL_NET_H
+	// no version info
 #endif
 	);
 	
@@ -300,7 +311,8 @@ DECKLSPECKL void Init_RUDL()
 	initTimerClasses();
 	initVideoClasses();
 	initSFontClasses();
-	initOverlay();
+	initFLXClasses();
+	initNetClasses();
 	initSDL();
 }
 

@@ -3,11 +3,11 @@
 
 #define RUDL_ENDMUSICEVENT (SDL_USEREVENT+1)
 
-VALUE classSound;
-VALUE classChannel;
-VALUE classMixer;
-VALUE classMusic;
-VALUE classEndOfMusicEvent;
+extern VALUE classSound;
+extern VALUE classChannel;
+extern VALUE classMixer;
+extern VALUE classMusic;
+extern VALUE classEndOfMusicEvent;
 
 extern void initAudioClasses();
 extern void quitAudio();

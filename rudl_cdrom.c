@@ -1,6 +1,9 @@
 /* RUDL - a C library wrapping SDL for use in Ruby. Copyright (C) 2001  Danny van Bruggen */
 #include "rudl_cdrom.h"
 
+VALUE classCD;
+VALUE classCDROM;
+
 //////////////////
 void initCD()
 {

@@ -79,7 +79,7 @@ containing 32 bit values with bits set where the colorcomponent should be stored
 For example: [0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF] describes a 32 bit color
 with red in the highest values.
 =end */
-static VALUE surface_new(int argc, VALUE* argv, VALUE self)
+VALUE surface_new(int argc, VALUE* argv, VALUE self)
 {
 	Uint32 flags = 0;
 	Uint16 width, height;
