@@ -14,4 +14,4 @@ typedef struct RUDLMapTile{
 typedef RUDLMap{
 	Uint16 w,h;
 	RUDLMapTile** tile;
-} RUDLMap; 
+} RUDLMap;

@@ -44,6 +44,7 @@ static VALUE joystick_new(VALUE self, VALUE id)
 		return Data_Wrap_Struct(classJoystick, 0, 0, joystick);
 	}
 	SDL_RAISE;
+
 	return Qnil;
 }
 
@@ -59,7 +60,6 @@ SDL_Joystick* retrieveJoystickPointer(VALUE self)
 --- Joystick.count
 Returns the amount of joysticks attached to the computer.
 =end */
-
 static VALUE joystick_count(VALUE self)
 {
 	initJoystick();
@@ -175,6 +175,7 @@ static VALUE joystick_close_hack(VALUE self)
 
 void initJoystickClasses()
 {
+
 	classJoystick=rb_define_class_under(moduleRUDL, "Joystick", rb_cObject);
 	rb_define_singleton_method(classJoystick, "new", joystick_new, 1);
 	rb_define_singleton_method(classJoystick, "count", joystick_count, 0);
@@ -196,7 +197,7 @@ void initJoystickClasses()
 		"	end									\n"
 		"end end								\n"
 	);
-	
+
 /*
 =begin
 = JoyAxisEvent

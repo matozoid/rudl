@@ -38,6 +38,7 @@ typedef struct {
   int screen_h;
   int screen_depth;
   int loop;
+
   int lastFrameTicks;
 } FLC;
 
@@ -45,8 +46,10 @@ typedef struct {
 #define ReadU32(tmp1, tmp2) (Uint32)*(tmp1) = (((((((Uint8)*(tmp2+3)<<8)+((Uint8)*(tmp2+2)))<<8)+((Uint8)*(tmp2+1)))<<8)+(Uint8)*(tmp2));
 
 
+
 void FlcReadFile(FLC*flc, Uint32 size)
 { 
+
 	if(size>flc->membufSize) {
 		RUDL_VERIFY((flc->pMembuf=realloc(flc->pMembuf, size+1)), "Realloc failed");
 	}
@@ -55,6 +58,7 @@ void FlcReadFile(FLC*flc, Uint32 size)
 
 int FlcCheckHeader(FLC*flc ,char *filename)
 { 
+
 	if((flc->file=fopen(filename, "rb"))==NULL) {
 		return(0);
 	}
@@ -83,6 +87,7 @@ int FlcCheckHeader(FLC*flc ,char *filename)
 
 int FlcCheckFrame(FLC*flc)
 { 
+
 	flc->pFrame=flc->pMembuf+flc->FrameSize-16;
 	ReadU32(&flc->FrameSize, flc->pFrame+0);
 	ReadU16(&flc->FrameCheck, flc->pFrame+4);
@@ -103,13 +108,17 @@ int FlcCheckFrame(FLC*flc)
 
 void COLORS256(FLC*flc)
 { 
+
 	Uint8 *pSrc;
 	Uint16 NumColorPackets;
 	Uint16 NumColors;
 	Uint8 NumColorsSkip;
 	int i;
+
 	SDL_Surface*surface=retrieveSurfacePointer(flc->surface);
+
 	
+
 	pSrc=flc->pChunk+6;
 	ReadU16(&NumColorPackets, pSrc);
 	pSrc+=2;
@@ -135,6 +144,7 @@ void SS2(FLC*flc)
   Uint8 ColumSkip, Fill1, Fill2;
   Uint16 Lines, Count;
 	SDL_Surface*surface=retrieveSurfacePointer(flc->surface);
+
 
   pSrc=flc->pChunk+6;
   pDst=surface->pixels;
@@ -196,6 +206,7 @@ void DECODE_BRUN(FLC*flc)
   int HeightCount, PacketsCount;
 	SDL_Surface*surface=retrieveSurfacePointer(flc->surface);
 
+
   HeightCount=flc->HeaderHeight;
   pSrc=flc->pChunk+6;
   pDst=surface->pixels;
@@ -231,6 +242,7 @@ void DECODE_LC(FLC*flc)
   Uint16 Lines, tmp;
   int PacketsCount;
 	SDL_Surface*surface=retrieveSurfacePointer(flc->surface);
+
 
   pSrc=flc->pChunk+6;
   pDst=surface->pixels;
@@ -272,6 +284,7 @@ void DECODE_COLOR(FLC*flc)
   int i;
 	SDL_Surface*surface=retrieveSurfacePointer(flc->surface);
 
+
   pSrc=flc->pChunk+6;
   ReadU16(&NumColorPackets, pSrc);
   pSrc+=2;
@@ -294,7 +307,10 @@ void DECODE_COLOR(FLC*flc)
 
 void DECODE_COPY(FLC*flc)
 {
+
 	SDL_Surface*surface=retrieveSurfacePointer(flc->surface);
+
+
 
 	Uint8 *pSrc, *pDst;
 	int Lines = flc->screen_h;
@@ -309,9 +325,11 @@ void DECODE_COPY(FLC*flc)
 
 void BLACK(FLC*flc)
 {
+
 	Uint8 *pDst;
 	int Lines = flc->screen_h;
 	SDL_Surface*surface=retrieveSurfacePointer(flc->surface);
+
 	pDst=surface->pixels;
 	while(Lines-- > 0) {
 		memset(pDst, 0, flc->screen_w);
@@ -322,15 +340,20 @@ void BLACK(FLC*flc)
 
 void FlcDoOneFrame(FLC*flc)
 {
+
 	int ChunkCount; 
+
 	SDL_Surface*surface=retrieveSurfacePointer(flc->surface);
+
 	ChunkCount=flc->FrameChunks;
 	flc->pChunk=flc->pMembuf;
+
 	if ( SDL_LockSurface(surface) < 0 )
 		return;
 	while(ChunkCount--) {
 		ReadU32(&flc->ChunkSize, flc->pChunk+0);
 		ReadU16(&flc->ChunkType, flc->pChunk+4);
+
 
 		switch(flc->ChunkType) {
 			case 4:
@@ -382,6 +405,7 @@ void SDLWaitFrame(FLC*flc)
 */
 void FlcInitFirstFrame(FLC*flc)
 { 
+
 	flc->FrameSize=16;
 	flc->FrameCount=0;
 	if(fseek(flc->file, 128, SEEK_SET)) {
@@ -391,36 +415,54 @@ void FlcInitFirstFrame(FLC*flc)
 	FlcReadFile(flc, flc->FrameSize);
 }
 
+
+
 void FLCMark(FLC*flc)
+
 {
+
 	rb_gc_mark(flc->surface);
+
 }
 
 void FlcInit(FLC*flc, char *filename)
 { 
+
 	VALUE args[3];
+
+
 
 	flc->pMembuf=NULL;
 	flc->membufSize=0;
 
 	RUDL_VERIFY(FlcCheckHeader(flc, filename), "Wrong header");
 
+
+
 	args[0]=rb_ary_new3(2, INT2NUM(flc->HeaderWidth), INT2NUM(flc->HeaderHeight));
+
 	args[1]=UINT2NUM(SDL_SWSURFACE);
+
 	args[2]=INT2NUM(flc->HeaderDepth);
+
 	flc->surface=surface_new(3, args, classSurface);
+
 	flc->lastFrameTicks=SDL_GetTicks();
+
 }
 
 void FlcDeInit(FLC*flc)
 { 
+
 	flc->surface=Qnil;
+
 	fclose(flc->file);
 	free(flc->pMembuf);
 }
 
 void FlcMain(FLC*flc)
 {
+
 /*	int quit=0;
 	SDL_Event event;
 	FlcInitFirstFrame(flc);

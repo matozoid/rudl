@@ -34,6 +34,7 @@
 #ifdef HAVE_SDL_ROTOZOOM_H
 	#include "SDL_rotozoom.h"
 #endif
+
 #ifdef HAVE_SDL_NET_H
 	#include "SDL_net.h"
 #endif
@@ -43,9 +44,11 @@ bool sDLInitWasCalled=false;
 
 VALUE id_new;
 VALUE id_clone;
+
 ID id_begin; // For ranges
 ID id_end;
 VALUE moduleRUDL;
+
 VALUE classPit;
 VALUE classSDLError;
 VALUE moduleConstant;
@@ -85,6 +88,7 @@ static VALUE RUDL_at_exit(VALUE obj)
 #endif
 	quitVideo();
 	quitTTF();
+
 	DEBUG_S("Quitting the rest of it");
 	SDL_Quit();
 	return Qnil;
@@ -94,6 +98,7 @@ __inline__ Uint32 PARAMETER2FLAGS(VALUE flagsArg)
 {
 	Uint32 flags=0;
 	int i;
+
 	VALUE tmp;
 
 	if(rb_obj_is_kind_of(flagsArg, rb_cArray)){
@@ -171,7 +176,6 @@ static VALUE RUDL_versions(VALUE self)
 		"'net'=>RUDL::Version.new,\n"
 #endif
 	"}"
-
 	,RUDLVERSION_MAJOR, RUDLVERSION_MINOR, RUDLVERSION_PATCH
 	,SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_PATCHLEVEL
 	// no version info (BitMask)
@@ -199,11 +203,11 @@ static VALUE RUDL_versions(VALUE self)
 #ifdef HAVE_SMPEG_SMPEG_H
 	,SMPEG_MAJOR_VERSION, SMPEG_MINOR_VERSION, SMPEG_PATCHLEVEL
 #endif
+
 #ifdef HAVE_SDL_NET_H
 	// no version info
 #endif
 	);
-	
 	return rb_eval_string(versions);
 }
 
@@ -244,15 +248,15 @@ problem.
 = Constants
 All for the hacked ((|init_subsystem|)) and ((|quit_subsystem|)),
 which should officially never be needed:
-
 INIT_TIMER, INIT_AUDIO, INIT_VIDEO, INIT_CDROM, INIT_JOYSTICK, INIT_NOPARACHUTE, INIT_EVERYTHING
 =end */
 
 DECKLSPECKL void Init_RUDL()
 {
 	DEBUG_S("Init_RUDL()");
-	moduleRUDL=rb_define_module("RUDL");
 
+	moduleRUDL=rb_define_module("RUDL");
+	
 	rb_define_singleton_method(moduleRUDL, "at_exit", RUDL_at_exit, 0);
 	rb_define_singleton_method(moduleRUDL, "init_subsystem", RUDL_init, 1);
 	rb_define_singleton_method(moduleRUDL, "quit_subsystem", RUDL_quit, 1);
@@ -287,7 +291,6 @@ DECKLSPECKL void Init_RUDL()
 		"end\n"
 	);
 
-
 	id_begin=rb_intern("begin");
 	id_end=rb_intern("end");
 	id_new=rb_intern("new");
@@ -312,8 +315,10 @@ DECKLSPECKL void Init_RUDL()
 	initVideoClasses();
 	initSFontClasses();
 	initFLXClasses();
+
 	initNetClasses();
 	initSDL();
+
 }
 
 /*

@@ -109,8 +109,6 @@ static VALUE key_set_repeat(VALUE self, VALUE delay, VALUE interval)
 	return self;
 }
 
-
-
 void initKeyClasses()
 {
 	classKey=rb_define_class_under(moduleRUDL, "Key", rb_cObject);
