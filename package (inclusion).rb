@@ -82,7 +82,7 @@ def zipit(what)
 
     # I hope the command line doesn't get truncated :)
     puts "Zipping #{outfile}..."
-    system("zip -9 -q #{outfile} " + filelist)
+    `zip -9 -q #{outfile} #{filelist}`
 end
 
 main
