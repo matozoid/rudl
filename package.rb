@@ -3,6 +3,7 @@
 
 # by Rennex
 
+require "ftools"
 
 # settings
 $destdir        = "rudl_packages"
@@ -120,18 +121,58 @@ def zipit(what)
 
     if not $list
         Dir.mkdir($destdir) unless File.exists?($destdir)
-        # zip em up! one at a time, to avoid truncated command lines
-        if what == "source"
-            outfile = "#$destdir/rudl-#$version-source.tar"
 
-            puts "Tarring #{outfile}..."
-            system("tar -cf #{outfile} \"#{files.shift}\"")
-            files.each do |filename|
-                system("tar -rf #{outfile} \"#{filename}\"")
+        # creating source package?
+        if what == "source"
+            outfile = "rudl-#$version-source.tar"
+            tempdir2 = "rudl-#$version/"
+            tempdir = "#$destdir/#{tempdir2}"
+
+            puts "Tarring #$destdir/#{outfile}..."
+
+            if File.exists?(tempdir)
+                unless Dir[tempdir + "*"].empty?
+                    puts "Temporary directory #{tempdir} already contains files!"
+                    exit
+                end
+            else
+                Dir.mkdir(tempdir)
             end
+
+            rem = []    # tempfiles to be deleted afterwards
+
+            # copy each file to the tempdir, and log the actions
+            files.each do |filename|
+                targetdir = tempdir + File.dirname(filename)
+                unless File.dirname(filename) == "." or File.exists?(targetdir)
+                    Dir.mkdir(targetdir)
+                    rem << ["dir", targetdir]
+                end
+                File.syscopy(filename, tempdir + filename)
+                rem << ["file", tempdir + filename]
+            end
+
+            olddir = Dir.pwd
+            Dir.chdir($destdir)
+
+            system("tar -cf #{outfile} #{tempdir2}")
 
             puts "GZipping #{outfile}.gz..."
             system("gzip -f9 #{outfile}")
+
+            Dir.chdir(olddir)
+
+            puts "Deleting temporary files..."
+            rem.reverse.each do |filetype, filename|
+                if filetype == "dir"
+                    Dir.delete(filename)
+                else
+                    File.delete(filename)
+                end
+            end
+
+            Dir.delete(tempdir)
+
         else
             if what == "setup-release"
             else
@@ -141,6 +182,7 @@ def zipit(what)
 
             File.delete(outfile) if File.exists?(outfile)
 
+            # zip em up! one at a time, to avoid truncated command lines
             puts "Zipping #{outfile}..."
             files.each do |filename|
                 system("zip -9 -q #{outfile} \"#{filename}\"")
