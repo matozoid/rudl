@@ -31,17 +31,24 @@ __inline__ SDL_Surface* retrieveSurfacePointer(VALUE self)
 	return surface;
 }
 
-__inline__ void setMasksFromBPP(Uint32 bpp, Uint32* Rmask, Uint32* Gmask, Uint32* Bmask, Uint32* Amask)
+__inline__ void setMasksFromBPP(Uint32 bpp, boolean alphaWanted, Uint32* Rmask, Uint32* Gmask, Uint32* Bmask, Uint32* Amask)
 {
 	*Amask = 0;
-	switch(bpp){
-		case 8:  *Rmask = 0xFF >> 6 << 5; *Gmask = 0xFF >> 5 << 2; *Bmask = 0xFF >> 6; break;
-		case 12: *Rmask = 0xFF >> 4 << 8; *Gmask = 0xFF >> 4 << 4; *Bmask = 0xFF >> 4; break;
-		case 15: *Rmask = 0xFF >> 3 << 10; *Gmask = 0xFF >> 3 << 5; *Bmask = 0xFF >> 3; break;
-		case 16: *Rmask = 0xFF >> 3 << 11; *Gmask = 0xFF >> 2 << 5; *Bmask = 0xFF >> 3; break;
-		case 24:
-		case 32: *Rmask = 0xFF << 16; *Gmask = 0xFF << 8; *Bmask = 0xFF; break;
-		default: SDL_RAISE_S("no standard masks exist for given bitdepth");
+	DEBUG_I(bpp);
+	DEBUG_I(alphaWanted);
+	if(alphaWanted && bpp==32){
+		*Rmask = 0xFF << 32; *Gmask = 0xFF << 16; *Bmask = 0xFF << 8; *Amask=0xFF;
+		DEBUG_S("alpha added");
+	}else{
+		switch(bpp){
+			case 8:  *Rmask = 0xFF >> 6 << 5; *Gmask = 0xFF >> 5 << 2; *Bmask = 0xFF >> 6; break;
+			case 12: *Rmask = 0xFF >> 4 << 8; *Gmask = 0xFF >> 4 << 4; *Bmask = 0xFF >> 4; break;
+			case 15: *Rmask = 0xFF >> 3 << 10; *Gmask = 0xFF >> 3 << 5; *Bmask = 0xFF >> 3; break;
+			case 16: *Rmask = 0xFF >> 3 << 11; *Gmask = 0xFF >> 2 << 5; *Bmask = 0xFF >> 3; break;
+			case 24:
+			case 32: *Rmask = 0xFF << 16; *Gmask = 0xFF << 8; *Bmask = 0xFF; break;
+			default: SDL_RAISE_S("no standard masks exist for given bitdepth");
+		}
 	}
 }
 
@@ -74,14 +81,32 @@ If a surface is supplied, it is used to copy the values from that aren't given.
 * SRCALPHA: This flag turns on alpha-blending for blits from this surface. If SDL_HWSURFACE 
 	is also specified and alpha-blending blits are hardware-accelerated, then the surface 
 	will be placed in video memory if possible. Use SDL_SetAlpha to set or clear this flag 
-	after surface creation.
+	after surface creation. For a 32 bitdepth surface, an alpha mask will automatically be
+	added, in other cases, you will have to specify a mask.
 
 ((|depth|)) is bitdepth, like 8, 15, 16, 24 or 32.
 
 ((|masks|)) describes the format for the pixels and is an array of [R, G, B, A]
 containing 32 bit values with bits set where the colorcomponent should be stored.
 For example: [0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF] describes a 32 bit color
-with red in the highest values.
+with red in the highest values and an alpha channel. If it is not specified, the following
+defaults are used:
+
+RRGGGBB (8bpp)
+
+RRRR GGGGBBBB (12bpp)
+
+RRRRRGG GGGBBBBB (15bpp)
+
+RRRRRGGG GGGBBBBB (16bpp)
+
+RRRRRRRR GGGGGGGG BBBBBBBB (24 bpp)
+
+........ RRRRRRRR GGGGGGGG BBBBBBBB (32 bpp)
+
+RRRRRRRR GGGGGGGG BBBBBBBB AAAAAAAA (32 bpp, SRCALPHA set)
+
+Normally this shouldn't have to be of interest.
 =end */
 VALUE surface_new(int argc, VALUE* argv, VALUE self)
 {
@@ -94,152 +119,81 @@ VALUE surface_new(int argc, VALUE* argv, VALUE self)
 
 	VALUE sizeObject, surfaceOrFlagsObject, surfaceOrDepthObject, masksObject;
 
-
-
 	SDL_PixelFormat* pix=NULL;
 
-
-
 	initVideo();
-
 	
-
 	rb_scan_args(argc, argv, "13", &sizeObject, &surfaceOrFlagsObject, &surfaceOrDepthObject, &masksObject);
-
-
 
 	PARAMETER2COORD(sizeObject, &width, &height);
 
-
-
 	if(argc>1){
-
 		if(rb_obj_is_kind_of(surfaceOrFlagsObject, classSurface)){ // got surface on pos 1
-
 			pix=retrieveSurfacePointer(surfaceOrFlagsObject)->format;
-
 			flags=retrieveSurfacePointer(surfaceOrFlagsObject)->flags;
-
 		}else{
-
 			flags=PARAMETER2FLAGS(surfaceOrFlagsObject);
 
-
-
 			if(argc>2){ // got surface on pos 2, or depth
-
 			
-
 				if(rb_obj_is_kind_of(surfaceOrDepthObject, classSurface)){ // got Surface on pos 2
-
 					if(argc==3){
-
 						pix=retrieveSurfacePointer(surfaceOrDepthObject)->format;
-
 					}else{
-
 						SDL_RAISE_S("masks are taken from surface");
-
 						return Qnil;
-
 					}
-
 				}else{ // got depth
-
 					bpp=NUM2Sint16(surfaceOrDepthObject);
-
 					if(argc==4){ // got masks
-
 						Check_Type(masksObject, T_ARRAY);
-
 						if(RARRAY(masksObject)->len==4){
-
 							tmp=rb_ary_entry(masksObject, 0);	Rmask=NUM2UINT(tmp);
-
 							tmp=rb_ary_entry(masksObject, 1);	Gmask=NUM2UINT(tmp);
-
 							tmp=rb_ary_entry(masksObject, 2);	Bmask=NUM2UINT(tmp);
-
 							tmp=rb_ary_entry(masksObject, 3);	Amask=NUM2UINT(tmp);
-
 						}else{
-
 							SDL_RAISE_S("Need 4 elements in masks array");
-
 						}
-
 					}else{ // no masks
-
-						setMasksFromBPP(bpp, &Rmask, &Gmask, &Bmask, &Amask);
-
+						boolean alpha=flags&SDL_SRCALPHA>0;
+						DEBUG_I(flags&SDL_SRCALPHA>0);
+						DEBUG_I((flags&SDL_SRCALPHA)>0);
+						setMasksFromBPP(bpp, (flags&SDL_SRCALPHA)>0, &Rmask, &Gmask, &Bmask, &Amask);
 					}
-
 				}
-
 			}else{
-
 				wildGuess=true; // only size and flags given
-
 			}
-
 		}
-
 	}else{ // only size given... Guess a bit:
-
 		wildGuess=true;
-
 	}
-
-
 
 	if(wildGuess){
-
 		if(SDL_GetVideoSurface()){
-
 			pix = SDL_GetVideoSurface()->format;
-
 		}else{
-
 			pix = SDL_GetVideoInfo()->vfmt;
-
 		}
-
 	}
-
-
 
 	if(pix){
-
 		bpp = pix->BitsPerPixel;
-
 		Rmask = pix->Rmask;
-
 		Gmask = pix->Gmask;
-
 		Bmask = pix->Bmask;
-
 		Amask = pix->Amask;
-
 	}
 
-
-
 	return createSurfaceObject(SDL_CreateRGBSurface(flags, width, height, bpp, Rmask, Gmask, Bmask, Amask));
-
 }
 
-
-
 /*
-
 =begin
-
 --- Surface.load_new( filename )
-
 --- String.to_surface
-
 This creates a (({Surface})) with an image in it, 
-
 loaded from disk from ((|filename|)) by using load_new
 
 or loaded by treating ((|String|)) as the image data when using to_surface.
