@@ -85,6 +85,8 @@ __inline__ int retrieveChannelNumber(VALUE channel)
 =begin
 <<< docs/head
 
+= Audio
+
 On this page, there are various classes for sound output.
 The system consists of a mixer that will mix several sounds,
 and one piece of music.
@@ -887,7 +889,6 @@ void freemusic(Mix_Music* m)
 = Music
 This encapsulates a song.
 For some reason, SDL will only play one song at a time, and even though most of the 
-
 Music methods are instance methods, some will act on the playing Music only.
 == Class Methods
 --- Music.new( filename )
@@ -1123,7 +1124,8 @@ void initAudioClasses()
 	rb_define_singleton_method(classMixer, "init", mixer_initialize, -1);
 /*
 =begin
-= EndOfMusicEvent
+= Events
+--- EndOfMusicEvent
 This event is posted when the current music has ended.
 =end */
 	classEndOfMusicEvent=rb_define_class_under(moduleRUDL, "EndOfMusicEvent", rb_cObject);

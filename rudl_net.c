@@ -1,4 +1,7 @@
 /* RUDL - a C library wrapping SDL for use in Ruby. Copyright (C) 2001  Danny van Bruggen */
+
+// DONT_GENERATE_RD2_DOCS
+
 #include "rudl_net.h"
 /*
 

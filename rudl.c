@@ -320,21 +320,3 @@ DECKLSPECKL void Init_RUDL()
 	initSDL();
 
 }
-
-/*
-Note to self: RDOC tags
-= H1
-== H2
-=== H3
-==== H4
-+ H5
-  (indented) SOURCE
-* UL LI
-(1) OL LI
---- Class#|.method
-((|var|))
-(({class}))
-((*emphasis*))
-((< >))
-((<URL:http://enz>))
-*/

@@ -1,5 +1,7 @@
+// DONT_GENERATE_RD2_DOCS
+
 /*
-	File copied to RUDL to enable bugfixing
+	File copied from SDL to RUDL to enable bugfixing
 */
 
 /*

@@ -1,3 +1,5 @@
+// DONT_GENERATE_RD2_DOCS
+
 /* Copied from SDL, so it could be modified */
 
 /*
