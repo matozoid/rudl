@@ -1,9 +1,9 @@
 <html>
 <head>
     <title>RUDL tutorial</title>
-    <link rel=stylesheet type='text/css' href='rudl-tutorial.css'>
+    <link rel="stylesheet" title="RUDL theme" href="rudl-tutorial.css" media="screen,projection" />
 </head>
-<body bgcolor="#f0f0f0">
+<body>
 
 <h1>RUDL Tutorial</h1>
 
@@ -14,8 +14,8 @@
 With RUDL you can create impressive games, applications, animations,
 visualizations, or whatever you want. And it's quick and more importantly,
 FUN to do, thanks to the ease of Ruby programming. Ruby is also fast
-enough for surprisingly complex things, so prototyping your graphics-related
-ideas with it is very easy.
+enough for surprisingly complex things, so prototyping your ideas that
+need graphics is very easy.
 </p>
 
 <p>This tutorial assumes previous knowledge of the following:</p>
@@ -23,16 +23,19 @@ ideas with it is very easy.
     <li> basics of Ruby programming </li>
     <li> basics of computer graphics: what are..
         <ul>
-            <li>pixels, RGB values</li>
-            <li>bitmap images (a.k.a raster images)</li>
-            <li>Cartesian coordinates (x,y)</li>
+            <li> pixels, RGB values </li>
+            <li> bitmap images (a.k.a raster images) </li>
+            <li> Cartesian coordinates (x,y) </li>
         </ul>
     </li>
 </ul>
 
 <p>Installing RUDL is explained in <a href="howto_install.html">another document</a>.
-<p>We recommend trying out all the examples in this tutorial to see what exactly
-they do. After reading this tutorial, you'll be well on your way to creating the
+<p>We recommend trying out all the examples in this tutorial as they are presented,
+to see what exactly they do. You can find them in the <b>docs/tutorial-files/</b> directory
+ready to run.</p>
+
+<p>After reading this tutorial, you'll be well on your way to creating the
 next RUDL masterpiece!
 </p>
 
@@ -40,7 +43,10 @@ next RUDL masterpiece!
 <h2>Opening a window or screen</h2>
 
 <p>Naturally the first thing we'll need is a window to draw on, or the whole screen.
-We need to load the RUDL library and create a DisplaySurface. The following example
+We need to load the RUDL library and create a DisplaySurface. A DisplaySurface
+object represents an on-screen bitmap (a window or the full screen).</p>
+
+<p>The following example (<a href="tutorial-files/window1.rb">window1.rb</a>)
 opens a window 300 pixels wide and 200 pixels high, waits for 3 seconds, and exits.</p>
 <pre>
 require "RUDL"
@@ -54,30 +60,187 @@ sleep 3
 
 <p>First, we load the RUDL library with <code>require "RUDL"</code> (where "RUDL" must be written in
 upper case). RUDL defines its classes under the module named <code>RUDL</code>, and all constants
-in module <code>RUDL::Constant</code>. We <code>include</code> those modules at the top level, so that
-we won't need to type <code>RUDL::</code> in front of all RUDL class names.
+in module <code>RUDL::Constant</code>. We <code>include</code> those modules at the top level,
+so that we won't need to type <code>RUDL::</code> in front of all RUDL class names.
 </p>
 
 <p>You'll notice that the window size, 300x200, is given as an array. All coordinates in RUDL are
-expressed as [x, y] arrays, and rectangles are [x, y, width, height]. When creating surfaces
-for example, the sizes are [width, height] arrays. RUDL defines some
-<a href="rudl_video_rect.html">shortcut methods</a> in the Array class, most notably
-<code>Array#x</code> and <code>Array#y</code>. These return the first and
-second element, respectively.
+expressed as [x,&nbsp;y] arrays, and rectangles are [x,&nbsp;y,&nbsp;width,&nbsp;height].
+Sizes of surfaces are logically [width,&nbsp;height] arrays. RUDL defines some shortcut methods
+in the Array class, most notably <code>Array#x</code> and <code>Array#y</code>. These
+return the first and second element, respectively.
 </p>
-<blockquote>(make this a fancy "hint box"? is this hint 100% accurate?-) You can also use floating point
-values for coordinates, and they will automatically be rounded down to integers.
+<blockquote>(make this a fancy "hint box"? is this hint 100% accurate?-) You can use floating point
+values directly for coordinates, and they will automatically be rounded down to integers.
 </blockquote>
 
 <p><code>DisplaySurface.new</code> takes optional second and third arguments. The second
-argument can contain flags, which are usually omitted, or <code>FULLSCREEN | HWSURFACE</code>
-if you want to set a full screen mode with the given size as the resolution. The third argument is
-the color depth (8 for paletted 256-color, 16 for hi-color, 24 or 32 for true color).
+argument can contain flags, which are usually either omitted, or
+<code>FULLSCREEN&nbsp;|&nbsp;HWSURFACE</code> if you want to set a full screen mode
+with the given size as the resolution. The third argument is the color depth (8 for paletted
+256-color, 16 for hi-color, 24 or 32 for true color).
 </p>
 
+<h3>Temporary event handler</h3>
 
+<p>You probably noticed that our window in the previous example wasn't very responsive.
+You couldn't close it, and on Windows it couldn't even be moved. We need to handle input events,
+but we'll cover that subject a little later. For now, let's replace the <code>sleep&nbsp;3</code>
+line with this code snippet, which simply waits for the window to be closed.
+(<a href="tutorial-files/window2.rb">window2.rb</a>)</p>
+
+<pre>
+loop do
+    event = EventQueue.wait
+    break if event.is_a? QuitEvent
+end
+</pre>
 
 <h2>Drawing primitives</h2>
+
+<p>Remember how a DisplaySurface represents an on-screen bitmap? Well, objects of class
+Surface represent bitmap images in memory (off screen). We can create new surfaces of
+whatever size and bit depth we want, and they'll be initially filled with black, just like
+DisplaySurfaces. The DisplaySurface class inherits drawing methods from Surface, so we
+can draw in the window or in a surface the exact same way.</p>
+
+<p>While drawing lines and circles and other graphics primitives is easy, it can be difficult
+to use them to create something nice. So let's start with a ready-made image to play with.
+Loading images from files in RUDL is as easy as it gets: just supply a file name to
+<code>Surface.load_new</code> and you get a surface containing that image! Supported
+formats include PNG, JPEG, BMP, GIF and many more.</p>
+
+<p>Let's see how to use them, with <a href="tutorial-files/image.rb">image.rb</a>. First
+we open a window, this is all familiar already. Then we <code>fill</code> it with a gray
+color: <code>[128,128,128]</code>. RGB values in RUDL are represented as [r,g,b] arrays
+(or you can use hex values: 0xRRGGBBAA, where A = alpha channel value. We'll use arrays
+for clarity.) </p>
+
+<!--
+</pre>
+
+<p>
+</p>
+<pre>
+-->
+
+<pre>
+require "RUDL"
+include RUDL
+include Constant
+
+win = DisplaySurface.new([300,200])
+win.fill [128,128,128]
+</pre>
+
+<p>Foo
+</p>
+<pre>
+ball = Surface.load_new("ball.gif")
+win.blit(ball, [90,70])
+
+ball.set_colorkey [255,255,255]
+win.blit(ball, [160,70])
+
+ball.set_alpha 128
+win.blit(ball, [125,100])
+
+win.update
+
+loop do
+    event = EventQueue.wait
+    break if event.is_a? QuitEvent
+end
+</pre>
+
+<h3>foo?</h3>
+
+<p>Let's look at a demonstration (<a href="tutorial-files/drawing.rb">drawing.rb</a>).
+First we load RUDL:</p>
+<pre>
+require "RUDL"
+include RUDL
+include Constant
+</pre>
+
+<p>Then we open a window and set its title with <code>set_caption</code> :</p>
+<pre>
+win = DisplaySurface.new([260,200])
+win.set_caption "RUDL gfx example"
+</pre>
+
+<p>Let's fill the window completely with a gray green color, and on top of that, a gray
+blue filled box whose top left corner is at [20,20] and that is 220x160 pixels in size:</p>
+<pre>
+win.fill [128,160,128]
+win.fill [128,128,160], [20,20,220,160]
+</pre>
+
+<p>For readability, we'll assign the RGB values for black and white to variables of the same names.
+Then, we plot a white pixel at [30,30], and demonstrate using the handy <code>[]</code> and
+<code>[]=</code> methods to read and write single pixels, respectively: (<code>plot</code> is
+an alias for <code>[]=</code>)
+</p>
+<pre>
+white = [255,255,255]
+black = [0,0,0]
+
+win.plot [30,30], white
+win[40,40] = win[30,30]
+</pre>
+
+<p>Next, we draw two lines, specifying the starting and ending coordinates and the color:
+</p>
+<pre>
+win.line [70,60], [90,90], black
+win.line [90,90], [120,100], black
+</pre>
+
+<p>Draw a white 30x30 rectangle at 80,30. Also, draw a 10x3 rectangle, which will have
+a one-pixel-thick interior, since the one-pixel-thick borders are included in the size:
+</p>
+<pre>
+win.rectangle [80,30,30,30], white
+win.rectangle [90,50,10,3], white
+</pre>
+
+<p>And now for the big finale. First, we create an (off-screen) Surface and specify only the size,
+letting it copy other properties (mainly the bit depth) from the window surface (<code>win</code>).</p>
+<pre>
+surf = Surface.new [51,71], win
+</pre>
+
+<p>Then we blit (copy) a portion of the window to this new surface. We create a mirrored copy
+of it with <code>mirror_x</code>, and blit that back to the window next to the original picture.
+All this will result in a picture of a stupid-looking smiley.
+</p>
+<pre>
+surf.blit(win, [0,0], [70,30,51,71])
+win.blit(surf.mirror_x, [121,30])
+</pre>
+
+<p>At this point, the window still appears black. All our drawing operations have been
+performed to an off-screen buffer, so that we can take our time composing it without
+the user seeing the progress. Now that we're done, we call <code>update</code> to
+make the changes visible:
+</p>
+<pre>
+win.update
+</pre>
+
+<p>And finish with the same event loop as above, to wait until the window is closed:
+</p>
+<pre>
+loop do
+    event = EventQueue.wait
+    break if event.is_a? QuitEvent
+end
+</pre>
+
+<br>
+<p>There! As you can see, drawing is very straightforward
+</p>
+
 
 <h2>Input events</h2>
 
