@@ -1,0 +1,89 @@
+<html>
+<head>
+    <title>RUDL tutorial</title>
+    <link rel=stylesheet type='text/css' href='rudl-tutorial.css'>
+</head>
+<body bgcolor="#f0f0f0">
+
+<h1>RUDL Tutorial</h1>
+
+
+<h2>Introduction</h2>
+
+<p>This is a short tutorial to RUDL, the SDL library wrapper for Ruby.
+With RUDL you can create impressive games, applications, animations,
+visualizations, or whatever you want. And it's quick and more importantly,
+FUN to do, thanks to the ease of Ruby programming. Ruby is also fast
+enough for surprisingly complex things, so prototyping your graphics-related
+ideas with it is very easy.
+</p>
+
+<p>This tutorial assumes previous knowledge of the following:</p>
+<ul>
+    <li> basics of Ruby programming </li>
+    <li> basics of computer graphics: what are..
+        <ul>
+            <li>pixels, RGB values</li>
+            <li>bitmap images (a.k.a raster images)</li>
+            <li>Cartesian coordinates (x,y)</li>
+        </ul>
+    </li>
+</ul>
+
+<p>Installing RUDL is explained in <a href="howto_install.html">another document</a>.
+<p>We recommend trying out all the examples in this tutorial to see what exactly
+they do. After reading this tutorial, you'll be well on your way to creating the
+next RUDL masterpiece!
+</p>
+
+
+<h2>Opening a window or screen</h2>
+
+<p>Naturally the first thing we'll need is a window to draw on, or the whole screen.
+We need to load the RUDL library and create a DisplaySurface. The following example
+opens a window 300 pixels wide and 200 pixels high, waits for 3 seconds, and exits.</p>
+<pre>
+require "RUDL"
+include RUDL
+include Constant
+
+win = DisplaySurface.new([300,200])
+
+sleep 3
+</pre>
+
+<p>First, we load the RUDL library with <code>require "RUDL"</code> (where "RUDL" must be written in
+upper case). RUDL defines its classes under the module named <code>RUDL</code>, and all constants
+in module <code>RUDL::Constant</code>. We <code>include</code> those modules at the top level, so that
+we won't need to type <code>RUDL::</code> in front of all RUDL class names.
+</p>
+
+<p>You'll notice that the window size, 300x200, is given as an array. All coordinates in RUDL are
+expressed as [x, y] arrays, and rectangles are [x, y, width, height]. When creating surfaces
+for example, the sizes are [width, height] arrays. RUDL defines some
+<a href="rudl_video_rect.html">shortcut methods</a> in the Array class, most notably
+<code>Array#x</code> and <code>Array#y</code>. These return the first and
+second element, respectively.
+</p>
+<blockquote>(make this a fancy "hint box"? is this hint 100% accurate?-) You can also use floating point
+values for coordinates, and they will automatically be rounded down to integers.
+</blockquote>
+
+<p><code>DisplaySurface.new</code> takes optional second and third arguments. The second
+argument can contain flags, which are usually omitted, or <code>FULLSCREEN | HWSURFACE</code>
+if you want to set a full screen mode with the given size as the resolution. The third argument is
+the color depth (8 for paletted 256-color, 16 for hi-color, 24 or 32 for true color).
+</p>
+
+
+
+<h2>Drawing primitives</h2>
+
+<h2>Input events</h2>
+
+
+
+
+
+</body>
+</html>
