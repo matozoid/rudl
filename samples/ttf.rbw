@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require '../RUDL'; include RUDL; include Constant
+require 'RUDL'; include RUDL; include Constant
 
 display=DisplaySurface.new([320,200])
 

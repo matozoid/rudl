@@ -1,10 +1,6 @@
 #!/usr/bin/env ruby
 
-
-# I use ../ because I want to use the RUDL.so that is made by extconf.rb and the makefile.
-# You normally use just:
-# require 'RUDL'
-require '../RUDL'
+require 'RUDL'
 
 # Namespaces are boring, let's get rid of them.
 include RUDL

@@ -1,4 +1,3 @@
-
 require 'RUDL'
 # we would usually "include RUDL" and "include Constant" to avoid
 # having to write RUDL:: in front of RUDL classes.

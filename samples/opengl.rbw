@@ -42,73 +42,8 @@
 # *  function is used.
 # *  Pressing the 't' key turns the antialiasing on and off.
 # */
-
-require '../RUDL'; include RUDL
-require "opengl"
-require 'glut'
-require "rational"
-
-STDOUT.sync = TRUE
-
-$year = 0; $day = 0;
-
-def init
-   GL.ClearColor(0.0, 0.0, 0.0, 0.0);
-   GL.ShadeModel(GL::FLAT);
-end
-
-display = Proc.new {
-   GL.Clear(GL::COLOR_BUFFER_BIT);
-   GL.Color(1.0, 1.0, 1.0);
-
-   GL.PushMatrix();
-   GLUT.WireSphere(1.0, 20, 16);   # draw sun */
-   GL.Rotate($year, 0.0, 1.0, 0.0);
-   GL.Translate(2.0, 0.0, 0.0);
-   GL.Rotate($day, 0.0, 1.0, 0.0);
-   GLUT.WireSphere(0.2, 10, 8);    # draw smaller planet */
-   GL.PopMatrix();
-}
-
-reshape = Proc.new { |w, h|
-   GL.Viewport(0, 0,  w,  h); 
-   GL.MatrixMode(GL::PROJECTION);
-   GL.LoadIdentity();
-   GLU.Perspective(60.0,  w.to_f/h.to_f, 1.0, 20.0);
-   GL.MatrixMode(GL::MODELVIEW);
-   GL.LoadIdentity();
-   GLU.LookAt(0.0, 0.0, 5.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
-}
-
-include Constant
-
-$d=DisplaySurface.new([640,480], OPENGL|DOUBLEBUF|FULLSCREEN)
-init
-
-Key.set_repeat(1,10)
-
-done=false
-
-while !done
-	event=EventQueue.poll
-	case event
-		when QuitEvent
-			done=true
-		when KeyDownEvent
-			case event.key
-				when K_ESCAPE
-					done=true
-				when K_LEFT
-					$day = ($day + 10) % 360
-				when K_RIGHT
-					$day = ($day - 10) % 360
-				when K_UP
-					$year = ($year + 5) % 360
-				when K_DOWN
-					$year = ($year - 5) % 360
-			end
-	end
-	reshape.call(400,400)
-	display.call
-	$d.flip
-end
+require 'RUDL'
+include RUDL
+require "opengl"require 'glut'require "rational"
+STDOUT.sync = TRUE$year = 0
+$day = 0def init   GL.ClearColor(0.0, 0.0, 0.0, 0.0)   GL.ShadeModel(GL::FLAT)enddisplay = Proc.new {   GL.Clear(GL::COLOR_BUFFER_BIT)   GL.Color(1.0, 1.0, 1.0)   GL.PushMatrix()   GLUT.WireSphere(1.0, 20, 16)   # draw sun */   GL.Rotate($year, 0.0, 1.0, 0.0)   GL.Translate(2.0, 0.0, 0.0)   GL.Rotate($day, 0.0, 1.0, 0.0)   GLUT.WireSphere(0.2, 10, 8)   # draw smaller planet */   GL.PopMatrix()}reshape = Proc.new { |w, h|   GL.Viewport(0, 0,  w,  h)   GL.MatrixMode(GL::PROJECTION)   GL.LoadIdentity   GLU.Perspective(60.0,  w.to_f/h.to_f, 1.0, 20.0)   GL.MatrixMode(GL::MODELVIEW)   GL.LoadIdentity   GLU.LookAt(0.0, 0.0, 5.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0)}include Constant$d=DisplaySurface.new([640,480], OPENGL|DOUBLEBUF|FULLSCREEN)initKey.set_repeat(1,10)done=falsewhile !done	event=EventQueue.poll	case event		when QuitEvent			done=true		when KeyDownEvent			case event.key				when K_ESCAPE					done=true				when K_LEFT					$day = ($day + 10) % 360				when K_RIGHT					$day = ($day - 10) % 360				when K_UP					$year = ($year + 5) % 360				when K_DOWN					$year = ($year - 5) % 360			end	end	reshape.call(400,400)	display.call	$d.flipend

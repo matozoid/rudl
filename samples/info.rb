@@ -1,5 +1,7 @@
 #!/usr/local/bin/ruby
 
+# This sample demonstrates some utility functions in RUDL.
+
 require 'RUDL'
 include RUDL
 include Constant
@@ -7,24 +9,32 @@ include Constant
 puts
 puts "RUDL info"
 puts
+
+# This prints the versions of all libraries that were compiled into
+# RUDL. Libraries that have version 0 don't provide version information.
 puts "Libraries used:"
 RUDL.versions.each {|library, version|
 	puts "#{library} #{version}"
 }
 
 begin
+	# This prints information about what the hardware can do.
+	# Normally you would query it for a few values, but here
+	# we just list all of them.
 	puts
 	puts "Video hardware info:"
 	DisplaySurface.best_mode_info.sort.each {|name, value|
 		if value
-			puts "o #{name}"
+			puts "y #{name}"
 		else
-			puts "x #{name}"
+			puts "n #{name}"
 		end
 	}
+
+	# Here we retrieve possible display modes. This information can
+	# be used for selecting a good videomode to use.
 	puts
 	puts "Video modes: (F means fullscreen)"
-
 	modes={}
 
 	[	['8', 8, SWSURFACE],
@@ -55,6 +65,7 @@ rescue
 	puts "No video driver available"
 end
 
+# Well, joystick info.
 joysticks=Joystick.count
 
 if joysticks==0
@@ -65,7 +76,9 @@ else
 	}
 end
 
+# The audio module returns an odd amount of channels...
 begin
-	puts "Audio driver: #{Mixer.driver}"
+	format=Mixer.format
+	puts "Format: #{format[0]} Channels: #{format[1]} Samplerate: #{format[2]} Driver: #{Mixer.driver}"
 #rescue
 end

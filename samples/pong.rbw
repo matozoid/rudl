@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require '../RUDL'; include RUDL; include Constant
+require 'RUDL'; include RUDL; include Constant
 
 # Eek! Globals!
 $sound_on=RUDL.versions.include? 'SDL_mixer'
