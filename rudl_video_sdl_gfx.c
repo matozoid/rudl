@@ -1,4 +1,12 @@
-/* RUDL - a C library wrapping SDL for use in Ruby. Copyright (C) 2001, 2002  Danny van Bruggen */
+/* 
+RUDL - a C library wrapping SDL for use in Ruby. 
+Copyright (C) 2001, 2002, 2003  Danny van Bruggen 
+
+$Log: rudl_video_sdl_gfx.c,v $
+Revision 1.11  2003/09/26 22:43:16  tsuihark
+Added CVS headers
+
+*/
 #include "rudl_events.h"
 #include "rudl_video.h"
 

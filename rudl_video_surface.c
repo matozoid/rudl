@@ -1,4 +1,13 @@
-/* RUDL - a C library wrapping SDL for use in Ruby. Copyright (C) 2001, 2002  Danny van Bruggen */
+/* 
+RUDL - a C library wrapping SDL for use in Ruby. 
+Copyright (C) 2001, 2002, 2003  Danny van Bruggen 
+
+$Log: rudl_video_surface.c,v $
+Revision 1.17  2003/09/26 22:43:16  tsuihark
+Added CVS headers
+
+
+*/
 #include "rudl_events.h"
 #include "rudl_video.h"
 
@@ -189,141 +198,73 @@ VALUE surface_new(int argc, VALUE* argv, VALUE self)
 --- String.to_surface
 This creates a (({Surface})) with an image in it,
 loaded from disk from ((|filename|)) by using load_new
-
 or loaded by treating ((|String|)) as the image data when using to_surface.
-
 In the last case, the ((|string|)) should be in some supported format,
-
 just like the file for load_new should be.
-
 If the SDL_image library was found during RUDL's installation,
-
 it will load the following formats:
-
 BMP, PNM, XPM, XCF, PCX, GIF, JPEG, TIFF, PNG, TGA and LBM.
-
 If the SDL_image library was not found, only simple BMP loading is supported.
-
 Simple means: not all BMP files can be loaded.
-
 =end */
-
 static VALUE surface_load_new(VALUE self, VALUE filename)
-
 {
-
 	SDL_Surface* surface=NULL;
-
 	initVideo();
-
 #ifdef HAVE_SDL_IMAGE_H
-
 	surface=IMG_Load(STR2CSTR(filename));
-
 #else
-
 	surface=SDL_LoadBMP(STR2CSTR(filename));
-
 #endif
-
 	if(!surface) SDL_RAISE;
-
 	return createSurfaceObject(surface);
-
 }
 
-
-
 static VALUE string_to_surface(VALUE self)
-
 {
-
 	SDL_RWops* rwops=NULL;
-
 	SDL_Surface* surface=NULL;
 
-
-
 	initVideo();
-
-
 
 	rwops=SDL_RWFromMem(RSTRING(self)->ptr, RSTRING(self)->len);
 
-
-
 #ifdef HAVE_SDL_IMAGE_H
-
 	surface=IMG_Load_RW(rwops, 0);
-
 #else
-
 	surface=SDL_LoadBMP_RW(rwops, 0);
-
 #endif
 
-
-
 	SDL_FreeRW(rwops);
-
 	if(!surface) SDL_RAISE;
-
 	return createSurfaceObject(surface);
-
 }
-
-
 
 static VALUE surface_destroy(VALUE self);
 
-
-
 void dont_free(void*_)
-
 {
-
 	DEBUG_S("dont_free");
-
 }
 
-
-
 /*
-
 =begin
-
 --- Surface.shared_new( surface )
-
 This method is two things:
-
 (1) a way to share the same bunch of data (width, height, bpp, pixeldata)
-
-   between two Surface objects.
-
-   Please don't use it this way if there isn't a very good reason for it.
-
+between two Surface objects.
+Please don't use it this way if there isn't a very good reason for it.
 (2) a way to import foreign objects that wrap an SDL_Surface*.
-
-   If that doesn't mean anything to you, please ignore this point.
-
-   It takes the pointer from the foreign object and creates a new Surface
-
-   that wraps it.
-
-   Garbage collection problems should be prevented by giving the new surface
-
-   a reference to ((|surface|))
-
-
+If that doesn't mean anything to you, please ignore this point.
+It takes the pointer from the foreign object and creates a new Surface
+that wraps it.
+Garbage collection problems should be prevented by giving the new surface
+a reference to ((|surface|))
 
 Note that if the original surface is destroyed by a call to Surface#destroy,
-
 the shared ones will be invalidated too!
-
 =end */
-
 static VALUE surface_shared_new(VALUE self, VALUE other)
-
 {
 
 	VALUE new_surface=createSurfaceObject(DATA_PTR(other));
