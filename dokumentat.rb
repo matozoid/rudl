@@ -604,11 +604,11 @@ def main
 
 	raise "No project name defined" if(!project_name)
 
-	#if !File.exist?("#{output_dir}/#{STYLESHEET_FILENAME}")
+	if !File.exist?("#{output_dir}/#{STYLESHEET_FILENAME}")
 		File.open("#{output_dir}/#{STYLESHEET_FILENAME}", "w") do |file|
 			file.write(Output::stylesheet)
 		end
-	#end
+	end
 
 	dokumentat=Dokumentat.new(project_name)
 
