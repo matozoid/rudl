@@ -34,7 +34,6 @@ dir_config('ttf')
 dir_config('pthread')
 dir_config('sdl')
 dir_config('gfx')
-dir_config('sge')
 dir_config('smpeg')
 dir_config('net')
 
