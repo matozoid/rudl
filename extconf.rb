@@ -16,6 +16,7 @@ dir_config('pthread')
 dir_config('sdl')
 dir_config('gfx')
 dir_config('sge')
+dir_config('smpeg')
 
 mswin32=/mswin32/ =~ RUBY_PLATFORM
 cygwin=/cygwin/ =~ RUBY_PLATFORM
@@ -32,22 +33,21 @@ end
 
 puts '* Checking for optional files'
 
+puts ' - smpeg, video playing library'
+have_header('smpeg/smpeg.h') if have_library('smpeg')
+
 puts ' - pthreads, multithreading library (not used in RUDL, but has to be linked if SDL uses it)'
 have_library('pthread')
 
-puts ' - Drawing, sprites: SGE from http://freshmeat.net/projects/sge'
-have_sge=have_header('sge.h') if have_library('SGE')
+puts ' - Collision detection: SGE from http://freshmeat.net/projects/sge'
+puts 'This is incorporated into RUDL, no library needed'
 
 puts ' - Drawing: SDL_gfx from http://www.ferzkopp.net/'
-have_gfx=have_header('SDL_gfxPrimitives.h') and
+have_header('SDL_gfxPrimitives.h') and
 	have_header('SDL_framerate.h') and
 	have_header('SDL_gfxPrimitives_font.h') and
 	have_header('SDL_imageFilter.h') and
 	have_header('SDL_rotozoom.h') if have_library('SDL_gfx')
-
-if have_sge and have_gfx
-	puts '... both SGE and SDL_gfx were found. SGE will be used when both offer the same functionality'
-end
 
 puts ' - Multi-channel audio mixer library: SDL_mixer from http://www.libsdl.org/projects/SDL_mixer/'
 have_header('SDL_mixer.h') if have_library('SDL_mixer','Mix_OpenAudio')

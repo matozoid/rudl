@@ -12,17 +12,31 @@
 #include "rudl_ttf.h"
 #include "rudl_video.h"
 
-#ifdef HAVE_SGE_H
-#include "sge.h"
-#endif
-
 // For getting versions:
+#ifdef HAVE_SGE_H
+	#include "sge.h"
+#endif
 #ifdef HAVE_SDL_MIXER_H
 	#include "SDL_mixer.h"
 	#ifndef MIX_MAJOR_VERSION
 		#define MIX_MAJOR_VERSION 0
 		#define MIX_MINOR_VERSION 0
 	#endif
+#endif
+#ifdef HAVE_SMPEG_SMPEG_H
+	#include "smpeg/smpeg.h"
+#endif
+#ifdef HAVE_SDL_GFXPRIMITIVES_H
+	#include "SDL_gfxPrimitives.h"
+#endif
+#ifdef HAVE_SDL_FRAMERATE_H
+	#include "SDL_framerate.h"
+#endif
+#ifdef HAVE_SDL_IMAGEFILTER_H
+	#include "SDL_imageFilter.h"
+#endif
+#ifdef HAVE_SDL_ROTOZOOM_H
+	#include "SDL_rotozoom.h"
 #endif
 //
 
@@ -118,19 +132,36 @@ static VALUE RUDL_versions(VALUE self)
 {
 	char versions[8192]; // Ugh
 	sprintf(versions, "{"
-		"'RUDL'=>RUDL::Version.new(%i,%i,%i),"
-	
+		"'RUDL'=>RUDL::Version.new(%i,%i,%i),\n"
 #ifdef HAVE_SDL_IMAGE_H
-		"'SDL_image'=>RUDL::Version.new,"
+		"'SDL_image'=>RUDL::Version.new,\n"
 #endif
 #ifdef HAVE_SDL_MIXER_H
-		"'SDL_mixer'=>RUDL::Version.new(%i, %i),"
+		"'SDL_mixer'=>RUDL::Version.new(%i, %i),\n"
 #endif
 #ifdef HAVE_SDL_TTF_H
-		"'SDL_ttf'=>RUDL::Version.new,"
+		"'SDL_ttf'=>RUDL::Version.new,\n"
 #endif
 #ifdef HAVE_SGE_H
-		"'SGE'=>RUDL::Version.new(%i),"
+		"'SGE'=>RUDL::Version.new(%i),\n"
+#endif
+#ifdef HAVE_SDL_GFXPRIMITIVES_H
+		"'SDL_gfxPrimitives'=>RUDL::Version.new(%i, %i),\n"
+#endif
+#ifdef HAVE_SDL_FRAMERATE_H
+		"'SDL_framerate'=>RUDL::Version.new,\n"
+#endif
+#ifdef HAVE_SDL_IMAGEFILTER_H
+		"'SDL_imagefilter'=>RUDL::Version.new,\n"
+#endif
+#ifdef HAVE_SDL_ROTOZOOM_H
+		"'SDL_rotozoom'=>RUDL::Version.new,\n"
+#endif
+#ifdef HAVE_SDL_H
+		"'SDL'=>RUDL::Version.new(%i,%i,%i),\n"
+#endif
+#ifdef HAVE_SMPEG_SMPEG_H
+		"'smpeg'=>RUDL::Version.new(%i, %i, %i),\n"
 #endif
 	"}"
 
@@ -146,6 +177,24 @@ static VALUE RUDL_versions(VALUE self)
 #endif
 #ifdef HAVE_SGE_H
 	,SGE_VER // This gets interpreted as octal! No idea how to fix this...
+#endif
+#ifdef HAVE_SDL_GFXPRIMITIVES_H
+	,SDL_GFXPRIMITIVES_MAJOR, SDL_GFXPRIMITIVES_MINOR
+#endif
+#ifdef HAVE_SDL_FRAMERATE_H
+	// no version info
+#endif
+#ifdef HAVE_SDL_IMAGEFILTER_H
+	// no version info
+#endif
+#ifdef HAVE_SDL_ROTOZOOM_H
+	// no version info
+#endif
+#ifdef HAVE_SDL_H
+	,SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_PATCHLEVEL
+#endif
+#ifdef HAVE_SMPEG_SMPEG_H
+	,SMPEG_MAJOR_VERSION, SMPEG_MINOR_VERSION, SMPEG_PATCHLEVEL
 #endif
 	);
 	

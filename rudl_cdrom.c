@@ -55,6 +55,18 @@ static VALUE cdrom_new(VALUE self, VALUE number)
 
 /*
 =begin
+--- CDROM.destroy
+Uninitializes the CDROM subsystem,
+which is normally not necessary.
+=end */
+static VALUE cdrom_destroy(VALUE self, VALUE number)
+{
+	quitCD();
+	return self;
+}
+
+/*
+=begin
 --- CDROM.count
 Returns the number of CDROMs installed.
 =end */
@@ -251,6 +263,7 @@ void initCDClasses()
 {
 	classCDROM=rb_define_class_under(moduleRUDL, "CDROM", rb_cObject);
 	rb_define_singleton_method(classCDROM, "new", cdrom_new, 1);
+	rb_define_singleton_method(classCDROM, "destroy", cdrom_destroy, 0);
 	rb_define_singleton_method(classCDROM, "count", cdrom_count, 0);
 	rb_define_method(classCDROM, "eject", cdrom_eject, 0);
 	rb_define_method(classCDROM, "busy?", cdrom_busy_, 0);

@@ -329,11 +329,12 @@ static VALUE mixer_init(int argc, VALUE* argv, VALUE self)
 }
 /*
 =begin
---- Mixer.quit
+--- Mixer.destroy
+(was Mixer.quit)
 Uninitializes the Mixer.
-If you really want to do this, then be warned that all Music objects will be destroyed!
+If you really want to do this, then be warned that all Music objects will be destroyed too!
 =end */
-static VALUE mixer_quit(VALUE self)
+static VALUE mixer_destroy(VALUE self)
 {
 	quitAudio();
 	return self;
@@ -626,8 +627,8 @@ static VALUE music_dealloc(VALUE self)
 /////////////// INIT
 void initAudioClasses()
 {
-	classChannel=rb_define_class_under(moduleRUDL, "Channel", rb_cObject);
 #ifdef HAVE_SDL_MIXER_H
+	classChannel=rb_define_class_under(moduleRUDL, "Channel", rb_cObject);
 	rb_define_singleton_method(classChannel, "new", channel_new, 1);
 	rb_define_method(classChannel, "fade_out", channel_fade_out, 1);
 	rb_define_method(classChannel, "busy?", channel_busy, 0);
@@ -637,9 +638,8 @@ void initAudioClasses()
 	rb_define_method(classChannel, "stop", channel_stop, 0);
 	rb_define_method(classChannel, "pause", channel_pause, 0);
 	rb_define_method(classChannel, "unpause", channel_unpause, 0);
-#endif
+
 	classSound=rb_define_class_under(moduleRUDL, "Sound", rb_cObject);
-#ifdef HAVE_SDL_MIXER_H
 	rb_define_singleton_method(classSound, "new", sound_new, 1);
 	rb_define_method(classSound, "fade_out", sound_fade_out, 1);
 	rb_define_method(classSound, "num_channels", sound_get_num_channels, 0);
@@ -647,11 +647,10 @@ void initAudioClasses()
 	rb_define_method(classSound, "play", sound_play, -1);
 	rb_define_method(classSound, "volume=", sound_set_volume, 1);
 	rb_define_method(classSound, "stop", sound_stop, 0);
-#endif
+
 	classMixer=rb_define_module_under(moduleRUDL, "Mixer");
-#ifdef HAVE_SDL_MIXER_H
 	rb_define_singleton_method(classMixer, "init", mixer_init, -1);
-	rb_define_singleton_method(classMixer, "quit", mixer_quit, 0);
+	rb_define_singleton_method(classMixer, "destroy", mixer_destroy, 0);
 	rb_define_singleton_method(classMixer, "fade_out", mixer_fade_out, 1);
 	rb_define_singleton_method(classMixer, "find_free_channel", mixer_find_free_channel, 0);
 	rb_define_singleton_method(classMixer, "find_oldest_channel", mixer_find_oldest_channel, 0);
@@ -662,9 +661,8 @@ void initAudioClasses()
 	rb_define_singleton_method(classMixer, "reserved=", mixer_set_reserved, 1);
 	rb_define_singleton_method(classMixer, "stop", mixer_stop, 0);
 	rb_define_singleton_method(classMixer, "unpause", mixer_unpause, 0);
-#endif
+
 	classMusic=rb_define_class_under(moduleRUDL, "Music", rb_cObject);
-#ifdef HAVE_SDL_MIXER_H
 	rb_define_singleton_method(classMusic, "new", music_new, 1);
 	rb_define_method(classMusic, "busy?", music_get_busy, 0);
 	rb_define_method(classMusic, "fade_out", music_fade_out, 1);
@@ -678,7 +676,6 @@ void initAudioClasses()
 	rb_define_method(classMusic, "pause", music_pause, 0);
 	rb_define_method(classMusic, "unpause", music_unpause, 0);
 	rb_define_method(classMusic, "dealloc", music_dealloc, 0);
-#endif
 /*
 =begin
 = EndOfMusicEvent
@@ -697,7 +694,6 @@ This event is posted when the current music has ended.
 	DEC_CONSTN(AUDIO_U16SYS);
 	DEC_CONSTN(AUDIO_S16SYS);
 
-#ifdef HAVE_SDL_MIXER_H
 	clearGCHack();
 #endif
 }

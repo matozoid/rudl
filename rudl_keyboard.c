@@ -6,6 +6,10 @@
 /*
 =begin
 = Key
+The Key class gives access to the keyboard without events.
+
+EventQueue.pump will update the state of Key,
+so if no keys seem to be pressed, call pump.
 == Class Methods
 --- Key.focused?
 Returns true when the application has the keyboard input focus.
