@@ -1,6 +1,7 @@
 
 newest
 ------
+ - added Surface#scale2x
  - Surface#set_colorkey(nil) now does the same as unset_colorkey, and
    set_alpha(nil) does the same as unset_alpha.
  - Surface.new now copies the palette if a 8-bit surface was supplied
