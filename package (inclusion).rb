@@ -57,32 +57,32 @@ end
 # create either the source or setup archive
 def zipit(what)
 
-    # which archive are we creating?
-    case what
-        when "source"
-            files = lsdir("docs") + lsdir("include") +
-                    lsdir("samples") + lsdir("utility") +
-                    Dir["*.{c,h,txt,rb}"] << "configure" << "make.bat"
-            files.delete("package.rb")
-
-        when "setup"
-            files = lsdir("dll") + lsdir("docs") +
-                    lsdir("samples") + lsdir("utility") +
-                    Dir["*.txt"] << "RUDL.so" << "install-on-windows.rb"
-
-        else
-            raise "Oh God please no!"
-    end
-
-    filelist = '"' + files.join('" "') + '"'
-    outfile = "#$destdir/rudl-#$version-#{what}.zip"
-
-    Dir.mkdir($destdir) unless File.exists?($destdir)
-    File.delete(outfile) if File.exists?(outfile)
-
-    # I hope the command line doesn't get truncated :)
-    puts "Zipping #{outfile}..."
-    `zip -9 -q #{outfile} #{filelist}`
+	# which archive are we creating?
+	case what
+		when "source"
+			files = lsdir("docs") + lsdir("include") +
+			lsdir("samples") + lsdir("utility") +
+			Dir["*.{c,h,txt,rb}"] << "configure" << "make.bat"
+			files.delete("package.rb")
+	
+		when "setup"
+			files = lsdir("dll") + lsdir("docs") +
+			lsdir("samples") + lsdir("utility") +
+			Dir["*.txt"] << "RUDL.so" << "install-on-windows.rb"
+		
+		else
+			raise "Oh God please no!"
+	end
+	
+	filelist = '"' + files.join('" "') + '"'
+	outfile = "#$destdir/rudl-#$version-#{what}.zip"
+	
+	Dir.mkdir($destdir) unless File.exists?($destdir)
+	File.delete(outfile) if File.exists?(outfile)
+	
+	# I hope the command line doesn't get truncated :)
+	puts "Zipping #{outfile}..."
+	`zip -9 -q #{outfile} #{filelist}`
 end
 
 main
