@@ -85,7 +85,21 @@ __inline__ int retrieveChannelNumber(VALUE channel)
 =begin
 <<< docs/head
 
-This page describes the various classes that access SDL_mixer.
+On this page, there are various classes for sound output.
+The system consists of a mixer that will mix several sounds,
+and one piece of music.
+
+The Sound class represents a particular sound sample. It can
+be played on any Channel of the Mixer.
+
+The Mixer has a certain amount of Channels.
+Channels can be told to play a certain Sound.
+It is not possible to play more Sounds at once than there are Channels.
+
+A separate Channel is kept by the Mixer for playing Music files.
+Since it's only one channel, only one song can play at a time.
+
+This is a wrapper around SDL_mixer.
 
 = Channel
 A Channel is an interface object to one of the mixer's channels.
