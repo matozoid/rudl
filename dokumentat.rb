@@ -2,7 +2,22 @@ require 'getoptlong'
 require 'ftools'
 require 'pp'
 
+def html_header(title)
+<<HEADER
+<html>
+<head>
+<title>#{title}</title>
+</head>
+<body>
+HEADER
+end
+
+def html_footer
+	"\n</body>\n</html>\n"
+end
+
 ARGV=['--verbose', '--project-name=rudl', '--output-dir=docs', 'dokumentat.rb', 'dokme/*.c', 'dokme/dokmetoo/*.c']
+#ARGV=['--verbose', '--project-name=rudl', '--output-dir=docs', 'test.c']
 =begin
 --- Organizing documentation:
 A hierarchy is project.class_or_module.method.parameter.
@@ -143,10 +158,17 @@ class Entry
 	attr_reader :children
 	attr_reader :name
 	
+	# The first time an entry with this name has been found:
 	def initialize(name)
 		@name=name
 		@children=[]
 		@text=nil
+	end
+	
+	# If an entry (like MethodEntry) can contain more than one line (for parameter lists),
+	# this method will be called the second time and up.
+	def reenter(name)
+		puts "reenter "+name
 	end
 	
 	def <=>(other)
@@ -181,30 +203,20 @@ end
 
 class ProjectEntry < Entry
 	def write(output_directory)
-		# Write every child entry to index.html, except for FileEntries, which will make their own file.
-		#File.open(output_directory+'/index.html', 'w') do |file|
-		#	file.write "<html>\n<head>\n<title>#{@name}</title>\n</head>\n<body>\n"
-		#	file.write "<h1>Files</h1>\n"
-			children.sort.each do |child|
-		#		if child.is_a? FileEntry
-		#			file.write "<p><h2><a href='#{child.name.downcase}.html'>#{child.name}</a></h2>\n"
-					child.write(output_directory)
-		#		else
-		#			child.write(file)
-		#		end
-			end
-		#	file.write "<p>#{@text}"
-		#	file.write "\n</body>\n</html>\n"
-		#end
+		children.sort.each do |child|
+				child.write(output_directory)
+		end
 	end
 end
 
 class FileEntry < Entry
 	def write(output_directory)
 		File.open(output_directory+'/'+@name.downcase+'.html', 'w') do |file|
+			file.write(html_header(@name))
 			children.sort.each do |child|
 				child.write(file)
 			end
+			file.write(html_footer)
 		end	end
 end
 
@@ -239,8 +251,27 @@ class SectionEntry < Entry
 end
 
 class MethodEntry < Entry
+	def initialize(name)
+		puts "init #{name}"
+		@parameterlists=[]
+		super(reenter(name))
+	end
+	
+	def reenter(name)
+		methodname, parameterlist=name.split('(') # uglyyyyyyyyyy, could theoretically split more than twice
+		if parameterlist
+			parameterlist='('+parameterlist
+		else
+			parameterlist=''
+		end
+		@parameterlists.push(parameterlist)
+		methodname
+	end
+	
 	def write(file)
-		file.write("<h4>#{@name}</h4>\n")
+		@parameterlists.sort.each do |list|
+			file.write("<h4>#{@name}#{list}</h4>\n")
+		end
 		file.write("#{@text}")
 		children.sort.each do |child|
 			child.write(file)
@@ -257,11 +288,13 @@ class Path
 		@path=[root]
 	end
 	
-	def goto(entry)
+	def goto(name, search_entry)
 		last_in_path=@path[-1]
-		if last_in_path.children.include?(entry)
-			entry=last_in_path.children[last_in_path.children.index(entry)]
+		if last_in_path.children.include?(search_entry)
+			entry=last_in_path.children[last_in_path.children.index(search_entry)]
+			entry.reenter(name)
 		else
+			entry=search_entry
 			last_in_path.children.push entry
 		end
 		@path.push(entry)	end
@@ -285,7 +318,6 @@ class Path
 	
 	def backup_to(path, class_type)
 		while(@path.length>0 && @path[@path.length-1]!=class_type)
-			p @path
 			@path=@path[0..-2]
 		end
 	end
@@ -311,8 +343,8 @@ class Dokumentat
 		files=Dir[source_path]
 		files.each do |file_name|
 			path=Path.new(@root)
-			path.goto(@project)
-			path.goto(@index_file)
+			path.goto('', @project)
+			path.goto('', @index_file)
 			process_file(file_name, path)
 		end
 	end
@@ -333,19 +365,19 @@ class Dokumentat
 						case type.downcase
 							when 'file'
 								path.goto_file_level
-								path.goto(FileEntry.new(name))
+								path.goto(name, FileEntry.new(name))
 							when 'section'
 								path.goto_section_level
-								path.goto(SectionEntry.new(name))
+								path.goto(name, SectionEntry.new(name))
 							when 'method'
 								path.goto_method_level
-								path.goto(MethodEntry.new(name))
+								path.goto(name, MethodEntry.new(name))
 							when 'class'
 								path.goto_class_level
-								path.goto(ClassEntry.new(name))
+								path.goto(name, ClassEntry.new(name))
 							when 'module'
 								path.goto_class_level
-								path.goto(ModuleEntry.new(name))
+								path.goto(name, ModuleEntry.new(name))
 							else
 								say "Unknown section: #{line}"
 						end
@@ -357,7 +389,7 @@ class Dokumentat
 						end
 					end
 				end
-				text.gsub! /@([^\W]*)/, '<b>\1</b>'
+				text.gsub! /@([\w?!=]*)/, '<b>\1</b>'
 				path.deepest_node.add_text(text)
 			end
 		end
@@ -413,6 +445,5 @@ def main
 	
 	dokumentat.write(output_dir)
 end
-
 
 main
