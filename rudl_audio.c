@@ -81,17 +81,13 @@ __inline__ int retrieveChannelNumber(VALUE channel)
     tmp=rb_iv_get(channel, "@number");
     return NUM2INT(tmp);
 }
-/*
-=begin
-<<< docs/head
-
-= Audio
-
+/**
+@file Audio
 On this page, there are various classes for sound output.
 The system consists of a mixer that will mix several sounds,
 and one piece of music.
 
-The Sound class represents a particular sound sample. It can
+The @RUDL::Sound class represents a particular sound sample. It can
 be played on any Channel of the Mixer.
 
 The Mixer has a certain amount of Channels.
@@ -101,31 +97,32 @@ It is not possible to play more Sounds at once than there are Channels.
 A separate Channel is kept by the Mixer for playing Music files.
 Since it's only one channel, only one song can play at a time.
 
-This is a wrapper around SDL_mixer.
-
-= Channel
+This is a wrapper around <a href='http://www.libsdl.org/projects/SDL_mixer/'>SDL_mixer</a>.
+*/
+/**
+@class RUDL::Channel
 A Channel is an interface object to one of the mixer's channels.
 It can be used for manipulating sound on a particular channel.
-== Class Methods
---- Channel.new( number )
-Creates a Channel interface object for mixer channel ((|number|)).
-=end */
-
+*/
+/**
+@section Class Methods
+@method new( number )
+Creates a Channel interface object for mixer channel @number.
+*/
 
 // Replaced by some evalled stuff
 
-/*
-=begin
-== Instance Methods
---- Channel#fade_out( milliseconds )
---- Channel#volume
---- Channel#volume=( loudness )
-These are volume methods.
-fade_out fades the channel to silence in ((|milliseconds|)) milliseconds.
-volume returns the current volume.
-volume= sets the volume to loudness.
+/**
+@section Volume methods
+@method fade_out( milliseconds )
+fade_out fades the channel to silence in @milliseconds milliseconds.
+*/
+/**
+@method volume
+@method volume=( loudness )
+Get and set the volume of a @RUDL::Channel.
 Volumes range from 0.0 to 1.0.
-=end */
+*/
 static VALUE channel_fade_out(VALUE self, VALUE milliseconds)
 {
     Mix_FadeOutChannel(retrieveChannelNumber(self), NUM2UINT(milliseconds));
@@ -143,21 +140,21 @@ static VALUE channel_set_volume(VALUE self, VALUE volume)
     return self;
 }
 
-/*
-=begin
---- Channel#busy
---- Channel#pause
---- Channel#unpause
---- Channel#play( sound, loops, maxtime )
-
---- Channel#play( sound, loops )
-
---- Channel#play( sound )
-
---- Channel#stop
+/**
+@section Play control
+@method busy => boolean
+@method pause => self
+@method unpause => self
+@method play( sound, loops, maxtime ) => self
+@method play( sound, loops ) => self
+@method play( sound ) => self
+@method stop => self
+*/
+/**
+@section Play control
 These are pretty self-explanatory.
-play plays (({Sound})) sound 1+loops times, for a maximum time of maxtime milliseconds.
-=end */
+@play plays @Sound @sound 1 + @loops times, for a maximum time of @maxtime milliseconds.
+*/
 static VALUE channel_busy(VALUE self)
 {
     return Mix_Playing(retrieveChannelNumber(self));
@@ -200,21 +197,18 @@ static VALUE channel_unpause(VALUE self)
     Mix_Resume(retrieveChannelNumber(self));
     return self;
 }
-/*
-=begin
---- Channel#set_panning( left, right )
+/**
+@section Positioning
+@method set_panning( left, right ) => self
 Set the panning of a channel. The left and right channels are specified
 as numbers between 0.0 and 1.0, quietest to loudest, respectively.
 Technically, this is just individual volume control for a sample with
 two (stereo) channels, so it can be used for more than just panning.
 If you want real panning, call it like this:
-
-  channel.set_panning(left, 1.0-left);
+<p class='example'>channel.set_panning(left, 1.0-left);</p>
 
 ...which isn't so hard.
-
-Returns self.
-=end */
+*/
 static VALUE channel_set_panning(VALUE self, VALUE left, VALUE right)
 {
     double l=NUM2DBL(left);
@@ -227,64 +221,55 @@ static VALUE channel_set_panning(VALUE self, VALUE left, VALUE right)
     return self;
 }
 
-/*
-=begin
---- Channel#set_position( angle, distance )
-Set the position of a channel. ((|angle|)) is an number from 0 to 360, that
-specifies the location of the sound in relation to the listener. ((|angle|))
+/**
+@method set_position( angle, distance ) => self
+Set the position of a channel. @angle is an number from 0 to 360, that
+specifies the location of the sound in relation to the listener. @angle
 will be reduced as neccesary (540 becomes 180 degrees, -100 becomes 260).
-Angle 0 is due north, and rotates clockwise as the value increases.
+@Angle 0 is due north, and rotates clockwise as the value increases.
 For efficiency, the precision of this effect may be limited (angles 1
 through 7 might all produce the same effect, 8 through 15 are equal, etc).
 
-((|distance|)) is a number between 0.0 and 1.0 that specifies the space
+@distance is a number between 0.0 and 1.0 that specifies the space
 between the sound and the listener. The larger the number, the further
 away the sound is. Using 1.0 does not guarantee that the channel will be
 culled from the mixing process or be completely silent. For efficiency,
-the precision of this effect may be limited (distance 0 through 0.1 might
-all produce the same effect, 0.1 through 0.2 are equal, etc). Setting ((|angle|))
-and ((|distance|)) to 0 unregisters this effect, since the data would be
+the precision of this effect may be limited (@distance 0 through 0.1 might
+all produce the same effect, 0.1 through 0.2 are equal, etc). Setting @angle
+and @distance to 0 unregisters this effect, since the data would be
 unchanged.
-
-Returns self.
-=end */
+*/
 static VALUE channel_set_position(VALUE self, VALUE angle, VALUE distance)
 {
     SDL_VERIFY(Mix_SetPosition(retrieveChannelNumber(self), (Sint16)NUM2INT(angle), (Sint8)(NUM2DBL(distance)*255)));
     return self;
 }
 
-/*
-=begin
---- Channel#set_distance( distance )
-((|distance|)) is a number between 0.0 and 1.0 that specifies the space
+/**
+@method set_distance( distance ) => self
+@Distance is a number between 0.0 and 1.0 that specifies the space
 between the sound and the listener. The larger the number, the further
 away the sound is. Using 1.0 does not guarantee that the channel will be
 culled from the mixing process or be completely silent. For efficiency,
 the precision of this effect may be limited (distance 0 through 0.1 might
 all produce the same effect, 0.1 through 0.2 are equal, etc). Setting
-((|distance|)) to 0 unregisters this effect, since the data would be
+@distance to 0 unregisters this effect, since the data would be
 unchanged.
-
-Returns self.
-=end */
+*/
 static VALUE channel_set_distance(VALUE self, VALUE distance)
 {
     SDL_VERIFY(Mix_SetDistance(retrieveChannelNumber(self), (Uint8)(NUM2DBL(distance)*255)));
     return self;
 }
 
-/*
-=begin
---- Channel#reverse_stereo( reverse )
+/**
+@method reverse_stereo( reverse ) => self
 Causes a channel to reverse its stereo. This is handy if the user has his
 speakers hooked up backwards, or you would like to have a minor bit of
-psychedelia in your sound code.  :)  Calling this function with ((|reverse|))
-set to true reverses the chunks's usual channels. If ((|reverse|)) is false,
+psychedelia in your sound code.  :)  Calling this function with @reverse
+set to true reverses the chunks's usual channels. If @reverse is false,
 the effect is unregistered.
-
-Returns self.
-=end */
+*/
 static VALUE channel_reverse_stereo(VALUE self, VALUE reverse)
 {
     SDL_VERIFY(Mix_SetReverseStereo(retrieveChannelNumber(self), NUM2BOOL(reverse)));
@@ -301,17 +286,18 @@ Mix_Chunk* retrieveMixChunk(VALUE self)
     return chunk;
 }
 
-/*
-=begin
-= Sound
+/**
+@class RUDL::Sound
 Sound is a single sample.
 It is loaded from a WAV file.
-== Class Methods
---- Sound.new
---- Sound.new( filename )
---- Sound.load_new( filename )
-Creates a new (({Sound})) object with the sound in file ((|filename|)).
-=end */
+*/
+/**@section Initializers
+@method new
+@method new( filename )
+@method load_new( filename )
+@section Initializers
+Creates a new @Sound object with the sound in file @filename.
+*/
 static VALUE sound_new(VALUE self, VALUE filename)
 {
     Mix_Chunk* chunk;
@@ -332,13 +318,11 @@ static VALUE sound_new(VALUE self, VALUE filename)
 }
 
 
-/*
-=begin
---- Sound.import( sampledata )
+/**
+@method import( sampledata )
 This method imports raw sampledata.
-If it is not in the Mixer's format, use (({Mixer.convert})) first.
-=end */
-
+If it is not in the Mixer's format, use @Mixer@convert first.
+*/
 static VALUE sound_import(VALUE self, VALUE sampledata)
 {
     Mix_Chunk* chunk=(Mix_Chunk *)malloc(sizeof(Mix_Chunk));
@@ -362,15 +346,14 @@ static VALUE sound_import(VALUE self, VALUE sampledata)
 }
 
 
-/*
-=begin
---- Sound.convert( sample, source_format, destination_format )
-Returns a string with the string ((|sample|)) with sampledata in it,
-assumed to be in ((|source_format|)),
-converted to the ((|destination_format|)).
+/* NOT IMPLEMENTED
+@method convert( sample, source_format, destination_format )
+Returns a string with the string @sample with sampledata in it,
+assumed to be in @source_format,
+converted to the @destination_format.
 
 A format is an array with these contents: [frequency, format (like AUDIO_S8), channels].
-=end */
+*/
 static __inline__ void unpack_audio_format_array(VALUE array, int* rate, Uint16* format, int* channels)
 {
     *rate=NUM2INT(rb_ary_entry(array, 0));
@@ -430,11 +413,10 @@ static VALUE sound_convert(int argc, VALUE* argv, VALUE self)
     return rb_str_new(dest_memory, dest_length);
 }
 
-/*
-#=begin
-#--- Sound.mix( destination, source )
-#--- Sound.mix( destination, source, max_volume )
-#=end */
+/* NOT IMPLEMENTED
+@method mix( destination, source )
+@method mix( destination, source, max_volume )
+*/
 /*
 
 __inline__ char* sound_pad(VALUE input, int to_length)
@@ -472,11 +454,10 @@ Kopieer sdl_mixer.c
 }
 */
 
-/*
-=begin
---- String.to_sound
-Creates a new (({Sound})) object with the sound (in .WAV format) in the string.
-=end */
+/**
+@method String.to_sound
+Creates a new @RUDL::Sound object with the sound (in .WAV format) in the string.
+*/
 static VALUE string_to_sound(VALUE self)
 {
     Mix_Chunk* chunk;
@@ -497,16 +478,15 @@ static VALUE string_to_sound(VALUE self)
     return newObject;
 }
 
-/*
-=begin
-== Instance Methods
---- Sound#fade_out( milliseconds )
---- Sound#volume
---- Sound#volume=( loudness )
+/**
+@section Volume methods
+@method fade_out( milliseconds )
+@method volume
+@method volume=( loudness )
 These are volume methods.
-fade_out fades all instances of this sound that are playing to silence in ((|milliseconds|)) milliseconds.
-volume returns the current volume.
-volume= sets the volume to loudness.
+@fade_out fades all instances of this sound that are playing to silence in @milliseconds milliseconds.
+@volume returns the current volume.
+@volume= sets the volume to loudness.
 Volumes range from 0.0 to 1.0.
 =end */
 static VALUE sound_fade_out(VALUE self, VALUE time)
@@ -526,25 +506,19 @@ static VALUE sound_set_volume(VALUE self, VALUE volume)
     return self;
 }
 
-/*
-=begin
---- Sound#play( loops, maxtime )
+/**
+@method play( loops, maxtime ) => RUDL::Channel or nil
 Starts playing a song on an available channel.
-If no channels are available, it will not play and return ((|nil|)).
-Loops controls how many extra times the sound will play, a negative loop will play
+If no channels are available, it will not play and return @nil.
+@Loops controls how many extra times the sound will play, a negative loop will play
 indefinitely, it defaults to 0.
-Maxtime is the number of total milliseconds that the sound will play.
+@Maxtime is the number of total milliseconds that the sound will play.
 It defaults to forever (-1).
-
 
 Returns a channel object for the channel that is selected to play the sound.
 
 Returns nil if for some reason no channel is found.
-
-
---- Sound#stop
-Stops all channels playing this (({Sound})).
-=end */
+*/
 static VALUE sound_play(int argc, VALUE* argv, VALUE self)
 {
     VALUE loopsValue, timeValue;
@@ -571,6 +545,10 @@ static VALUE sound_play(int argc, VALUE* argv, VALUE self)
     return createChannelObject(channelnum);
 }
 
+/**
+@method stop => self
+Stops all channels playing this @Sound.
+*/
 static VALUE sound_stop(VALUE self)
 {
     Mix_HaltGroup((int)retrieveMixChunk(self));
@@ -582,13 +560,10 @@ static VALUE sound_get_num_channels(VALUE self)
     return UINT2NUM(Mix_GroupCount((int)retrieveMixChunk(self)));
 }
 
-
-
-/*
-=begin
---- Sound#to_s
+/**
+@method to_s => String
 Returns a string with the sampledata.
-=end */
+*/
 static VALUE sound_export(VALUE self)
 {
     Mix_Chunk* chunk=retrieveMixChunk(self);
@@ -596,45 +571,43 @@ static VALUE sound_export(VALUE self)
     return rb_str_new(chunk->abuf, chunk->alen);
 }
 
-/*
-=begin
---- Sound#format
-Returns the format of the (({Sound})), which is always the same as the Mixer's format.
-See (({Mixer.format}))
-=end */
+/**
+@method format
+Returns the format of the @Sound, which is always the same as the Mixer's format.
+See @Mixer.format
+*/
+// This method is actually an alias for Mixer.format.
 
 /////////////// MIXER
-/*
-=begin
-= Mixer
+/**
+@class RUDL::Mixer
 Mixer is the main sound class.
-
-== Class and instance Methods
---- Mixer.new
---- Mixer.new( frequency )
---- Mixer.new( frequency, format )
---- Mixer.new( frequency, format, stereo )
---- Mixer.new( frequency, format, stereo, buffersize )
-
+All methods are available as class and instance methods.
+*/
+/**
+@section Initializers
+@method new => Mixer
+@method new( frequency ) => Mixer
+@method new( frequency, format ) => Mixer
+@method new( frequency, format, stereo ) => Mixer
+@method new( frequency, format, stereo, buffersize ) => Mixer
 Initializes the sound system.
-This call is not neccesary, the mixer will call (({Mixer.new})) when it is needed.
+This call is not neccesary, the mixer will call @Mixer.new when it is needed.
 When you disagree with the defaults (at the time of writing: 16 bit, 22kHz, stereo, 4096)
-you can set them yourself, but do this ((*before*)) using any sound related method!
-* ((|frequency|)) is a number like 11025, 22050 or 44100.
-* ((|format|)) is AUDIO_S8 for 8 bit samples or AUDIO_S16SYS for 16 bit samples.
-
+you can set them yourself, but do this <em>before</em> using any sound related method!
+<ul>
+<li>@frequency is a number like 11025, 22050 or 44100.
+<li>@format is AUDIO_S8 for 8 bit samples or AUDIO_S16SYS for 16 bit samples.
   Other possibilities are listed at the bottom of this page.
-* ((|channels|)) is 1 (mono) or 2 (stereo.)
-
-* ((|buffersize|)) is how many samples are calculated in one go.
-
+<li>@channels is 1 (mono) or 2 (stereo.)
+<li>@buffersize is how many samples are calculated in one go.
   4096 by default.
   Set higher if your sound stutters.
+</ul>
 
-(({Mixer.new})) will return a Mixer object, but if you don't want it, you can
+@Mixer.new will return a @Mixer object, but if you don't want it, you can
 discard it and use class methods instead.
-
-=end */
+*/
 static VALUE mixer_initialize(int argc, VALUE* argv, VALUE self)
 {
     int frequency = MIX_DEFAULT_FREQUENCY;
@@ -670,26 +643,23 @@ static VALUE mixer_initialize(int argc, VALUE* argv, VALUE self)
 
     return self;
 }
-/*
-=begin
---- Mixer.destroy
---- Mixer#destroy
+/**
+@method destroy => self
 (was Mixer.quit)
 Uninitializes the Mixer.
 If you really want to do this, then be warned that all Music objects will be destroyed too!
-=end */
+*/
 static VALUE mixer_destroy(VALUE self)
 {
     quitAudio();
     return self;
 }
 
-/*
-=begin
---- Mixer.fade_out( millisecs )
---- Mixer#fade_out( millisecs )
+/**
+@section Methods
+@method fade_out( millisecs )
 Fades away all sound to silence in millisecs milliseconds.
-=end */
+*/
 static VALUE mixer_fade_out(VALUE self, VALUE time)
 {
     initAudio();
@@ -697,17 +667,14 @@ static VALUE mixer_fade_out(VALUE self, VALUE time)
     return self;
 }
 
-/*
-=begin
---- Mixer.find_free_channel
---- Mixer.find_oldest_channel
---- Mixer#find_free_channel
---- Mixer#find_oldest_channel
+/**
+@method find_free_channel => Channel or nil
+@method find_oldest_channel => Channel or nil
 Both functions search for a channel that can be used to play new sounds on.
-find_free_channel finds a channel that is not playing anything and returns nil
+@find_free_channel finds a channel that is not playing anything and returns nil
 if there is no such channel.
-find_oldest_channel finds the channel that has been playing for the longest time.
-=end */
+@find_oldest_channel finds the channel that has been playing for the longest time.
+*/
 static VALUE mixer_find_free_channel(VALUE self)
 {
     int channel;
@@ -726,14 +693,12 @@ static VALUE mixer_find_oldest_channel(VALUE self)
     initAudio();
     return createChannelObject(Mix_GroupOldest(-1));
 }
-/*
-=begin
---- Mixer.busy?
---- Mixer#busy?
+/**
+@method busy? => boolean
 Returns the number of current active channels.
 This is not the total channels,
 but the number of channels that are currently playing sound.
-=end */
+*/
 static VALUE mixer_get_busy(VALUE self)
 {
     if(!SDL_WasInit(SDL_INIT_AUDIO)){
@@ -743,17 +708,14 @@ static VALUE mixer_get_busy(VALUE self)
 }
 
 /*
-=begin
---- Mixer.num_channels
---- Mixer.num_channels=( amount )
---- Mixer#num_channels
---- Mixer#num_channels=( amount )
+@method num_channels => number_of_channels
+@method num_channels=( amount ) => number_of_channels
 Gets or sets the current number of channels available for the mixer.
 This value defaults to 8 when the mixer is first initialized.
 RUDL imposes a channel limit of 256.
 
-These channels are not the same thing as in (({Mixer.init})).
-=end */
+These channels are not the same thing as in @Mixer.init.
+*/
 static VALUE mixer_get_num_channels(VALUE self)
 {
     initAudio();
@@ -769,16 +731,16 @@ static VALUE mixer_set_num_channels(VALUE self, VALUE channelsValue)
     return self;
 }
 
-/*
-=begin
---- Mixer.pause
---- Mixer.unpause
---- Mixer.stop
---- Mixer#pause
---- Mixer#unpause
---- Mixer#stop
+/**
+@section Mass Channel Operations
 These work on all channels at once.
-=end */
+*/
+/**
+@method pause
+@method unpause
+@method stop
+@section Methods
+*/
 static VALUE mixer_pause(VALUE self)
 {
     initAudio();
@@ -800,14 +762,12 @@ static VALUE mixer_unpause(VALUE self)
     return self;
 }
 
-/*
-=begin
---- Mixer.reserved=( amount )
---- Mixer#reserved=( amount )
+/**
+@method reserved=( amount ) => self
 This sets aside the first ((|amount|)) channels.
 They can only be played on by directly creating a Channel object and playing on it.
 No other function will take these channels for playing.
-=end */
+*/
 static VALUE mixer_set_reserved(VALUE self, VALUE amount)
 {
     initAudio();
@@ -815,13 +775,10 @@ static VALUE mixer_set_reserved(VALUE self, VALUE amount)
     return self;
 }
 
-/*
-=begin
---- Mixer.driver
---- Mixer#driver
+/**
+@method driver => String
 Returns the name of the driver doing the sound output.
-=end */
-
+*/
 static VALUE mixer_driver(VALUE self)
 {
     int bufsize = 1024;
@@ -836,14 +793,12 @@ static VALUE mixer_driver(VALUE self)
     return CSTR2STR(name);
 }
 
-/*
-=begin
---- Mixer.format
---- Mixer#format
+/**
+@method format
 These get the parameters that Mixer is playing at.
 It returns an array of [format (like AUDIO_S8), channels, frequency].
-See also (({Mixer.init})).
-=end */
+See also @Mixer@init.
+*/
 
 static VALUE mixer_get_format(VALUE self)
 {
@@ -878,24 +833,22 @@ Mix_Music* retrieveMusicPointer(VALUE self)
 
 void freemusic(Mix_Music* m)
 {
-
     if(m){
         Mix_FreeMusic(m); // This is called multiple times, but it seems to work :)
-
     }
 }
 
-/*
-=begin
-= Music
+/**
+@class Music
 This encapsulates a song.
 For some reason, SDL will only play one song at a time, and even though most of the
 Music methods are instance methods, some will act on the playing Music only.
-== Class Methods
---- Music.new( filename )
+*/
+/**
+@section Initializers
+@method new( filename )
 Creates a new Music object from a MOD, XM, MIDI, MP3 or OGG file (I think.)
-=end */
-
+*/
 static VALUE music_new(VALUE self, VALUE filename)
 {
     VALUE newObject;
@@ -905,18 +858,20 @@ static VALUE music_new(VALUE self, VALUE filename)
     return newObject;
 }
 
-/*
-=begin
-== Instance Methods
---- Music#volume
---- Music#volume=( loudness )
---- Music#fade_out( milliseconds )
-Volume methods:
-fade_out fades out ((*the currently playing music*)) to silence in ((|milliseconds|)) milliseconds.
+/**
+@section Volume methods
+These methods work on the currently playing music.
+*/
+/**
+@method volume => Number
+@method volume=( loudness ) => self
 volume and volume= get and set the volume.
 Volume ranges from 0.0 to 1.0.
-These methods work on the currently playing music.
-=end */
+*/
+/**
+@method fade_out( milliseconds )
+fades out <em>the currently playing music</em> to silence in @milliseconds.
+*/
 static VALUE music_fade_out(VALUE self, VALUE time)
 {
     Mix_FadeOutMusic(NUM2INT(time));
@@ -933,13 +888,16 @@ static VALUE music_set_volume(VALUE self, VALUE volume)
     Mix_VolumeMusic((int)(NUM2DBL(volume)*127));
     return self;
 }
-/*
-=begin
---- Music#play
---- Music#play( loops )
+/**
+@section Play control
+All pretty straight forward, except that they all act on the playing music, not the current one.
+*/
+/**
+@method play
+@method play( loops )
 Plays this piece of music, stopping the previously playing one.
-Plays the music one time, or loops+1 times if you pass loops.
-=end */
+Plays the music one time, or @loops + 1 times if you pass @loops.
+*/
 static VALUE music_play(int argc, VALUE* argv, VALUE self)
 {
     int loops = 0;
@@ -957,15 +915,13 @@ static VALUE music_play(int argc, VALUE* argv, VALUE self)
     SDL_VERIFY(!(Mix_PlayMusic(retrieveMusicPointer(self), loops)==-1));
     return self;
 }
-/*
-=begin
---- Music#stop
---- Music#pause
---- Music#unpause
---- Music#busy?
---- Music#restart
-All pretty straight forward, except that they all act on the playing music, not the current one.
-=end */
+/**
+@method stop
+@method pause
+@method unpause
+@method busy?
+@method restart
+*/
 static VALUE music_stop(VALUE self)
 {
     Mix_HaltMusic();
@@ -994,12 +950,12 @@ static VALUE music_restart(VALUE self)
     Mix_RewindMusic();
     return self;
 }
-/*
-=begin
---- Music#post_end_event
---- Music#post_end_event=( onOrOff )
-Returns, or sets whether an EndOfMusicEvent will be posted when the current music stops playing.
-((|onOrOff|)) is true or false.
+/**
+@section Methods
+@method post_end_event => boolean
+@method post_end_event=( on_or_off ) => self
+Returns, or sets whether an @EndOfMusicEvent will be posted when the current music stops playing.
+@on_or_off is true or false.
 =end */
 static VALUE music_set_post_end_event(VALUE self, VALUE onOff)
 {
@@ -1012,13 +968,13 @@ static VALUE music_get_post_end_event(VALUE self)
     return INT2BOOL(endmusic_event);
 }
 
-/*
-=begin
---- Music#destroy
+/**
+@section Initializers
+@method destroy
 Frees the music from memory,
 thereby rendering the music instance useless.
-=end */
-
+Ruby will crash if you use it anyway.
+*/
 static VALUE music_destroy(VALUE self)
 {
     freemusic(retrieveMusicPointer(self));
@@ -1028,10 +984,7 @@ static VALUE music_destroy(VALUE self)
 }
 #endif
 
-
-
 /////////////// INIT
-
 
 void initAudioClasses()
 {
@@ -1123,24 +1076,21 @@ void initAudioClasses()
     rb_alias(classMusic, rb_intern("dealloc"), rb_intern("destroy"));
 
     rb_define_singleton_method(classMixer, "init", mixer_initialize, -1);
-/*
-=begin
-= Events
-== EndOfMusicEvent
+/**
+#@file - need to fix Dokumentat for this
+@section Events
+@class EndOfMusicEvent
 This event is posted when the current music has ended.
-=end */
+*/
     classEndOfMusicEvent=rb_define_class_under(moduleRUDL, "EndOfMusicEvent", rb_cObject);
 
-
-/*
-=begin
-= Constants
+/**
+@section Constants
+#@file
 These are for indicating an audio format:
-AUDIO_U8, AUDIO_S8, AUDIO_U16LSB, AUDIO_S16LSB, AUDIO_U16MSB, AUDIO_S16MSB,
-AUDIO_U16, AUDIO_S16, AUDIO_U16SYS, AUDIO_S16SYS
-=end */
-
-
+<code>AUDIO_U8, AUDIO_S8, AUDIO_U16LSB, AUDIO_S16LSB, AUDIO_U16MSB, AUDIO_S16MSB,
+AUDIO_U16, AUDIO_S16, AUDIO_U16SYS, AUDIO_S16SYS</code>
+*/
     DEC_CONSTN(AUDIO_U8);
     DEC_CONSTN(AUDIO_S8);
     DEC_CONSTN(AUDIO_U16LSB);
