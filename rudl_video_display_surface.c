@@ -187,7 +187,66 @@ static VALUE displaySurface_mode_ok_(int argc, VALUE* argv, VALUE self)
 
 /*
 =begin
+--- DisplaySurface.best_mode_info
+This method return a hash filled with information about the video hardware.
+
+These entries are true or false:
+ * hardware surfaces available
+ * window manager available
+ * hardware to hardware blits accelerated
+ * hardware to hardware colorkey blits accelerated
+ * hardware to hardware alpha blits accelerated
+ * software to hardware blits accelerated
+ * software to hardware colorkey blits accelerated
+ * software to hardware alpha blits accelerated
+ * color fills accelerated
+This is in kilobytes:
+ * video memory
+
+There is currently no difference between best_mode_info and info, 
+except that one is a class method and the other an instance method, 
+but there may be differences in the future.
+=end */
+
+static VALUE get_video_info()
+{
+	const SDL_VideoInfo* info=SDL_GetVideoInfo();
+	VALUE retval=rb_hash_new();
+	rb_hash_aset(retval, CSTR2STR("hardware surfaces available"), INT2BOOL(info->hw_available));
+	rb_hash_aset(retval, CSTR2STR("window manager available"), INT2BOOL(info->wm_available));
+	rb_hash_aset(retval, CSTR2STR("hardware to hardware blits accelerated"), INT2BOOL(info->blit_hw));
+	rb_hash_aset(retval, CSTR2STR("hardware to hardware colorkey blits accelerated"), INT2BOOL(info->blit_hw_CC));
+	rb_hash_aset(retval, CSTR2STR("hardware to hardware alpha blits accelerated"), INT2BOOL(info->blit_hw_A));
+	rb_hash_aset(retval, CSTR2STR("software to hardware blits accelerated"), INT2BOOL(info->blit_sw));
+	rb_hash_aset(retval, CSTR2STR("software to hardware colorkey blits accelerated"), INT2BOOL(info->blit_sw_CC));
+	rb_hash_aset(retval, CSTR2STR("software to hardware alpha blits accelerated"), INT2BOOL(info->blit_sw_A));
+	rb_hash_aset(retval, CSTR2STR("color fills accelerated"), INT2BOOL(info->blit_fill));
+	rb_hash_aset(retval, CSTR2STR("video memory"), UINT2NUM(info->video_mem));
+	return retval;
+}
+
+static VALUE displaySurface_best_mode_info(VALUE self)
+{
+	initVideo();
+	if(SDL_GetVideoSurface()==NULL){
+		return get_video_info();
+	}else{
+		SDL_RAISE_S("Cannot be called after creating a DisplaySurface");
+		return Qnil;
+	}
+}
+
+static VALUE displaySurface_info(VALUE self)
+{
+	initVideo();
+	return get_video_info();
+}
+
+/*
+=begin
 == Instance Methods
+--- DisplaySurface#info
+See DisplaySurface.best_mode_info
 --- DisplaySurface#driver
 Returns the name of the videodriver that is being used.
 =end */
@@ -212,16 +271,18 @@ You must update an area of your display when you change its contents.
 If passed with no arguments, this will update the entire display surface.
 =end
 This call cannot be used on OPENGL displays, and will generate an exception.
-If you have many rects that need updating, it is best to combine them into a sequence and pass
-them all at once. This call will accept a sequence of rectstyle
-arguments. Any None's in the list will be ignored.
+If you have many rects that need updating,
+it is best to combine them into an array and pass them all at once.
 */
 static VALUE displaySurface_update(int argc, VALUE* argv, VALUE self)
 {
 	SDL_Rect rect;
-	SDL_Surface* surface=retrieveSurfacePointer(self);
 	VALUE rectObject;
-	int i;
+	int i, total_rects;
+	SDL_Rect* rects;
+
+
+	GET_SURFACE;
 
 	if(surface->flags&SDL_OPENGL) SDL_RAISE_S("Cannot update an OPENGL display");
 
@@ -231,10 +292,13 @@ static VALUE displaySurface_update(int argc, VALUE* argv, VALUE self)
 			return self;
 		case 1:
 			Check_Type(rectObject, T_ARRAY);
-			for(i=0; i<RARRAY(rectObject)->len; i++){
-				PARAMETER2CRECT(rb_ary_entry(rectObject, i), &rect);
-				SDL_UpdateRect(surface, rect.x, rect.y, rect.w, rect.h);
+			total_rects=RARRAY(rectObject)->len;
+			rects=malloc(sizeof(rects)*total_rects);
+			for(i=0; i<total_rects; i++){
+				PARAMETER2CRECT(rb_ary_entry(rectObject, i), rects+i);
 			}
+			SDL_UpdateRects(surface, total_rects, rects);
+			free(rects);
 	}
 	return self;
 }
@@ -382,7 +446,9 @@ void initVideoDisplaySurfaceClasses()
 	rb_define_singleton_method(classDisplaySurface, "new", displaySurface_new, -1);
 	rb_define_singleton_method(classDisplaySurface, "modes", displaySurface_modes, -1);
 	rb_define_singleton_method(classDisplaySurface, "mode_ok?", displaySurface_mode_ok_, -1);
+	rb_define_singleton_method(classDisplaySurface, "best_mode_info", displaySurface_best_mode_info, 0);
 	rb_define_method(classDisplaySurface, "driver", displaySurface_driver, 0);
+	rb_define_method(classDisplaySurface, "info", displaySurface_info, 0);
 	rb_define_method(classDisplaySurface, "update", displaySurface_update, -1);
 	rb_define_method(classDisplaySurface, "flip", displaySurface_flip, 0);
 	rb_define_method(classDisplaySurface, "active?", displaySurface_active_, 0);

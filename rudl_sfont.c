@@ -155,6 +155,7 @@ void initSFontClasses()
 
 	add_sfont_print_centered();
 
+	// Backward compatability:
 	rb_alias(classSFont, rb_intern("puts"), rb_intern("print"));
 	rb_alias(classSFont, rb_intern("puts_centered"), rb_intern("print_centered"));
 

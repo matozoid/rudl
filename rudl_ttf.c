@@ -285,6 +285,7 @@ void initTrueTypeFontClasses()
 	rb_define_method(classTTF, "underline=", truetypefont_underline__, 1);
 	rb_define_method(classTTF, "size", truetypefont_size, 1);
 
+	// Backward compatability:
 	rb_alias(classTTF, rb_intern("height"), rb_intern("h"));
 #endif
 }

@@ -230,7 +230,6 @@ INIT_TIMER, INIT_AUDIO, INIT_VIDEO, INIT_CDROM, INIT_JOYSTICK, INIT_NOPARACHUTE,
 
 DECKLSPECKL void Init_RUDL()
 {
-	DEBUG_S("Initing RUDL");
 	moduleRUDL=rb_define_module("RUDL");
 
 	rb_define_singleton_method(moduleRUDL, "at_exit", RUDL_at_exit, 0);

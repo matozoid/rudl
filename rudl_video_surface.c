@@ -29,8 +29,6 @@ __inline__ SDL_Surface* retrieveSurfacePointer(VALUE self)
 	return surface;
 }
 
-#define GET_SURFACE SDL_Surface* surface; Data_Get_Struct(self, SDL_Surface, surface);
-
 __inline__ void setMasksFromBPP(Uint32 bpp, Uint32* Rmask, Uint32* Gmask, Uint32* Bmask, Uint32* Amask)
 {
 	*Amask = 0;
@@ -75,6 +73,9 @@ If a surface is supplied, it is used to copy the values from that aren't given.
 ((|depth|)) is bitdepth, like 8, 15, 16, 24 or 32.
 
 ((|masks|)) describes the format for the pixels and is an array of [R, G, B, A]
+containing 32 bit values with bits set where the colorcomponent should be stored.
+For example: [0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF] describes a 32 bit color
+with red in the highest values.
 =end */
 static VALUE surface_new(int argc, VALUE* argv, VALUE self)
 {
@@ -177,7 +178,8 @@ static VALUE surface_load_new(VALUE self, VALUE filename)
 
 /*
 =begin
---- Surface.destroy
+== Instance Methods
+--- Surface#destroy
 Frees memory used by this surface.
 The surface is no longer useable after this call.
 =end */
@@ -191,12 +193,13 @@ static VALUE surface_destroy(VALUE self)
 
 /*
 =begin
-== Instance Methods
 --- Surface#blit( source, coordinate )
 --- Surface#blit( source, coordinate, sourceRect )
-This method blits ((|source|)) onto the (({Surface})).
+This method blits (copies, pastes, draws) ((|source|)) onto the (({Surface})) it is called on.
 ((|coordinate|)) is the position [x, y] where ((|source|)) will end up in the destination (({Surface})).
-((|sourcerect|)) can be used to blit only a portion of the ((|source|)).
+((|sourcerect|)) is the area in the ((|source|)) bitmap that you want blitted.
+Not supplying it will blit the whole ((|source|)).
+Returns the rectangle array ([x,y,w,h]) in (({Surface})) that was changed.
 =end */
 static VALUE surface_blit(int argc, VALUE* argv, VALUE self)
 {
@@ -227,9 +230,7 @@ static VALUE surface_blit(int argc, VALUE* argv, VALUE self)
 	}
 
 	retval=rb_obj_alloc(classRect);
-	CRECT2RECT(&dest_rect, retval);
-
-	return retval;
+	return new_rect_from_SDL_Rect(&dest_rect);
 }
 
 /*
@@ -376,8 +377,7 @@ static VALUE surface_rect(VALUE self)
 	rect.h=surface->h;
 
 	retval=rb_obj_alloc(classRect);
-	CRECT2RECT(&rect, retval);
-	return retval;
+	return new_rect_from_SDL_Rect(&rect);
 }
 
 static VALUE surface_w(VALUE self)
@@ -702,9 +702,7 @@ static VALUE surface_clip_(VALUE self, VALUE rectObject)
 
 static VALUE surface_clip(VALUE self)
 {
-	VALUE rect=rb_obj_alloc(classRect);
-	CRECT2RECT(&(retrieveSurfacePointer(self)->clip_rect), rect);
-	return rect;
+	return new_rect_from_SDL_Rect(&(retrieveSurfacePointer(self)->clip_rect));
 }
 
 
@@ -1020,6 +1018,11 @@ void define_ruby_row_methods()
 		"		each_row {|r| retval.push(r)}	\n"
 		"		retval							\n"
 		"	end									\n"
+		"	def rows=(rows)						\n"
+		"		(0..h).each {|row|				\n"
+		"			set_row(row, rows[row])		\n"
+		"		}								\n"
+		"	end									\n"
 		"end end								\n"
 	);
 }
@@ -1103,6 +1106,11 @@ void define_ruby_column_methods()
 		"		retval=[]							\n"
 		"		each_column {|c| retval.push(c)}	\n"
 		"		retval								\n"
+		"	end									\n"
+		"	def columns=(cols)						\n"
+		"		(0..w).each {|col|				\n"
+		"			set_column(col, cols[col])	\n"
+		"		}								\n"
 		"	end									\n"
 		"end end								\n"
 	);
@@ -1189,6 +1197,7 @@ void initVideoSurfaceClasses()
 	rb_define_method(classSurface, "rect", surface_rect, 0);
 	
 	rb_define_method(classSurface, "blit", surface_blit, -1);
+
 	rb_define_method(classSurface, "convert", surface_convert, 0);
 	rb_define_method(classSurface, "convert_alpha", surface_convert_alpha, 0);
 	rb_define_method(classSurface, "convert!", surface_convert_, 0);

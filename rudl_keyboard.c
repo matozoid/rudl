@@ -125,10 +125,10 @@ The modifier keys state.
 /*
 =begin
 = KeyDownEvent
-This event is posted (once) when a key is pressed.
---- KeyUpEvent#key
+This event is posted when a key is pressed and when it gets repeated (see Key#set_repeat).
+--- KeyDownEvent#key
 The keycode for the pressed key.
---- KeyUpEvent#mod
+--- KeyDownEvent#mod
 The modifier keys state.
 =end */
 	classKeyDownEvent=rb_define_class_under(moduleRUDL, "KeyDownEvent", classEvent);

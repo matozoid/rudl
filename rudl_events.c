@@ -91,7 +91,7 @@ VALUE sDLEvent2RubyEvent(SDL_Event* event)
 			rb_iv_set(newEvent, "@button", INT2NUM(event->jbutton.button));
 			break;
 		case SDL_VIDEORESIZE:
-			newEvent=rb_obj_alloc(classMouseButtonUpEvent);
+			newEvent=rb_obj_alloc(classResizeEvent);
 			rb_iv_set(newEvent, "@size", rb_ary_new3(2, 
 				UINT2NUM(event->resize.w), 
 				UINT2NUM(event->resize.h)));

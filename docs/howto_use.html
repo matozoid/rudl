@@ -35,13 +35,11 @@ Use the samples!
 <P>The following datatypes are commonly used by RUDL:
 <P>When a coordinate, size or such is needed, RUDL works with array's of two numbers like
 [10, 42].
-<P>When a rectangle is needed: 
-either an array of four numbers, 
-representing x,y from the top left corner, 
-and w,h for width and height: [x, y, width, height], 
-or, especially when manipulating a rectangle, a Rect object, 
-which has x, y, w and h members.
-Return values are of the first type ([x,y,widht,height].)
+<P>When a rectangle is needed one uses an array of four numbers, 
+representing x,y from the top left corner of the screen, 
+and w,h for width and height: [x, y, width, height].
+Ruby's Array class is extended with a lot of methods to enable things like
+[5,10,30,30].y (which will be 10)
 <P>When a color is needed, always use an array of [red, green, blue],
 a [red, green, blue, alpha] array or a hexadecimal 32 bit number: 0xFF8040EE.
 Return values are arrays, I don't know if sometimes returning three, sometimes

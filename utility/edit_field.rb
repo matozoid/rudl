@@ -8,7 +8,7 @@ module RUDL
 
 
 		def initialize(area, foreground_color=[255,255,255], background_color=[0,0,0], transparant=true, max_length=nil)
-			@area=Rect.new(area)
+			@area=area
 			@max_length=max_length
 			@text_surface=Surface.new [@area.w, @area.h]
 			@cursor_visible=true
@@ -145,7 +145,7 @@ module RUDL
 			cursor_x=0
 			cursor_x=compute_string_length(@content[0..@cursor_pos-1]) if @cursor_pos>0
 			draw_cursor(cursor_x) if @cursor_visible
-			surface.blit @text_surface, [@area.x, @area.y]
+			surface.blit @text_surface, @area
 		end
 
 		private

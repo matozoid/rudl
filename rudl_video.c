@@ -110,27 +110,6 @@ __inline__ VALUE COLOR2VALUE(Uint32 color, SDL_Surface* surface)
 	}
 }
 
-__inline__ void RECT2CRECT(VALUE source, SDL_Rect* destination)
-{
-	VALUE tmp;
-	tmp=rb_ivar_get(source, id_atx);
-	destination->x=NUM2Sint16(tmp);
-	tmp=rb_ivar_get(source, id_aty);
-	destination->y=NUM2Sint16(tmp);
-	tmp=rb_ivar_get(source, id_atw);
-	destination->w=NUM2Uint16(tmp);
-	tmp=rb_ivar_get(source, id_ath);
-	destination->h=NUM2Uint16(tmp);
-}
-
-__inline__ void CRECT2RECT(SDL_Rect* source, VALUE destination)
-{
-	rb_ivar_set(destination, id_atx, INT2NUM(source->x));
-	rb_ivar_set(destination, id_aty, INT2NUM(source->y));
-	rb_ivar_set(destination, id_atw, UINT2NUM(source->w));
-	rb_ivar_set(destination, id_ath, UINT2NUM(source->h));
-}
-
 __inline__ void PARAMETER2COORD(VALUE parameter, Sint16* x, Sint16* y)
 {
 	VALUE tmp;
@@ -141,23 +120,6 @@ __inline__ void PARAMETER2COORD(VALUE parameter, Sint16* x, Sint16* y)
 		*y=NUM2Sint16(tmp);
 	}else{
 		rb_raise(rb_eTypeError, "Expected coordinate array with at least 2 elements");
-	}
-}
-
-__inline__ void PARAMETER2CRECT(VALUE arg1, SDL_Rect* rect)
-{
-	VALUE tmp;
-	if(rb_obj_is_kind_of(arg1, classRect)){
-		RECT2CRECT(arg1, rect);
-	}else{
-		if(rb_obj_is_kind_of(arg1, rb_cArray)){
-			tmp=rb_ary_entry(arg1, 0);			rect->x=NUM2Sint16(tmp);
-			tmp=rb_ary_entry(arg1, 1);			rect->y=NUM2Sint16(tmp);
-			tmp=rb_ary_entry(arg1, 2);			rect->w=NUM2Uint16(tmp);
-			tmp=rb_ary_entry(arg1, 3);			rect->h=NUM2Uint16(tmp);
-		}else{
-			rb_raise(rb_eTypeError, "Wanted RUDL::Rect or array");
-		}
 	}
 }
 

@@ -129,7 +129,7 @@ class Player
 	end
 
 	def collide(ball_pos, ball_dir)
-		if Rect.new(@x, @y, 8, $BatSize).overlap(Rect.new(ball_pos[0], ball_pos[1], 8, 8))
+		if [@x, @y, 8, $BatSize].overlap [ball_pos[0], ball_pos[1], 8, 8]
 			if @side==0
 				ball_dir[0]=ball_dir[0].abs
 			else
@@ -244,8 +244,7 @@ class Pong
 				end
 
 				if !@gameOver
-					@ball_pos[0]+=@ball_dir[0]
-					@ball_pos[1]+=@ball_dir[1]
+					@ball_pos.move! @ball_dir
 				end
 
 				if @ball_pos[1]>$display.h-8

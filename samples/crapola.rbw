@@ -9,7 +9,7 @@ require '../RUDL'
 include RUDL
 include Constant
 
-$display=DisplaySurface.new([320, 200], HWSURFACE|DOUBLEBUF|FULLSCREEN)
+$display=DisplaySurface.new([320, 200], HWSURFACE|DOUBLEBUF)#|FULLSCREEN)
 
 $MaxBadThings=50
 
@@ -86,10 +86,10 @@ class Sprite
 			sprite.update
 		end
 
-		Rect.collide_lists(@@goodbulletlist, @@badthinglist) do |bullet, thing|
+		Array.collide_lists(@@goodbulletlist, @@badthinglist) do |bullet, thing|
 			bullet.stop
 			thing.stop
-			25.times do Explosion.new([thing.rect.x, thing.rect.y]) end
+			25.times do Explosion.new(thing.rect) end
 			if $sound_on
 				if thing.instance_of?(Rock)
 					$sound['boom'].play
@@ -100,11 +100,11 @@ class Sprite
 			$score=$score+10
 		end
 
-		Rect.collide_lists(@@badthinglist, @@goodthinglist) do |enemy, friend|
+		Array.collide_lists(@@badthinglist, @@goodthinglist) do |enemy, friend|
 			enemy.stop
 			friend.stop
 			$sound['ship boom'].play if $sound_on
-			25.times do Explosion.new([enemy.rect.x, enemy.rect.y]) end
+			25.times do Explosion.new(enemy.rect) end
 		end
 	end
 	
@@ -125,7 +125,7 @@ class Sprite
 
 	def initialize(position, image)
 		@image=image
-		@rect=Rect.new(position[0], position[1], @image.w, @image.h)
+		@rect=[position.x, position.y, @image.w, @image.h]
 		start
 	end
 
@@ -141,7 +141,7 @@ class Sprite
 	end
 
 	def draw
-		$display.blit(@image, [@rect.x, @rect.y])
+		$display.blit(@image, @rect)
 	end
 end
 
@@ -157,15 +157,14 @@ class Explosion < Sprite
 		if @timetolive<0 then
 			stop
 		end
-		@rect.x+=@direction[0]
-		@rect.y+=@direction[1]
+		@rect.move! @direction
 		super
 	end
 end
 
 class Bullet < Sprite
 	def initialize(position)
-		bulletposition=[position[0]+3, position[1]-4]
+		bulletposition=position.move [3,-4]
 		super(bulletposition, $images[1])
 	end
 
@@ -197,11 +196,10 @@ class Rock < Sprite
 	end
 
 	def update
-		@rect.x+=@direction[0]
-		@rect.y+=@direction[1]
+		@rect.move! @direction
 		stop if @rect.y>200
-		@direction[0]=@direction[0].abs if @rect.x<0
-		@direction[0]=-(@direction[0].abs) if @rect.x>290
+		@direction.x=@direction.x.abs if @rect.x<0
+		@direction.x=-(@direction.x.abs) if @rect.x>290
 		@image=$rotated_rocks[@rotation]
 		@rotation=@rotation+@rotationspeed
 		@rotation=@rotation-100 while @rotation>=100  # Is this faster than modulo?
@@ -268,8 +266,7 @@ class DestroyedEnemy < Sprite
 	end
 
 	def update
-		@rect.x+=@direction
-		@rect.y+=1
+		@rect.move! [@direction, 1]
 		stop if @rect.y>200
 		Explosion.new([@rect.x, @rect.y])
 	end
@@ -325,7 +322,7 @@ class Ship < Sprite
 		
 		if keystate[K_LCTRL] 
 			if !@endlessbulletstreamstopper
-				Bullet.new([@rect.x, @rect.y])
+				Bullet.new(@rect)
 				$sound['shoot'].play if $sound_on
 				@endlessbulletstreamstopper=true
 			end
@@ -464,7 +461,7 @@ def makescrolltextimage
 	'Judith, Marieke, Gijs, Katja, Patrick, Mat(t)hieu, Femnijl(c), Mimsje(c), Rachel, '+
 	'Bert, DiDi, PeterJ, Dossey, dhr. ing. Edelwater, Frouke!, Dennis, Ishi, Nekiwa, '+
 	'Joepi, Jumbo, Able Lakes King, KLinZ, Margooks, McDuvel, Sletje, Ufor Anders, '+
-	'Bernadette, Roelof, Marc, Huiskokkie, '+
+	'Bernadette, Roelof, Marc, '+
 	'Maurice, Martijn, Carline, the girl next door, Peggy, Manon and the mice running '+
 	'through this house. Wrap is coming up. In producing RUDL, I used 30 Valkenburgs Wit, '+
 	'a P166/64MB running Win98, a 486/80 20MB running Linux (it\'s froukepc!), MSVC (for '+
@@ -472,6 +469,7 @@ def makescrolltextimage
 	'a Wacom tablet for drawing graphics (yeah, I could just as well have drawn them '+
 	'with a mouse), boejon, tons of mail, mostly useless discussions on IRC, uh-oh, '+
 	'wrap time!'
+	scrolltext='heeeej'
 	img=Surface.new([8*scrolltext.length, 8])
 	img.print([0,0],scrolltext, [255, 100, 200])
 end
@@ -507,7 +505,7 @@ def gameover
 			end
 		end
 		$display.fill([0, 0, 0])
-		$display.blit(logo, [logo_x,logo_y+Math.sin(counter/90.0)*80])
+		$display.blit(logo, [logo_x, logo_y+Math.sin(counter/90.0)*80])
 		$display.print([(320-8*9)/2, (200-8)/2], 'GAME OVER', 0xFFFFFFFF)
 		$display.blit(scrollimg, [-scrollpos, 190])
 		scrollpos=scrollpos+1

@@ -12,7 +12,10 @@ RUDL.versions.each {|library, version|
 	puts "#{library} #{version}"
 }
 
-#begin
+begin
+	puts
+	puts "Video hardware info:"
+	puts DisplaySurface.best_mode_info.sort.join("\n")
 	puts
 	puts "Video modes: (F means fullscreen)"
 
@@ -42,6 +45,6 @@ RUDL.versions.each {|library, version|
 	sorted.sort.each {|line| # OK, so the sorting is crap
 		puts line
 	}
-#rescue
-#	puts "No video driver available"
-#end
+rescue
+	puts "No video driver available"
+end

@@ -3,7 +3,7 @@
 #define _RUDL_H
 
 #define RUDLVERSION_MAJOR 0
-#define RUDLVERSION_MINOR 6
+#define RUDLVERSION_MINOR 7
 #define RUDLVERSION_PATCH 0
 #define DEBUG_RUDL
 
@@ -69,12 +69,18 @@ extern VALUE rb_range_last(VALUE obj);
 #define NUM2BOOL(____b)	((____b)==Qtrue? true:false)
 #define INT2BOOL(____b)	((____b) ? Qtrue : Qfalse)
 #define DBL2NUM(x)	rb_float_new(x)
+#define FLT2NUM(x)	rb_float_new(x)
 #define CSTR2STR(x)	rb_str_new2(x)
+#define NUM2Sint32(x)	((Sint32)NUM2INT(x))
+#define NUM2Uint32(x)	((Uint32)NUM2UINT(x))
 #define NUM2Sint16(x)	((Sint16)NUM2INT(x))
 #define NUM2Uint16(x)	((Uint16)NUM2UINT(x))
 #define NUM2Sint8(x)	((Sint8)NUM2INT(x))
 #define NUM2Uint8(x)	((Uint8)NUM2UINT(x))
 #define NUM2FLT(x)	((float)NUM2DBL(x))
+
+#define RUDL_MIN(a, b) ((a)<(b)?(a):(b))
+#define RUDL_MAX(a, b) ((a)>(b)?(a):(b))
 
 #define DEC_CONST(x)	rb_define_const(moduleConstant, #x, UINT2NUM(SDL_##x));
 #define DEC_CONSTK(x)	rb_define_const(moduleConstant, #x, UINT2NUM(SDL##x));
