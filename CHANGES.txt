@@ -1,7 +1,7 @@
 
 newest
 ------
- + Added DisplaySurface.get
+ + Added DisplaySurface.get (class method, returns the global DisplaySurface object)
  + added DisplaySurface.set_icon for setting the window icon
  + added Surface#mirror_x and mirror_y
  + added Surface#scale2x
