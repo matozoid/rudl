@@ -1,17 +1,24 @@
 #!/usr/bin/env ruby
-require 'RUDL'; include RUDL
+require "RUDL"
+include RUDL
 
-display=DisplaySurface.new([320,200])
+win = DisplaySurface.new([320,200])
 
-while true do
-	event=EventQueue.poll
-	case event
-		when MouseMotionEvent
-			display.plot(event.pos, [255,255,255])
-			# Does the same:
-			# display[event.pos[0], event.pos[1]]=[255,255,255]
-			display.update
-		when QuitEvent, KeyDownEvent, MouseButtonDownEvent
-			exit
-	end
+while true
+    event = EventQueue.wait
+
+    case event
+        when MouseMotionEvent
+            win.plot(event.pos, [255,255,255])
+            # you can also plot a white pixel with win[x,y] = [255,255,255]
+            win.update
+
+        when MouseButtonDownEvent
+            win.fill [0,0,0]
+            win.update
+
+        when QuitEvent, KeyDownEvent
+            exit
+    end
+
 end
