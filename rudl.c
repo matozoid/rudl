@@ -143,6 +143,23 @@ VALUE RUDL_is_init(VALUE obj, VALUE flags)
     return UINT2NUM(SDL_WasInit(PARAMETER2FLAGS(flags)));
 }
 
+
+/**
+@file RUDL
+@module RUDL
+Module @RUDL contains all @RUDL classes as inner classes.
+It has some class methods of its own too.
+*/
+/**@section Class Methods
+@method versions
+Returns a hash of library names with their versions that are supported by @RUDL.
+This list was determined when @RUDL was compiled for a certain system,
+and might change when other libraries have been installed or removed
+and @RUDL is recompiled.
+Versions are @RUDL@Version objects.
+This includes "RUDL" itself.
+*/
+
 static VALUE RUDL_versions(VALUE self)
 {
     char versions[8192]; // Ugh
@@ -215,42 +232,6 @@ static VALUE RUDL_versions(VALUE self)
 
 //////////////////////////////////
 
-/*
-=begin
-<<< docs/head
-= RUDL
-Module (({RUDL})) contains all RUDL classes as inner classes.
-It has some class methods of its own too.
-== Class Methods
---- RUDL.versions
-Returns a hash of library names with their versions that are supported by RUDL.
-This list was determined when RUDL was compiled for a certain system,
-and might change when other libraries have been installed or removed
-and RUDL is recompiled.
-Versions are RUDL::Version objects.
-This includes "RUDL" itself.
-= Pit
-The (({Pit})) is where the things end up that don't fit anywhere else.
-The methods are defined where they fit best.
-= Version
-(({Version})) is the class used for version comparisons.
-It defines four version levels: major, minor, patch and deepest.
---- Version#initialize( major=0, minor=0, patch=0, deepest=0 )
-Initializes a new Version object.
---- Version#<( v )
-Compares this version number with the one in ((|v|)).
-Returns ((|true|)) if older.
---- Version#to_s
-Returns the version as a string: "major.minor.patch.deepest"
-= SDLError
-SDLError is the class that is thrown when SDL or RUDL find an SDL-specific
-problem.
-= Constants
-All for the hacked ((|init_subsystem|)) and ((|quit_subsystem|)),
-which should officially never be needed:
-INIT_TIMER, INIT_AUDIO, INIT_VIDEO, INIT_CDROM, INIT_JOYSTICK, INIT_NOPARACHUTE, INIT_EVERYTHING
-=end */
-
 DECKLSPECKL void Init_RUDL()
 {
     DEBUG_S("Init_RUDL()");
@@ -263,11 +244,38 @@ DECKLSPECKL void Init_RUDL()
     rb_define_singleton_method(moduleRUDL, "is_subsystem_init", RUDL_is_init, 1);
     rb_define_singleton_method(moduleRUDL, "versions", RUDL_versions, 0);
 
+/**
+@class RUDL::SDLError
+SDLError is the class that is thrown when SDL or RUDL find an SDL-specific
+problem.
+*/
     classSDLError=rb_define_class("SDLError", rb_eStandardError);
-    moduleConstant=rb_define_module_under(moduleRUDL, "Constant");
 
+/**
+@class RUDL::Pit
+The @Pit is where the things end up that don't fit anywhere else.
+The methods are documented where they fit best.
+*/
     classPit=rb_define_class_under(moduleRUDL, "Pit", rb_cObject);
 
+/**
+@class RUDL::Version
+@Version is the class used for version comparisons.
+It defines four version levels: major, minor, patch and deepest.
+*/
+/**
+@method initialize( major=0, minor=0, patch=0, deepest=0 )
+Initializes a new Version object.
+*/
+/**
+@method <( v )
+Compares this version number with the one in @v.
+Returns <code>true</code> if older.
+*/
+/**
+@method to_s
+Returns the version as a string: "major.minor.patch.deepest"
+*/
     rb_eval_string(
         "module RUDL\n"
         "   class Version\n"
@@ -296,6 +304,13 @@ DECKLSPECKL void Init_RUDL()
     id_new=rb_intern("new");
     id_clone=rb_intern("clone");
 
+/**
+@class RUDL::Constants
+All for the hacked @init_subsystem and @quit_subsystem,
+which should officially never be needed:
+<code>INIT_TIMER, INIT_AUDIO, INIT_VIDEO, INIT_CDROM, INIT_JOYSTICK, INIT_NOPARACHUTE, INIT_EVERYTHING</code>
+*/
+    moduleConstant=rb_define_module_under(moduleRUDL, "Constant");
     DEC_CONST(INIT_TIMER);
     DEC_CONST(INIT_AUDIO);
     DEC_CONST(INIT_VIDEO);
