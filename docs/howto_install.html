@@ -6,21 +6,16 @@
 <body>
 <H1>How to get and install RUDL</H1>
 
-<H2>Linux</H2>
-
-You'll have to build it from source, as described below.
-
-
 <H2>Windows</H2>
 
-This chapter may be outdated at any time.
+<p>This chapter may be outdated at any time.
 
 
 <h3>Binary</h3>
 
-This explains how to get RUDL installed on Windows.
+<p>This explains how to get RUDL installed on Windows.
 Developers are advised to create a package with their program, SDL, and RUDL in it
-so average users won't have to install RUDL seperately.
+so end users won't have to install RUDL separately.
 
 <ol>
     <li>Grab <A HREF="http://rubyinstaller.sourceforge.net/">One Click Ruby 1.8.x Installer</A>
@@ -40,45 +35,86 @@ so average users won't have to install RUDL seperately.
 </ol>
 
 <p>If you want to use another version of Ruby, you'll get trouble using RUDL.
-This is because the RUDL.so library is statically linked with msvcrt-ruby18.lib (or something of that kind) and that lib
-changes a lot between Ruby versions.
-This can be solved by downloading a lib only RUDL, if it exists for your version.
+This is because the RUDL.so library is statically linked with msvcrt-ruby18.lib
+(or something of that kind) and that lib changes a lot between Ruby versions.
+This can be solved by downloading a lib-only RUDL, if it exists for your version.
 (If it doesn't, it can be created on request)
 You can put the RUDL.so in the directory where you unpacked the RUDL setup and rerun install-on-windows.
+
+
+<h3>Creating an installable version of your project</h3>
+
+<p>... to do.
+
 
 <h3>Source</h3>
 
 <p>Compiling from source could be useful for creating a smaller RUDL library that depends on less libraries.
 
-<p>Source is now compiled with the Microsoft Visual C 6 command line tools.
-They can be set up with the "vcvars32" batchfile in VC's bin directory, 
-which sets up Visual Studio's environment variables.
-You need to add RUDL's lib and include to the LIB and INCLUDE in the batch file.
-Alternatively, you can modify the environment variables from the Windows GUI or another batchfile,
-as long as the result looks like the following:
+<p>RUDL is compiled with the Microsoft Visual C++ command line tools. If you don't have Visual Studio,
+it is possible to compile RUDL with tools that can be downloaded for free from Microsoft.
 
-<p><b>Windows environment variables example</b></p>
-
-<p>With Visual Studio in <code>C:\Program Files\VStudio\</code>
-and the include and lib dirs beneath the RUDL dir <code>C:\rudl\</code>
-
-<ul><code>
-<li>include=C:\Program Files\VStudio\VC98\Include;C:\rudl\include
-<li>lib=C:\Program Files\VStudio\VC98\Lib;C:\rudl\lib
-<li>MSDevDir=C:\Program Files\VStudio\Common\MSDev98
-<li>Path=C:\Program Files\VStudio\Common\MSDev98\BIN;C:\Program Files\VStudio\VC98\BIN;C:\Program Files\VStudio\Common\MSDev98\TOOLS
-</code></ul>
-
-<p>Proceed with the build instructions below. If you don't want to download
+<p>Set up your compiler with the instructions below, then proceed with the build
+instructions at the bottom of this page. If you don't want to download
 the latest SDL libraries, you can use the provided includes and libs, and the DLLs from
 the RUDL setup archive, and start from &quot;ruby extconf.rb&quot;.
 
-<p>If you download the libraries yourself, you should
-probably copy the binaries and includes into the corresponding RUDL directories.
+<p>If you download the SDL libraries yourself, you should probably copy their binaries
+and includes into the corresponding RUDL directories.
 
-<h3>Creating an installable version of your project</h3>
 
-<p>... to do.
+<h4>Visual Studio</h4>
+
+<p>With Visual Studio, you only need to make sure its bin, include and lib
+paths are in the environment variables, and add RUDL's include and lib dirs.
+Example paths:
+<ul>
+<li><strong>PATH</strong> = C:\Program Files\VStudio\VC98\BIN
+<li><strong>INCLUDE</strong> = C:\Program Files\VStudio\VC98\Include;
+    <strong>C:\rudl\include</strong>
+<li><strong>LIB</strong> = C:\Program Files\VStudio\VC98\Lib;
+    <strong>C:\rudl\lib</strong>
+</ul>
+
+<p>Those are in addition to what's already in the variables, of course.
+In Windows 2000 or XP, you can edit them from Control Panel -> System ->
+Advanced -> Environment Variables. You might have to reboot, or at least
+restart any command line prompts for the changes to take effect. Check
+them with the command <code>echo %PATH%</code>, etc.
+
+
+<h4>Free tools</h4>
+
+<p>If you don't have Visual Studio, you will probably need all of the following:
+<ul>
+<li><a href="http://msdn.microsoft.com/visualc/vctoolkit2003/">Microsoft Visual C++ Toolkit 2003</a>
+    (the compiler itself)
+<li><a href="http://www.microsoft.com/msdownload/platformsdk/sdkupdate/">Microsoft Platform SDK</a>
+    (Core SDK)
+<li>.NET Framework 1.1 SDK from <a href="http://msdn.microsoft.com/">msdn.microsoft.com</a>
+    - NOTE: RUDL doesn't use .NET, and the only reason to get this huge SDK seems to be to get MSVCRT.lib.
+<li>MinGW32-make from the <a href="http://www.mingw.org/download.shtml">MinGW site</a>
+    (search for mingw32-make-*.exe)
+</ul>
+
+<p>You need to make sure that some environment variables are set up correctly. Here's a
+list of the variables, with default installation paths:
+<ul>
+<li><strong>PATH</strong> = C:\Program Files\Microsoft Visual C++ Toolkit 2003\bin
+<li><strong>INCLUDE</strong> = C:\Program Files\Microsoft Visual C++ Toolkit 2003\include;
+    C:\Program Files\Microsoft SDK\include;
+    <strong>C:\rudl\include</strong>
+<li><strong>LIB</strong> = C:\Program Files\Microsoft Visual C++ Toolkit 2003\lib;
+    C:\Program Files\Microsoft SDK\lib;
+    <strong>C:\rudl\lib</strong>
+</ul>
+
+
+
+<h2>Linux</h2>
+
+<p>You'll have to build it from source, as described below.
+
 
 <h2>Building from source</h2>
 
@@ -100,17 +136,18 @@ probably copy the binaries and includes into the corresponding RUDL directories.
         </ul>
         (You may need to download or compile the user binaries as well, if they're not included in the devel package.)
 
-        <p>Note that RUDL doesn't <I>need</I> everything, only the core SDL library.
+        <p>Note that RUDL doesn't <em>need</em> everything, only the core SDL library.
         <p>The libraries must be installed where the compiler can find them. Sometimes the rpm's have
         created symlinks from e.g. /usr/lib/libSDL.so to a nonexisting version, so you may need to fix them manually.
     <li><code>ruby extconf.rb</code> in the RUDL root dir will look for the above-mentioned libraries
     and create a makefile with the libraries it finds.
     <p>If it can't find some library that you have installed, you can try editing extconf.rb
-    and uncommenting the $DEBUG flag. Make sure that the library binaries and includes are in the right locations.
+    and uncommenting the $DEBUG flag. Make sure that the library binaries and includes are in
+    the right locations. See also the generated <code>mkmf.log</code>
     <li><code>make</code>
-    <li>And now, as root:
-    <code>make install</code>
+    <li>And now, as root: <code>make install</code><br>
+        (on Windows, run instead <code>ruby install-on-windows.rb</code>)
 </ol>
-That's it. You can now try the samples.
+<p>That's it. You can now try the samples.
 </body>
 </html>
