@@ -333,8 +333,8 @@ class Ship < Sprite
 				Bullet.new(@rect)
 
 				sound_x=@rect.x/300.0
-
-				$sound['shoot'].play.set_panning(sound_x, 1.0-sound_x) if $sound_on
+				sound=$sound['shoot'].play
+				sound.set_panning(sound_x, 1.0-sound_x) if $sound_on && sound
 				@endlessbulletstreamstopper=true
 			end
 		else
@@ -452,58 +452,33 @@ def play
 end
 
 def gameover
-	scrolltext='                                        '+
-
-	'(This scroller is not synchronized in any way, sorry!) '+
-
-	'Welcome to CRAPOLA, a crappy game to demonstrate RUDL, the accellerated multimedia '+
-
-	'extension to Ruby. The cursor keys move your ship left and right. Left CTRL shoots '+
-
-	' and ALT-ENTER toggles fullscreen. Jeff Minter RU13Z... This game took a few hours to program... '+
-
-	'Don\'t look at the frame-skipping code, I\'m still figuring out what the best way to '+
-
-	'do that is... Laamella Gad - the wave of the past... Greetz in no order fly to '+
-
-	'the Dynamic Duo  -  Hotline  -  911  -  the Yak Society  -  Papillon ... Ah whatever, '+
-
-	'those groups are long dead.  Greetings to Toshiro Kuwabara (thanks for rdtool), '+
-
-	'Yoshiyuki Kusano, Andrew Hunt, David Thomas, Nauglin, Leon Torres, Mike Sassak, Martin Stannard, '+
-
-	'Pete Shinners from Pygame, Patrick May, Ulf Ekstrom, Peter Thoman, Niklas Frykholm, Matthew Bloch, '+
-
-	'Massimiliano Mirra, '+
-
-	't h e - e l f  from NFA for the music which was ripped from some vague Amiga demo\'s, '+
-
-	'Karl Bartel (for SFont), Andreas Schiffler (next bugreport will come in when I find '+
-
-	'some time <:) ) Yukihiro "Matz" Matsumoto for Ruby, Sam Lantinga for SDL, Gerard, '+
-
-	'Judith, Marieke, Gijs, Katja, Patrick, Matje, Femnijl(c), Mimsje(c), Rachel, '+
-
-	'Bert, DiDi, PeterJ, Dossey, dhr. ing. Edelwater, Frouke, Dennis, Ishi, Nekiwa, '+
-
-	'Joepi, Jumbo, Able Lakes King, KLinZ, Margooks, McDuvel, Sletje, Ufor Anders, '+
-
-	'Bernadette, Roelof, Eric de kleine enz., '+
-
-	'Maurice, Martijn, Carline, Cathelijne next door, Peggy, Manon and the mice running '+
-
-	'through this house. Wrap is coming up. In producing RUDL, I used 30 Valkenburgs Wit, '+
-
-	'a P166/64MB and a P1000/128MB running Win98, a 486/80 20MB and a P166 16MB running Linux '+
-
-	'(it\'s two generations of froukepc!), MSVC (for editing), '+
-
-	'a Wacom tablet for drawing graphics (yeah, I could just as well have drawn them '+
-
-	'with a mouse), boejon, tons of mail, mostly useless discussions on IRC, uh-oh, '+
-
-	'wrap time!'
-
+	scrolltext=<<ENDSCROLL
+                                        Welcome to CRAPOLA, a crappy game to demonstrate RUDL, the accellerated multimedia
+ extension to Ruby. The cursor keys move your ship left and right. Left CTRL shoots
+ and ALT-ENTER toggles fullscreen. Jeff Minter RU13Z... This game took a few hours to program...
+ Don\'t look at the frame-skipping code, I\'m still figuring out what the best way to
+ do that is... Laamella Gad - the wave of the past... Greetz in no order fly to
+ the Dynamic Duo  -  Hotline  -  911  -  the Yak Society  -  Papillon ... Ah whatever,
+ those groups are long dead.  Greetings to Toshiro Kuwabara (thanks for rdtool),
+ Yoshiyuki Kusano, Andrew Hunt, David Thomas, Nauglin, Leon Torres, Mike Sassak, Martin Stannard,
+ Pete Shinners from Pygame, Patrick May, Ulf Ekstrom, Peter Thoman, Niklas Frykholm, Matthew Bloch,
+ Massimiliano Mirra, Renne Nissinen,
+ t h e - e l f  from NFA for the music which was ripped from some vague Amiga demo's,
+ Karl Bartel (for SFont), Andreas Schiffler (next bugreport will come in when I find
+ some time <:) ) Yukihiro "Matz" Matsumoto for Ruby, Sam Lantinga for SDL, Gerard,
+ Judith, Marieke, Gijs, Katja, Patrick, Matje, Femnijl(c), Mimsje(c), Rachel,
+ Bert, DiDi, PeterJ, Dossey, dhr. ing. Edelwater, Frouke, Dennis, Ishi, Nekiwa,
+ Joepi, Jumbo, Able Lakes King, KLinZ, Margooks, McDuvel, Sletje, Ufor Anders,
+ Bernadette, Roelof, Eric de kleine enz.,
+ Maurice, Martijn, Carline, Cathelijne next door, Peggy, Manon and the mice running
+ through this house. Wrap is coming up. In producing RUDL, I used 30 Valkenburgs Wit,
+ a P166/64MB and a P1000/128MB (upgraded to 512MB) running Win98 (now WinXP,)
+ a 486/80 20MB, a P166 16MB and now a P233 64MB running Linux
+ (it\'s three generations of froukepc!), MSVC (for editing),
+ a Wacom tablet for drawing graphics (yeah, I could just as well have drawn them
+ with a mouse,) boejon, tons of mail, mostly useless discussions on IRC, uh-oh,
+ wrap time!
+ENDSCROLL
 	Music.new('media/crapola_fire.mod').play(-1) if $sound_on
 
 	font=BitmapFont.new(Surface.load_new('media/24p_copperplate_blue.png'))
