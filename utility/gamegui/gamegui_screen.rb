@@ -10,7 +10,8 @@ module GameGUI
 	class Screen
 		attr_accessor :display_surface
 		attr_accessor :area, :font, :color, :select_color, :selectors
-		attr_accessor :left_column_width
+		attr_reader :left_column_width, :right_column_width
+		attr_reader :row_height
 		attr_accessor :pre_draw, :post_draw
 		attr_accessor :on_start, :on_quit
 		attr_reader :selectors_by_id
@@ -31,6 +32,7 @@ module GameGUI
 				@left_column_width=selector.w if @left_column_width<selector.w
 			end
 			@left_column_width+=10
+			@right_column_width=@area.w-@left_column_width
 		end
 		
 		def current_selector_index=(new_index)
@@ -56,8 +58,9 @@ module GameGUI
 		def draw
 			@pre_draw.call(self) if @pre_draw
 			current_selector=0.0
+			@row_height=@area.h/@selectors.length
 			@selectors.each do |selector|
-				selector.draw([@area.x, @area.y+(@area.h/@selectors.length)*current_selector])
+				selector.draw([@area.x, @area.y+(@row_height)*current_selector])
 				current_selector+=1
 			end
 			@post_draw.call(self) if @post_draw

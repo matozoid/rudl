@@ -26,7 +26,7 @@ mainscreen=GameGUI::Screen.new(
 		GameGUI::ControlSelector.new('Left:', :left, ','),
 		GameGUI::ControlSelector.new('Right:', :right, '.'),
 		GameGUI::ControlSelector.new('Fire:', :fire, ' '),
-		GameGUI::Slider.new('Volume:', :volume, 0, 100, 90, 1),
+		GameGUI::Slider.new('Volume:', :volume, 0, 100, 90, 5),
 		GameGUI::ResolutionSelector.new('Resolution:', :resolution),
 		GameGUI::CustomSelector.new('Quit!') {
 			mainscreen.quit
