@@ -14,6 +14,7 @@ VALUE classDraw;
 VALUE classImage;
 VALUE classCursors;
 VALUE classRGBA;
+VALUE classCollisionMap;
 
 VALUE classSurfacesLostException;
 

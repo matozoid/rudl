@@ -14,8 +14,6 @@ ID id_rect, id_atx, id_aty, id_atw, id_ath;
 
 void initVideo()
 {
-	initSDL();
-
 	if(!SDL_WasInit(SDL_INIT_VIDEO)){
 		if(SDL_WasInit(SDL_INIT_AUDIO)){
 			SDL_RAISE_S("Always start video before audio");
@@ -27,6 +25,14 @@ void initVideo()
 		//SDL_EnableUNICODE(1);
 	}
 }
+
+void quitVideo()
+{
+	if(SDL_WasInit(SDL_INIT_VIDEO)){
+		SDL_QuitSubSystem(SDL_INIT_VIDEO);
+	}
+}
+
 Uint32 VALUE2COLOR_NOMAP(VALUE colorObject)
 {
 	if(rb_obj_is_kind_of(colorObject, rb_cArray)){
@@ -163,6 +169,8 @@ SDL_Surface* retrieveSurfacePointer(VALUE self)
 	Data_Get_Struct(self, SDL_Surface, surface);
 	return surface;
 }
+
+#define GET_SURFACE SDL_Surface* surface; Data_Get_Struct(self, SDL_Surface, surface);
 
 void setMasksFromBPP(Uint32 bpp, Uint32* Rmask, Uint32* Gmask, Uint32* Bmask, Uint32* Amask)
 {
@@ -305,6 +313,22 @@ static VALUE surface_load_new(VALUE self, VALUE filename)
 #endif
 	if(!surface) SDL_RAISE;
 	return createSurfaceObject(surface);
+}
+
+/*
+=begin
+--- Surface.load_new( filename )
+This creates a (({Surface})) with an image in it, loaded from ((|filename|)).
+If the SDL_image library was found during RUDL's installation, it will load many formats, like
+BMP, PNM, XPM, PCX, GIF, JPEG, PNG and TGA.
+If the SDL_image library was not found, only BMP loading is supported.
+=end */
+static VALUE surface_destroy(VALUE self)
+{
+	GET_SURFACE;
+	SDL_FreeSurface(surface);
+	DATA_PTR(self)=NULL;
+	return Qnil;
 }
 
 /*
@@ -899,7 +923,7 @@ static VALUE surface_contained_images(VALUE self)
 	return images;
 }
 
-///////////////////////////////// DISPLAY
+///////////////////////////////// DISPLAYSURFACE
 /*
 =begin
 = DisplaySurface < Surface
@@ -958,6 +982,20 @@ static VALUE displaySurface_new(int argc, VALUE* argv, VALUE self)
 
 	return Data_Wrap_Struct(classDisplaySurface, 0, 0, surf);
 }
+
+/*
+=begin
+--- DisplaySurface.destroy
+Destroys the display, removing the window or returning from fullscreen mode.
+Do not call methods on a destroyed DisplaySurface
+=end
+*/
+static VALUE displaySurface_destroy(VALUE self)
+{
+	quitVideo();
+	return Qnil;
+}
+
 /*
 =begin
 --- DisplaySurface.modes
@@ -1409,7 +1447,6 @@ Uint32 internal_get(SDL_Surface* surface, Sint16 x, Sint16 y)
 	return color;
 }
 
-// not in SDL_gfxprimitives, but it fits here, next to plot.
 static VALUE surface_get(VALUE self, VALUE coordinate)
 {
 	SDL_Surface* surface=retrieveSurfacePointer(self);
@@ -1439,6 +1476,7 @@ void initVideoClasses()
 	classSurface=rb_define_class_under(moduleRUDL, "Surface", rb_cObject);
 	rb_define_singleton_method(classSurface, "new", surface_new, -1);
 	rb_define_singleton_method(classSurface, "load_new", surface_load_new, 1);
+	rb_define_method(classSurface, "destroy", surface_destroy, 0);
 	rb_define_method(classSurface, "save_bmp", surface_save_bmp, 1);
 
 	rb_define_method(classSurface, "w", surface_w, 0);
@@ -1500,6 +1538,7 @@ void initVideoClasses()
 	rb_define_method(classDisplaySurface, "set_caption", displaySurface_set_caption, -1);
 	rb_define_method(classDisplaySurface, "gamma=", displaySurface_gamma_, 1);
 	rb_define_method(classDisplaySurface, "toggle_fullscreen", displaySurface_toggle_fullscreen, 0);
+	rb_define_method(classDisplaySurface, "destroy", displaySurface_destroy, 0);
 
 	//classSurfaceArray=rb_define_class_under(moduleRUDL, "SurfaceArray", rb_cObject);
 	initVideoSDLGFXClasses();

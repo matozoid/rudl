@@ -80,27 +80,6 @@ static VALUE surface_array_plot(VALUE self, VALUE x, VALUE y, VALUE color)
 /*
 =begin
 --- Surface#horizontal_line( coord, endx, color )
---- Surface#vertical_line( coord, endy, color )
---- Surface#rectangle( rect, color )
---- Surface#filled_rectangle( rect, color )
---- Surface#line( coord1, coord2, color )
---- Surface#antialiased_line( coord1, coord2, color )
---- Surface#circle( coord, radius, color )
---- Surface#filled_circle( coord, radius, color )
---- Surface#filled_pie( coord, radius, start, end, color )
---- Surface#ellipse( coord, radius_x, radius_y, color )
---- Surface#antialiased_ellipse( coord, radius_x, radius_y, color )
---- Surface#filled_ellipse( coord, radius_x, radius_y, color )
-These methods are thought to be self-explanatory.
-Filled_rectangle is a lot like fill.
-Fill comes from SDL, filled_rectangle from SDL_gfxPrimitives,
-choose whichever you like best.
---- Surface#polygon( coord_list, color )
---- Surface#filled_polygon( coord_list, color )
---- Surface#antialiased_polygon( coord_list, color)
-The polygon methods take an array of [x,y], like [[10,10],[40,60]].
---- Surface#print( coord, text, color )
-Puts ((|text|)) on the surface in a monospaced standard old ASCII font.
 =end */
 static VALUE surface_horizontal_line(VALUE self, VALUE coord, VALUE endx, VALUE color)
 {
@@ -111,6 +90,10 @@ static VALUE surface_horizontal_line(VALUE self, VALUE coord, VALUE endx, VALUE 
 	return self;
 }
 
+/*
+=begin
+--- Surface#vertical_line( coord, endy, color )
+=end */
 static VALUE surface_vertical_line(VALUE self, VALUE coord, VALUE endy, VALUE color)
 {
 	Sint16 x,y;
@@ -119,6 +102,10 @@ static VALUE surface_vertical_line(VALUE self, VALUE coord, VALUE endy, VALUE co
 	return self;
 }
 
+/*
+=begin
+--- Surface#rectangle( rect, color )
+=end */
 static VALUE surface_rectangle(VALUE self, VALUE rectObject, VALUE color)
 {
 	SDL_Rect rect;
@@ -127,6 +114,10 @@ static VALUE surface_rectangle(VALUE self, VALUE rectObject, VALUE color)
 	return self;
 }
 
+/*
+=begin
+--- Surface#filled_rectangle( rect, color )
+=end */
 static VALUE surface_filled_rectangle(VALUE self, VALUE rectObject, VALUE color)
 {
 	SDL_Rect rect;
@@ -135,6 +126,10 @@ static VALUE surface_filled_rectangle(VALUE self, VALUE rectObject, VALUE color)
 	return self;
 }
 
+/*
+=begin
+--- Surface#line( coord1, coord2, color )
+=end */
 static VALUE surface_line(VALUE self, VALUE coord1, VALUE coord2, VALUE color)
 {
 	Sint16 x1,y1,x2,y2;
@@ -144,6 +139,10 @@ static VALUE surface_line(VALUE self, VALUE coord1, VALUE coord2, VALUE color)
 	return self;
 }
 
+/*
+=begin
+--- Surface#antialiased_line( coord1, coord2, color )
+=end */
 static VALUE surface_antialiased_line(VALUE self, VALUE coord1, VALUE coord2, VALUE color)
 {
 	Sint16 x1,y1,x2,y2;
@@ -153,6 +152,10 @@ static VALUE surface_antialiased_line(VALUE self, VALUE coord1, VALUE coord2, VA
 	return self;
 }
 
+/*
+=begin
+--- Surface#circle( coord, radius, color )
+=end */
 static VALUE surface_circle(VALUE self, VALUE coord, VALUE r, VALUE color)
 {
 	Sint16 x,y;
@@ -161,6 +164,10 @@ static VALUE surface_circle(VALUE self, VALUE coord, VALUE r, VALUE color)
 	return self;
 }
 
+/*
+=begin
+--- Surface#filled_circle( coord, radius, color )
+=end */
 static VALUE surface_filled_circle(VALUE self, VALUE coord, VALUE r, VALUE color)
 {
 	Sint16 x,y;
@@ -169,6 +176,22 @@ static VALUE surface_filled_circle(VALUE self, VALUE coord, VALUE r, VALUE color
 	return self;
 }
 
+/*
+=begin
+--- Surface#antialiased_circle( coord, radius, color )
+=end */
+static VALUE surface_antialiased_circle(VALUE self, VALUE coord, VALUE r, VALUE color)
+{
+	Sint16 x,y;
+	PARAMETER2COORD(coord, &x, &y);
+	if(aacircleColor(retrieveSurfacePointer(self), x, y, NUM2Sint16(r), VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
+	return self;
+}
+
+/*
+=begin
+--- Surface#filled_pie( coord, radius, start, end, color )
+=end */
 static VALUE surface_filled_pie(VALUE self, VALUE coord, VALUE r, VALUE start, VALUE end, VALUE color)
 {
 	Sint16 x,y;
@@ -178,7 +201,10 @@ static VALUE surface_filled_pie(VALUE self, VALUE coord, VALUE r, VALUE start, V
 }
 
 
-
+/*
+=begin
+--- Surface#ellipse( coord, radius_x, radius_y, color )
+=end */
 static VALUE surface_ellipse(VALUE self, VALUE coord, VALUE rx, VALUE ry, VALUE color)
 {
 	Sint16 x,y;
@@ -187,6 +213,10 @@ static VALUE surface_ellipse(VALUE self, VALUE coord, VALUE rx, VALUE ry, VALUE 
 	return self;
 }
 
+/*
+=begin
+--- Surface#antialiased_ellipse( coord, radius_x, radius_y, color )
+=end */
 static VALUE surface_antialiased_ellipse(VALUE self, VALUE coord, VALUE rx, VALUE ry, VALUE color)
 {
 	Sint16 x,y;
@@ -195,6 +225,14 @@ static VALUE surface_antialiased_ellipse(VALUE self, VALUE coord, VALUE rx, VALU
 	return self;
 }
 
+/*
+=begin
+--- Surface#filled_ellipse( coord, radius_x, radius_y, color )
+These methods are thought to be self-explanatory.
+Filled_rectangle is a lot like fill.
+Fill comes from SDL, filled_rectangle from SDL_gfx,
+choose whichever you like best.
+=end */
 static VALUE surface_filled_ellipse(VALUE self, VALUE coord, VALUE rx, VALUE ry, VALUE color)
 {
 	Sint16 x,y;
@@ -202,6 +240,10 @@ static VALUE surface_filled_ellipse(VALUE self, VALUE coord, VALUE rx, VALUE ry,
 	if(filledEllipseColor(retrieveSurfacePointer(self), x, y, NUM2Sint16(rx), NUM2Sint16(ry), VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
 	return self;
 }
+/*
+=begin
+--- Surface#polygon( coord_list, color )
+=end */
 
 static VALUE surface_polygon(VALUE self, VALUE coordlist, VALUE color)
 {
@@ -222,6 +264,10 @@ static VALUE surface_polygon(VALUE self, VALUE coordlist, VALUE color)
 	return self;
 }
 
+/*
+=begin
+-- Surface#filled_polygon( coord_list, color )
+=end */
 static VALUE surface_filled_polygon(VALUE self, VALUE coordlist, VALUE color)
 {
 	int numpoints=RARRAY(coordlist)->len;
@@ -241,6 +287,11 @@ static VALUE surface_filled_polygon(VALUE self, VALUE coordlist, VALUE color)
 	return self;
 }
 
+/*
+=begin
+--- Surface#antialiased_polygon( coord_list, color)
+The polygon methods take an array of [x,y], like [[10,10],[40,60]].
+=end */
 static VALUE surface_antialiased_polygon(VALUE self, VALUE coordlist, VALUE color)
 {
 	int numpoints=RARRAY(coordlist)->len;
@@ -260,6 +311,11 @@ static VALUE surface_antialiased_polygon(VALUE self, VALUE coordlist, VALUE colo
 	return self;
 }
 
+/*
+=begin
+--- Surface#print( coord, text, color )
+Puts ((|text|)) on the surface in a monospaced standard old ASCII font.
+=end */
 static VALUE surface_print(VALUE self, VALUE coord, VALUE text, VALUE color)
 {
 	Sint16 x,y;
@@ -358,6 +414,7 @@ void initVideoSDLGFXClasses()
 	rb_define_method(classSurface, "antialiased_line", surface_antialiased_line, 3);
 	rb_define_method(classSurface, "circle", surface_circle, 3);
 	rb_define_method(classSurface, "filled_circle", surface_filled_circle, 3);
+	rb_define_method(classSurface, "antialiased_circle", surface_antialiased_circle, 3);
 	rb_define_method(classSurface, "filled_pie", surface_filled_pie, 5);
 	rb_define_method(classSurface, "ellipse", surface_ellipse, 4);
 	rb_define_method(classSurface, "filled_ellipse", surface_filled_ellipse, 4);
