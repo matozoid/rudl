@@ -1,442 +1,0 @@
-<?xml version="1.0" ?>
-<!DOCTYPE html 
-  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title>../rudl_video.c</title>
-</head>
-<body>
-<h1><a name="label:0" id="label:0">Surface</a></h1><!-- RDLabel: "Surface" -->
-<p>A surface is a two dimensional array of pixels.
-This might not seem like much, but it is just about the most important class in RUDL.</p>
-<h2><a name="label:1" id="label:1">Class Methods</a></h2><!-- RDLabel: "Class Methods" -->
-<dl>
-<dt><a name="label:2" id="label:2"><code>Surface.new( <var>size</var> )</code></a><!-- RDLabel: "Surface.new" -->
-<dt><a name="label:3" id="label:3"><code>Surface.new( <var>size</var>, <var>surface</var> )</code></a><!-- RDLabel: "Surface.new" -->
-<dt><a name="label:4" id="label:4"><code>Surface.new( <var>size</var>, <var>flags</var> )</code></a><!-- RDLabel: "Surface.new" -->
-<dt><a name="label:5" id="label:5"><code>Surface.new( <var>size</var>, <var>flags</var>, <var>surface</var> )</code></a><!-- RDLabel: "Surface.new" -->
-<dt><a name="label:6" id="label:6"><code>Surface.new( <var>size</var>, <var>flags</var>, <var>depth</var> )</code></a><!-- RDLabel: "Surface.new" -->
-<dt><a name="label:7" id="label:7"><code>Surface.new( <var>size</var>, <var>flags</var>, <var>depth</var>, <var>masks</var> )</code></a><!-- RDLabel: "Surface.new" -->
-</dl>
-<p>All these methods create a new <code>Surface</code> with <var>size</var> = [w, h].
-If only <var>size</var> is supplied, the rest of the arguments will be set to reasonable values.
-If a surface is supplied, it is used to copy the values from that aren't given.</p>
-<p><var>flags</var> is, quoted from SDL's documentation:</p>
-<ul>
-<li>SWSURFACE: SDL will create the surface in system memory. This improves the performance 
-  of pixel level access, however you may not be able to take advantage of some types of
-  hardware blitting.</li>
-<li>HWSURFACE: SDL will attempt to create the surface in video memory. This will allow SDL 
-  to take advantage of Video-&gt;Video blits (which are often accelerated).</li>
-<li>SRCCOLORKEY: With this flag SDL will attempt to find the best location for this surface, 
-  either in system memory or video memory, to obtain hardware colorkey blitting support.</li>
-<li>SRCALPHA: With this flag SDL will attempt to find the best location for this surface, 
-  either in system memory or video memory, to obtain hardware alpha support.</li>
-</ul>
-<p><var>depth</var> is bitdepth, like 8, 15, 16, 24 or 32.</p>
-<p><var>masks</var> describes the format for the pixels and is an array of [R, G, B, A]</p>
-<dl>
-<dt><a name="label:8" id="label:8"><code>Surface.load_new( <var>filename</var> )</code></a><!-- RDLabel: "Surface.load_new" -->
-</dl>
-<p>This creates a <code>Surface</code> with an image in it, loaded from <var>filename</var>.
-If the SDL_image library was found during RUDL's installation, it will load many formats, like
-BMP, PNM, XPM, PCX, GIF, JPEG, PNG and TGA.
-If the SDL_image library was not found, only BMP loading is supported.</p>
-<h2><a name="label:9" id="label:9">Instance Methods</a></h2><!-- RDLabel: "Instance Methods" -->
-<dl>
-<dt><a name="label:10" id="label:10"><code>Surface#blit( <var>source</var>, <var>coordinate</var> )</code></a><!-- RDLabel: "Surface#blit" -->
-<dt><a name="label:11" id="label:11"><code>Surface#blit( <var>source</var>, <var>coordinate</var>, <var>sourceRect</var> )</code></a><!-- RDLabel: "Surface#blit" -->
-</dl>
-<p>This method blits <var>source</var> onto the <code>Surface</code>.
-<var>coordinate</var> is the position [x, y] where <var>source</var> will end up in the destination <code>Surface</code>.
-<var>sourcerect</var> can be used to blit only a portion of the <var>source</var>.</p>
-<dl>
-<dt><a name="label:12" id="label:12"><code>Surface#convert</code></a><!-- RDLabel: "Surface#convert" -->
-<dt><a name="label:13" id="label:13"><code>Surface#convert_alpha</code></a><!-- RDLabel: "Surface#convert_alpha" -->
-</dl>
-<p>Converts this surface to the current display's format, making it faster to blit.
-The alpha version optimizes for fast alpha blitting.</p>
-<dl>
-<dt><a name="label:14" id="label:14"><code>Surface#lock</code></a><!-- RDLabel: "Surface#lock" -->
-<dt><a name="label:15" id="label:15"><code>Surface#must_lock</code></a><!-- RDLabel: "Surface#must_lock" -->
-<dt><a name="label:16" id="label:16"><code>Surface#unlock</code></a><!-- RDLabel: "Surface#unlock" -->
-<dt><a name="label:17" id="label:17"><code>Surface#locked?</code></a><!-- RDLabel: "Surface#locked?" -->
-</dl>
-<p>These methods control the locking of surfaces.
-Locking is needed when the pixels in the surface need to be accessed.</p>
-<ul>
-<li>must_lock returns true when a surface needs locking for pixel access.</li>
-<li>lock locks the surface.</li>
-<li>unlock unlocks it again.</li>
-<li>locked? returns true when the surface is locked.</li>
-</ul>
-<dl>
-<dt><a name="label:18" id="label:18"><code>Surface#save_bmp( <var>filename</var> ) =&gt; <var>self</var></code></a><!-- RDLabel: "Surface#save_bmp" -->
-</dl>
-<p>This is the only method in RUDL which stores surface data.
-Pass it the filename and the surface data will be saved to that file.</p>
-<dl>
-<dt><a name="label:19" id="label:19"><code>Surface#w</code></a><!-- RDLabel: "Surface#w" -->
-<dt><a name="label:20" id="label:20"><code>Surface#h</code></a><!-- RDLabel: "Surface#h" -->
-<dt><a name="label:21" id="label:21"><code>Surface#size</code></a><!-- RDLabel: "Surface#size" -->
-<dt><a name="label:22" id="label:22"><code>Surface#rect</code></a><!-- RDLabel: "Surface#rect" -->
-</dl>
-<p>These methods return the size of the surface.
-w returns width, h returns height, size returns [w, h] and rect returns an array of [0, 0, w, h].</p>
-<dl>
-<dt><a name="label:23" id="label:23"><code>Surface#colorkey</code></a><!-- RDLabel: "Surface#colorkey" -->
-<dt><a name="label:24" id="label:24"><code>Surface#unset_colorkey</code></a><!-- RDLabel: "Surface#unset_colorkey" -->
-<dt><a name="label:25" id="label:25"><code>Surface#set_colorkey( <var>color</var> )</code></a><!-- RDLabel: "Surface#set_colorkey" -->
-<dt><a name="label:26" id="label:26"><code>Surface#set_colorkey( <var>color</var>, <var>flags</var> )</code></a><!-- RDLabel: "Surface#set_colorkey" -->
-</dl>
-<p>These methods control the color that will be completely transparent (it will not be copied 
-to the destination surface.)
-The only flag is "RLEACCEL" which will encode the bitmap in a more efficient way for blitting,
-by skipping the transparent pixels.</p>
-<dl>
-<dt><a name="label:27" id="label:27"><code>Surface#fill( <var>color</var> )</code></a><!-- RDLabel: "Surface#fill" -->
-<dt><a name="label:28" id="label:28"><code>Surface#fill( <var>color</var>, <var>rect</var> )</code></a><!-- RDLabel: "Surface#fill" -->
-</dl>
-<p>Fills rectangle <var>rect</var> in the surface with <var>color</var>.</p>
-<dl>
-<dt><a name="label:29" id="label:29"><code>Surface#plot( <var>coordinate</var>, <var>color</var> )</code></a><!-- RDLabel: "Surface#plot" -->
-<dt><a name="label:30" id="label:30"><code>Surface#get( <var>coordinate</var> )</code></a><!-- RDLabel: "Surface#get" -->
-<dt><a name="label:31" id="label:31"><code>Surface#[ <var>x</var>, <var>y</var> ]= <var>color</var></code></a><!-- RDLabel: "Surface#[ x, y ]= color" -->
-<dt><a name="label:32" id="label:32"><code>Surface#[ <var>x</var>, <var>y</var> ]</code></a><!-- RDLabel: "Surface#[ x, y ]" -->
-</dl>
-<p>These methods access single pixels on a surface.
-<var>plot</var> or <var>[]=</var> set a pixel to <var>color</var> at <var>coordinate</var>.
-<var>get</var> or <var>[]</var> get the color of a pixel.
-These methods require the surface to be locked if neccesary.
-<var>[]=</var> and <var>[]</var> are the only methods in RUDL that take a seperate x and y coordinate.</p>
-<dl>
-<dt><a name="label:33" id="label:33"><code>Surface#rotozoom( <var>angle</var>, <var>zoom</var>, <var>smooth</var> )</code></a><!-- RDLabel: "Surface#rotozoom" -->
-</dl>
-<p>Returns a new surface that is rotated <var>angle</var> degrees and zoomed
-<var>zoom</var> times (fractions are OK).
-This method returns a 32 bit surface.
-Exception: for now it returns an 8 bit surface when fed an 8 bit surface.
-If <var>smooth</var> is true and the surface is 32 bits,
-bilinear interpolation will be applied, resulting in a smoother image.</p>
-<dl>
-<dt><a name="label:34" id="label:34"><code>Surface#zoom( <var>zoom_horizontal</var>, <var>zoom_vertical</var>, <var>smooth</var> )</code></a><!-- RDLabel: "Surface#zoom" -->
-</dl>
-<p>Returns a new surface that is zoomed.
-1.0 doesn't zoom, bigger than 1.0 zooms in, smaller than 1.0 zooms out.
-This method returns a 32 bit surface.
-Exception: for now it returns an 8 bit surface when fed an 8 bit surface.
-If <var>smooth</var> is true and the surface is 32 bits,
-bilinear interpolation will be applied, resulting in a smoother image.
-(The last two methods are from Andreas Schiffler's SDL_rotozoom, aschiffler@home.com)</p>
-<dl>
-<dt><a name="label:35" id="label:35"><code>Surface#horizontal_line( <var>coord</var>, <var>endx</var>, <var>color</var> )</code></a><!-- RDLabel: "Surface#horizontal_line" -->
-<dt><a name="label:36" id="label:36"><code>Surface#vertical_line( <var>coord</var>, <var>endy</var>, <var>color</var> )</code></a><!-- RDLabel: "Surface#vertical_line" -->
-<dt><a name="label:37" id="label:37"><code>Surface#rectangle( <var>rect</var>, <var>color</var> )</code></a><!-- RDLabel: "Surface#rectangle" -->
-<dt><a name="label:38" id="label:38"><code>Surface#filled_rectangle( <var>rect</var>, <var>color</var> )</code></a><!-- RDLabel: "Surface#filled_rectangle" -->
-<dt><a name="label:39" id="label:39"><code>Surface#line( <var>coord1</var>, <var>coord2</var>, <var>color</var> )</code></a><!-- RDLabel: "Surface#line" -->
-<dt><a name="label:40" id="label:40"><code>Surface#antialiased_line( <var>coord1</var>, <var>coord2</var>, <var>color</var> )</code></a><!-- RDLabel: "Surface#antialiased_line" -->
-<dt><a name="label:41" id="label:41"><code>Surface#circle( <var>coord</var>, <var>radius</var>, <var>color</var> )</code></a><!-- RDLabel: "Surface#circle" -->
-<dt><a name="label:42" id="label:42"><code>Surface#filled_circle( <var>coord</var>, <var>radius</var>, <var>color</var> )</code></a><!-- RDLabel: "Surface#filled_circle" -->
-<dt><a name="label:43" id="label:43"><code>Surface#ellipse( <var>coord</var>, <var>radius_x</var>, <var>radius_y</var>, <var>color</var> )</code></a><!-- RDLabel: "Surface#ellipse" -->
-<dt><a name="label:44" id="label:44"><code>Surface#filled_ellipse( <var>coord</var>, <var>radius_x</var>, <var>radius_y</var>, <var>color</var> )</code></a><!-- RDLabel: "Surface#filled_ellipse" -->
-</dl>
-<p>These methods are thought to be self-explanatory.
-Filled_rectangle is a lot like fill.
-Fill comes from SDL, filled_rectangle from SDL_gfxPrimitives,
-choose whichever you like best.
-(Taken from SDL_gfxPrimitives by Andreas Schiffler, aschiffler@home.com)</p>
-<dl>
-<dt><a name="label:45" id="label:45"><code>Surface#polygon( <var>coord_list</var>, <var>color</var> )</code></a><!-- RDLabel: "Surface#polygon" -->
-<dt><a name="label:46" id="label:46"><code>Surface#filled_polygon( <var>coord_list</var>, <var>color</var> )</code></a><!-- RDLabel: "Surface#filled_polygon" -->
-</dl>
-<p>The polygon methods take an array of [x,y], like [[10,10],[40,60]].
-(Taken from SDL_gfxPrimitives by Andreas Schiffler, aschiffler@home.com)</p>
-<dl>
-<dt><a name="label:47" id="label:47"><code>Surface#print( <var>coord</var>, <var>text</var>, <var>color</var> )</code></a><!-- RDLabel: "Surface#print" -->
-</dl>
-<p>Puts <var>text</var> on the surface in a monospaced standard old ASCII font.
-(Taken from SDL_gfxPrimitives by Andreas Schiffler, aschiffler@home.com)</p>
-<dl>
-<dt><a name="label:48" id="label:48"><code>Surface#pitch</code></a><!-- RDLabel: "Surface#pitch" -->
-</dl>
-<p>The surface pitch is the number of bytes used in each scanline.
-This function should rarely needed, mainly for any special-case debugging.</p>
-<dl>
-<dt><a name="label:49" id="label:49"><code>Surface#bitsize</code></a><!-- RDLabel: "Surface#bitsize" -->
-</dl>
-<p>Returns the number of bits used to represent each pixel.
-This value may not exactly fill the number of bytes used per pixel.
-For example a 15 bit Surface still requires a full 2 bytes.</p>
-<dl>
-<dt><a name="label:50" id="label:50"><code>Surface#bytesize</code></a><!-- RDLabel: "Surface#bytesize" -->
-</dl>
-<p>Returns the number of bytes used to store each pixel.</p>
-<dl>
-<dt><a name="label:51" id="label:51"><code>Surface#flags</code></a><!-- RDLabel: "Surface#flags" -->
-</dl>
-<p>Returns the current state flags for the surface.</p>
-<dl>
-<dt><a name="label:52" id="label:52"><code>Surface#losses</code></a><!-- RDLabel: "Surface#losses" -->
-</dl>
-<p>Returns the bitloss for each color plane.
-The loss is the number of bits removed for each colorplane from a full 8 bits of
-resolution. A value of 8 usually indicates that colorplane is not used
-(like the alpha)</p>
-<p>Returns an array of [redloss, greenloss, blueloss, alphaloss]</p>
-<dl>
-<dt><a name="label:53" id="label:53"><code>Surface#shifts</code></a><!-- RDLabel: "Surface#shifts" -->
-</dl>
-<p>Returns the bitshifts [redshift, greenshift, blueshift] used for each color plane.
-The shift is determine how many bits left-shifted a colorplane value is in a
-mapped color value.</p>
-<dl>
-<dt><a name="label:54" id="label:54"><code>Surface#masks</code></a><!-- RDLabel: "Surface#masks" -->
-</dl>
-<p>Returns the bitmasks [redmask, greenmask, bluemask, alphamask] for each color plane.
-The bitmask is used to isolate each colorplane value from a mapped color value.
-A value of zero means that colorplane is not used (like alpha)</p>
-<dl>
-<dt><a name="label:55" id="label:55"><code>Surface#palette</code></a><!-- RDLabel: "Surface#palette" -->
-<dt><a name="label:56" id="label:56"><code>Surface#set_palette( <var>first</var>, <var>colors</var> )</code></a><!-- RDLabel: "Surface#set_palette" -->
-</dl>
-<p>These methods return or set the 256 color palette that is part of 8 bit <code>Surface</code>s.
-<var>first</var> is the first color to change.
-<var>colors</var> and the return value of <var>palette</var> are arrays of colors like
-[[50,80,120], [255,255,0]]</p>
-<dl>
-<dt><a name="label:57" id="label:57"><code>Surface#alpha</code></a><!-- RDLabel: "Surface#alpha" -->
-<dt><a name="label:58" id="label:58"><code>Surface#unset_alpha</code></a><!-- RDLabel: "Surface#unset_alpha" -->
-<dt><a name="label:59" id="label:59"><code>Surface#set_alpha( <var>alpha</var> )</code></a><!-- RDLabel: "Surface#set_alpha" -->
-<dt><a name="label:60" id="label:60"><code>Surface#set_alpha( <var>alpha</var>, <var>flags</var> )</code></a><!-- RDLabel: "Surface#set_alpha" -->
-</dl>
-<p>Gets or sets the overall transparency for the surface.
-An alpha of 0 is fully transparent, an alpha of 255 is fully opaque.
-If your surface has a pixel alpha channel, it will override the overall surface transparency.
-You'll need to change the actual pixel transparency to make changes.
-If your image also has pixel alpha values, will be used repeatedly, you
-will probably want to pass the RLEACCEL flag to the call.
-This will take a short time to compile your surface, and increase the blitting speed.</p>
-<dl>
-<dt><a name="label:61" id="label:61"><code>Surface#clip</code></a><!-- RDLabel: "Surface#clip" -->
-<dt><a name="label:62" id="label:62"><code>Surface#unset_clip</code></a><!-- RDLabel: "Surface#unset_clip" -->
-<dt><a name="label:63" id="label:63"><code>Surface#clip=( <var>rect</var> )</code></a><!-- RDLabel: "Surface#clip=" -->
-</dl>
-<p>Retrieves, removes or sets the clipping rectangle for surfaces that are
-blitted to this surface.</p>
-<dl>
-<dt><a name="label:64" id="label:64"><code>Surface#subsurface</code></a><!-- RDLabel: "Surface#subsurface" -->
-</dl>
-<p>Not implemented</p>
-<dl>
-<dt><a name="label:65" id="label:65"><code>Surface#contained_images</code></a><!-- RDLabel: "Surface#contained_images" -->
-</dl>
-<p>Returns an array of surfaces that are found by parsing this surface in a certain way.
-An example is in the samples directory.
-This is not part of SDL, it is RUDL-specific.</p>
-<h1><a name="label:66" id="label:66">DisplaySurface &lt; Surface</a></h1><!-- RDLabel: "DisplaySurface < Surface" -->
-<p>The DisplaySurface is the surface that represents the window or the full screen that you
-will be drawing and blitting on.
-Since it is inherited from Surface, it can be used just like an ordinary surface.
-You will need to create a DisplaySurface to show anything on your screen.</p>
-<h2><a name="label:67" id="label:67">Class Methods</a></h2><!-- RDLabel: "Class Methods" -->
-<dl>
-<dt><a name="label:68" id="label:68"><code>DisplaySurface.new( [<var>w</var>,<var>h</var>] )</code></a><!-- RDLabel: "DisplaySurface.new" -->
-<dt><a name="label:69" id="label:69"><code>DisplaySurface.new( [<var>w</var>,<var>h</var>], <var>flags</var> )</code></a><!-- RDLabel: "DisplaySurface.new" -->
-<dt><a name="label:70" id="label:70"><code>DisplaySurface.new( [<var>w</var>,<var>h</var>], <var>flags</var>, <var>depth</var> )</code></a><!-- RDLabel: "DisplaySurface.new" -->
-</dl>
-<p>Return value: the new DisplaySurface object</p>
-<ul>
-<li><var>[w,h]</var> is the requested size for the new display.</li>
-<li><p><var>flags</var> is a combination of the following:</p>
-<ul>
-<li>SWSURFACE, to create the display in normal memory,</li>
-<li>HWSURFACE, to create the display in the memory of your video hardware, if possible,</li>
-<li>ASYNCBLIT, to (i quote) "enable the use of asynchronous to the display surface.
-    This will usually slow down blitting on single CPU machines, but may provide a speed increase on SMP systems."</li>
-<li>RESIZABLE, to make a resizable display (see events to find the event that it sends),</li>
-<li>HWPALETTE, to grab the system palette,</li>
-<li>DOUBLEBUF, to enable double buffered hardware pageflipping. Use <var>flip</var> with this.</li>
-<li>FULLSCREEN, attempts to grab all of the screen,</li>
-<li>NOFRAME, in RUDL 0.3 and up, leaves the frame off the window.</li>
-</ul></li>
-<li><var>depth</var> selects the bits per pixel value (8 is 256 colors, 16 is thousands of colors, 
-  24 and 32 are millions of colors). If it is not supplied, a good one will be selected for you.</li>
-</ul>
-<dl>
-<dt><a name="label:71" id="label:71"><code>DisplaySurface.modes</code></a><!-- RDLabel: "DisplaySurface.modes" -->
-<dt><a name="label:72" id="label:72"><code>DisplaySurface.modes( <var>bitdepth</var> )</code></a><!-- RDLabel: "DisplaySurface.modes" -->
-<dt><a name="label:73" id="label:73"><code>DisplaySurface.modes( <var>bitdepth</var>, <var>flags</var> )</code></a><!-- RDLabel: "DisplaySurface.modes" -->
-</dl>
-<p>Lists available modes for a certain <var>bitdepth</var> and optionally only those modes that 
-can do <var>flags</var>.
-Flags are like those in DisplaySurface.new.
-No flags is the same as passing FULLSCREEN.
-Returns an array with arrays of [w, h], or nil.
-nil means any mode is ok, an empty array means <var>no</var> mode is supported.</p>
-<dl>
-<dt><a name="label:74" id="label:74"><code>DisplaySurface.mode_ok?</code></a><!-- RDLabel: "DisplaySurface.mode_ok?" -->
-</dl>
-<p>Like DisplaySurface.new, but doesn't set the mode, only returns true if the mode can be set,
-and false if it can't.</p>
-<dl>
-<dt><a name="label:75" id="label:75"><code>DisplaySurface.info</code></a><!-- RDLabel: "DisplaySurface.info" -->
-</dl>
-<p>Not implemented because I'm not sure what use the pygame-version is.</p>
-<h2><a name="label:76" id="label:76">Instance Methods</a></h2><!-- RDLabel: "Instance Methods" -->
-<dl>
-<dt><a name="label:77" id="label:77"><code>DisplaySurface#update</code></a><!-- RDLabel: "DisplaySurface#update" -->
-<dt><a name="label:78" id="label:78"><code>DisplaySurface#update( <var>rect</var> )</code></a><!-- RDLabel: "DisplaySurface#update" -->
-</dl>
-<p>This call will update a section (or sections) of the display screen.
-You must update an area of your display when you change its contents.
-<var>rect</var> is, starting from v0.4, an array of rectangles.
-If passed with no arguments, this will update the entire display surface.</p>
-<dl>
-<dt><a name="label:79" id="label:79"><code>DisplaySurface#flip</code></a><!-- RDLabel: "DisplaySurface#flip" -->
-</dl>
-<p>This will update the contents of the entire display.
-If your display mode is using the flags HWSURFACE and DOUBLEBUF, this
-will wait for a vertical retrace and swap the surfaces.
-If you are using a different type of display mode, it will simply update
-the entire contents of the surface.</p>
-<dl>
-<dt><a name="label:80" id="label:80"><code>DisplaySurface#active?</code></a><!-- RDLabel: "DisplaySurface#active?" -->
-</dl>
-<p>Returns true if the application is active.</p>
-<dl>
-<dt><a name="label:81" id="label:81"><code>DisplaySurface#caption</code></a><!-- RDLabel: "DisplaySurface#caption" -->
-<dt><a name="label:82" id="label:82"><code>DisplaySurface#set_caption( <var>title</var> )</code></a><!-- RDLabel: "DisplaySurface#set_caption" -->
-<dt><a name="label:83" id="label:83"><code>DisplaySurface#set_caption( <var>title</var>, <var>icontitle</var> )</code></a><!-- RDLabel: "DisplaySurface#set_caption" -->
-</dl>
-<p>caption= sets the title of the window (if the application runs in a window) to title.
-Sets the title of the icon that shows when the application is iconified to icontitle,
-or title if icontitle is not supplied.
-caption returns the title and icontitle of the window.</p>
-<dl>
-<dt><a name="label:84" id="label:84"><code>DisplaySurface#driver</code></a><!-- RDLabel: "DisplaySurface#driver" -->
-</dl>
-<p>Returns the name of the videodriver that is being used.</p>
-<dl>
-<dt><a name="label:85" id="label:85"><code>DisplaySurface#iconify</code></a><!-- RDLabel: "DisplaySurface#iconify" -->
-</dl>
-<p>Iconifies the application.
-Returns true if it is succesfull.</p>
-<dl>
-<dt><a name="label:86" id="label:86"><code>DisplaySurface#gamma=([<var>r</var>,<var>g</var>,<var>b</var>])</code></a><!-- RDLabel: "DisplaySurface#gamma=" -->
-<dt><a name="label:87" id="label:87"><code>DisplaySurface#gamma=(<var>intensity</var>)</code></a><!-- RDLabel: "DisplaySurface#gamma=" -->
-</dl>
-<p>Sets the gamma value for the display when this is supported.
-Intensity is a shortcut for values where r=g=b.</p>
-<dl>
-<dt><a name="label:88" id="label:88"><code>DisplaySurface#toggle_fullscreen</code></a><!-- RDLabel: "DisplaySurface#toggle_fullscreen" -->
-</dl>
-<p>Toggles between fullscreen and windowed mode.
-Only works on a few platforms.
-This will someday be replaced by a method that will work on all platforms.</p>
-<h1><a name="label:89" id="label:89">Rect</a></h1><!-- RDLabel: "Rect" -->
-<h2><a name="label:90" id="label:90">Class Methods</a></h2><!-- RDLabel: "Class Methods" -->
-<dl>
-<dt><a name="label:91" id="label:91"><code>Rect.new( <var>x</var>, <var>y</var>, <var>w</var>, <var>h</var> )</code></a><!-- RDLabel: "Rect.new" -->
-<dt><a name="label:92" id="label:92"><code>Rect.new( <var>rectangle</var> )</code></a><!-- RDLabel: "Rect.new" -->
-</dl>
-<p>Creates a new Rect object that can be used as a parameter to methods instead of
-an [x, y, w, h] array.</p>
-<h2><a name="label:93" id="label:93">Instance Methods</a></h2><!-- RDLabel: "Instance Methods" -->
-<dl>
-<dt><a name="label:94" id="label:94"><code>Rect#overlap( <var>rect</var> )</code></a><!-- RDLabel: "Rect#overlap" -->
-</dl>
-<p>Returns true if any area of the two rectangles overlaps.</p>
-<dl>
-<dt><a name="label:95" id="label:95"><code>Rect.collide_lists( <var>l1</var>, <var>l2</var> ) <var>BOGUS</var></code></a><!-- RDLabel: "Rect.collide_lists" -->
-</dl>
-<p>This method looks through list <var>l1</var>,
-checking collisions with every object in list <var>l2</var>.
-It does this by calling "rect" on all objects, expecting an array of [x,y,w,h] back,
-defining the area this object is in.
-It yields (object_from_l1, object_from_l2) for every collision it detects.
-More advanced collision detection methods will follow.</p>
-<dl>
-<dt><a name="label:96" id="label:96"><code>Rect#x</code></a><!-- RDLabel: "Rect#x" -->
-<dt><a name="label:97" id="label:97"><code>Rect#y</code></a><!-- RDLabel: "Rect#y" -->
-<dt><a name="label:98" id="label:98"><code>Rect#w</code></a><!-- RDLabel: "Rect#w" -->
-<dt><a name="label:99" id="label:99"><code>Rect#h</code></a><!-- RDLabel: "Rect#h" -->
-</dl>
-<p>These can be set and read at will.</p>
-<dl>
-<dt><a name="label:100" id="label:100"><code>Rect#to_ary</code></a><!-- RDLabel: "Rect#to_ary" -->
-</dl>
-<p>Returns [x, y, w, h]</p>
-<dl>
-<dt><a name="label:101" id="label:101"><code>Rect#move( <var>delta</var> )</code></a><!-- RDLabel: "Rect#move" -->
-<dt><a name="label:102" id="label:102"><code>Rect#move!( <var>delta</var> )</code></a><!-- RDLabel: "Rect#move!" -->
-</dl>
-<p>Returns a new rectangle which is the base rectangle moved by the given amount.</p>
-<dl>
-<dt><a name="label:103" id="label:103"><code>Rect#inflate( <var>sizes</var> )</code></a><!-- RDLabel: "Rect#inflate" -->
-<dt><a name="label:104" id="label:104"><code>Rect#inflate!( <var>sizes</var> )</code></a><!-- RDLabel: "Rect#inflate!" -->
-</dl>
-<p>Returns a rectangle which has the sizes changed by the given amounts.
-<var>sizes</var> is an array of [dx, dy].
-The rectangle shrinks and expands around the rectangle's center.
-Negative values will shrink the rectangle.</p>
-<dl>
-<dt><a name="label:105" id="label:105"><code>Rect#normalize</code></a><!-- RDLabel: "Rect#normalize" -->
-<dt><a name="label:106" id="label:106"><code>Rect#normalize!</code></a><!-- RDLabel: "Rect#normalize!" -->
-</dl>
-<p>If w and h aren't positive, this will change them to positive.</p>
-<dl>
-<dt><a name="label:107" id="label:107"><code>Rect#union( <var>rect</var> )</code></a><!-- RDLabel: "Rect#union" -->
-<dt><a name="label:108" id="label:108"><code>Rect#union!( <var>rect</var> )</code></a><!-- RDLabel: "Rect#union!" -->
-</dl>
-<p>Returns a new rectangle that completely covers the given inputs.
-There may be area inside the newrectangle that is not covered by the inputs.</p>
-<dl>
-<dt><a name="label:109" id="label:109"><code>Rect#contains( <var>thing</var> )</code></a><!-- RDLabel: "Rect#contains" -->
-</dl>
-<p>Returns whether thing (a Rect, [x, y, w, h] or [x, y]) fits completely within the rectangle.</p>
-<dl>
-<dt><a name="label:110" id="label:110"><code>Rect#find_overlapping_rect( <var>rects</var> )</code></a><!-- RDLabel: "Rect#find_overlapping_rect" -->
-</dl>
-<p>Returns the first rectangle in the list to overlap the base rectangle.
-Once an overlap is found, this will stop checking the remaining list.
-If no overlap is found, it will return nil.</p>
-<dl>
-<dt><a name="label:111" id="label:111"><code>Rect#find_overlapping_rects( <var>rects</var> )</code></a><!-- RDLabel: "Rect#find_overlapping_rects" -->
-</dl>
-<p>Returns an array with the rectangles in the list to overlap the base rectangle.
-If no overlap is found, it will return [].</p>
-<dl>
-<dt><a name="label:112" id="label:112"><code>Rect#clip( <var>rect</var> )</code></a><!-- RDLabel: "Rect#clip" -->
-<dt><a name="label:113" id="label:113"><code>Rect#clip!( <var>rect</var> )</code></a><!-- RDLabel: "Rect#clip!" -->
-</dl>
-<p>Returns a new rectangle that is the given rectangle cropped to the inside of the base rectangle.
-If the two rectangles do not overlap to begin with, you will get a rectangle with 0 size.</p>
-<dl>
-<dt><a name="label:114" id="label:114"><code>Rect#clamp( <var>rect</var> )</code></a><!-- RDLabel: "Rect#clamp" -->
-<dt><a name="label:115" id="label:115"><code>Rect#clamp!( <var>rect</var> )</code></a><!-- RDLabel: "Rect#clamp!" -->
-</dl>
-<p>Returns a new rectangle that is moved to be completely inside the base rectangle.
-If the given rectangle is too large for the base rectangle in an axis, 
-it will be centered on that axis.</p>
-<h1><a name="label:116" id="label:116">SurfacesLostException</a></h1><!-- RDLabel: "SurfacesLostException" -->
-<p>This gruesome thing is thrown bij Surface#blit when Windows manages to destroy all your
-surfaces.
-This might happen when switching to another application, for example.
-The only thing to rescue your application is by waiting for blit to stop throwing exceptions,
-then reloading all your surfaces.</p>
-<h1><a name="label:117" id="label:117">ResizeEvent</a></h1><!-- RDLabel: "ResizeEvent" -->
-<dl>
-<dt><a name="label:118" id="label:118"><code>ResizeEvent#size</code></a><!-- RDLabel: "ResizeEvent#size" -->
-</dl>
-<p>This is [w, h] the new size of the window.</p>
-<h1><a name="label:119" id="label:119">ActiveEvent</a></h1><!-- RDLabel: "ActiveEvent" -->
-<dl>
-<dt><a name="label:120" id="label:120"><code>ActiveEvent#gain</code></a><!-- RDLabel: "ActiveEvent#gain" -->
-<dt><a name="label:121" id="label:121"><code>ActiveEvent#state</code></a><!-- RDLabel: "ActiveEvent#state" -->
-</dl>
-<h1><a name="label:122" id="label:122">QuitEvent</a></h1><!-- RDLabel: "QuitEvent" -->
-<p>This event signals that the user or the program itself has requested to be terminated.</p>
-
-</body>
-</html>
