@@ -1,39 +1,42 @@
-<TITLE>How to...</TITLE>
+<html>
+<head>
+<title>How to install RUDL</title>
 <link rel=stylesheet type='text/css' href='rudl.css'>
-
+</head
+<body>
 <H1>How to get and install RUDL</H1>
 
 <H2>Linux</H2>
 
-<p>Download the latest source package from 
-<a href='http://sourceforge.net/project/showfiles.php?group_id=42958'>the RUDL SourceForge files page</a>
-<p>Continue with the general setup.
+You'll have to build it from source, as described below.
+
 
 <H2>Windows</H2>
 
-<P>This chapter may be outdated at any time.
+This chapter may be outdated at any time.
+
 
 <h3>Binary</h3>
 
-<p>This explains how to get RUDL installed on Windows.
+This explains how to get RUDL installed on Windows.
 Developers are advised to create a package with their program, SDL, and RUDL in it
 so average users won't have to install RUDL seperately.
 
 <ol>
-	<li>Grab <A HREF="http://rubyinstaller.sourceforge.net/">One Click Ruby 1.8.x Installer</A>
-	if you don't have it.
-	Install it.
-	It might be necessary to reboot.
-	<li>Alternatively, grab <A HREF="http://www.dm4lab.to/~usa/ruby/index_en.html"> U. Nakamura's Visual C Ruby</A>.
-	It is reported to work.
-	<li>Grab the latest binary RUDL setup version from
-	<a href='http://sourceforge.net/project/showfiles.php?group_id=42958'>the RUDL SourceForge files page</a>
-	<li>Unzip RUDL to a place you like.
-	<li>Run install-on-windows.rb.
-	We suggest copying the dll's to the Ruby bin dir when it asks for that.
-	<li>Try one of the samples in the RUDL/samples directory.
-	<li>That's it.
-	If it doesn't run, contact us.
+    <li>Grab <A HREF="http://rubyinstaller.sourceforge.net/">One Click Ruby 1.8.x Installer</A>
+    if you don't have it.
+    Install it.
+    It might be necessary to reboot.
+    <li>Alternatively, grab <A HREF="http://www.dm4lab.to/~usa/ruby/index_en.html"> U. Nakamura's Visual C Ruby</A>.
+    It is reported to work.
+    <li>Grab the latest binary RUDL setup version from
+    <a href='http://sourceforge.net/project/showfiles.php?group_id=42958'>the RUDL SourceForge files page</a>
+    <li>Unzip RUDL to a place you like.
+    <li>Run install-on-windows.rb.
+    We suggest copying the dll's to the Ruby bin dir when it asks for that.
+    <li>Try one of the samples in the RUDL/samples directory.
+    <li>That's it.
+    If it doesn't run, contact us.
 </ol>
 
 <p>If you want to use another version of Ruby, you'll get trouble using RUDL.
@@ -42,46 +45,68 @@ changes a lot between Ruby versions.
 This can be solved by downloading a lib only RUDL, if it exists for your version.
 (If it doesn't, it can be created on request)
 You can put the RUDL.so in the directory where you unpacked the RUDL setup and rerun install-on-windows.
-	
+
 <h3>Source</h3>
 
-<p>Compiling from source could be useful for creating a smaller RUDL library, depending on less libraries.
+<p>Compiling from source could be useful for creating a smaller RUDL library that depends on less libraries.
 
 <p>Source is now compiled with the Microsoft Visual C 6 command line tools.
 They need to be set up with the "vcvars32" batchfile in VC's bin directory,
 you need to add RUDL's lib and include to the LIB and INCLUDE in the batch file.
 
-<p><i>Windows environment variables example</p>
+<p><b>Windows environment variables example</b></p>
 
-<p>With Visual Studio in D:\Program Files\VStudio\, 
-and the include and lib dirs beneath the RUDL dir: d:\rubyspul\rudl\.
+<p>With Visual Studio in <code>C:\Program Files\VStudio\</code>
+and the include and lib dirs beneath the RUDL dir <code>C:\rudl\</code>
 
-<code><br>
-include=D:\Program Files\VStudio\VC98\Include;d:\rubyspul\rudl\include<br>
-lib=D:\Program Files\VStudio\VC98\Lib;d:\rubyspul\rudl\lib<br>
-MSDevDir=D:\Program Files\VStudio\Common\MSDev98<br>
-Path=D:\Program Files\VStudio\Common\MSDev98\BIN;D:\Program Files\VStudio\VC98\BIN;D:\Program Files\VStudio\Common\MSDev98\TOOLS<br>
-</code></i>
+<ul><code>
+<li>include=C:\Program Files\VStudio\VC98\Include;C:\rudl\include
+<li>lib=C:\Program Files\VStudio\VC98\Lib;C:\rudl\lib
+<li>MSDevDir=C:\Program Files\VStudio\Common\MSDev98
+<li>Path=C:\Program Files\VStudio\Common\MSDev98\BIN;C:\Program Files\VStudio\VC98\BIN;C:\Program Files\VStudio\Common\MSDev98\TOOLS
+</code></ul>
 
-<p>Continue with the general setup.
+<p>Proceed with the build instructions below. If you don't want to download
+the latest SDL libraries, you can use the provided includes and libs, and the DLLs from
+the RUDL setup archive, and start from "ruby extconf.rb".
+
+<p>If you download the libraries yourself, you should
+probably copy the binaries and includes into the corresponding RUDL directories.
 
 <h3>Creating an installable version of your project</h3>
 
 <p>... to do.
 
-<h2>General setup</h2>
+<h2>Building from source</h2>
 
 <p><ol>
-	<li><b>ruby extconf.rb</b> in the RUDL root should create a makefile, or complain.
-	If it says it can't find things,
-	it will point to a URL that contains the wanted libraries.
-	RUDL doesn't <I>need</I> everything, 
-	just SDL actually.
-	If it complains, and you wished it would say a little more, 
-	you can edit extconf.rb and uncomment the DEBUG-flag.
-	<li><b>make</b>
-	<li>And now, as root:
-	<b>make install</b>
-	<li>That's it.
-	You can now try the samples.
+    <li>
+        Download the latest RUDL source package from
+        <a href='http://sourceforge.net/project/showfiles.php?group_id=42958'>the RUDL SourceForge files page</a>
+    <li>
+        Grab the developer versions of the following libraries for your platform:
+        <ul>
+            <li><a href="http://www.libsdl.org/download-1.2.php">SDL</a>
+            <li><a href="http://www.ferzkopp.net/Software/SDL_gfx-2.0/">SDL_gfx</a>
+            <li><a href="http://www.libsdl.org/projects/SDL_image/">SDL_image</a>
+            <li><a href="http://www.libsdl.org/projects/SDL_mixer/">SDL_mixer</a>
+            <li><a href="http://www.libsdl.org/projects/SDL_ttf/">SDL_ttf</a>
+            <li>(SDL_net)
+            <li>(smpeg)
+            <li>(freetype)
+        </ul>
+        (You may need to download or compile the user binaries as well, if they're not included in the devel package.)
+        <p>Note that RUDL doesn't <I>need</I> everything, only the core SDL library.
+        <p>The libraries must be installed where the compiler can find them. Sometimes the rpm's have
+        created symlinks from e.g. /usr/lib/libSDL.so to a nonexisting version, so you may need to fix them manually.
+    <li><b>ruby extconf.rb</b> in the RUDL root dir will look for the above-mentioned libraries
+    and create a makefile with the libraries it finds.
+    <p>If it can't find some library that you have installed, you can try editing extconf.rb
+    and uncommenting the $DEBUG flag. Make sure that the library binaries and includes are in the right locations.
+    <li><b>make</b>
+    <li>And now, as root:
+    <b>make install</b>
 </ol>
+That's it. You can now try the samples.
+</body>
+</html>
