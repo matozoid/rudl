@@ -1,6 +1,6 @@
 
 /* this function feeds all rows of the bitmap to the row processing function */
-static void SCALE2XFUNC(SDL_Surface* src, SDL_Surface* dest)
+static void SCALE2XFUNC(SDL_Surface* src, SDL_Surface* dest, int x, int y)
 {
     PIXEL* srcpix = src->pixels;
     PIXEL* destpix = dest->pixels;
@@ -10,7 +10,8 @@ static void SCALE2XFUNC(SDL_Surface* src, SDL_Surface* dest)
     PIXEL *dest0, *dest1, *src0, *src1, *src2;
 
     /* set up destination line pointers */
-    dest0 = destpix; dest1 = destpix + destpitch;
+    dest0 = destpix + y*destpitch + x;
+    dest1 = dest0 + destpitch;
 
     /* set up source line pointers */
     /* since there's no line above, we reuse this first line */
