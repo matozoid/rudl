@@ -81,14 +81,16 @@ static VALUE RUDL_at_exit(VALUE obj)
 	return Qnil;
 }
 
-Uint32 PARAMETER2FLAGS(VALUE flagsArg)
+__inline__ Uint32 PARAMETER2FLAGS(VALUE flagsArg)
 {
 	Uint32 flags=0;
 	int i;
+	VALUE tmp;
 
 	if(rb_obj_is_kind_of(flagsArg, rb_cArray)){
 		for(i=0; i<RARRAY(flagsArg)->len; i++){
-			flags|=NUM2UINT(rb_ary_entry(flagsArg, i));
+			tmp=rb_ary_entry(flagsArg, i);
+			flags|=NUM2UINT(tmp);
 		}
 	}else{
 		flags=NUM2UINT(flagsArg);
@@ -97,12 +99,12 @@ Uint32 PARAMETER2FLAGS(VALUE flagsArg)
 }
 
 
-VALUE rb_range_first(VALUE obj)
+__inline__ VALUE rb_range_first(VALUE obj)
 {
     return rb_ivar_get(obj, id_begin);
 }
 
-VALUE rb_range_last(VALUE obj)
+__inline__ VALUE rb_range_last(VALUE obj)
 {
     return rb_ivar_get(obj, id_end);
 }
@@ -202,11 +204,21 @@ It has some class methods of its own too.
 --- RUDL.version and RUDL.used_libraries
     No longer implemented, use versions instead.
 --- RUDL.versions
-    Returns hash of librarynames with their versionnumbers that are supported by RUDL.
+    Returns hash of librarynames with their versions that are supported by RUDL.
     This list was determined when RUDL was compiled for a certain system,
     and might change when other libraries have been installed or removed
     and RUDL is recompiled.
+	Versions are RUDL::Version objects.
     This includes "RUDL" itself.
+= Version
+(({Version})) is the class used for version comparisons.
+It defines four version levels: major, minor, patch and deepest.
+--- Version#initialize( major=0, minor=0, patch=0, deepest=0 )
+Initializes a new Version object.
+--- Version#<( v )
+Compares this version number with the one in v.
+--- Version#to_s
+Returns the version as a string: major.minor.patch.deepest
 = SDLError
 SDLError is the class that is thrown when SDL or RUDL find an SDL-specific
 problem.
@@ -247,7 +259,7 @@ DECKLSPECKL void Init_RUDL()
 		"			@deepest=deepest\n"
 		"		end\n"
 		"		def to_s\n"
-		"			\"#{major}.#{minor}.#{patch}.#{deepest}\""
+		"			\"#{major}.#{minor}.#{patch}.#{deepest}\"\n"
 		"		end\n"
 		"	end\n"
 		"end\n"

@@ -8,13 +8,13 @@
 #define DEBUG_RUDL
 
 // Find out what "inline" looks like:
-#ifndef INLINE
-# ifdef __GNUC__
-#  define INLINE __inline__
-# else
-#  define INLINE __inline
-# endif
-#endif
+//#ifndef INLINE
+//# ifdef __GNUC__
+#define INLINE __inline__
+//# else
+//#  define INLINE __inline
+//# endif
+//#endif
 //
 
 #include "ruby.h"

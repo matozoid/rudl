@@ -29,21 +29,29 @@ void quitVideo()
 	}
 }
 
-Uint32 VALUE2COLOR_NOMAP(VALUE colorObject)
+__inline__ Uint32 VALUE2COLOR_NOMAP(VALUE colorObject)
 {
+	VALUE r,g,b,a;
 	if(rb_obj_is_kind_of(colorObject, rb_cArray)){
 		switch(RARRAY(colorObject)->len){
 			case 3:
-				return (((Uint32)(NUM2UINT(rb_ary_entry(colorObject, 0))))<<24)+
-					(((Uint32)(NUM2UINT(rb_ary_entry(colorObject, 1))))<<16)+
-					(((Uint32)(NUM2UINT(rb_ary_entry(colorObject, 2))))<<8)+
+				r=rb_ary_entry(colorObject, 0);
+				g=rb_ary_entry(colorObject, 1);
+				b=rb_ary_entry(colorObject, 2);
+				return (((Uint32)(NUM2UINT(r)))<<24)+
+					(((Uint32)(NUM2UINT(g)))<<16)+
+					(((Uint32)(NUM2UINT(b)))<<8)+
 					((Uint32)0x000000ff);
 				break;
 			case 4:
-				return (((Uint32)(NUM2UINT(rb_ary_entry(colorObject, 0))))<<24)+
-					(((Uint32)(NUM2UINT(rb_ary_entry(colorObject, 1))))<<16)+
-					(((Uint32)(NUM2UINT(rb_ary_entry(colorObject, 2))))<<8)+
-					((Uint32)(NUM2UINT(rb_ary_entry(colorObject, 3))));
+				r=rb_ary_entry(colorObject, 0);
+				g=rb_ary_entry(colorObject, 1);
+				b=rb_ary_entry(colorObject, 2);
+				a=rb_ary_entry(colorObject, 3);
+				return (((Uint32)(NUM2UINT(r)))<<24)+
+					(((Uint32)(NUM2UINT(g)))<<16)+
+					(((Uint32)(NUM2UINT(b)))<<8)+
+					((Uint32)(NUM2UINT(a)));
 				break;
 			default:
 				rb_raise(rb_eTypeError, "Need colorarray with 3 or 4 elements");
@@ -54,22 +62,30 @@ Uint32 VALUE2COLOR_NOMAP(VALUE colorObject)
 	}
 }
 
-Uint32 VALUE2COLOR(VALUE colorObject, SDL_PixelFormat* format)
+__inline__ Uint32 VALUE2COLOR(VALUE colorObject, SDL_PixelFormat* format)
 {
+	VALUE r,g,b,a;
 	if(rb_obj_is_kind_of(colorObject, rb_cArray)){
 		switch(RARRAY(colorObject)->len){
 			case 3:
+				r=rb_ary_entry(colorObject, 0);
+				g=rb_ary_entry(colorObject, 1);
+				b=rb_ary_entry(colorObject, 2);
 				return SDL_MapRGB(format,
-						(Uint8)NUM2UINT(rb_ary_entry(colorObject, 0)),
-						(Uint8)NUM2UINT(rb_ary_entry(colorObject, 1)),
-						(Uint8)NUM2UINT(rb_ary_entry(colorObject, 2)));
+						(Uint8)NUM2UINT(r),
+						(Uint8)NUM2UINT(g),
+						(Uint8)NUM2UINT(b));
 				break;
 			case 4:
+				r=rb_ary_entry(colorObject, 0);
+				g=rb_ary_entry(colorObject, 1);
+				b=rb_ary_entry(colorObject, 2);
+				a=rb_ary_entry(colorObject, 3);
 				return SDL_MapRGBA(format,
-						(Uint8)NUM2UINT(rb_ary_entry(colorObject, 0)),
-						(Uint8)NUM2UINT(rb_ary_entry(colorObject, 1)),
-						(Uint8)NUM2UINT(rb_ary_entry(colorObject, 2)),
-						(Uint8)NUM2UINT(rb_ary_entry(colorObject, 3)));
+						(Uint8)NUM2UINT(r),
+						(Uint8)NUM2UINT(g),
+						(Uint8)NUM2UINT(b),
+						(Uint8)NUM2UINT(a));
 				break;
 			default:
 				rb_raise(rb_eTypeError, "Need colorarray with 3 or 4 elements");
@@ -80,7 +96,7 @@ Uint32 VALUE2COLOR(VALUE colorObject, SDL_PixelFormat* format)
 	}
 }
 
-VALUE COLOR2VALUE(Uint32 color, SDL_Surface* surface)
+__inline__ VALUE COLOR2VALUE(Uint32 color, SDL_Surface* surface)
 {
 	Uint8 r,g,b,a;
 
@@ -94,15 +110,20 @@ VALUE COLOR2VALUE(Uint32 color, SDL_Surface* surface)
 	}
 }
 
-void RECT2CRECT(VALUE source, SDL_Rect* destination)
+__inline__ void RECT2CRECT(VALUE source, SDL_Rect* destination)
 {
-	destination->x=NUM2Sint16(rb_ivar_get(source, id_atx));
-	destination->y=NUM2Sint16(rb_ivar_get(source, id_aty));
-	destination->w=NUM2Uint16(rb_ivar_get(source, id_atw));
-	destination->h=NUM2Uint16(rb_ivar_get(source, id_ath));
+	VALUE tmp;
+	tmp=rb_ivar_get(source, id_atx);
+	destination->x=NUM2Sint16(tmp);
+	tmp=rb_ivar_get(source, id_aty);
+	destination->y=NUM2Sint16(tmp);
+	tmp=rb_ivar_get(source, id_atw);
+	destination->w=NUM2Uint16(tmp);
+	tmp=rb_ivar_get(source, id_ath);
+	destination->h=NUM2Uint16(tmp);
 }
 
-void CRECT2RECT(SDL_Rect* source, VALUE destination)
+__inline__ void CRECT2RECT(SDL_Rect* source, VALUE destination)
 {
 	rb_ivar_set(destination, id_atx, INT2NUM(source->x));
 	rb_ivar_set(destination, id_aty, INT2NUM(source->y));
@@ -110,26 +131,30 @@ void CRECT2RECT(SDL_Rect* source, VALUE destination)
 	rb_ivar_set(destination, id_ath, UINT2NUM(source->h));
 }
 
-void PARAMETER2COORD(VALUE parameter, Sint16* x, Sint16* y)
+__inline__ void PARAMETER2COORD(VALUE parameter, Sint16* x, Sint16* y)
 {
+	VALUE tmp;
 	if(rb_obj_is_kind_of(parameter, rb_cArray)){
-		*x=NUM2Sint16(rb_ary_entry(parameter, 0));
-		*y=NUM2Sint16(rb_ary_entry(parameter, 1));
+		tmp=rb_ary_entry(parameter, 0);
+		*x=NUM2Sint16(tmp);
+		tmp=rb_ary_entry(parameter, 1);
+		*y=NUM2Sint16(tmp);
 	}else{
 		rb_raise(rb_eTypeError, "Expected coordinate array with at least 2 elements");
 	}
 }
 
-void PARAMETER2CRECT(VALUE arg1, SDL_Rect* rect)
+__inline__ void PARAMETER2CRECT(VALUE arg1, SDL_Rect* rect)
 {
+	VALUE tmp;
 	if(rb_obj_is_kind_of(arg1, classRect)){
 		RECT2CRECT(arg1, rect);
 	}else{
 		if(rb_obj_is_kind_of(arg1, rb_cArray)){
-			rect->x=NUM2Sint16(rb_ary_entry(arg1, 0));
-			rect->y=NUM2Sint16(rb_ary_entry(arg1, 1));
-			rect->w=NUM2Uint16(rb_ary_entry(arg1, 2));
-			rect->h=NUM2Uint16(rb_ary_entry(arg1, 3));
+			tmp=rb_ary_entry(arg1, 0);			rect->x=NUM2Sint16(tmp);
+			tmp=rb_ary_entry(arg1, 1);			rect->y=NUM2Sint16(tmp);
+			tmp=rb_ary_entry(arg1, 2);			rect->w=NUM2Uint16(tmp);
+			tmp=rb_ary_entry(arg1, 3);			rect->h=NUM2Uint16(tmp);
 		}else{
 			rb_raise(rb_eTypeError, "Wanted RUDL::Rect or array");
 		}

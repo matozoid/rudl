@@ -186,7 +186,8 @@ Returns a string describing the CDROM.
 =end */
 static VALUE cdrom_name(VALUE self)
 {
-	return rb_str_new2(SDL_CDName(NUM2INT(rb_iv_get(self, "@id"))));
+	VALUE tmp=rb_iv_get(self, "@id");
+	return rb_str_new2(SDL_CDName(NUM2INT(tmp)));
 }
 
 /*

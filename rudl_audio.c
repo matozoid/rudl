@@ -64,7 +64,9 @@ VALUE createChannelObject(int number)
 
 int retrieveChannelNumber(VALUE channel)
 {
-	return NUM2INT(rb_iv_get(channel, "@number"));
+	VALUE tmp;
+	tmp=rb_iv_get(channel, "@number");
+	return NUM2INT(tmp);
 }
 /*
 =begin

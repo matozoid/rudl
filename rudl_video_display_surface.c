@@ -335,12 +335,13 @@ Intensity is a shortcut for values where r=g=b.
 static VALUE displaySurface_gamma_(VALUE self, VALUE color)
 {
 	float r, g, b;
+	VALUE tmp;
 
 	if(rb_obj_is_kind_of(color, rb_cArray)){
 		if(RARRAY(color)->len==3){
-			r=NUM2FLT(rb_ary_entry(color, 0));
-			g=NUM2FLT(rb_ary_entry(color, 1));
-			b=NUM2FLT(rb_ary_entry(color, 2));
+			tmp=rb_ary_entry(color, 0);		r=NUM2FLT(tmp);
+			tmp=rb_ary_entry(color, 1);		g=NUM2FLT(tmp);
+			tmp=rb_ary_entry(color, 2);		b=NUM2FLT(tmp);
 		}else{
 			SDL_RAISE_S("Want [r,g,b] array");
 			return Qnil;

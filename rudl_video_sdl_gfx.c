@@ -253,10 +253,11 @@ static VALUE surface_polygon(VALUE self, VALUE coordlist, VALUE color)
 	Sint16 *x=malloc(sizeof(Sint16)*numpoints);
 	Sint16 *y=malloc(sizeof(Sint16)*numpoints);
 	int i;
+	VALUE tmp;
 	
 	for(i=0; i<numpoints; i++){
-		x[i]=NUM2Sint16(rb_ary_entry(rb_ary_entry(coordlist, i), 0));
-		y[i]=NUM2Sint16(rb_ary_entry(rb_ary_entry(coordlist, i), 1));
+		tmp=rb_ary_entry(rb_ary_entry(coordlist, i), 0);	x[i]=NUM2Sint16(tmp);
+		tmp=rb_ary_entry(rb_ary_entry(coordlist, i), 1);	y[i]=NUM2Sint16(tmp);
 	}
 
 	if(polygonColor(retrieveSurfacePointer(self), x, y, numpoints, VALUE2COLOR_NOMAP(color)))  SDL_RAISE_S("failed");
@@ -276,10 +277,11 @@ static VALUE surface_filled_polygon(VALUE self, VALUE coordlist, VALUE color)
 	Sint16 *x=malloc(sizeof(Sint16)*numpoints);
 	Sint16 *y=malloc(sizeof(Sint16)*numpoints);
 	int i;
+	VALUE tmp;
 	
 	for(i=0; i<numpoints; i++){
-		x[i]=NUM2Sint16(rb_ary_entry(rb_ary_entry(coordlist, i), 0));
-		y[i]=NUM2Sint16(rb_ary_entry(rb_ary_entry(coordlist, i), 1));
+		tmp=rb_ary_entry(rb_ary_entry(coordlist, i), 0);	x[i]=NUM2Sint16(tmp);
+		tmp=rb_ary_entry(rb_ary_entry(coordlist, i), 1);	y[i]=NUM2Sint16(tmp);
 	}
 
 	if(filledPolygonColor(retrieveSurfacePointer(self), x, y, numpoints, VALUE2COLOR_NOMAP(color)))  SDL_RAISE_S("failed");
@@ -300,10 +302,11 @@ static VALUE surface_antialiased_polygon(VALUE self, VALUE coordlist, VALUE colo
 	Sint16 *x=malloc(sizeof(Sint16)*numpoints);
 	Sint16 *y=malloc(sizeof(Sint16)*numpoints);
 	int i;
+	VALUE tmp;
 	
 	for(i=0; i<numpoints; i++){
-		x[i]=NUM2Sint16(rb_ary_entry(rb_ary_entry(coordlist, i), 0));
-		y[i]=NUM2Sint16(rb_ary_entry(rb_ary_entry(coordlist, i), 1));
+		tmp=rb_ary_entry(rb_ary_entry(coordlist, i), 0);	x[i]=NUM2Sint16(tmp);
+		tmp=rb_ary_entry(rb_ary_entry(coordlist, i), 1);	y[i]=NUM2Sint16(tmp);
 	}
 
 	if(aapolygonColor(retrieveSurfacePointer(self), x, y, numpoints, VALUE2COLOR_NOMAP(color)))  SDL_RAISE_S("failed");

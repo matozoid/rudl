@@ -17,12 +17,12 @@ This might not seem like much, but it is just about the most important class in 
 
 // SUPPORT:
 
-VALUE createSurfaceObject(SDL_Surface* surface)
+__inline__ VALUE createSurfaceObject(SDL_Surface* surface)
 {
 	return Data_Wrap_Struct(classSurface, 0, SDL_FreeSurface, surface);
 }
 
-SDL_Surface* retrieveSurfacePointer(VALUE self)
+__inline__ SDL_Surface* retrieveSurfacePointer(VALUE self)
 {
 	SDL_Surface* surface;
 	Data_Get_Struct(self, SDL_Surface, surface);
@@ -31,7 +31,7 @@ SDL_Surface* retrieveSurfacePointer(VALUE self)
 
 #define GET_SURFACE SDL_Surface* surface; Data_Get_Struct(self, SDL_Surface, surface);
 
-void setMasksFromBPP(Uint32 bpp, Uint32* Rmask, Uint32* Gmask, Uint32* Bmask, Uint32* Amask)
+__inline__ void setMasksFromBPP(Uint32 bpp, Uint32* Rmask, Uint32* Gmask, Uint32* Bmask, Uint32* Amask)
 {
 	*Amask = 0;
 	switch(bpp){
@@ -82,6 +82,7 @@ static VALUE surface_new(int argc, VALUE* argv, VALUE self)
 	Uint16 width, height;
 	short bpp=0;
 	Uint32 Rmask, Gmask, Bmask, Amask;
+	VALUE tmp;
 	bool wildGuess=false;
 
 	VALUE sizeObject, surfaceOrFlagsObject, surfaceOrDepthObject, masksObject;
@@ -115,10 +116,10 @@ static VALUE surface_new(int argc, VALUE* argv, VALUE self)
 					if(argc==4){ // got masks
 						Check_Type(masksObject, T_ARRAY);
 						if(RARRAY(masksObject)->len==4){
-							Rmask=NUM2UINT(rb_ary_entry(masksObject, 0));
-							Gmask=NUM2UINT(rb_ary_entry(masksObject, 1));
-							Bmask=NUM2UINT(rb_ary_entry(masksObject, 2));
-							Amask=NUM2UINT(rb_ary_entry(masksObject, 3));
+							tmp=rb_ary_entry(masksObject, 0);	Rmask=NUM2UINT(tmp);
+							tmp=rb_ary_entry(masksObject, 1);	Gmask=NUM2UINT(tmp);
+							tmp=rb_ary_entry(masksObject, 2);	Bmask=NUM2UINT(tmp);
+							tmp=rb_ary_entry(masksObject, 3);	Amask=NUM2UINT(tmp);
 						}else{
 							SDL_RAISE_S("Need 4 elements in masks array");
 						}
@@ -467,7 +468,8 @@ This function should rarely needed, mainly for any special-case debugging.
 =end */
 static VALUE surface_pitch(VALUE self)
 {
-	return retrieveSurfacePointer(self)->pitch;
+	GET_SURFACE;
+	return UINT2NUM(surface->pitch);
 }
 
 /*
@@ -601,6 +603,8 @@ static VALUE surface_set_palette(VALUE self, VALUE firstValue, VALUE colors)
 	SDL_Color newPal[256];
 	VALUE color;
 
+	VALUE tmp;
+
 	if(!rb_obj_is_kind_of(colors, rb_cArray)){
 		SDL_RAISE_S("Need array of colors");
 		return Qnil;
@@ -614,9 +618,9 @@ static VALUE surface_set_palette(VALUE self, VALUE firstValue, VALUE colors)
 
 	for(i=0; i<amount; i++){
 		color=rb_ary_entry(colors, i);
-		newPal[i].r=NUM2Uint8(rb_ary_entry(color, 0));
-		newPal[i].g=NUM2Uint8(rb_ary_entry(color, 1));
-		newPal[i].b=NUM2Uint8(rb_ary_entry(color, 2));
+		tmp=rb_ary_entry(color, 0);		newPal[i].r=NUM2Uint8(tmp);
+		tmp=rb_ary_entry(color, 1);		newPal[i].g=NUM2Uint8(tmp);
+		tmp=rb_ary_entry(color, 2);		newPal[i].b=NUM2Uint8(tmp);
 	}
 
 	if(SDL_SetColors(surface, newPal, first, amount)==0) SDL_RAISE;
@@ -846,7 +850,7 @@ These methods read single pixels on a surface.
 These methods require the surface to be locked if neccesary.
 ((|[]=|)) and ((|[]|)) are the only methods in RUDL that take a seperate x and y coordinate.
 =end */
-Uint32 internal_get(SDL_Surface* surface, Sint16 x, Sint16 y)
+__inline__ Uint32 internal_get(SDL_Surface* surface, Sint16 x, Sint16 y)
 {
 	SDL_PixelFormat* format = surface->format;
 	Uint8* pixels = (Uint8*)surface->pixels;
@@ -887,7 +891,7 @@ Uint32 internal_get(SDL_Surface* surface, Sint16 x, Sint16 y)
 	return color;
 }
 
-Uint32 internal_nonlocking_get(SDL_Surface* surface, Sint16 x, Sint16 y)
+__inline__ Uint32 internal_nonlocking_get(SDL_Surface* surface, Sint16 x, Sint16 y)
 {
 	SDL_PixelFormat* format = surface->format;
 	Uint8* pixels = (Uint8*)surface->pixels;
@@ -951,29 +955,221 @@ static VALUE surface_array_get(VALUE self, VALUE x, VALUE y)
 	return rb_ary_new3(4, UINT2NUM(r), UINT2NUM(g), UINT2NUM(b), UINT2NUM(a));
 }
 
+__inline__ static void* get_line_pointer(SDL_Surface* surface, int y)
+{
+	return (((Uint8*)surface->pixels)+surface->pitch*y);
+}
+
+__inline__ static void copy_line_to_surface(SDL_Surface* surface, int y, Uint8* data)
+{
+	memcpy(get_line_pointer(surface, y), data, surface->w*surface->format->BytesPerPixel);
+}
+
+__inline__ static void copy_surface_to_line(SDL_Surface* surface, int y, Uint8* data)
+{
+	memcpy(data, get_line_pointer(surface, y), surface->w*surface->format->BytesPerPixel);
+}
+
+
+/*
+=begin
+--- Surface#rows
+--- Surface#get_row( y )
+--- Surface#set_row( y, pixels )
+--- Surface#each_row { |row_of_pixels| ... }
+--- Surface#each_row! { |row_of_pixels| ... }
+These methods manipulate rows of pixels.
+Surface#rows returns an array of strings with one row of imagedata each.
+get and set get and set a single such row.
+each_row and each_row! iterate through the rows, 
+passing each of them to the supplied codeblock.
+For more info, see Surface#pixels.
+=end */
+static VALUE surface_get_row(VALUE self, VALUE y)
+{
+	GET_SURFACE;
+	return rb_str_new(get_line_pointer(surface, NUM2INT(y)), surface->w*surface->format->BytesPerPixel);
+}
+
+static VALUE surface_set_row(VALUE self, VALUE y, VALUE pixels)
+{
+	GET_SURFACE;
+	if(RSTRING(pixels)->len<surface->w*surface->format->BytesPerPixel){
+		SDL_RAISE("Not enough data for a complete row");
+	}
+	copy_line_to_surface(surface, NUM2INT(y), RSTRING(pixels)->ptr);
+	return self;
+}
+
+void define_ruby_row_methods()
+{
+	rb_eval_string(
+		"module RUDL class Surface				\n"
+		"	def each_row						\n"
+		"		(0...h).each {|y|				\n"
+		"			yield(get_row(y))			\n"
+		"		}								\n"
+		"	end									\n"
+		"	def each_row!						\n"
+		"		(0...h).each {|y|					\n"
+		"			set_row(y, yield(get_row(y)))	\n"
+		"		}									\n"
+		"	end									\n"
+		"	def rows							\n"
+		"		retval=[]						\n"
+		"		each_row {|r| retval.push(r)}	\n"
+		"		retval							\n"
+		"	end									\n"
+		"end end								\n"
+	);
+}
+
+/*
+=begin
+--- Surface#columns
+--- Surface#get_column( x )
+--- Surface#set_column( x, pixels )
+--- Surface#each_column { |column_of_pixels| ... }
+--- Surface#each_column! { |column_of_pixels| ... }
+These methods manipulate columns of pixels.
+Surface#columns returns an array of strings with one column of imagedata each.
+get and set get and set a single such column.
+each_column and each_column! iterate through the columns, 
+passing each of them to the supplied codeblock.
+For more info, see Surface#pixels.
+=end */
+static VALUE surface_get_column(VALUE self, VALUE x)
+{
+	int y;
+	int pixelsize;
+	int h;
+	Uint8* src, *dest, *column;
+
+	GET_SURFACE;
+	
+	h=surface->h;
+	pixelsize=surface->format->BytesPerPixel;
+	
+	column=malloc(h*pixelsize);
+	src=((Uint8*)surface->pixels)+(NUM2INT(x))*pixelsize;
+	dest=column;
+	for(y=0; y<h; y++){
+		memcpy(dest, src, pixelsize);
+		dest+=pixelsize;
+		src+=surface->pitch;
+	}
+
+	return rb_str_new(column, h*pixelsize);
+}
+
+static VALUE surface_set_column(VALUE self, VALUE x, VALUE pixels)
+{
+	int y;
+	int pixelsize;
+	int h;
+	Uint8* src, *dest;
+
+	GET_SURFACE;
+	
+	h=surface->h;
+	pixelsize=surface->format->BytesPerPixel;
+	
+	dest=((Uint8*)surface->pixels)+(NUM2INT(x))*pixelsize;
+	src=RSTRING(pixels)->ptr;
+	for(y=0; y<h; y++){
+		memcpy(dest, src, pixelsize);
+		dest+=surface->pitch;
+		src+=pixelsize;
+	}
+
+	return self;
+}
+
+void define_ruby_column_methods()
+{
+	rb_eval_string(
+		"module RUDL class Surface				\n"
+		"	def each_column						\n"
+		"		(0...w).each {|x|				\n"
+		"			yield(get_column(x))		\n"
+		"		}								\n"
+		"	end									\n"
+		"	def each_column!					\n"
+		"		(0...w).each {|x|						\n"
+		"			set_column(x, yield(get_column(x)))	\n"
+		"		}										\n"
+		"	end									\n"
+		"	def columns							\n"
+		"		retval=[]							\n"
+		"		each_column {|c| retval.push(c)}	\n"
+		"		retval								\n"
+		"	end									\n"
+		"end end								\n"
+	);
+}
+
 /*
 =begin
 --- Surface#pixels
 --- Surface#pixels=( pixeldata )
 These methods get and set all image data at once.
 The transport medium is a string with binary data in it.
+The data is raw, no fancy color arrays here.
+If bytesize (the amount of bytes used to describe the color of a pixel) is
+four, for example, a row of 10 pixels will return a string of 40 characters.
+If the colorformat is specified as BGRA, then character zero will be the
+B component, character one the G component etc.
+Eight bit color surfaces store one byte indexes into the palette.
+These methods perform best when the surface's pitch is equal to its width.
+There is not much errorchecking so beware of crashes.
 =end */
 static VALUE surface_pixels(VALUE self)
 {
+	Uint32 image_size;
 	GET_SURFACE;
-	return rb_str_new(surface->pixels, surface->w*surface->h);
+	
+	image_size=surface->w*surface->h*surface->format->BytesPerPixel;
+
+	if(surface->pitch==surface->w){
+		return rb_str_new(surface->pixels, image_size);
+	}else{
+		int y;
+		Uint8* tmp_pixels=malloc(image_size);
+		VALUE retval;
+		Uint16 bytewidth=surface->w*surface->format->BytesPerPixel;
+
+		for(y=0; y<surface->h; y++){
+			copy_surface_to_line(surface, y, tmp_pixels+y*bytewidth);
+		}
+		retval=rb_str_new(tmp_pixels, image_size);
+		free(tmp_pixels);
+		return retval;
+	}
 }
 
 static VALUE surface_set_pixels(VALUE self, VALUE pixels)
 {
 	int size;
+	Uint8* pixelpointer;
+
 	GET_SURFACE;
-	size=surface->w*surface->h;
+	
+	size=surface->w*surface->h*surface->format->BytesPerPixel;
+	pixelpointer=RSTRING(pixels)->ptr;
+	
 	if(RSTRING(pixels)->len<size){
 		SDL_RAISE_S("Not enough data in string");
 		return Qnil;
 	}else{
-		memcpy(surface->pixels, RSTRING(pixels)->ptr, size);
+		if(surface->pitch==surface->w){
+			memcpy(surface->pixels, pixelpointer, size);
+		}else{
+			int y;
+			Uint16 bytewidth=surface->w*surface->format->BytesPerPixel;
+			for(y=0; y<surface->h; y++){
+				copy_line_to_surface(surface, y, pixelpointer+y*bytewidth);
+			}
+		}
 	}
 	return self;
 }
@@ -1036,4 +1232,12 @@ void initVideoSurfaceClasses()
 
 	rb_define_method(classSurface, "pixels", surface_pixels, 0);
 	rb_define_method(classSurface, "pixels=", surface_set_pixels, 1);
+
+	rb_define_method(classSurface, "get_row", surface_get_row, 1);
+	rb_define_method(classSurface, "set_row", surface_set_row, 2);
+	define_ruby_row_methods();
+
+	rb_define_method(classSurface, "get_column", surface_get_column, 1);
+	rb_define_method(classSurface, "set_column", surface_set_column, 2);
+	define_ruby_column_methods();
 }

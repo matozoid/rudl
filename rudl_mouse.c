@@ -118,6 +118,7 @@ static VALUE mouse_set_cursor(VALUE self, VALUE hotspot, VALUE xormasks, VALUE a
 	SDL_Cursor *lastcursor, *cursor = NULL;
 	Uint8 *xordata=NULL, *anddata=NULL;
 	Sint16 spotx, spoty;
+	VALUE tmp;
 
 	initVideo();
 
@@ -136,8 +137,10 @@ static VALUE mouse_set_cursor(VALUE self, VALUE hotspot, VALUE xormasks, VALUE a
 
 	for(y=0; y<sy; y++){
 		for(x=0; x<sx; x++){
-			xordata[y*sx+x]=(Uint8)NUM2UINT(rb_ary_entry(rb_ary_entry(xormasks, y), x));
-			anddata[y*sx+x]=(Uint8)NUM2UINT(rb_ary_entry(rb_ary_entry(andmasks, y), x));
+			tmp=rb_ary_entry(rb_ary_entry(xormasks, y), x);
+			xordata[y*sx+x]=(Uint8)NUM2UINT(tmp);
+			tmp=rb_ary_entry(rb_ary_entry(andmasks, y), x);
+			anddata[y*sx+x]=(Uint8)NUM2UINT(tmp);
 		}
 	}
 
