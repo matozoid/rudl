@@ -3,6 +3,9 @@ RUDL - a C library wrapping SDL for use in Ruby.
 Copyright (C) 2001, 2002, 2003  Danny van Bruggen
 
 $Log: rudl_video_display_surface.c,v $
+Revision 1.19  2003/12/03 16:04:11  rennex
+Tweaked the docs a bit
+
 Revision 1.18  2003/12/01 23:30:27  rennex
 Added mask_string size check in set_icon
 
@@ -450,12 +453,12 @@ The SDL docs say this must be called before calling DisplaySurface.new, but
 at least on Windows this is not true. This method exists also as a class method
 of DisplaySurface.
 
-Win32 icons must be 32x32.
+Win32 icons must be 32x32 to work properly.
 
-If the icon has a colorkey set, that color will be transparent. (Since
+If ((|icon_surface|)) has a colorkey set, that color will be transparent. (Since
 SDL currently handles that wrong, RUDL generates the mask instead, unless
 you supply nil for mask_string.)
-Alternatively, you can supply a mask_string where each byte represents
+Alternatively, you can supply ((|mask_string|)) where each byte represents
 the visibility of 8 pixels (MSB is the leftmost pixel, 0 means transparent).
 =end */
 static VALUE displaySurface_set_icon(int argc, VALUE* argv, VALUE self)
@@ -479,10 +482,10 @@ static VALUE displaySurface_set_icon(int argc, VALUE* argv, VALUE self)
     } else if (surface->flags & SDL_SRCCOLORKEY) {
         Sint16 x, y, xb;
         Uint8 bit, b;
-        int wb = (surface->w + 7) / 8;
+        int wb = (surface->w + 7) / 8;  /* width in bytes */
         Uint32 key = surface->format->colorkey;
 
-        /* get memory for the mask. gets freed when we exit this function */
+        /* get memory for the mask. It gets freed when we exit this function */
         maskptr = maskstr = ALLOCA_N(Uint8, wb * surface->h);
 
         for (y=0; y < surface->h; y++) {
