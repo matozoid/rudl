@@ -19,3 +19,18 @@ Edit vcvars32.bat to point to a user include and lib directory, which you create
 Put the development versions of the support libraries (SDL, SDL_ttf, smpeg, etc) in the lib and include directories. .h files go in the include dir, others, mostly .lib files, in the lib dir. DLL's should be put in RUDL's dll dir.
 
 Continue as "On unix"
+
+--- Windows environment variables example:
+
+With Visual Studio in D:\Program Files\VStudio\, 
+and the include and lib dirs beneath the RUDL dir: d:\rubyspul\rudl\.
+
+vvv
+include=D:\Program Files\VStudio\VC98\Include;d:\rubyspul\rudl\include
+
+lib=D:\Program Files\VStudio\VC98\Lib;d:\rubyspul\rudl\lib
+
+MSDevDir=D:\Program Files\VStudio\Common\MSDev98
+
+Path=D:\Program Files\VStudio\Common\MSDev98\BIN;D:\Program Files\VStudio\VC98\BIN;D:\Program Files\VStudio\Common\MSDev98\TOOLS
+^^^
