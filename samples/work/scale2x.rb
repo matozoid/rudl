@@ -30,7 +30,7 @@ win.blit quadpic, [40+6*pic.w,10]
 # blit the 3x scaled
 # since there's no scale3x, reduce the 4x one to 75% size B)
 triplepic = quadpic.zoom(0.75, 0.75, true)
-triplepic.unset_colorkey if triplepic.colorkey  # naughty zoom!
+triplepic.unset_colorkey    # naughty zoom!
 win.blit triplepic, [30+3*pic.w,10]
 win.print([30+3*pic.w, 15+3*pic.h], "(pseudo 3x)", [0,0,0]) if pic.w*3 >= 78
 
