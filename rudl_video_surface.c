@@ -3,6 +3,9 @@ RUDL - a C library wrapping SDL for use in Ruby.
 Copyright (C) 2001, 2002, 2003  Danny van Bruggen
 
 $Log: rudl_video_surface.c,v $
+Revision 1.22  2003/10/01 21:26:01  tsuihark
+Some 16 bit + alpha stuff
+
 Revision 1.21  2003/09/29 12:43:21  rennex
 Moved SDL_LockSurface after the coordinate check in internal_(nonlocking_)get
 
@@ -55,8 +58,11 @@ __inline__ SDL_Surface* retrieveSurfacePointer(VALUE self)
 __inline__ void setMasksFromBPP(Uint32 bpp, boolean alphaWanted, Uint32* Rmask, Uint32* Gmask, Uint32* Bmask, Uint32* Amask)
 {
 	*Amask = 0;
-	if(alphaWanted && bpp==32){
-		*Rmask = 0xFF << 24; *Gmask = 0xFF << 16; *Bmask = 0xFF << 8; *Amask=0xFF;
+	if(alphaWanted && (bpp==32||bpp==16)){
+		switch(bpp){
+			case 16: *Rmask=0xF<<12; *Gmask=0xF<<8; *Bmask=0xF<<4; *Amask=0xF;break
+			case 32: *Rmask = 0xFF << 24; *Gmask = 0xFF << 16; *Bmask = 0xFF << 8; *Amask=0xFF; break;
+		}
 	}else{
 		switch(bpp){
 			case 8:  *Rmask = 0xFF >> 6 << 5; *Gmask = 0xFF >> 5 << 2; *Bmask = 0xFF >> 6; break;

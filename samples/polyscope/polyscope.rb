@@ -131,7 +131,7 @@ class Poly
 
 	def newImage
 		size=rand(20)+5
-		@surface=Surface.new [size*2, size*2], SWSURFACE|SRCALPHA, 32
+		@surface=Surface.new [size*2, size*2], SWSURFACE|SRCALPHA, 16
 		
 		@surface.filled_circle([size, size], size-1, [rand(255), rand(255), rand(255), rand(255)])
 		@surface.convert_alpha!

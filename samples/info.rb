@@ -1,6 +1,6 @@
 #!/usr/local/bin/ruby
 
-require '../RUDL'
+require 'RUDL'
 include RUDL
 include Constant
 
