@@ -3,6 +3,9 @@ RUDL - a C library wrapping SDL for use in Ruby.
 Copyright (C) 2001, 2002, 2003  Danny van Bruggen 
 
 $Log: rudl_video_surface.c,v $
+Revision 1.19  2003/09/26 23:23:43  tsuihark
+Fixed documentation issue
+
 Revision 1.18  2003/09/26 22:52:03  tsuihark
 Fixed damn EOLs
 
@@ -78,20 +81,10 @@ If only ((|size|)) is supplied, the rest of the arguments will be set to reasona
 If a surface is supplied, it is used to copy the values from that aren't given.
 
 ((|flags|)) is, quoted from SDL's documentation:
-* SWSURFACE: SDL will create the surface in system memory. This improves the performance of
-	pixel level access, however you may not be able to take advantage of some types of
-	hardware blitting.
-* HWSURFACE: SDL will attempt to create the surface in video memory. This will allow SDL
-	to take advantage of Video->Video blits (which are often accelerated).
-* SRCCOLORKEY: This flag turns on colourkeying for blits from this surface. If
-	SDL_HWSURFACE is also specified and colourkeyed blits are hardware-accelerated, then
-	SDL will attempt to place the surface in video memory. Use SDL_SetColorKey to set or
-	clear this flag after surface creation.
-* SRCALPHA: This flag turns on alpha-blending for blits from this surface. If SDL_HWSURFACE
-	is also specified and alpha-blending blits are hardware-accelerated, then the surface
-	will be placed in video memory if possible. Use SDL_SetAlpha to set or clear this flag
-	after surface creation. For a 32 bitdepth surface, an alpha mask will automatically be
-	added, in other cases, you will have to specify a mask.
+* SWSURFACE: SDL will create the surface in system memory. This improves the performance of pixel level access, however you may not be able to take advantage of some types of hardware blitting.
+* HWSURFACE: SDL will attempt to create the surface in video memory. This will allow SDL to take advantage of Video->Video blits (which are often accelerated).
+* SRCCOLORKEY: This flag turns on colourkeying for blits from this surface. If SDL_HWSURFACE is also specified and colourkeyed blits are hardware-accelerated, then	SDL will attempt to place the surface in video memory. Use SDL_SetColorKey to set or clear this flag after surface creation.
+* SRCALPHA: This flag turns on alpha-blending for blits from this surface. If SDL_HWSURFACE	is also specified and alpha-blending blits are hardware-accelerated, then the surface	will be placed in video memory if possible. Use SDL_SetAlpha to set or clear this flag	after surface creation. For a 32 bitdepth surface, an alpha mask will automatically be	added, in other cases, you will have to specify a mask.
 
 ((|depth|)) is bitdepth, like 8, 15, 16, 24 or 32.
 
@@ -254,13 +247,8 @@ void dont_free(void*_)
 =begin
 --- Surface.shared_new( surface )
 This method is two things:
-(1) a way to share the same bunch of data (width, height, bpp, pixeldata)
-between two Surface objects.
-Please don't use it this way if there isn't a very good reason for it.
-(2) a way to import foreign objects that wrap an SDL_Surface*.
-If that doesn't mean anything to you, please ignore this point.
-It takes the pointer from the foreign object and creates a new Surface
-that wraps it.
+(1) a way to share the same bunch of data (width, height, bpp, pixeldata) between two Surface objects. Please don't use it this way if there isn't a very good reason for it.
+(2) a way to import foreign objects that wrap an SDL_Surface*. If that doesn't mean anything to you, please ignore this point. It takes the pointer from the foreign object and creates a new Surface that wraps it.
 Garbage collection problems should be prevented by giving the new surface
 a reference to ((|surface|))
 
