@@ -1,17 +1,17 @@
 =begin
 ---------------------------------------------------------------------
-This is a porting from the pygame script to RUDL. The original pygame 
-code is at the end, followed by the BlitzBasic source from where the 
-pygame was implemented. The Ruby version seems to be visibly slower 
-than the Python one, mainly (I guess) because of the two nested 
-"stepped" loops. The liquid.py runs at 20-25 fps on my duron-600, 
-while the liquid.rb runs at 13-16 fps. I think this slow down has 
-nothing to do with the RUDL wrap, but with Ruby itself. Probably the 
-'polling' has part in the guilt, but the 'peeking' method doesn't 
-work as expected on RUDL - it just return whether there is any event 
+This is a porting from the pygame script to RUDL. The original pygame
+code is at the end, followed by the BlitzBasic source from where the
+pygame was implemented. The Ruby version seems to be visibly slower
+than the Python one, mainly (I guess) because of the two nested
+"stepped" loops. The liquid.py runs at 20-25 fps on my duron-600,
+while the liquid.rb runs at 13-16 fps. I think this slow down has
+nothing to do with the RUDL wrap, but with Ruby itself. Probably the
+'polling' has part in the guilt, but the 'peeking' method doesn't
+work as expected on RUDL - it just return whether there is any event
 awaiting, not the event itself.
 
-Maybe someone more used to Ruby could try to accelerate the loops. 
+Maybe someone more used to Ruby could try to accelerate the loops.
 If so, please let us see the resultant code.
 
 NOTE: You'll need a 690x530x16bpp BMP for the script to work.
@@ -45,7 +45,7 @@ x = y = fps = 0
 t = Timer.ticks
 
 #-- mainloop
-while not [QuitEvent, KeyDownEvent, MouseButtonDownEvent].include?( EventQueue.poll.type )
+while not [QuitEvent, KeyDownEvent, MouseButtonDownEvent].include?( EventQueue.poll.class )
 	anim += 0.4
 	0.step(639, STEP) { |x|
 		0.step(379, STEP) { |y|
@@ -134,9 +134,9 @@ i've snipped the sound and text stuff out.
 ; Brad@freedom2000.com
 
 ; Load a bmp pic (800x600) and slice it into 1600 squares
-Graphics 640,480					
-SetBuffer BackBuffer()				
-bitmap$="f2kwarp.bmp"					
+Graphics 640,480
+SetBuffer BackBuffer()
+bitmap$="f2kwarp.bmp"
 pic=LoadAnimImage(bitmap$,20,15,0,1600)
 
 ; use SIN to move all 1600 squares around to give liquid effect
@@ -145,7 +145,7 @@ f=0:w=w+10:If w=360 Then w=0
 For y=0 To 599 Step 15
 For x = 0 To 799 Step 20
 f=f+1:If f=1600 Then f=0
-DrawBlock pic,(x+(Sin(w+x)*40))/1.7+80,(y+(Sin(w+y)*40))/1.7+60,f 
+DrawBlock pic,(x+(Sin(w+x)*40))/1.7+80,(y+(Sin(w+y)*40))/1.7+60,f
 Next:Next:Flip:Cls
 Until KeyDown(1)
 """
