@@ -120,7 +120,8 @@ def zipit(what)
 	if not $list
 		# zip em up! one at a time, to avoid truncated command lines
 		if what == "setup"
-			outfile = "#$destdir/rudl-#$version-for-ruby-#$target_ruby-setup.zip"
+			# Just guessing that we're doing a release build now
+			outfile = "#$destdir/rudl-#$version-for-ruby-#$target_ruby-setup-releasebuild.zip"
 			Dir.mkdir($destdir) unless File.exists?($destdir)
 			File.delete(outfile) if File.exists?(outfile)
 			
