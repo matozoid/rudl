@@ -1,7 +1,10 @@
-# $Revision: 1.15 $
-# $Date: 2003/09/26 20:52:29 $
-# $Author: tsuihark $
+# $Revision: 1.16 $
+# $Date: 2003/09/26 21:00:24 $
+# $Author: rennex $
 # $Log: extconf.rb,v $
+# Revision 1.16  2003/09/26 21:00:24  rennex
+# Me too, testing that is! ;)
+#
 # Revision 1.15  2003/09/26 20:52:29  tsuihark
 # testing keywords
 #
