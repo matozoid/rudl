@@ -5,7 +5,6 @@ require 'getoptlong'
 @file some.hierarchy (controls placement in files)
 @class class_name (starts or continues documenting a class, include the whole hierarchy please)
 @module module_name (starts or continues documenting a class, include the whole hierarchy please)
-@inherits hierarchy
 @section section_name (starts or continues documenting a class, include the whole hierarchy please)
 @method method_name(param,param,param) > retval
 
