@@ -1,3 +1,8 @@
+# $Log: koei.rb,v $
+# Revision 1.3  2003/10/05 10:53:20  tsuihark
+# Ready for packaging
+#
+
 require 'koei_layoutmanager.rb'
 require 'koei_default.rb'
 require 'koei_drawing.rb'

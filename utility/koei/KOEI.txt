@@ -1,0 +1,6 @@
+Koei GUI toolkit
+----------------
+
+This is an early attempt at creating a GUI toolkit. It is in no way useful,
+since it's not even near finished, but it might be a start for others to 
+create a complete kit.

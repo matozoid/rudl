@@ -1,5 +1,10 @@
 #!/usr/local/bin/ruby
 
+# $Log: koeitest.rb,v $
+# Revision 1.2  2003/10/05 10:53:20  tsuihark
+# Ready for packaging
+#
+
 require 'koei'
 include Koei
 require 'RUDL'
@@ -29,7 +34,7 @@ main_window=Window.new("Testjeuh") {
 		}
 		@p2=RaisedPanel.new
 =end
-			@labbie=Label.new("porneaux")
+			@labbie=Label.new("spam")
 	}
 	@right_panel=	LoweredPanel.new
 }

@@ -1,3 +1,8 @@
+# $Log: koei_nesting.rb,v $
+# Revision 1.2  2003/10/05 10:53:20  tsuihark
+# Ready for packaging
+#
+
 module Koei
 	$bindings=[]
 
