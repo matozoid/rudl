@@ -2,11 +2,99 @@ require 'getoptlong'
 require 'ftools'
 require 'pp'
 
+=begin
+@file Dokumentat
+@section 1. Dokumentat
+Welcome to Dokumentat, the simple documenter for Ruby C extensions.
+Created by Danny van Bruggen and Renne Nissinen.
+=end
+
+=begin
+@section 2. Why another document system?
+After using rd2 for a while, we got annoyed by the oddness of the syntax,
+the slowness of the software and the low quality of the output.
+Low quality, because the generated html we used contained no markers to
+link to, making it impossible to do cross references.
+Slow is not really an argument, but it got annoying at times. Dokumentat
+doesn't really do a lot, so it's fast.
+The syntax, with lots of ((|markers|)) and <<Weirdness|http://nu.nl>> was
+hard to remember, and looking up the right codes wasn't something we liked
+to do in the middle of programming.
+
+Rdoc, another system, is an impressive piece of software.
+However, it was specifically written for Ruby software, not the C extension
+libraries.
+It promises to document C libraries too, but we got Rdoc pretty confused with
+our macro's.
+It's a matter of taste, but we think the HTML output is painfully hard to read
+and plain ugly with all the frames and listings.
+=end
+
+=begin
+@section 3. What do we promise?
+We promise to give you a system that makes documenting your C library, 
+and optionally your Ruby source, easy.
+We mixed rd2 and javadoc, comprised a lot and came up with a simple system 
+for throwing your documentation together.
+=end
+
+=begin
+@section 4. The general idea
+You start Dokumentat by offering it all the files with documentation in them.
+They will be read, and everything starting with a start and ending with an end tag
+is seen as a seperate documentation block.
+Most blocks will start with one or more lines of classification: where the following text
+should appear, which method, which class, which file...
+The first line that is not a classification is the start of the documentation,
+it continues up to the end tag.
+
+The begin and end tags for C files are <b>/**</b> and <b>*/</b> like Javadoc.
+Lines are not supposed to start with <b>*</b> though.
+The begin and end tags for Ruby files are <b>=begin</b> and <b>=end</b>.
+Begin tags are expected to be at the start of a line. End tags may appear anywhere.
+=end
+
+=begin
+@section 5. Classification
+Every Dokumentat tag starts with @@.
+If you need the @@ itself, double it: @@@@.
+These are the classification tags: <b>@@file</b>, <b>@@section</b>, <b>@@module</b>, <b>@@class</b> and <b>@@method</b>.
+
+<b>@@file</b> specifies in which output file the rest of the documentation in the input file should be stored.
+Since it appears in the title of the output page, it should look good, like "@@file Documentation for dokumentat"
+You can use more than one <b>@@file</b> statement in one source file, and you can use the same <b>@@file</b>
+statement in multiple source files (to get the documentation from multiple files to show up in one
+output file.)
+
+<b>@@module</b> and <b>@@class</b> tell Dokumentat for which module we will encounter documentation.
+
+TODO: specify format
+
+<b>@@method</b> says that documentation for a method is coming up.
+
+TODO: specify format
+
+
+<b>@@section</b> is a way to subdivide one of the previous classifications.
+You can have sections with groups of methods, or chapters like the documentation you are
+reading now, or whatever you like.
+
+A hierarchy is built with these, a file can contain modules, sections, methods and classes,
+modules and classes can contain sections and methods, methods can contain sections, etc.
+Everything that is contained will be sorted when Dokumentat starts writing the output files.
+=end
+
+=begin
+@section 6. The documentation itself.
+
+=end
+
 def html_header(title)
 <<HEADER
 <html>
 <head>
-<title>#{title}</title>
+	<title>#{title}</title>
+	<link rel='stylesheet' title='Dokumentat' href='../dokumentat.css' media='screen,projection' />
 </head>
 <body>
 HEADER
@@ -16,9 +104,15 @@ def html_footer
 	"\n</body>\n</html>\n"
 end
 
-ARGV=['--verbose', '--project-name=rudl', '--output-dir=docs', 'dokumentat.rb', 'dokme/*.c', 'dokme/dokmetoo/*.c']
+ARGV=[
+	'--verbose',
+	'--project-name=dokumentat',
+	'--output-dir=docs',
+	'dokumentat.rb'
+]
 #ARGV=['--verbose', '--project-name=rudl', '--output-dir=docs', 'test.c']
 =begin
+@file other crap
 --- Organizing documentation:
 A hierarchy is project.class_or_module.method.parameter.
 Incompletely specified hierarchies will be completed by searching to the left
@@ -29,6 +123,7 @@ then: go through nested classes and modules, looking at methods (or class and mo
 @class class_name (starts or continues documenting a class, include the whole hierarchy please)
 @module module_name (starts or continues documenting a module, include the whole hierarchy please)
 @section section_name (starts a user defined section within the current block)
+@numbered_section section_name (starts a user defined section within the current block)
 @method method_name(param,param,param) > retval
 
 Text before the first organizational tag will be put in index.html
@@ -102,8 +197,8 @@ This class roxxorz
 $verbose=false
 $open_tag='/**'
 $close_tag='*/'
+$extras_dir=nil
 
-# Removes all 
 class Array
 	def remove_starting_at_class(cls)
 		idx=-1
@@ -168,7 +263,6 @@ class Entry
 	# If an entry (like MethodEntry) can contain more than one line (for parameter lists),
 	# this method will be called the second time and up.
 	def reenter(name)
-		puts "reenter "+name
 	end
 	
 	def <=>(other)
@@ -204,7 +298,9 @@ end
 class ProjectEntry < Entry
 	def write(output_directory)
 		children.sort.each do |child|
-				child.write(output_directory)
+			project_dir="#{output_directory}/#{@name}"
+			File.makedirs(project_dir)
+			child.write(project_dir)
 		end
 	end
 end
@@ -252,7 +348,6 @@ end
 
 class MethodEntry < Entry
 	def initialize(name)
-		puts "init #{name}"
 		@parameterlists=[]
 		super(reenter(name))
 	end
@@ -264,6 +359,7 @@ class MethodEntry < Entry
 		else
 			parameterlist=''
 		end
+		parameterlist.gsub(/->/, '&rarr;')
 		@parameterlists.push(parameterlist)
 		methodname
 	end
@@ -337,6 +433,10 @@ class Dokumentat
 		@index_file=FileEntry.new('index')
 		@root.children.push(@project)
 		@project.children.push(@index_file)
+		@matchers={
+			:c => /^\/\*\*\s*(.*?)\s*\*\//m,
+			:ruby => /^=begin\s*(.*?)\s*^=end/m
+		}
 	end
 	
 	def process_dir(source_path)
@@ -352,7 +452,18 @@ class Dokumentat
 	def process_file(file_name, path)
 		say "Processing file #{file_name}"
 		File.open(file_name, 'r') do |file|
-			file.read.scan(/\/\*\*\s*(.*?)\s*\*\//m)  do |block|
+			commentmatcher=nil
+			case file_name.downcase
+				when /\.rbw?$/
+					commentmatcher=@matchers[:ruby]
+				when /\.c?$/
+					commentmatcher=@matchers[:c]
+				else
+					say "Unknown extension"
+					return
+			end
+			
+			file.read.scan(commentmatcher)  do |block|
 				lines=block.to_s.split("\n")
 				section_mode=true
 				text=""
@@ -389,7 +500,8 @@ class Dokumentat
 						end
 					end
 				end
-				text.gsub! /@([\w?!=]*)/, '<b>\1</b>'
+				text.gsub! /([^@])@([\w?!=]*)/, '\1<b>\2</b>'
+				text.gsub! /@@/, '@'
 				path.deepest_node.add_text(text)
 			end
 		end
@@ -412,8 +524,7 @@ def main
 		["--project-name",	"-p",		GetoptLong::REQUIRED_ARGUMENT],
 		["--output-dir",	"-o",		GetoptLong::REQUIRED_ARGUMENT],
 		["--verbose",		"-v",		GetoptLong::NO_ARGUMENT ],
-		["--open-tag",		"-O",		GetoptLong::REQUIRED_ARGUMENT],
-		["--close-tag",		"-C",		GetoptLong::REQUIRED_ARGUMENT]
+		["--extras-dir",	"-e",		GetoptLong::REQUIRED_ARGUMENT]
 	)
 	project_name=nil
 	output_dir=nil
@@ -426,10 +537,8 @@ def main
 				project_name=arg
 			when '--output-dir'
 				output_dir=arg
-			when '--open-tag'
-				$open_tag=arg
-			when '--open-tag'
-				$open_tag=arg
+			when '--extras-dir'
+				$extras_dir=arg
 			else
 				raise "Unknown option: #{opt}"
 		end
