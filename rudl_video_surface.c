@@ -34,11 +34,8 @@ __inline__ SDL_Surface* retrieveSurfacePointer(VALUE self)
 __inline__ void setMasksFromBPP(Uint32 bpp, boolean alphaWanted, Uint32* Rmask, Uint32* Gmask, Uint32* Bmask, Uint32* Amask)
 {
 	*Amask = 0;
-	DEBUG_I(bpp);
-	DEBUG_I(alphaWanted);
 	if(alphaWanted && bpp==32){
 		*Rmask = 0xFF << 24; *Gmask = 0xFF << 16; *Bmask = 0xFF << 8; *Amask=0xFF;
-		DEBUG_S("alpha added");
 	}else{
 		switch(bpp){
 			case 8:  *Rmask = 0xFF >> 6 << 5; *Gmask = 0xFF >> 5 << 2; *Bmask = 0xFF >> 6; break;
@@ -156,9 +153,6 @@ VALUE surface_new(int argc, VALUE* argv, VALUE self)
 							SDL_RAISE_S("Need 4 elements in masks array");
 						}
 					}else{ // no masks
-						boolean alpha=flags&SDL_SRCALPHA>0;
-						DEBUG_I(flags&SDL_SRCALPHA>0);
-						DEBUG_I((flags&SDL_SRCALPHA)>0);
 						setMasksFromBPP(bpp, (flags&SDL_SRCALPHA)>0, &Rmask, &Gmask, &Bmask, &Amask);
 					}
 				}
