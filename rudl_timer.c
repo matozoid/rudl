@@ -18,6 +18,8 @@ void initTimer()
 == Class Methods
 --- Timer.delay( milliseconds )
 Will do nothing for ((|milliseconds|)) milliseconds.
+It is not guaranteed to be exact and has different resolution on different platforms.
+Expect a resolution of 10 to 20 milliseconds at worst.
 --- Timer.ticks
 Returns the time in milliseconds since RUDL was required.
 =end */

@@ -128,7 +128,7 @@ their existence.
 == Class and instance Methods
 --- EventQueue.get
 --- EventQueue#get
-Returns all events in the queue.
+Returns all events in the queue and removes them from the queue.
 --- EventQueue.get( eventmask )
 --- EventQueue#get( eventmask )
 Not implemented.
@@ -300,7 +300,7 @@ static VALUE eventqueue_wait(VALUE self)
 
 void initEventsClasses()
 {
-	classEventQueue=rb_define_module_under(moduleRUDL, "EventQueue");
+	classEventQueue=rb_define_class_under(moduleRUDL, "EventQueue", rb_cObject);
 	rb_define_singleton_and_instance_method(classEventQueue, "get", eventqueue_get, -1);
 	rb_define_singleton_and_instance_method(classEventQueue, "peek", eventqueue_peek, -1);
 	rb_define_singleton_and_instance_method(classEventQueue, "poll", eventqueue_poll, 0);
@@ -318,7 +318,7 @@ void initEventsClasses()
 Flushes all events from the queue.
 =end */
 	rb_eval_string(
-		"module RUDL module EventQueue				\n"
+		"module RUDL class EventQueue				\n"
 		"	def EventQueue.flush					\n"
 		"		true while EventQueue.poll			\n"
 		"	end										\n"

@@ -216,10 +216,10 @@ void dont_free(void*_)
 =begin
 --- Surface.shared_new( surface )
 This method is two things:
-1. a way to share the same bunch of data (width, height, bpp, pixeldata) 
+(1) a way to share the same bunch of data (width, height, bpp, pixeldata) 
    between two Surface objects.
    Please don't use it this way if there isn't a very good reason for it.
-2. a way to import foreign objects that wrap an SDL_Surface*.
+(2) a way to import foreign objects that wrap an SDL_Surface*.
    If that doesn't mean anything to you, please ignore this point.
    It takes the pointer from the foreign object and creates a new Surface
    that wraps it.

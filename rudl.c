@@ -206,14 +206,14 @@ Module (({RUDL})) contains all RUDL classes as inner classes.
 It has some class methods of its own too.
 == Class Methods
 --- RUDL.version and RUDL.used_libraries
-    No longer implemented, use versions instead.
+No longer implemented, use versions instead.
 --- RUDL.versions
-    Returns hash of librarynames with their versions that are supported by RUDL.
-    This list was determined when RUDL was compiled for a certain system,
-    and might change when other libraries have been installed or removed
-    and RUDL is recompiled.
-	Versions are RUDL::Version objects.
-    This includes "RUDL" itself.
+Returns hash of librarynames with their versions that are supported by RUDL.
+This list was determined when RUDL was compiled for a certain system,
+and might change when other libraries have been installed or removed
+and RUDL is recompiled.
+Versions are RUDL::Version objects.
+This includes "RUDL" itself.
 = Pit
 The (({Pit})) is where the things end up that don't fit anywhere else.
 The methods are defined where they fit best.
@@ -221,12 +221,12 @@ The methods are defined where they fit best.
 (({Version})) is the class used for version comparisons.
 It defines four version levels: major, minor, patch and deepest.
 --- Version#initialize( major=0, minor=0, patch=0, deepest=0 )
-	Initializes a new Version object.
+Initializes a new Version object.
 --- Version#<( v )
-	Compares this version number with the one in ((|v|)).
-	Returns ((|true|)) if older.
+Compares this version number with the one in ((|v|)).
+Returns ((|true|)) if older.
 --- Version#to_s
-	Returns the version as a string: "major.minor.patch.deepest"
+Returns the version as a string: "major.minor.patch.deepest"
 = SDLError
 SDLError is the class that is thrown when SDL or RUDL find an SDL-specific
 problem.

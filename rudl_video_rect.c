@@ -647,35 +647,29 @@ static VALUE rb_array_overlaps(VALUE self, VALUE otherRect)
 /*
 =begin
 --- Pit.cross_lines( a, b, c, d )
-	Returns the coordinate where lines ((|a|)) to ((|b|)) and ((|c|)) to ((|d|)) cross, 
-	an array of [x,y,x2,y2] if they are parallel and overlapping,
-	an array of [x,y] if they are parallel and touch at only one point,
-	or false if they don't cross.
-	((|a|)), ((|b|)), ((|c|)) and ((|d|)) are coordinates as always: [x,y]
+Returns the coordinate where lines ((|a|)) to ((|b|)) and ((|c|)) to ((|d|)) cross, 
+an array of [x,y,x2,y2] if they are parallel and overlapping,
+an array of [x,y] if they are parallel and touch at only one point,
+or false if they don't cross.
+((|a|)), ((|b|)), ((|c|)) and ((|d|)) are coordinates as always: [x,y]
 
-	The results may have small precision errors,
-	so don't use it to compare directly with other numbers.
+The results may have small precision errors,
+so don't use it to compare directly with other numbers.
 =end */
 
 static VALUE rb_pit_cross_lines_retval(int cross, int parallel, double x, double y, double x2, double y2)
 {
-//	DEBUG_S("---");
-//	printf("%f, %f", x, y);
 	if(cross){
-//		DEBUG_S("cross");
 		if(parallel){
-//			DEBUG_S("parallel");
 			if(x==x2 && y==y2){
 				return rb_ary_new3(2, DBL2NUM(x), DBL2NUM(y));
 			}else{
 				return rb_ary_new3(4, DBL2NUM(x), DBL2NUM(y), DBL2NUM(x2), DBL2NUM(y2));
 			}
 		}else{
-//			DEBUG_S("normal");
 			return rb_ary_new3(2, DBL2NUM(x), DBL2NUM(y));
 		}
 	}else{
-//		DEBUG_S("dont cross");
 		return Qfalse;
 	}
 }
@@ -761,12 +755,18 @@ static VALUE rb_pit_cross_lines(VALUE self, VALUE pa, VALUE pb, VALUE pc, VALUE 
 			if(pcx==pdx){ // Beide lijnen lopen verticaal
 				return rb_pit_cross_lines_retval((pax==pcx)&&!(pby<pcy || pay>pdy), true, pax, RUDL_MAX(pay, pcy), pax, RUDL_MIN(pby, pdy));
 			}else{ // alleen de eerste lijn loopt vertikaal
+				if((pcx<pax && pdx<pax)||(pcx>pax && pdx>pax)){
+					return rb_pit_cross_lines_retval(false, false, 0,0,0,0);
+				}
 				c=(pdy-pcy)/(pdx-pcx);	// de helling van de tweede lijn berkenen
 				d=pcy-c*pcx;			// het snijpunt van de tweede lijn met x=0 berekenen 
 				yk=c*pax+d;				// de y-coord van het snijpunt is dan 
 				return rb_pit_cross_lines_retval(yk>=pay && yk<=pby, false, pax, yk, 0, 0);
 			}
 		}else{ // Alleen de tweede lijn loopt verticaal
+			if((pax<pcx && pbx<pcx)||(pax>pcx && pbx>pcx)){
+				return rb_pit_cross_lines_retval(false, false, 0,0,0,0);
+			}
 			c=(pby-pay)/(pbx-pax);	// de helling van de eerste lijn berkenen
 			d=pay-c*pax;			// het snijpunt van de tweede lijn met x=0 berekenen 
 			yk=c*pcx+d;				// de y-coord van het snijpunt is dan 

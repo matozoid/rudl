@@ -5,7 +5,7 @@
 #include "SDL_mixer.h"
 
 #ifndef MIX_MAJOR_VERSION
-#error Your SDL_mixer lib is too old
+Your SDL_mixer lib is too old
 #endif
 
 // Thanks to Ruby-SDL
