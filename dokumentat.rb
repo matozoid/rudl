@@ -157,10 +157,10 @@ Output is HTML with structural tags only. You should do visual formatting with C
 # Just for testing.
 ARGV=[
 	'--verbose',
-	'--project-name=dokumentat',
-#   '--output-dir=docs',
-#	'D:/Rubyspul/rudl/*',
-	'dokumentat.rb'
+	'--project-name=RUDL',
+	'D:/Rubyspul/rudl/rudl_ttf.c',
+	'D:/Rubyspul/rudl/rudl.c'
+	#'dokumentat.rb'
 ] if ARGV.empty?
 
 #ARGV=['--verbose', '--project-name=rudl', '--output-dir=docs', 'test.c']
@@ -226,16 +226,13 @@ ul, ol li {
 SHEET
 	end
 
-	def Output.html_header(title)
-<<HEADER
-<html>
-<head>
-	<title>#{title}</title>
-	<link rel='stylesheet' title='Dokumentat' href='../#{STYLESHEET_FILENAME}' media='screen,projection,print' />
-</head>
-<body>
-
-HEADER
+	def Output.html_header(title, is_index)
+		text="<html>\n<head>\n"
+		text+="<title>#{title}</title>\n"+
+		text+="<link rel='stylesheet' title='Dokumentat' href='../#{STYLESHEET_FILENAME}' media='screen,projection,print' />\n"
+		text+="<link rel='Contents' href='index.html'>\n" if !is_index
+		text+="<link rel='Contents' href='..'>\n" if is_index
+		text+="</head>\n<body>\n"
 	end
 
 	def Output.html_footer
@@ -271,20 +268,20 @@ HEADER
 		output
 	end
 
-	def Output.format_TOC_header
-		'<h1>Index</h1>'
+	def Output.format_TOC_header(project_name)
+		"<h1>#{project_name}</h1>"
 	end
 
 	def Output.format_TOC_list(entries)
 		"<ul>\n#{entries}\n</ul>\n"
 	end
 
-	def Output.format_TOC_top_entry(name, link)
-		"<li><h3><a href='#{link}'>#{name}</a></h3></li>\n"
+	def Output.format_TOC_top_entry(target, name)
+		"<li><h3><a href='#{target}'>#{name}</a></h3></li>\n"
 	end
 
-	def Output.format_TOC_entry(name, link)
-		"<li><a href='#{link}'>#{name}</a></li>\n"
+	def Output.format_TOC_entry(target, name)
+		"<li><a href='#{target}'>#{name}</a></li>\n"
 	end
 	
 	def Output.format_start_of_normal_paragraph()
@@ -406,7 +403,7 @@ class Entry
 	end
 
 	def toc_entries
-		entries=Output::format_TOC_entry(name, link)
+		entries=Output::format_TOC_entry(link, name)
 		children.each do |child|
 			entries+=Output::format_TOC_list(child.toc_entries)
 		end
@@ -448,9 +445,9 @@ class FileEntry < Entry
 
 	def write(output_directory)
 		File.open(output_directory+'/'+to_filename, 'w') do |file|
-			file.write(Output::html_header(@name))
+			file.write(Output::html_header(@name, is_index_file?))
 			if is_index_file?
-				file.write Output::format_TOC_header
+				file.write Output::format_TOC_header(@parent.name)
 				file.write Output::format_TOC_list(top_toc_entries)
 			end
 			file.write(Output::format_text(@text))
@@ -464,7 +461,7 @@ class FileEntry < Entry
 		items=""
 		@parent.children.sort.each do |child|
 			if(child.is_a? FileEntry)&&(!child.is_index_file?)
-				items+=Output::format_TOC_top_entry(child.name, child.link)
+				items+=Output::format_TOC_top_entry(child.link, child.name)
 				items+=Output::format_TOC_list(child.toc_entries)
 			end
 		end
@@ -655,9 +652,12 @@ class Dokumentat
 								path.goto_class_level
 								path.goto(name, ModuleEntry.new(name))
 							else
-								say "Unknown section: #{line}"
+								# If a line starts with an unknown classification, it could be the start of the text block.
+								section_mode=false
 						end
-					else
+					end
+					# no else here, since mode can change in previous block.
+					if !section_mode
 						path.deepest_node.add_text(line)
 					end
 				end
