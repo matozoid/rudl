@@ -3,6 +3,9 @@ RUDL - a C library wrapping SDL for use in Ruby.
 Copyright (C) 2001, 2002, 2003  Danny van Bruggen
 
 $Log: rudl_video_display_surface.c,v $
+Revision 1.16  2003/12/01 19:14:24  rennex
+Added transparency support to set_icon
+
 Revision 1.15  2003/11/28 23:58:44  rennex
 Added set_icon, but without transparency support
 
@@ -440,18 +443,64 @@ static VALUE displaySurface_caption(VALUE self)
 /*
 =begin
 --- DisplaySurface#set_icon( iconSurface )
+--- DisplaySurface#set_icon( iconSurface, maskString )
 Sets the icon for the display window.
+
+The SDL docs say this must be called before calling DisplaySurface.new, but
+at least on Windows this is not true. This method exists also as a class method
+of DisplaySurface.
 
 Win32 icons must be 32x32.
 
-Transparent icon support will be added when there's time to figure it out !
+If the icon has a colorkey set, that color will be transparent. (Since
+SDL currently handles that wrong, RUDL generates the mask instead, unless
+you supply nil for mask.)
+Alternatively, you can supply a mask string where each byte represents
+the visibility of 8 pixels (MSB is the leftmost pixel, 0 means transparent).
 =end */
-
-static VALUE displaySurface_set_icon(VALUE self, VALUE icon)
+static VALUE displaySurface_set_icon(int argc, VALUE* argv, VALUE self)
 {
-    SDL_WM_SetIcon(retrieveSurfacePointer(icon), NULL);
+    VALUE icon, mask;
+    SDL_Surface* surface;
+    Uint8* maskstr = NULL;
+    Uint8* maskptr = NULL;
+
+    rb_scan_args(argc, argv, "11", &icon, &mask);
+
+    surface = retrieveSurfacePointer(icon);
+
+    if (argc == 2) {
+        if (mask != Qnil) maskstr = STR2CSTR(mask);
+
+    } else if (surface->flags & SDL_SRCCOLORKEY) {
+        Sint16 x, y, xb;
+        Uint8 bit, b;
+        int wb = (surface->w + 7) / 8;
+        Uint32 key = surface->format->colorkey;
+
+        maskptr = maskstr = ALLOCA_N(Uint8, wb * surface->h);
+
+        for (y=0; y < surface->h; y++) {
+            x = 0;
+            for (xb=0; xb < wb; xb++) {
+                b = 0;
+                for (bit=0x80; bit; bit >>= 1) {
+                    if (internal_get(surface, x, y) != key) {
+                        b |= bit;
+                    }
+                    x++;
+                }
+                *maskptr++ = b;
+            }
+        }
+    }
+
+    SDL_WM_SetIcon(surface, maskstr);
+
     return Qnil;
 }
+
+
 
 /*
 =begin
@@ -681,6 +730,7 @@ void initVideoDisplaySurfaceClasses()
     rb_define_singleton_method(classDisplaySurface, "best_mode_info", displaySurface_best_mode_info, 0);
     rb_define_singleton_method(classDisplaySurface, "gl_set_attribute", displaySurface_gl_set_attribute, 2);
     rb_define_singleton_method(classDisplaySurface, "gl_get_attribute", displaySurface_gl_get_attribute, 1);
+    rb_define_singleton_method(classDisplaySurface, "set_icon", displaySurface_set_icon, -1);
     rb_define_method(classDisplaySurface, "driver", displaySurface_driver, 0);
     rb_define_method(classDisplaySurface, "info", displaySurface_info, 0);
     rb_define_method(classDisplaySurface, "update", displaySurface_update, -1);
@@ -689,7 +739,7 @@ void initVideoDisplaySurfaceClasses()
     rb_define_method(classDisplaySurface, "caption", displaySurface_caption, 0);
     rb_define_method(classDisplaySurface, "iconify", displaySurface_iconify, 0);
     rb_define_method(classDisplaySurface, "set_caption", displaySurface_set_caption, -1);
-    rb_define_method(classDisplaySurface, "set_icon", displaySurface_set_icon, 1);
+    rb_define_method(classDisplaySurface, "set_icon", displaySurface_set_icon, -1);
     rb_define_method(classDisplaySurface, "gamma=", displaySurface_gamma_, 1);
     rb_define_method(classDisplaySurface, "toggle_fullscreen", displaySurface_toggle_fullscreen, 0);
     rb_define_method(classDisplaySurface, "destroy", displaySurface_destroy, 0);
