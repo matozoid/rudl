@@ -59,11 +59,15 @@ Simple means: not all BMP files can be loaded.</p>
 <dl>
 <dt><a name="label:10" id="label:10"><code>Surface.shared_new( <var>surface</var> )</code></a><!-- RDLabel: "Surface.shared_new" -->
 </dl>
-<p>This method is two things:
-1. a way to share the same bunch of data (width, height, bpp, pixeldata) </p>
+<p>This method is two things:</p>
+<ol>
+<li>a way to share the same bunch of data (width, height, bpp, pixeldata) </li>
+</ol>
 <pre>between two Surface objects.
 Please don't use it this way if there isn't a very good reason for it.</pre>
-<p>2. a way to import foreign objects that wrap an SDL_Surface*.</p>
+<ol>
+<li>a way to import foreign objects that wrap an SDL_Surface*.</li>
+</ol>
 <pre>If that doesn't mean anything to you, please ignore this point.
 It takes the pointer from the foreign object and creates a new Surface
 that wraps it.

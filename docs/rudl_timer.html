@@ -15,7 +15,9 @@
 <dl>
 <dt><a name="label:2" id="label:2"><code>Timer.delay( <var>milliseconds</var> )</code></a><!-- RDLabel: "Timer.delay" -->
 </dl>
-<p>Will do nothing for <var>milliseconds</var> milliseconds.</p>
+<p>Will do nothing for <var>milliseconds</var> milliseconds.
+It is not guaranteed to be exact and has different resolution on different platforms.
+Expect a resolution of 10 to 20 milliseconds at worst.</p>
 <dl>
 <dt><a name="label:3" id="label:3"><code>Timer.ticks</code></a><!-- RDLabel: "Timer.ticks" -->
 </dl>
