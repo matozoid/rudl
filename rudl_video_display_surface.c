@@ -3,6 +3,10 @@ RUDL - a C library wrapping SDL for use in Ruby.
 Copyright (C) 2001, 2002, 2003  Danny van Bruggen
 
 $Log: rudl_video_display_surface.c,v $
+Revision 1.21  2004/01/04 19:48:45  rennex
+Added automatic fixing of window clipping after a resize.
+Changed default window title to "RUDL window"
+
 Revision 1.20  2003/12/23 01:29:30  rennex
 Tweaked docs
 
@@ -68,7 +72,7 @@ static VALUE displaySurface_new(int argc, VALUE* argv, VALUE self)
 {
     SDL_Surface* surf;
     Uint32 flags = SDL_SWSURFACE;
-    int depth = 0, hasbuf;
+    int depth = 0, hasbuf, numargs;
     Sint16 w=0, h=0;
     char* title, *icontitle;
 
@@ -76,44 +80,51 @@ static VALUE displaySurface_new(int argc, VALUE* argv, VALUE self)
 
     initVideo();
 
-    switch(rb_scan_args(argc, argv, "12", &vsize, &vflags, &vdepth)){
-        case 3: depth=NUM2INT(vdepth);
-        case 2: flags=PARAMETER2FLAGS(vflags);
+    switch (numargs = rb_scan_args(argc, argv, "12", &vsize, &vflags, &vdepth)) {
+        case 3: depth = NUM2INT(vdepth);
+        case 2: flags = PARAMETER2FLAGS(vflags);
     }
 
     PARAMETER2COORD(vsize, &w, &h);
 
-    if(flags&SDL_OPENGL){
-        if(flags&SDL_DOUBLEBUF){
-            flags&=~SDL_DOUBLEBUF;
+    /* store parameters for re-setting video mode after a resize event */
+    currDSnumargs = numargs;
+    currDSflags = vflags;
+    currDSdepth = vdepth;
+
+    if (flags & SDL_OPENGL) {
+        if (flags & SDL_DOUBLEBUF) {
+            flags &= ~SDL_DOUBLEBUF;
             SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-        }else{
+        } else {
             SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 0);
         }
-        if(argc>2){
+        if (argc > 2) {
             SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, depth);
         }
         surf = SDL_SetVideoMode(w, h, depth, flags);
 
-        if(!surf) SDL_RAISE;
+        if (!surf) SDL_RAISE;
 
         SDL_GL_GetAttribute(SDL_GL_DOUBLEBUFFER, &hasbuf);
-        if(hasbuf) surf->flags|=SDL_DOUBLEBUF;
-    }else{
-        if(argc<3) flags |= SDL_ANYFORMAT;
+        if (hasbuf) surf->flags |= SDL_DOUBLEBUF;
+    } else {
+        if (argc < 3) flags |= SDL_ANYFORMAT;
 
         surf = SDL_SetVideoMode(w, h, depth, flags);
 
-        if(!surf) SDL_RAISE;
+        if (!surf) SDL_RAISE;
     }
 
     SDL_WM_GetCaption(&title, &icontitle);
     SDL_PumpEvents();
-    if(!title || !*title){
-        SDL_WM_SetCaption("SDL window", "SDL");
+    /* don't change the title if this was a call to resize the window! */
+    if (!title || !*title) {
+        SDL_WM_SetCaption("RUDL window", "RUDL");
     }
 
-    return Data_Wrap_Struct(classDisplaySurface, 0, 0, surf);
+    currentDisplaySurface = Data_Wrap_Struct(classDisplaySurface, 0, 0, surf);
+    return currentDisplaySurface;
 }
 
 /*
