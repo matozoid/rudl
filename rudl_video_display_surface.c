@@ -3,6 +3,9 @@ RUDL - a C library wrapping SDL for use in Ruby.
 Copyright (C) 2001, 2002, 2003  Danny van Bruggen
 
 $Log: rudl_video_display_surface.c,v $
+Revision 1.18  2003/12/01 23:30:27  rennex
+Added mask_string size check in set_icon
+
 Revision 1.17  2003/12/01 22:36:49  rennex
 Fixed some typos in docs
 
@@ -466,15 +469,20 @@ static VALUE displaySurface_set_icon(int argc, VALUE* argv, VALUE self)
 
     surface = retrieveSurfacePointer(icon);
 
+    /* custom mask supplied? */
     if (argc == 2) {
-        if (mask != Qnil) maskstr = STR2CSTR(mask);
-
+        if (mask != Qnil) {
+            RUDL_VERIFY(RSTRING(mask)->len >= surface->h*((surface->w + 7)/8), "Not enough data in mask_string");
+            maskstr = STR2CSTR(mask);
+        }
+    /* colorkey set? generate a working mask, unlike SDL currently :) */
     } else if (surface->flags & SDL_SRCCOLORKEY) {
         Sint16 x, y, xb;
         Uint8 bit, b;
         int wb = (surface->w + 7) / 8;
         Uint32 key = surface->format->colorkey;
 
+        /* get memory for the mask. gets freed when we exit this function */
         maskptr = maskstr = ALLOCA_N(Uint8, wb * surface->h);
 
         for (y=0; y < surface->h; y++) {
@@ -727,7 +735,7 @@ void initVideoDisplaySurfaceClasses()
     rb_define_singleton_method(classDisplaySurface, "best_mode_info", displaySurface_best_mode_info, 0);
     rb_define_singleton_method(classDisplaySurface, "gl_set_attribute", displaySurface_gl_set_attribute, 2);
     rb_define_singleton_method(classDisplaySurface, "gl_get_attribute", displaySurface_gl_get_attribute, 1);
-    rb_define_singleton_method(classDisplaySurface, "set_icon", displaySurface_set_icon, -1);
+    rb_define_singleton_and_instance_method(classDisplaySurface, "set_icon", displaySurface_set_icon, -1);
     rb_define_method(classDisplaySurface, "driver", displaySurface_driver, 0);
     rb_define_method(classDisplaySurface, "info", displaySurface_info, 0);
     rb_define_method(classDisplaySurface, "update", displaySurface_update, -1);
@@ -736,7 +744,6 @@ void initVideoDisplaySurfaceClasses()
     rb_define_method(classDisplaySurface, "caption", displaySurface_caption, 0);
     rb_define_method(classDisplaySurface, "iconify", displaySurface_iconify, 0);
     rb_define_method(classDisplaySurface, "set_caption", displaySurface_set_caption, -1);
-    rb_define_method(classDisplaySurface, "set_icon", displaySurface_set_icon, -1);
     rb_define_method(classDisplaySurface, "gamma=", displaySurface_gamma_, 1);
     rb_define_method(classDisplaySurface, "toggle_fullscreen", displaySurface_toggle_fullscreen, 0);
     rb_define_method(classDisplaySurface, "destroy", displaySurface_destroy, 0);
