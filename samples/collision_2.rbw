@@ -2,6 +2,10 @@
 #-- collision.cpp sample, adapted for RUDL's Bitmask.
 #--                  [- nauglin -]
 
+# (modified by rennex: changed bad EventQueue practice,
+# removed invalid [0,0,0,0] mask from Surface.new, changed
+# exit procedure to something more logical & eliminated busy loop)
+
 require 'RUDL'; include RUDL; include Constant
 
 screen = DisplaySurface.new( [640,480], SWSURFACE, 16 )
@@ -10,7 +14,7 @@ screen.set_caption( 'Collision', 'collision' )
 screen.fill( 0 )
 
 #-- THE BUFFER FOR THE BALL
-img1 = Surface.new( [30,30], SWSURFACE|SRCCOLORKEY, 16, [0,0,0,0] )
+img1 = Surface.new( [30,30], SWSURFACE|SRCCOLORKEY, 16 )
 img1.fill( 0 )
 img1.filled_circle( [15,15], 14, [150,200,50] )
 img1.set_colorkey( 0, SRCCOLORKEY|RLEACCEL )
@@ -35,7 +39,7 @@ buffer.unset_colorkey
 
 
 #-- If the delay between two PollEvent is greater than 100 and all events are added to the
-#-- event queue, the queue will grow *fast*. You're program will have no change to catch
+#-- event queue, the queue will grow *fast*. You're program will have no chance to catch
 #-- up. You *must* try to avoid adding events unnecessarily - mousemotions for example.
 #-- SDL_EventState(SDL_MOUSEMOTION,SDL_IGNORE);
 # EventQueue.blocked = MouseMotionEvent
@@ -113,12 +117,20 @@ while true
         loops+=1
 
         #-- CHECK EVENTS
-        event = EventQueue.poll
-        break if event.class==KeyDownEvent or event.class==QuitEvent
+        EventQueue.get.each do |event|
+            case event
+                when KeyDownEvent, QuitEvent
+                    #-- PRINT FPS
+                    tstart = Timer.ticks - tstart
+                    screen.print( [10,10], "#{ (loops*1000.0)/tstart } FPS (target: 100)", [255,255,0] )
+                    screen.flip
+
+                    # wait for a keypress or window close event, then exit
+                    while true
+                        ev = EventQueue.wait
+                        exit if ev.is_a? KeyDownEvent or ev.is_a? QuitEvent
+                    end
+            end
+        end
 end
 
-#-- PRINT FPS
-tstart = Timer.ticks - tstart
-screen.print( [10,10], "#{ (loops*1000.0)/tstart } FPS (target: 100)", [255,255,0] )
-screen.flip
-true until EventQueue.poll.class == KeyUpEvent
