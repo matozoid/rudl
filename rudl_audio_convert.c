@@ -1,7 +1,7 @@
-/*
-	File copied to RUDL to enable bugfixing
-*/
-
+/*
+	File copied to RUDL to enable bugfixing
+*/
+
 /*
     SDL - Simple DirectMedia Layer
     Copyright (C) 1997, 1998, 1999, 2000, 2001, 2002  Sam Lantinga
@@ -27,19 +27,19 @@
 /* Functions for audio drivers to perform runtime conversion of audio cvt->format */
 
 #include <stdio.h>
-
+
 #include "rudl.h"
 #include "SDL_error.h"
 #include "SDL_audio.h"
-
-typedef struct rudl_audio_conversion_info {
-	Uint16 format;		// Source audio cvt->format
-	Uint16 dst_format;		// Target audio cvt->format
-	double rate_incr;		// Rate conversion increment
-	Uint8 *buf;				// Buffer to hold entire audio data
-	int    len;				// Length of current audio buffer
-} rudl_audio_conversion_info;
-
+
+typedef struct rudl_audio_conversion_info {
+	Uint16 format;		// Source audio cvt->format
+	Uint16 dst_format;		// Target audio cvt->format
+	double rate_incr;		// Rate conversion increment
+	Uint8 *buf;				// Buffer to hold entire audio data
+	int    len;				// Length of current audio buffer
+} rudl_audio_conversion_info;
+
 // Effectively mix right and left channels into a single channel
 void rudl_convert_stereo_to_mono(rudl_audio_conversion_info *cvt)
 {
@@ -459,30 +459,30 @@ void rudl_resample(rudl_audio_conversion_info *cvt)
 	}
 	cvt->len = clen;
 }
-
-int rudl_convert_audio(
-		Uint8* source, int source_length,
+
+int rudl_convert_audio(
+		Uint8* source, int source_length,
 		Uint8** destination, int* destination_length,
 		Uint16 src_format, Uint8 src_channels, int src_rate,
 		Uint16 dst_format, Uint8 dst_channels, int dst_rate)
-{
-	rudl_audio_conversion_info cvt;
-
-	RUDL_ASSERT( src_channels>0, "source channels set to 0 or less" );
-	RUDL_ASSERT( dst_channels>0, "destination channels set to 0 or less" );
-	RUDL_ASSERT( src_rate>0, "source samplerate set to 0 or less" );
-	RUDL_ASSERT( dst_rate>0, "destination samplerate set to 0 or less" );
-	RUDL_ASSERT( src_channels<=4, "more than four source channels specified" );
-	RUDL_ASSERT( dst_channels<=4, "more than four destination channels specified" );
-
-	cvt.format = src_format;
-	cvt.dst_format = dst_format;
-	cvt.len = source_length;
-	cvt.buf=(Uint8*)malloc(8* ((double)dst_rate/src_rate) *source_length);
-	memcpy(cvt.buf, source, source_length);
+{
+	rudl_audio_conversion_info cvt;
+
+	RUDL_ASSERT( src_channels>0, "source channels set to 0 or less" );
+	RUDL_ASSERT( dst_channels>0, "destination channels set to 0 or less" );
+	RUDL_ASSERT( src_rate>0, "source samplerate set to 0 or less" );
+	RUDL_ASSERT( dst_rate>0, "destination samplerate set to 0 or less" );
+	RUDL_ASSERT( src_channels<=4, "more than four source channels specified" );
+	RUDL_ASSERT( dst_channels<=4, "more than four destination channels specified" );
+
+	cvt.format = src_format;
+	cvt.dst_format = dst_format;
+	cvt.len = source_length;
+	cvt.buf=(Uint8*)malloc(8* ((double)dst_rate/src_rate) *source_length);
+	memcpy(cvt.buf, source, source_length);
 
 	// First filter:  Endian conversion from src to dst
-	if ( (cvt.format & 0x1000) != (dst_format & 0x1000)
+	if ( (cvt.format & 0x1000) != (dst_format & 0x1000)
 		&& ((cvt.format & 0xff) != 8) ) {
 		rudl_convert_endian(&cvt);
 	}
@@ -576,7 +576,7 @@ int rudl_convert_audio(
 		}
 	}
 
-	*destination=cvt.buf;
-	*destination_length=cvt.len;
+	*destination=cvt.buf;
+	*destination_length=cvt.len;
 	return 1;
 }

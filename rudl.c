@@ -10,7 +10,7 @@
 #include "rudl_sfont.h"
 #include "rudl_timer.h"
 #include "rudl_ttf.h"
-#include "rudl_video.h"
+#include "rudl_video.h"
 
 // For getting versions:
 #ifdef HAVE_SDL_MIXER_H
@@ -69,14 +69,14 @@ void initSDL()
 }
 
 static VALUE RUDL_at_exit(VALUE obj)
-{
+{
 	DEBUG_S("Reached RUDL_at_exit");
 	quitJoystick();
 #ifdef HAVE_SDL_MIXER_H
 	quitAudio();
-#endif
+#endif
 	quitVideo();
-	quitTTF();
+	quitTTF();
 	DEBUG_S("Quitting the rest of it");
 	SDL_Quit();
 	return Qnil;
@@ -85,15 +85,15 @@ static VALUE RUDL_at_exit(VALUE obj)
 __inline__ Uint32 PARAMETER2FLAGS(VALUE flagsArg)
 {
 	Uint32 flags=0;
-	int i;
+	int i;
 	VALUE tmp;
 
 	if(rb_obj_is_kind_of(flagsArg, rb_cArray)){
-		for(i=0; i<RARRAY(flagsArg)->len; i++){
+		for(i=0; i<RARRAY(flagsArg)->len; i++){
 			tmp=rb_ary_entry(flagsArg, i);
 			flags|=NUM2UINT(tmp);
 		}
-	}else{
+	}else{
 		flags=NUM2UINT(flagsArg);
 	}
 	return flags;
@@ -132,9 +132,9 @@ static VALUE RUDL_versions(VALUE self)
 {
 	char versions[8192]; // Ugh
 	sprintf(versions, "{"
-		"'RUDL'=>RUDL::Version.new(%i,%i,%i),\n"
-		"'SDL'=>RUDL::Version.new(%i,%i,%i),\n"
-		"'BitMask'=>RUDL::Version.new,\n"
+		"'RUDL'=>RUDL::Version.new(%i,%i,%i),\n"
+		"'SDL'=>RUDL::Version.new(%i,%i,%i),\n"
+		"'BitMask'=>RUDL::Version.new,\n"
 #ifdef HAVE_SDL_IMAGE_H
 		"'SDL_image'=>RUDL::Version.new,\n"
 #endif
@@ -143,7 +143,7 @@ static VALUE RUDL_versions(VALUE self)
 #endif
 #ifdef HAVE_SDL_TTF_H
 		"'SDL_ttf'=>RUDL::Version.new,\n"
-#endif
+#endif
 #ifdef HAVE_SDL_GFXPRIMITIVES_H
 		"'SDL_gfxPrimitives'=>RUDL::Version.new(%i, %i),\n"
 #endif
@@ -162,12 +162,12 @@ static VALUE RUDL_versions(VALUE self)
 	"}"
 
 	,RUDLVERSION_MAJOR, RUDLVERSION_MINOR, RUDLVERSION_PATCH
-	,SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_PATCHLEVEL
-	// no version info (BitMask)
-#ifdef HAVE_SDL_IMAGE_H
+	,SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_PATCHLEVEL
+	// no version info (BitMask)
+#ifdef HAVE_SDL_IMAGE_H
 	// no version info
 #endif
-#ifdef HAVE_SDL_MIXER_H
+#ifdef HAVE_SDL_MIXER_H
 	,MIX_MAJOR_VERSION ,MIX_MINOR_VERSION
 #endif
 #ifdef HAVE_SDL_TTF_H
@@ -208,32 +208,32 @@ It has some class methods of its own too.
     Returns hash of librarynames with their versions that are supported by RUDL.
     This list was determined when RUDL was compiled for a certain system,
     and might change when other libraries have been installed or removed
-    and RUDL is recompiled.
-	Versions are RUDL::Version objects.
-    This includes "RUDL" itself.
-= Version
-(({Version})) is the class used for version comparisons.
-It defines four version levels: major, minor, patch and deepest.
---- Version#initialize( major=0, minor=0, patch=0, deepest=0 )
-Initializes a new Version object.
---- Version#<( v )
-Compares this version number with the one in ((|v|)).
-Returns ((|true|)) if older.
---- Version#to_s
+    and RUDL is recompiled.
+	Versions are RUDL::Version objects.
+    This includes "RUDL" itself.
+= Version
+(({Version})) is the class used for version comparisons.
+It defines four version levels: major, minor, patch and deepest.
+--- Version#initialize( major=0, minor=0, patch=0, deepest=0 )
+Initializes a new Version object.
+--- Version#<( v )
+Compares this version number with the one in ((|v|)).
+Returns ((|true|)) if older.
+--- Version#to_s
 Returns the version as a string: "major.minor.patch.deepest"
 = SDLError
 SDLError is the class that is thrown when SDL or RUDL find an SDL-specific
 problem.
 = Constants
-All for the hacked ((|init_subsystem|)) and ((|quit_subsystem|)),
+All for the hacked ((|init_subsystem|)) and ((|quit_subsystem|)),
 which should officially never be needed:
 
 INIT_TIMER, INIT_AUDIO, INIT_VIDEO, INIT_CDROM, INIT_JOYSTICK, INIT_NOPARACHUTE, INIT_EVERYTHING
 =end */
 
 DECKLSPECKL void Init_RUDL()
-{
-	DEBUG_S("Init_RUDL()");
+{
+	DEBUG_S("Init_RUDL()");
 	moduleRUDL=rb_define_module("RUDL");
 
 	rb_define_singleton_method(moduleRUDL, "at_exit", RUDL_at_exit, 0);
@@ -243,31 +243,31 @@ DECKLSPECKL void Init_RUDL()
 	rb_define_singleton_method(moduleRUDL, "versions", RUDL_versions, 0);
 
 	classSDLError=rb_define_class("SDLError", rb_eStandardError);
-	moduleConstant=rb_define_module_under(moduleRUDL, "Constant");
-
-	rb_eval_string(
-		"module RUDL\n"
-		"	class Version\n"
-		"		attr_accessor :major, :minor, :patch, :deepest\n"
-		"		def <(v)\n"
-		"			(@major<v.major) or\n"
-		"			(@major==v.major and @minor<v.minor) or\n"
-		"			(@major==v.major and @minor==v.minor and @patch<v.patch) or\n"
-		"			(@major==v.major and @minor==v.minor and @patch==v.patch and @deepest<v.deepest)\n"
-		"		end\n"
-		"		def initialize(major=0, minor=0, patch=0, deepest=0)\n"
-		"			@major=major\n"
-		"			@minor=minor\n"
-		"			@patch=patch\n"
-		"			@deepest=deepest\n"
-		"		end\n"
-		"		def to_s\n"
-		"			\"#{major}.#{minor}.#{patch}.#{deepest}\"\n"
-		"		end\n"
-		"	end\n"
-		"end\n"
-	);
-
+	moduleConstant=rb_define_module_under(moduleRUDL, "Constant");
+
+	rb_eval_string(
+		"module RUDL\n"
+		"	class Version\n"
+		"		attr_accessor :major, :minor, :patch, :deepest\n"
+		"		def <(v)\n"
+		"			(@major<v.major) or\n"
+		"			(@major==v.major and @minor<v.minor) or\n"
+		"			(@major==v.major and @minor==v.minor and @patch<v.patch) or\n"
+		"			(@major==v.major and @minor==v.minor and @patch==v.patch and @deepest<v.deepest)\n"
+		"		end\n"
+		"		def initialize(major=0, minor=0, patch=0, deepest=0)\n"
+		"			@major=major\n"
+		"			@minor=minor\n"
+		"			@patch=patch\n"
+		"			@deepest=deepest\n"
+		"		end\n"
+		"		def to_s\n"
+		"			\"#{major}.#{minor}.#{patch}.#{deepest}\"\n"
+		"		end\n"
+		"	end\n"
+		"end\n"
+	);
+
 
 	id_begin=rb_intern("begin");
 	id_end=rb_intern("end");
@@ -291,23 +291,23 @@ DECKLSPECKL void Init_RUDL()
 	initVideoClasses();
 	initSFontClasses();
 	initOverlay();
-	initSDL();
+	initSDL();
 }
-
-/*
-Note to self: RDOC tags
-= H1
-== H2
-=== H3
-==== H4
-+ H5
-  (indented) SOURCE
-* UL LI
-(1) OL LI
---- Class#|.method
-((|var|))
-(({class}))
-((*emphasis*))
-((< >))
-((<URL:http://enz>))
-*/
+
+/*
+Note to self: RDOC tags
+= H1
+== H2
+=== H3
+==== H4
++ H5
+  (indented) SOURCE
+* UL LI
+(1) OL LI
+--- Class#|.method
+((|var|))
+(({class}))
+((*emphasis*))
+((< >))
+((<URL:http://enz>))
+*/

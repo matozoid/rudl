@@ -5,14 +5,14 @@
 
 /*
 =begin
-<<< docs/head
-= Mouse
-The mouse class methods can also be used as instance methods once you
-instantiate the class. However, there is no need to do that, it's just
+<<< docs/head
+= Mouse
+The mouse class methods can also be used as instance methods once you
+instantiate the class. However, there is no need to do that, it's just
 for convenience.
 == Class and instance Methods
---- Mouse.focused?
---- Mouse#focused?
+--- Mouse.focused?
+--- Mouse#focused?
 Returns true when the application is receiving the mouse input focus.
 =end */
 static VALUE mouse_focused_(VALUE self)
@@ -22,8 +22,8 @@ static VALUE mouse_focused_(VALUE self)
 }
 /*
 =begin
---- Mouse.pos
---- Mouse#pos
+--- Mouse.pos
+--- Mouse#pos
 Returns the current position of the mouse cursor.
 This is the absolute mouse position inside your game window.
 =end */
@@ -38,8 +38,8 @@ static VALUE mouse_pos(VALUE self)
 }
 /*
 =begin
---- Mouse.pressed?
---- Mouse#pressed?
+--- Mouse.pressed?
+--- Mouse#pressed?
 This will return an array containing the pressed state of each mouse button.
 =end */
 static VALUE mouse_pressed_(VALUE self)
@@ -53,8 +53,8 @@ static VALUE mouse_pressed_(VALUE self)
 }
 /*
 =begin
---- Mouse.rel
---- Mouse#rel
+--- Mouse.rel
+--- Mouse#rel
 Returns the total distance the mouse has moved since your last call to ((<Mouse.rel>)).
 On the first call to get_rel the movement will always be 0,0.
 When the mouse is at the edges of the screen, the relative movement will be stopped.
@@ -71,8 +71,8 @@ static VALUE mouse_rel(VALUE self)
 }
 /*
 =begin
---- Mouse.pos=( pos )
---- Mouse#pos=( pos )
+--- Mouse.pos=( pos )
+--- Mouse#pos=( pos )
 Moves the mouse cursor to the specified position.
 This will generate a MouseMotionEvent on the input queue.
 =end */
@@ -86,8 +86,8 @@ static VALUE mouse_set_pos(VALUE self, VALUE pos)
 }
 /*
 =begin
---- Mouse.visible=( onOrOff )
---- Mouse#visible=( onOrOff )
+--- Mouse.visible=( onOrOff )
+--- Mouse#visible=( onOrOff )
 Shows or hides the mouse cursor.
 This will return the previous visible state of the mouse cursor.
 
@@ -105,8 +105,8 @@ static VALUE mouse_set_visible(VALUE self, VALUE yes)
 
 /*
 =begin
---- Mouse.set_cursor( hotspot, xormasks, andmasks )
---- Mouse#get_cursor( hotspot, xormasks, andmasks )
+--- Mouse.set_cursor( hotspot, xormasks, andmasks )
+--- Mouse#get_cursor( hotspot, xormasks, andmasks )
 When the mouse cursor is visible, it will be displayed as a black and white bitmap 
 using the given bitmask arrays.
 Hotspot is an array containing the cursor hotspot position.
@@ -121,7 +121,7 @@ static VALUE mouse_set_cursor(VALUE self, VALUE hotspot, VALUE xormasks, VALUE a
 	int x, y;
 	SDL_Cursor *lastcursor, *cursor = NULL;
 	Uint8 *xordata=NULL, *anddata=NULL;
-	Sint16 spotx, spoty;
+	Sint16 spotx, spoty;
 	VALUE tmp;
 
 	initVideo();
@@ -140,9 +140,9 @@ static VALUE mouse_set_cursor(VALUE self, VALUE hotspot, VALUE xormasks, VALUE a
 	anddata = (Uint8*)malloc(sx*sy);
 
 	for(y=0; y<sy; y++){
-		for(x=0; x<sx; x++){
+		for(x=0; x<sx; x++){
 			tmp=rb_ary_entry(rb_ary_entry(xormasks, y), x);
-			xordata[y*sx+x]=(Uint8)NUM2UINT(tmp);
+			xordata[y*sx+x]=(Uint8)NUM2UINT(tmp);
 			tmp=rb_ary_entry(rb_ary_entry(andmasks, y), x);
 			anddata[y*sx+x]=(Uint8)NUM2UINT(tmp);
 		}
@@ -162,7 +162,7 @@ static VALUE mouse_set_cursor(VALUE self, VALUE hotspot, VALUE xormasks, VALUE a
 }
 
 void initMouseClasses()
-{
+{
 	classMouse=rb_define_module_under(moduleRUDL, "Mouse");
 	//rb_define_singleton_method(classMouse, "cursor", mouse_cursor, 0);
 	rb_define_singleton_and_instance_method(classMouse, "set_cursor", mouse_set_cursor, 3);
@@ -210,5 +210,5 @@ The number of the button that was pressed.
 =end */
 	classMouseButtonDownEvent=rb_define_class_under(moduleRUDL, "MouseButtonDownEvent", classEvent);
 	rb_define_attr(classMouseButtonDownEvent, "pos", 1, 1);
-	rb_define_attr(classMouseButtonDownEvent, "button", 1, 1);
+	rb_define_attr(classMouseButtonDownEvent, "button", 1, 1);
 }
