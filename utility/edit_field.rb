@@ -2,22 +2,24 @@ module RUDL
 	class EditField
 		include Constant
 
-		attr_accessor :cursor_pos, :content, :max_length, :blink_timer, :cursor_visible
-		attr_accessor :foreground_color, :background_color
+		attr_accessor :cursor_pos, :content, :max_length, :blink_timer, :cursor_visible, :enabled
+		attr_accessor :foreground_color, :background_color, :disabled_color
 		attr_reader :area, :enter_given, :escape_given
 
-		def initialize(area, foreground_color=[255,255,255], background_color=[0,0,0], transparant=true, max_length=nil)
+		def initialize(area, foreground_color=[255,255,255], selected_color=[255,255,255], disabled_color=[127,127,127], background_color=[0,0,0], transparant=true, max_length=nil)
 			@area=area
 			@max_length=max_length
 			@text_surface=Surface.new [@area.w, @area.h]
 			@cursor_visible=true
-			set_colors(foreground_color, background_color, transparant)
+			@enabled=true
+			set_colors(foreground_color, background_color, disabled_color, transparant)
 			clear
 		end
 
-		def set_colors(foreground_color, background_color, transparant)
+		def set_colors(foreground_color, background_color, disabled_color, transparant)
 			@foreground_color=foreground_color
 			@background_color=background_color
+			@disabled_color=disabled_color
 			@text_surface.set_colorkey(@background_color) if transparant
 		end
 
@@ -80,7 +82,7 @@ module RUDL
 		end
 
 		def cursor_goto_xy(coordinate)
-			if @area.contains(coordinate)
+			if @area.contains?(coordinate)
 				offset=coordinate[0]-@area.x
 				new_pos=0
 				while offset>0 && new_pos<@content.length
@@ -138,12 +140,13 @@ module RUDL
 			@blink_timer=Timer.ticks
 		end
 
-		def draw(surface)
+		def draw(surface, area=nil)
+			@area=area if area
 			@text_surface.fill @background_color
 			draw_text
 			cursor_x=0
 			cursor_x=compute_string_length(@content[0..@cursor_pos-1]) if @cursor_pos>0
-			draw_cursor(cursor_x) if @cursor_visible
+			draw_cursor(cursor_x) if @cursor_visible && @enabled
 			surface.blit @text_surface, @area
 		end
 
@@ -166,7 +169,11 @@ module RUDL
 		end
 
 		def draw_text
-			@text_surface.print [0,0], @content, @foreground_color
+			if @enabled
+				@text_surface.print [0,0], @content, @foreground_color
+			else
+				@text_surface.print [0,0], @content, @disabled_color
+			end
 		end
 
 		def draw_cursor(x)
@@ -225,7 +232,7 @@ module RUDL
 		end
 
 		def compute_character_size(character)
-			@font.size(character)[0]
+			@font.size(character.chr)[0]
 		end
 
 		def room_for_character?(character)
@@ -238,7 +245,11 @@ module RUDL
 
 		def draw_text
 			if @content.length>0
-				@text_surface.blit(@font.render(@content, true, @foreground_color, @background_color), [0,0])
+				if @enabled
+					@text_surface.blit(@font.render(@content, true, @foreground_color, @background_color), [0,0])
+				else
+					@text_surface.blit(@font.render(@content, true, @disabled_color, @background_color), [0,0])
+				end
 			end
 		end
 
