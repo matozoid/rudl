@@ -59,7 +59,7 @@ module Koei
 		def initialize(*args, &init)
 			super
 			on_mouse_down.add(proc {find_root.focused_element=(self)})
-			on_key_down.add(method :handle_shortcuts)
+			on_key_down.add method(:handle_shortcuts)
 		end
 
 		def handle_shortcuts(sym, mod)
@@ -141,12 +141,12 @@ module Koei
 
 		def initialize(*args, &init)
 			super
-			on_mouse_down.add method :drag_mousedown
-			on_mouse_up.add method :drag_mouseup
-			on_mouse_move.add method :drag_mousemove
-			on_dragging.add method :dragging
-			on_drag_end.add method :drag_end
-			on_drag_start.add method :drag_start
+			on_mouse_down.add method(:drag_mousedown)
+			on_mouse_up.add method(:drag_mouseup)
+			on_mouse_move.add method(:drag_mousemove)
+			on_dragging.add method(:dragging)
+			on_drag_end.add method(:drag_end)
+			on_drag_start.add method(:drag_start)
 		end
 	end
 
@@ -207,9 +207,9 @@ module Koei
 
 		def initialize(*args, &init)
 			super
-			on_mouse_down.add method :click_mousedown
-			on_mouse_up.add method :click_mouseup
-			on_mouse_move.add method :click_mousemove
+			on_mouse_down.add method(:click_mousedown)
+			on_mouse_up.add method(:click_mouseup)
+			on_mouse_move.add method(:click_mousemove)
 		end
 	end
 
@@ -453,7 +453,7 @@ module Koei
 
 		def pre_user_elements
 			super true
-			on_switch_pushed_look.add method :switch_pushed_look
+			on_switch_pushed_look.add method(:switch_pushed_look)
 		end
 
 		def switch_pushed_look(pushed)
@@ -473,7 +473,7 @@ module Koei
 
 		def post_user_elements
 			super
-			on_click.add method :clicked
+			on_click.add method(:clicked)
 		end
 
 		def clicked(pos)
