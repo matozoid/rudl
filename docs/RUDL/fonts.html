@@ -1,0 +1,138 @@
+<html>
+<head>
+<title>Fonts</title>
+<html>
+<head>
+<link rel='stylesheet' title='Dokumentat' href='../dokumentat.css' media='screen,projection,print' />
+<link rel='Contents' href='index.html'>
+</head>
+<body>
+<h1><a name='_AND_bitmapfont'>BitmapFont</a></h1>
+
+<p>BitmapFont is made with the SFont library and prints text with bitmaps.
+It is maintained by Karl Bartel on <a href='http://www.linux-games.com/'>Linux Games</a>
+</p>
+<p><p>Here is Karl's README:
+</p>
+<p><p>FileFormat:
+</p>
+<p><p>The font file can be any type image file. The characters start with
+ASCII symbol #33. They are seperated by pink(255,0,255) lines at the top
+of the image. The space between these lines is the width of the caracter.
+Just take a look at the image, and you'll be able to understand what I tried
+to explain here.
+</p>
+<p><p>Example for the font file format is in this picture: <img src='sfont.gif'>
+</p>
+<p><p>The easiest way to create a new font is to use the GIMP's Logo function.
+Use the following string as text (ASCII 33-127 with escape sequences and
+spaces between the letters):
+</p>
+<p><code>! \" # $ % & ' ( ) * + , - . / 0 1 2 3 4 5 6 7 8 9 : ; < = > ? @ A B C D E F G H I J K L M N O P Q R S T U V W X Y Z [ \\ ] ^ _ ` a b c d e f g h i j k l m n o p q r s t u v w x y z { | } ~</code>
+</p>
+
+<h2><a name='_AND_bitmapfont_AND_class_methods'>Class Methods</a></h2>
+<h4><a name='_AND_bitmapfont_AND_class_methods_AND_new'>new( surface ) &rarr; BitmapFont</a></h4>
+
+<p>Creates a new BitmapFont from the drawn characters in <a href='javascript:void()'>surface.</a>
+To load a font directly from disc,
+use <code>Surface.load_new('fontfilename')</code> as the argument to <a href='javascript:void()'>new.</a>
+</p>
+
+<h2><a name='_AND_bitmapfont_AND_instance_methods'>Instance Methods</a></h2>
+<h4><a name='_AND_bitmapfont_AND_instance_methods_AND_print'>print( surface, coordinate, text ) &rarr; self</a></h4>
+
+<p>Puts <a href='javascript:void()'>text</a> on <a href='javascript:void()'>surface</a> at <a href='javascript:void()'>coordinate</a> which is an array of [x, y].
+</p>
+
+<h4><a name='_AND_bitmapfont_AND_instance_methods_AND_print_centered'>print_centered( surface, y, text ) &rarr; self</a></h4>
+
+<p>Puts <a href='javascript:void()'>text</a> on <a href='javascript:void()'>surface</a> at y-coordinate <a href='javascript:void()'>y</a> in the horizontal center of the screen.
+</p>
+
+<h4><a name='_AND_bitmapfont_AND_instance_methods_AND_size'>size( text ) &rarr; [width, heigth]</a></h4>
+
+<p>Returns the size in pixels that <a href='javascript:void()'>text</a> will take when written.
+</p>
+
+<h1><a name='_AND_truetypefont'>TrueTypeFont</a></h1>
+
+<p></p>
+<p>Using TrueTypeFonts is easy. You open a TTF file with <a href='javascript:void()'>new</a> specifying
+its filename and size. You render text with it by calling <a href='javascript:void()'>render,</a> and you get a new
+surface containing the image. If you use antialiasing and no background color, the
+returned surface will have per-pixel alpha values, to retain the antialiasing after blitting
+to a target surface.
+</p>
+
+<h2><a name='_AND_truetypefont_AND_class_methods'>Class Methods</a></h2>
+<h4><a name='_AND_truetypefont_AND_class_methods_AND_new'>new( filename, size ) &rarr; TrueTypeFont</a></h4>
+
+<p>Creates a new TrueTypeFont object.
+<a href='javascript:void()'>filename</a> is the filename of a TTF file.
+<a href='javascript:void()'>size</a> is the desired height of the font in pixels.
+</p>
+
+<h2><a name='_AND_truetypefont_AND_instance_methods'>Instance Methods</a></h2>
+<h4><a name='_AND_truetypefont_AND_instance_methods_AND_ascent'>ascent &rarr; Number</a></h4>
+
+<p>Returns the ascent for the font.
+The ascent is the number of pixels from the font baseline to the top of the font.
+</p>
+
+<h4><a name='_AND_truetypefont_AND_instance_methods_AND_bold'>bold? &rarr; boolean</a><br>
+<a name='_AND_truetypefont_AND_instance_methods_AND_bold'>bold=( onOrOff ) &rarr; self</a></h4>
+
+<p>Controls the bold attribute for the font.
+Making the font bold does not work as well as you would expect.
+</p>
+
+<h4><a name='_AND_truetypefont_AND_instance_methods_AND_descent'>descent &rarr; Number</a></h4>
+
+<p>Returns the descent for the font.
+The descent is the number of pixels from the font baseline to the bottom of the font.
+</p>
+
+<h4><a name='_AND_truetypefont_AND_instance_methods_AND_h'>h &rarr; Number</a></h4>
+
+<p>Returns the average size of each glyph in the font.
+</p>
+
+<h4><a name='_AND_truetypefont_AND_instance_methods_AND_italic'>italic? &rarr; boolean</a><br>
+<a name='_AND_truetypefont_AND_instance_methods_AND_italic'>italic=( onOrOff ) &rarr; self</a></h4>
+
+<p>Controls the italics attribute of the font.
+</p>
+
+<h4><a name='_AND_truetypefont_AND_instance_methods_AND_linesize'>linesize &rarr; Number</a></h4>
+
+<p>Returns the linesize for the font.
+Each font comes with its own recommendation for the number of spacing pixels between
+each line of the font.
+</p>
+
+<h4><a name='_AND_truetypefont_AND_instance_methods_AND_render'>render( text, antialias, foreground ) &rarr; Surface</a><br>
+<a name='_AND_truetypefont_AND_instance_methods_AND_render'>render( text, antialias, foreground, background ) &rarr; Surface</a></h4>
+
+<p>Render the given <a href='javascript:void()'>text</a> onto a new image surface.
+If <a href='javascript:void()'>antialias</a> is true, the edges of the font will be smoothed for a much cleaner look.
+</p>
+<p>The <a href='javascript:void()'>foreground</a> and <a href='javascript:void()'>background</a> colors are both RGBA, but the alpha component is ignored if given.
+If the background color is omitted, the text will have a transparent background.
+</p>
+
+<h4><a name='_AND_truetypefont_AND_instance_methods_AND_size'>size( text ) &rarr; [w, h]</a></h4>
+
+<p>Returns the size in pixels that this text would need.
+</p>
+
+<h4><a name='_AND_truetypefont_AND_instance_methods_AND_underline'>underline? &rarr; boolean</a><br>
+<a name='_AND_truetypefont_AND_instance_methods_AND_underline'>underline=( onOrOff ) &rarr; self</a></h4>
+
+<p>Controls the underline attribute of the font.
+</p>
+
+
+<br><br><br><br>
+</body>
+</html>

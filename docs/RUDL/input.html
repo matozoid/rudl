@@ -1,0 +1,340 @@
+<html>
+<head>
+<title>Input</title>
+<html>
+<head>
+<link rel='stylesheet' title='Dokumentat' href='../dokumentat.css' media='screen,projection,print' />
+<link rel='Contents' href='index.html'>
+</head>
+<body>
+<h1><a name='_AND_eventqueue'>EventQueue</a></h1>
+
+<p>This class is the interface to the eventsystem in SDL.
+Don't be put off by the amount of non-implemented methods, their absence doesn't bother
+me and I don't plan on implementing them before someone comes up with a good reason for
+their existence.
+</p>
+
+<h2><a name='_AND_eventqueue_AND_class_and_instance_methods'>Class and instance Methods</a></h2>
+<h4><a name='_AND_eventqueue_AND_class_and_instance_methods_AND_allowed'>allowed=( eventtype ) &rarr; nil</a></h4>
+
+<p>Not implemented.
+</p>
+
+<h4><a name='_AND_eventqueue_AND_class_and_instance_methods_AND_blocked'>blocked=( eventtype ) &rarr; nil</a></h4>
+<h4><a name='_AND_eventqueue_AND_class_and_instance_methods_AND_flush'>flush &rarr; nil</a></h4>
+
+<p>Flushes all events from the queue.
+</p>
+
+<h4><a name='_AND_eventqueue_AND_class_and_instance_methods_AND_get'>get &rarr; [ Event, ... ]</a></h4>
+
+<p>Returns all events in the queue and removes them from the queue.
+<a href='javascript:void()'>method</a> get( eventmask ) -> [ Event, ... ]
+Not implemented.
+</p>
+
+<h4><a name='_AND_eventqueue_AND_class_and_instance_methods_AND_grab'>grab &rarr; self</a><br>
+<a name='_AND_eventqueue_AND_class_and_instance_methods_AND_grab'>grab=( grab ) &rarr; self</a></h4>
+
+<p></p>
+<p>Controls grabbing of all mouse and keyboard input for the display.
+Grabbing the input is not neccessary to receive keyboard and mouse events,
+but it ensures all input will go to your application.
+It also keeps the mouse locked inside your window.
+It is best to not always grab the input,
+since it prevents the end user from doing anything else on their system.
+<a href='javascript:void()'>grab</a> is true or false.
+</p>
+
+<h4><a name='_AND_eventqueue_AND_class_and_instance_methods_AND_peek'>peek &rarr; Event or nil</a></h4>
+
+<p>Returns the next event without removing it from the queue,
+or nil when no events are available.
+<a href='javascript:void()'>method</a> peek( eventmask )
+Not implemented.
+</p>
+
+<h4><a name='_AND_eventqueue_AND_class_and_instance_methods_AND_poll'>poll &rarr; Event or nil</a></h4>
+
+<p>Returns the next event, or nil if the queue is empty.
+</p>
+
+<h4><a name='_AND_eventqueue_AND_class_and_instance_methods_AND_post'>post( event ) &rarr; nil</a></h4>
+
+<p>Not implemented.
+</p>
+
+<h4><a name='_AND_eventqueue_AND_class_and_instance_methods_AND_pump'>pump &rarr; self</a></h4>
+
+<p>This method is responsible for getting events from the operating system into the
+SDL eventqueue.
+If your application seems unresponsive,
+calling this method every now and then might help.
+</p>
+
+<h4><a name='_AND_eventqueue_AND_class_and_instance_methods_AND_wait'>wait &rarr; Event</a></h4>
+
+<p></p>
+<p>Wait for an event to arrive.
+Returns that event.
+</p>
+
+<h1><a name='_AND_joystick'>Joystick</a></h1>
+<h2><a name='_AND_joystick_AND_class_methods'>Class methods</a></h2>
+<h4><a name='_AND_joystick_AND_class_methods_AND_count'>count</a></h4>
+
+<p>Returns the amount of joysticks attached to the computer.
+</p>
+
+<h4><a name='_AND_joystick_AND_class_methods_AND_new'>new( id )</a></h4>
+
+<p>Creates a new joystick object.
+<a href='javascript:void()'>id</a> is a number smaller than <a href='javascript:void()'>count.</a>
+This will also start events for this joystick.
+</p>
+
+<h2><a name='_AND_joystick_AND_instance_methods'>Instance methods</a></h2>
+<h4><a name='_AND_joystick_AND_instance_methods_AND_axes'>axes</a></h4>
+
+<p>Returns the amount of axes the joystick has.
+</p>
+
+<h4><a name='_AND_joystick_AND_instance_methods_AND_axis'>axis( nr )</a></h4>
+
+<p>Returns the state of axis <a href='javascript:void()'>nr,</a> which is between -1 to 1.
+</p>
+
+<h4><a name='_AND_joystick_AND_instance_methods_AND_ball'>ball( nr )</a></h4>
+
+<p>Returns the state of ball <a href='javascript:void()'>nr,</a> which is an array of [dx, dy] where dx and dy are between -1 to 1.
+</p>
+
+<h4><a name='_AND_joystick_AND_instance_methods_AND_balls'>balls</a></h4>
+
+<p>Returns the amount of trackballs the joystick has.
+</p>
+
+<h4><a name='_AND_joystick_AND_instance_methods_AND_button'>button( nr )</a></h4>
+
+<p>Returns the boolean state of button <a href='javascript:void()'>nr.</a>
+</p>
+
+<h4><a name='_AND_joystick_AND_instance_methods_AND_buttons'>buttons</a></h4>
+
+<p>Returns the amount of buttons the joystick has.
+</p>
+
+<h4><a name='_AND_joystick_AND_instance_methods_AND_hat'>hat( nr )</a></h4>
+
+<p>Returns the state of hat <a href='javascript:void()'>nr,</a> which is an array of [dx, dy] where dx and dy can be -1, 0 or 1.
+</p>
+
+<h4><a name='_AND_joystick_AND_instance_methods_AND_hats'>hats</a></h4>
+
+<p>Returns the amount of hats the joystick has.
+</p>
+
+<h4><a name='_AND_joystick_AND_instance_methods_AND_id'>id</a></h4>
+
+<p>Returns the id of the joystick as it was passed to <a href='javascript:void()'>new.</a>
+</p>
+
+<h2><a name='_AND_joystick_AND_joystick_input_event_classes'>Joystick input event classes</a></h2>
+
+<p><dl>
+</p>
+<p><dt>JoyAxisEvent
+<dd>
+Contains <a href='javascript:void()'>id</a> which is the joysticknumber,
+<a href='javascript:void()'>value</a> which is the movement, ranging from -1 to 1 and
+<a href='javascript:void()'>axis</a> which is the axis index.
+</p>
+<p><dt> JoyBallEvent
+<dd>
+Contains <a href='javascript:void()'>id</a> which is the joysticknumber,
+<a href='javascript:void()'>ball</a> which is a trackball index and
+<a href='javascript:void()'>rel</a> which is a movement array of [dx, dy].
+</p>
+<p><dt> JoyHatEvent
+<dd>
+Contains <a href='javascript:void()'>id</a> which is the joysticknumber,
+<a href='javascript:void()'>hat</a> which is the hatnumber and
+a movement array of [dx, dy] called <a href='javascript:void()'>value</a> where dx and dy can be -1, 0 or 1.
+</p>
+<p><dt> JoyButtonUpEvent
+<dd>
+Contains <a href='javascript:void()'>id</a> which is the joysticknumber and
+<a href='javascript:void()'>button</a> which is the button index.
+</p>
+<p><dt> JoyButtonDownEvent
+<dd>
+Contains <a href='javascript:void()'>id</a> which is the joysticknumber and
+<a href='javascript:void()'>button</a> which is the button index.
+</p>
+<p></dl>
+</p>
+
+<h1><a name='_AND_key'>Key</a></h1>
+
+<p>The Key class gives access to the keyboard without events.
+</p>
+<p>You can either call the class methods: "Key.something" directly,
+or instantiate the class and lug along a reference to it and call
+instance methods on that: "k=Key.new" "k.something" (they will call
+class methods under the hood, so it's exactly the same)
+</p>
+<p>EventQueue.pump will update the state of Key,
+so if no keys seem to be pressed, call pump.
+</p>
+
+<h2><a name='_AND_key_AND_class_and_instance_methods'>Class and instance Methods</a></h2>
+<h4><a name='_AND_key_AND_class_and_instance_methods_AND_focused'>focused? &rarr; boolean</a></h4>
+
+<p>Returns true when the application has the keyboard input focus.
+</p>
+
+<h4><a name='_AND_key_AND_class_and_instance_methods_AND_modifiers'>modifiers &rarr; Number</a><br>
+<a name='_AND_key_AND_class_and_instance_methods_AND_modifiers'>modifiers=( modifiers ) &rarr; self</a></h4>
+
+<p>Returns the current modifier keys state.
+Sets the keyboard modifier state.
+</p>
+
+<h4><a name='_AND_key_AND_class_and_instance_methods_AND_name'>name( key ) &rarr; String</a></h4>
+
+<p>Returns a string describing constant <a href='javascript:void()'>key.</a>
+</p>
+
+<h4><a name='_AND_key_AND_class_and_instance_methods_AND_pressed'>pressed? &rarr; { K_b &rarr; true, ... }</a></h4>
+
+<p>Returns a hash containing all keys that are set, set to true.
+So, if K_b is pressed, the hash will contain a key,value pair of K_b => true.
+</p>
+
+<h4><a name='_AND_key_AND_class_and_instance_methods_AND_set_repeat'>set_repeat( delay, interval ) &rarr; self</a></h4>
+
+<p>Sets the keyboard to wait for <a href='javascript:void()'>delay</a> milliseconds before starting repeat with
+<a href='javascript:void()'>interval</a> delay between repeats.
+Set both to zero to disable repeat.
+</p>
+
+<h2><a name='_AND_key_AND_constants'>Constants</a></h2>
+
+<p>Keycodes in one handy big mess: (found in the module <a href='javascript:void()'>RUDL::Constant)</a>
+</p>
+<p>K_UNKNOWN, K_FIRST, K_BACKSPACE, K_TAB, K_CLEAR, K_RETURN, K_PAUSE, K_ESCAPE, K_SPACE, K_EXCLAIM, K_QUOTEDBL,
+K_HASH, K_DOLLAR, K_AMPERSAND, K_QUOTE, K_LEFTPAREN, K_RIGHTPAREN, K_ASTERISK, K_PLUS, K_COMMA,
+K_MINUS, K_PERIOD, K_SLASH, K_0, K_1, K_2, K_3, K_4, K_5, K_6, K_7, K_8, K_9, K_COLON, K_SEMICOLON, K_LESS,
+K_EQUALS, K_GREATER, K_QUESTION, K_AT, K_LEFTBRACKET, K_BACKSLASH, K_RIGHTBRACKET, K_CARET, K_UNDERSCORE,
+K_BACKQUOTE, K_a, K_b, K_c, K_d, K_e, K_f, K_g, K_h, K_i, K_j, K_k, K_l, K_m, K_n, K_o, K_p, K_q, K_r, K_s, K_t,
+K_u, K_v, K_w, K_x, K_y, K_z, K_DELETE, K_KP0, K_KP1, K_KP2, K_KP3, K_KP4, K_KP5, K_KP6, K_KP7, K_KP8, K_KP9,
+K_KP_PERIOD, K_KP_DIVIDE, K_KP_MULTIPLY, K_KP_MINUS, K_KP_PLUS, K_KP_ENTER, K_KP_EQUALS, K_UP,
+K_DOWN, K_RIGHT, K_LEFT, K_INSERT, K_HOME, K_END, K_PAGEUP, K_PAGEDOWN, K_F1, K_F2, K_F3, K_F4, K_F5,
+K_F6, K_F7, K_F8, K_F9, K_F10, K_F11, K_F12, K_F13, K_F14, K_F15, , K_NUMLOCK, K_CAPSLOCK, K_SCROLLOCK,
+K_RSHIFT, K_LSHIFT, K_RCTRL, K_LCTRL, K_RALT, K_LALT, K_RMETA, K_LMETA, K_LSUPER, K_RSUPER, K_MODE,
+K_HELP, K_PRINT, K_SYSREQ, K_BREAK, K_MENU, K_POWER, K_EURO, K_LAST, KMOD_NONE, KMOD_LSHIFT, KMOD_RSHIFT,
+KMOD_LCTRL, KMOD_RCTRL, KMOD_LALT, KMOD_RALT, KMOD_LMETA, KMOD_RMETA, KMOD_NUM, KMOD_CAPS, KMOD_MODE,
+KMOD_CTRL, KMOD_SHIFT, KMOD_ALT, KMOD_META
+</p>
+
+<h2><a name='_AND_key_AND_keyboard_input_event_classes'>Keyboard input event classes</a></h2>
+
+<p><dl>
+</p>
+<p><dt>KeyUpEvent
+<dd>
+This event is posted when a key is released. It contains <a href='javascript:void()'>key</a> (the keycode
+for the released key), <a href='javascript:void()'>mod</a> (the modifier keys state) and <a href='javascript:void()'>unicode</a>
+(the Unicode version of the key).
+<dt>KeyDownEvent
+<dd>
+This event is posted when a key is pressed and when it gets repeated (see Key#set_repeat).
+It contains <a href='javascript:void()'>key</a> (the keycode for the pressed key), <a href='javascript:void()'>mod</a> (the modifier keys state) and
+<a href='javascript:void()'>unicode</a> (the Unicode version of the key).
+</p>
+<p></dl>
+</p>
+
+<h1><a name='_AND_mouse'>Mouse</a></h1>
+
+<p>The mouse class methods can also be used as instance methods once you
+instantiate the class. However, there is no need to do that, it's just
+for convenience.
+</p>
+
+<h2><a name='_AND_mouse_AND_class_and_instance_methods'>Class and instance Methods</a></h2>
+<h4><a name='_AND_mouse_AND_class_and_instance_methods_AND_focused'>focused? &rarr; boolean</a></h4>
+
+<p>Returns true when the application is receiving the mouse input focus.
+</p>
+
+<h4><a name='_AND_mouse_AND_class_and_instance_methods_AND_pos'>pos &rarr; [x, y]</a><br>
+<a name='_AND_mouse_AND_class_and_instance_methods_AND_pos'>pos=( pos ) &rarr; self</a></h4>
+
+<p>Returns the current position of the mouse cursor.
+This is the absolute mouse position inside your game window.
+Moves the mouse cursor to the specified position.
+This will generate a <a href='javascript:void()'>MouseMotionEvent</a> on the input queue.
+</p>
+
+<h4><a name='_AND_mouse_AND_class_and_instance_methods_AND_pressed'>pressed? &rarr; [boolean, boolean, boolean]</a></h4>
+
+<p>This will return an array containing the pressed state of each mouse button.
+</p>
+
+<h4><a name='_AND_mouse_AND_class_and_instance_methods_AND_rel'>rel &rarr; [dx, dy]</a></h4>
+
+<p>Returns the total distance the mouse has moved since your last call to <a href='javascript:void()'>rel.</a>
+On the first call to <a href='javascript:void()'>rel</a> the movement will always be 0,0.
+When the mouse is at the edges of the screen, the relative movement will be stopped.
+See <a href='javascript:void()'>visible</a> for a way to resolve this.
+</p>
+
+<h4><a name='_AND_mouse_AND_class_and_instance_methods_AND_set_cursor'>set_cursor( hotspot, xormasks, andmasks ) &rarr; self</a></h4>
+
+<p>When the mouse cursor is visible, it will be displayed as a black and white bitmap
+using the given bitmask arrays.
+Hotspot is an array containing the cursor hotspot position.
+xormasks is an array of arrays of bytes containing the cursor xor data masks.
+Lastly is andmasks, an array of arrays of bytes containting the cursor bitmask data.
+</p>
+<p>The example "mousecursor.rb" explains this much better.
+</p>
+
+<h4><a name='_AND_mouse_AND_class_and_instance_methods_AND_visible'>visible=( onOrOff ) &rarr; boolean</a></h4>
+
+<p>Shows or hides the mouse cursor.
+This will return the previous visible state of the mouse cursor.
+</p>
+<p>Note that when the cursor is hidden and the application has grabbed the input.
+SDL will force the mouse to stay in the center of the screen.
+Since the mouse is hidden it won't matter that it's not moving,
+but it will keep the mouse from the edges of the screen so the relative mouse
+position will always be true.
+</p>
+
+<h2><a name='_AND_mouse_AND_mouse_input_event_classes'>Mouse input event classes</a></h2>
+
+<p><dl>
+</p>
+<p><dt> MouseMotionEvent
+<dd>
+Contains <a href='javascript:void()'>pos</a> (an array [x, y] telling the position of the mouse),
+<a href='javascript:void()'>rel</a> (an array [dx, dy] telling how much the mouse moved),
+and <a href='javascript:void()'>button</a> (an array of booleans, representing the states of the
+mousebuttons). Currently, three buttons are supported.
+<dt> MouseButtonUpEvent
+<dd>
+Contains <a href='javascript:void()'>pos</a> (an array [x, y] telling the position of the mouse) and
+<a href='javascript:void()'>button</a> (the number of the button that was released).
+<dt> MouseButtonDownEvent
+<dd>
+Contains <a href='javascript:void()'>pos</a> (an array [x, y] telling the position of the mouse) and
+<a href='javascript:void()'>button</a> (the number of the button that was pressed).
+</p>
+
+
+<br><br><br><br>
+</body>
+</html>

@@ -1,0 +1,252 @@
+<html>
+<head>
+<title>Misc</title>
+<html>
+<head>
+<link rel='stylesheet' title='Dokumentat' href='../dokumentat.css' media='screen,projection,print' />
+<link rel='Contents' href='index.html'>
+</head>
+<body>
+<h1><a name='_AND_array'>Array</a></h1>
+
+<p>The standard Ruby array class has been extended to provide
+methods for using it as a rectangle.
+Arrays like these have entries 0, 1, 2 and 3 set to floating point values for
+x, y, width and height.
+</p>
+<p>[10,15,20,25] would be a 20x25 rectangle at position 10,15.
+</p>
+<p>So far these methods are mostly untested.
+</p>
+
+<h2><a name='_AND_array_AND_class_methods'>Class Methods</a></h2>
+<h4><a name='_AND_array_AND_class_methods_AND_collide_lists'>collide_lists( l1, l2 )</a></h4>
+
+<p>This method looks through list <a href='javascript:void()'>l1,</a>
+checking collisions with every object in list <a href='javascript:void()'>l2.</a>
+It does this by calling "rect" on all objects, expecting an array of [x,y,w,h] back,
+defining the area this object is in.
+It yields (object_from_l1, object_from_l2) for every collision it detects.
+A more advanced collision detection method can be found in CollisionMap.
+</p>
+
+<h4><a name='_AND_array_AND_class_methods_AND_h'>h</a><br>
+<a name='_AND_array_AND_class_methods_AND_h'>h=( h )</a></h4>
+
+<p>These can be set and read at will.
+<a href='javascript:void()'>w</a> and <a href='javascript:void()'>h</a> have <a href='javascript:void()'>width</a> and <a href='javascript:void()'>height</a> as aliases.
+</p>
+
+<h4><a name='_AND_array_AND_class_methods_AND_union_list'>union_list( array_of_rects )</a></h4>
+
+<p>Returns a new array representing a rectangle covering all rectangles
+in <a href='javascript:void()'>array_of_rects.</a>
+</p>
+
+<h4><a name='_AND_array_AND_class_methods_AND_w'>w</a><br>
+<a name='_AND_array_AND_class_methods_AND_w'>w=( w )</a></h4>
+<h4><a name='_AND_array_AND_class_methods_AND_x'>x</a><br>
+<a name='_AND_array_AND_class_methods_AND_x'>x=( x )</a></h4>
+<h4><a name='_AND_array_AND_class_methods_AND_y'>y</a><br>
+<a name='_AND_array_AND_class_methods_AND_y'>y=( y )</a></h4>
+<h2><a name='_AND_array_AND_instance_methods'>Instance methods</a></h2>
+<h4><a name='_AND_array_AND_instance_methods_AND_bottom'>bottom</a><br>
+<a name='_AND_array_AND_instance_methods_AND_bottom'>bottom=( bottom )</a></h4>
+
+<p>These can be set and read at will.
+Differences with x, y, w and h are:
+* <a href='javascript:void()'>right</a> and <a href='javascript:void()'>bottom</a> are screen coordinates.
+	<a href='javascript:void()'>right</a> is <a href='javascript:void()'>x</a> + <a href='javascript:void()'>w</a> and <a href='javascript:void()'>bottom</a> is <a href='javascript:void()'>y</a> + <a href='javascript:void()'>h</a> .
+</p>
+
+<h4><a name='_AND_array_AND_instance_methods_AND_clamp'>clamp( rect ) &rarr; [x, y, w, h]</a><br>
+<a name='_AND_array_AND_instance_methods_AND_clamp'>clamp!( rect ) &rarr; nil</a></h4>
+
+<p>Returns a new rectangle that is moved to be completely inside the base rectangle.
+If the given rectangle is too large for the base rectangle in an axis,
+it will be centered on that axis.
+</p>
+
+<h4><a name='_AND_array_AND_instance_methods_AND_contains'>contains?( thing ) &rarr; boolean</a></h4>
+
+<p>Returns whether thing ([x, y, w, h] or [x, y]) fits completely within the rectangle.
+</p>
+
+<h4><a name='_AND_array_AND_instance_methods_AND_copy_from'>copy_from( rect ) &rarr; self</a></h4>
+
+<p>Sets <a href='javascript:void()'>self</a> to the same position and size as <a href='javascript:void()'>rect.</a>
+This is meant for optimizations.
+Returns <a href='javascript:void()'>self.</a>
+</p>
+
+<h4><a name='_AND_array_AND_instance_methods_AND_find_overlapping_rects'>find_overlapping_rects( rects ) &rarr; [ [x, y, w, h], ... ]</a></h4>
+
+<p>Returns an array with the rectangles in the list to overlaps the base rectangle.
+If no overlaps is found, it will return [].
+</p>
+
+<h4><a name='_AND_array_AND_instance_methods_AND_inflate'>inflate( sizes ) &rarr; [x, y, w, h]</a><br>
+<a name='_AND_array_AND_instance_methods_AND_inflate'>inflate!( sizes ) &rarr; self</a></h4>
+
+<p>Returns a rectangle which has the sizes changed by the given amounts.
+<a href='javascript:void()'>sizes</a> is an array of [dx, dy].
+The rectangle shrinks and expands around the rectangle's center.
+Negative values will shrink the rectangle.
+</p>
+
+<h4><a name='_AND_array_AND_instance_methods_AND_left'>left</a><br>
+<a name='_AND_array_AND_instance_methods_AND_left'>left=( left )</a></h4>
+<h4><a name='_AND_array_AND_instance_methods_AND_move'>move( delta )</a><br>
+<a name='_AND_array_AND_instance_methods_AND_move'>move!( delta )</a></h4>
+
+<p>Returns a new rectangle which is the base rectangle moved by the given amount.
+</p>
+
+<h4><a name='_AND_array_AND_instance_methods_AND_normalize'>normalize &rarr; self</a><br>
+<a name='_AND_array_AND_instance_methods_AND_normalize'>normalize! &rarr; [x, y, w, h]</a></h4>
+
+<p>If w and h aren't positive,
+this will change them to positive and keep the rectangle covering the same space.
+</p>
+
+<h4><a name='_AND_array_AND_instance_methods_AND_overlaps'>overlaps?( rect ) &rarr; boolean</a></h4>
+
+<p>Returns true if any area of the two rectangles overlapss.
+</p>
+
+<h4><a name='_AND_array_AND_instance_methods_AND_right'>right</a><br>
+<a name='_AND_array_AND_instance_methods_AND_right'>right=( right )</a></h4>
+<h4><a name='_AND_array_AND_instance_methods_AND_same_size'>same_size?( rect )</a></h4>
+
+<p>Returns whether <a href='javascript:void()'>rect</a> is the same area as <a href='javascript:void()'>self.</a>
+</p>
+
+<h4><a name='_AND_array_AND_instance_methods_AND_set_coordinates'>set_coordinates( x, y, w, h ) &rarr; self</a></h4>
+
+<p>Sets all properties at once.
+This is meant for optimizations.
+</p>
+
+<h4><a name='_AND_array_AND_instance_methods_AND_top'>top</a><br>
+<a name='_AND_array_AND_instance_methods_AND_top'>top=( top )</a></h4>
+<h4><a name='_AND_array_AND_instance_methods_AND_union'>union( rect ) &rarr; [x, y, w, h]</a><br>
+<a name='_AND_array_AND_instance_methods_AND_union'>union!( rect ) &rarr; self</a></h4>
+
+<p>Returns a new rectangle that completely covers the given rectangle(s).
+There may be an area inside the new rectangle that is not covered by the inputs.
+Rectangles are pre-normalized.
+</p>
+
+<h1><a name='_AND_collisionmap'>CollisionMap</a></h1>
+
+<p>This code is "bitmask" from <a href='http://www.ifm.liu.se/~ulfek/projects/2d_Collision_Detection.html'>Ulf Ekstrom</a>
+</p>
+<p><p>This class contains a map of all the visible pixels in a surface.
+(That's the ones that don't have the color key's color)
+With it, you can detect whether any pixels in a surface and another
+surface overlap when they are at two specific positions.
+</p>
+
+<h2><a name='_AND_collisionmap_AND_class_methods'>Class Methods</a></h2>
+<h4><a name='_AND_collisionmap_AND_class_methods_AND_['>[ x, y ] &rarr; Number</a><br>
+<a name='_AND_collisionmap_AND_class_methods_AND_['>[ x, y ]= collidebit &rarr; self</a></h4>
+
+<p>The array operator accesses single points in the collision map,
+in case you want to have collision with parts of a surface that
+weren't color keyed, or you want parts of the surface to appear
+"untouchable".
+</p>
+<p>If collidebit is set to 0, no collision will be detected for that point.
+If it is set to anything else, it will be set to 1 and collisions will
+be checked at that point.
+</p>
+
+<h4><a name='_AND_collisionmap_AND_class_methods_AND_collides_with'>collides_with( own_coord, other_map, other_coord ) &rarr; [hit_x, hit_y] or nil</a></h4>
+
+<p>This returns the first found overlapping (colliding) pixel for two collision maps,
+or nil if no collision occurred.
+The coordinates specify where the two maps are,
+which will probably mean that the two surfaces are blitted to the screen at those coordinates.
+</p>
+<p><p>If using the <a href='javascript:void()'>collision_map</a> attribute, you would get for one surface at [10,10] and
+another at [20,20]:
+<code>onesurface.collision_map( [10,10], other_surface.collision_map, [20,20] )</code>
+</p>
+
+<h4><a name='_AND_collisionmap_AND_class_methods_AND_destroy'>destroy &rarr; nil</a></h4>
+
+<p>Removes the map from memory.
+This instance of CollisionMap will be useless from this call on.
+</p>
+
+<h4><a name='_AND_collisionmap_AND_class_methods_AND_new'>new( surface ) &rarr; CollisionMap</a><br>
+<a name='_AND_collisionmap_AND_class_methods_AND_new'>new( size ) &rarr; CollisionMap</a></h4>
+
+<p>Creates a new collision map.
+</p>
+<p><p>Supplying a Surface will create the map with the information from surface.
+The map will not be automatically updated when the surface contents
+change, so a new <a href='javascript:void()'>CollisionMap</a> will have to be made each time.
+The Surface's colorkey will be used to identify "uncollidable" area's.
+</p>
+<p><p>Supplying a size array: [w, h] will create an empty bitmask of that size.
+</p>
+<p><p>Surface has an attribute, <a href='javascript:void()'>collision_map,</a> that you can use to attach
+a CollisionMap to.
+RUDL doesn't use that attribute for itself.
+The syntax would be:
+</p>
+<p><code>some_surface.collision_map=CollisionMap.new( some_surface )</code>
+</p>
+
+<h4><a name='_AND_collisionmap_AND_class_methods_AND_set'>set( coord ) &rarr; self</a></h4>
+<h4><a name='_AND_collisionmap_AND_class_methods_AND_size'>size &rarr; [w, h]</a></h4>
+
+<p>Returns the size of the collision map.
+</p>
+
+<h4><a name='_AND_collisionmap_AND_class_methods_AND_unset'>unset( coord ) &rarr; self</a></h4>
+
+<p>This fills and erases one point in the collision map,
+in case you want to have collision with parts of a surface that
+weren't color keyed, or you want parts of the surface to appear
+"untouchable"
+</p>
+
+<h1><a name='_AND_movie'>Movie</a></h1>
+
+<p>The Movie object represents an opened MPEG file.
+You control playback similar to a <a href='javascript:void()'>Sound</a> object.
+</p>
+<p>Movie objects have a target <a href='javascript:void()'>Surface.</a>
+The movie is rendered to this surface in a background thread.
+If the surface is the <a href='javascript:void()'>DisplaySurface,</a>
+and the system supports it,
+the movie will render into a hardware YUV overlay plane.
+If you don't set a target surface,
+it will default to the DisplaySurface.
+</p>
+<p>Movies are played back in background threads,
+so there is very little management needed on the user end.
+Just load the Movie, set the destination, and <a href='javascript:void()'>play</a>
+</p>
+<p><b>This is not usable yet</b>
+</p>
+
+<h2><a name='_AND_movie_AND_class_methods'>Class Methods</a></h2>
+<h4><a name='_AND_movie_AND_class_methods_AND_new'>new( filename )</a></h4>
+
+<p>Loads an MPEG stream from file <a href='javascript:void()'>filename</a>
+</p>
+
+<h1><a name='_AND_rect'>Rect</a></h1>
+
+<p>Rect has been discarded.
+Its methods have moved to the standard Ruby <a href='javascript:void()'>Array.</a>
+All these methods are now written in C.
+</p>
+
+
+<br><br><br><br>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<html>
+<head>
+<title>CDROM</title>
+<html>
+<head>
+<link rel='stylesheet' title='Dokumentat' href='../dokumentat.css' media='screen,projection,print' />
+<link rel='Contents' href='index.html'>
+</head>
+<body>
+<h1><a name='_AND_cdrom'>CDROM</a></h1>
+<h2><a name='_AND_cdrom_AND_class_methods'>Class methods</a></h2>
+
+<p>A class for playing audio CD's.
+</p>
+
+<h4><a name='_AND_cdrom_AND_class_methods_AND_count'>count</a></h4>
+
+<p>Returns the number of CDROMs installed.
+</p>
+
+<h4><a name='_AND_cdrom_AND_class_methods_AND_destroy'>destroy</a></h4>
+
+<p>Uninitializes the CDROM subsystem, which is normally not necessary.
+</p>
+
+<h4><a name='_AND_cdrom_AND_class_methods_AND_new'>new( number )</a></h4>
+
+<p>Creates a new CDROM access object for unit <a href='javascript:void()'>number.</a>
+There can only be one CDROM object per unit.
+Numbering starts at 0.
+</p>
+
+<h2><a name='_AND_cdrom_AND_others'>others</a></h2>
+<h4><a name='_AND_cdrom_AND_others_AND_audiotrack'>audiotrack?( track_nr )</a></h4>
+
+<p>Returns whether the specified track is an audiotrack.
+</p>
+
+<h4><a name='_AND_cdrom_AND_others_AND_current'>current</a></h4>
+<h4><a name='_AND_cdrom_AND_others_AND_name'>name</a></h4>
+
+<p>Returns a string describing the CDROM.
+</p>
+
+<h4><a name='_AND_cdrom_AND_others_AND_num_tracks'>num_tracks</a></h4>
+
+<p>Returns the number of tracks on the CD.
+</p>
+
+<h4><a name='_AND_cdrom_AND_others_AND_number'>number</a></h4>
+
+<p>Returns the unit number that was specified in <a href='javascript:void()'>new.</a>
+</p>
+
+<h4><a name='_AND_cdrom_AND_others_AND_track_length'>track_length( track_nr )</a></h4>
+
+<p>Returns the length of the track.
+</p>
+<p>Returns 0.0 when the track is not an audio track.
+</p>
+
+<h4><a name='_AND_cdrom_AND_others_AND_track_start'>track_start( track_nr )</a></h4>
+
+<p>Returns the starting time of the track.
+</p>
+
+<h2><a name='_AND_cdrom_AND_the_you-know-what-they-do_methods'>The you-know-what-they-do methods</a></h2>
+<h4><a name='_AND_cdrom_AND_the_you-know-what-they-do_methods_AND_busy'>busy?</a></h4>
+
+<p>These are the you-know-what-they-do methods.
+</p>
+
+<h4><a name='_AND_cdrom_AND_the_you-know-what-they-do_methods_AND_eject'>eject</a></h4>
+<h4><a name='_AND_cdrom_AND_the_you-know-what-they-do_methods_AND_empty'>empty?</a></h4>
+<h4><a name='_AND_cdrom_AND_the_you-know-what-they-do_methods_AND_pause'>pause</a></h4>
+<h4><a name='_AND_cdrom_AND_the_you-know-what-they-do_methods_AND_paused'>paused?</a></h4>
+<h4><a name='_AND_cdrom_AND_the_you-know-what-they-do_methods_AND_play'>play( track_nr )</a></h4>
+<h4><a name='_AND_cdrom_AND_the_you-know-what-they-do_methods_AND_resume'>resume</a></h4>
+<h4><a name='_AND_cdrom_AND_the_you-know-what-they-do_methods_AND_stop'>stop</a></h4>
+
+<br><br><br><br>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<html>
+<head>
+<title>RUDL</title>
+<html>
+<head>
+<link rel='stylesheet' title='Dokumentat' href='../dokumentat.css' media='screen,projection,print' />
+<link rel='Contents' href='index.html'>
+</head>
+<body>
+<h1><a name='_AND_rudl'>RUDL</a></h1>
+
+<p>Module <a href='javascript:void()'>RUDL</a> contains all <a href='javascript:void()'>RUDL</a> classes as inner classes.
+It has some class methods of its own too.
+</p>
+
+<h2><a name='_AND_rudl_AND_class_methods'>Class Methods</a></h2>
+<h4><a name='_AND_rudl_AND_class_methods_AND_versions'>versions</a></h4>
+
+<p>Returns a hash of library names with their versions that are supported by <a href='javascript:void()'>RUDL.</a>
+This list was determined when <a href='javascript:void()'>RUDL</a> was compiled for a certain system,
+and might change when other libraries have been installed or removed
+and <a href='javascript:void()'>RUDL</a> is recompiled.
+Versions are <a href='javascript:void()'>RUDL::Version</a> objects.
+This includes "RUDL" itself.
+</p>
+
+<h1><a name='_AND_rudl__constants'>RUDL::Constants</a></h1>
+
+<p>All for the hacked <a href='javascript:void()'>init_subsystem</a> and <a href='javascript:void()'>quit_subsystem,</a>
+which should officially never be needed:
+<code>INIT_TIMER, INIT_AUDIO, INIT_VIDEO, INIT_CDROM, INIT_JOYSTICK, INIT_NOPARACHUTE, INIT_EVERYTHING</code>
+</p>
+
+<h1><a name='_AND_rudl__pit'>RUDL::Pit</a></h1>
+
+<p>The <a href='javascript:void()'>Pit</a> is where the things end up that don't fit anywhere else.
+The methods are documented where they fit best.
+</p>
+
+<h1><a name='_AND_rudl__sdlerror'>RUDL::SDLError</a></h1>
+
+<p>SDLError is the class that is thrown when SDL or RUDL find an SDL-specific
+problem.
+</p>
+
+<h1><a name='_AND_rudl__version'>RUDL::Version</a></h1>
+
+<p><a href='javascript:void()'>Version</a> is the class used for version comparisons.
+It defines four version levels: major, minor, patch and deepest.
+</p>
+
+<h4><a name='_AND_rudl__version_AND_<'><( v )</a></h4>
+
+<p>Compares this version number with the one in <a href='javascript:void()'>v.</a>
+Returns <code>true</code> if older.
+</p>
+
+<h4><a name='_AND_rudl__version_AND_initialize'>initialize( major=0, minor=0, patch=0, deepest=0 )</a></h4>
+
+<p>Initializes a new Version object.
+</p>
+
+<h4><a name='_AND_rudl__version_AND_to_s'>to_s</a></h4>
+
+<p>Returns the version as a string: "major.minor.patch.deepest"
+</p>
+
+
+<br><br><br><br>
+</body>
+</html>

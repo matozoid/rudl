@@ -1,0 +1,507 @@
+<html>
+<head>
+<title>Surface</title>
+<html>
+<head>
+<link rel='stylesheet' title='Dokumentat' href='../dokumentat.css' media='screen,projection,print' />
+<link rel='Contents' href='index.html'>
+</head>
+<body>
+<h1><a name='_AND_surface'>Surface</a></h1>
+
+<p>A <a href='javascript:void()'>Surface</a> is a two dimensional array of pixels with some information about those pixels.
+This might not seem like much, but it is just about the most important class in RUDL.
+</p>
+
+<h2><a name='_AND_surface_AND_alpha_methods'>Alpha methods</a></h2>
+
+<p>Gets or sets the overall transparency for the <a href='javascript:void()'>Surface.</a>
+An alpha of 0 is fully transparent, an alpha of 255 is fully opaque.
+If your surface has a pixel alpha channel, it will override the overall surface transparency.
+You'll need to change the actual pixel transparency to make changes.
+If your image also has pixel alpha values and will be used repeatedly, you
+will probably want to pass the <code>RLEACCEL</code> flag to the call.
+This will take a short time to compile your surface, and increase the blitting speed.
+Note that the per-surface alpha value of 128 is considered a special case and is
+optimised, so it's much faster than other per-surface values.
+</p>
+
+<h4><a name='_AND_surface_AND_alpha_methods_AND_alpha'>alpha</a></h4>
+<h4><a name='_AND_surface_AND_alpha_methods_AND_set_alpha'>set_alpha( alpha )</a><br>
+<a name='_AND_surface_AND_alpha_methods_AND_set_alpha'>set_alpha( alpha, flags )</a></h4>
+
+<p><a href='javascript:void()'>set_alpha(nil)</a> removes the per-surface alpha, same as <a href='javascript:void()'>unset_alpha.</a>
+</p>
+
+<h4><a name='_AND_surface_AND_alpha_methods_AND_unset_alpha'>unset_alpha</a></h4>
+<h2><a name='_AND_surface_AND_batch_pixel_access'>Batch pixel access</a></h2>
+
+<p>These methods manipulate the pixels in the Surface.
+The transport medium is a string with binary data in it.
+The data is raw, no fancy color arrays here.
+If bytesize (the amount of bytes used to describe the color of a pixel) is
+four, for example, a (({Surface})) of 5x5 pixels will return a string of length (5x5x4).
+If the colorformat is specified as BGRA, then character zero will be the
+B component, character one the G component etc.
+Eight bit color surfaces store one byte indexes into the palette.
+These methods perform best when the surface's pitch is equal to its width.
+There is not much errorchecking so beware of crashes.
+</p>
+
+<h4><a name='_AND_surface_AND_batch_pixel_access_AND_columns'>columns</a></h4>
+
+<p>Returns an array of strings with one column of imagedata each.
+</p>
+
+<h4><a name='_AND_surface_AND_batch_pixel_access_AND_each_column'>each_column { |column_of_pixels| ... }</a><br>
+<a name='_AND_surface_AND_batch_pixel_access_AND_each_column'>each_column! { |column_of_pixels| ... }</a></h4>
+
+<p><a href='javascript:void()'>each_column</a> and <a href='javascript:void()'>each_column!</a> iterate through the columns,
+passing each of them to the supplied codeblock.
+</p>
+
+<h4><a name='_AND_surface_AND_batch_pixel_access_AND_each_row'>each_row { |row_of_pixels| ... }</a><br>
+<a name='_AND_surface_AND_batch_pixel_access_AND_each_row'>each_row! { |row_of_pixels| ... }</a></h4>
+
+<p><a href='javascript:void()'>each_row</a> and <a href='javascript:void()'>each_row!</a> iterate through the rows,
+passing each of them to the supplied codeblock.
+</p>
+
+<h4><a name='_AND_surface_AND_batch_pixel_access_AND_get_column'>get_column( x )</a></h4>
+
+<p>Get a column.
+</p>
+
+<h4><a name='_AND_surface_AND_batch_pixel_access_AND_get_row'>get_row( y )</a></h4>
+
+<p>Get a single row.
+</p>
+
+<h4><a name='_AND_surface_AND_batch_pixel_access_AND_pixels'>pixels</a><br>
+<a name='_AND_surface_AND_batch_pixel_access_AND_pixels'>pixels=( pixeldata )</a></h4>
+
+<p>These methods get and set all image data at once.
+</p>
+
+<h4><a name='_AND_surface_AND_batch_pixel_access_AND_rows'>rows</a></h4>
+
+<p>Returns an array of strings with one row of imagedata each.
+</p>
+
+<h4><a name='_AND_surface_AND_batch_pixel_access_AND_set_column'>set_column( x, pixels )</a></h4>
+
+<p>Set a column
+</p>
+
+<h4><a name='_AND_surface_AND_batch_pixel_access_AND_set_row'>set_row( y, pixels )</a></h4>
+
+<p>Set a single row.
+</p>
+
+<h2><a name='_AND_surface_AND_clipping'>Clipping</a></h2>
+<h4><a name='_AND_surface_AND_clipping_AND_clip'>clip</a><br>
+<a name='_AND_surface_AND_clipping_AND_clip'>clip=( rect )</a></h4>
+
+<p>Retrieves, removes or sets the clipping rectangle for surfaces that are
+blitted to this surface.
+</p>
+
+<h4><a name='_AND_surface_AND_clipping_AND_unset_clip'>unset_clip</a></h4>
+<h2><a name='_AND_surface_AND_colorkey_methods'>Colorkey methods</a></h2>
+
+<p>These methods control the color that will be completely transparent (it will not be copied
+to the destination surface.)
+</p>
+
+<h4><a name='_AND_surface_AND_colorkey_methods_AND_colorkey'>colorkey &rarr; Array[R,G,B]</a></h4>
+<h4><a name='_AND_surface_AND_colorkey_methods_AND_set_colorkey'>set_colorkey( color ) &rarr; self</a><br>
+<a name='_AND_surface_AND_colorkey_methods_AND_set_colorkey'>set_colorkey( color, flags ) &rarr; self</a></h4>
+
+<p>The only flag for <a href='javascript:void()'>flags</a> is <code>RLEACCEL</code> which will encode the bitmap in a more efficient way for blitting,
+by skipping the transparent pixels.
+set_colorkey(nil) removes the color key, same as <a href='javascript:void()'>unset_colorkey</a> .
+</p>
+
+<h4><a name='_AND_surface_AND_colorkey_methods_AND_unset_colorkey'>unset_colorkey &rarr; self</a></h4>
+<h2><a name='_AND_surface_AND_drawing'>Drawing</a></h2>
+
+<p>Many of the methods here are from <a href='http://de.ferzkopp.net/'>SDL_gfx</a>.
+They were written by Andreas Schiffler.
+For these methods, "antialiased" means that drawing is done with many shades of the
+requested color to simulate
+</p>
+
+<h4><a name='_AND_surface_AND_drawing_AND_['>[ x, y ]= color &rarr; self</a><br>
+<a name='_AND_surface_AND_drawing_AND_['>[ coordinate ]= color &rarr; self</a><br>
+<a name='_AND_surface_AND_drawing_AND_['>[ x, y ]</a><br>
+<a name='_AND_surface_AND_drawing_AND_['>[ coordinate ]</a></h4>
+
+<p>These methods access single pixels on a surface.
+<a href='javascript:void()'>plot</a> or <a href='javascript:void()'>[]=</a> set the color of a pixel. The coordinate can be given as an [x,y] array or two
+separate numbers. <a href='javascript:void()'>plot</a> is an alias for <a href='javascript:void()'>[]=.</a>
+These methods require the surface to be locked if necessary.
+<a href='javascript:void()'>[]=</a> and <a href='javascript:void()'>[]</a> are the only methods in RUDL that take separate x and y coordinates.
+See also: <a href='javascript:void()'>Surface.get,</a> <a href='javascript:void()'>Surface.[]</a>
+See <a href='javascript:void()'>get</a>
+</p>
+
+<h4><a name='_AND_surface_AND_drawing_AND_fill'>fill( color ) &rarr; self</a><br>
+<a name='_AND_surface_AND_drawing_AND_fill'>fill( color, rect ) &rarr; self</a></h4>
+
+<p>Fills rectangle <a href='javascript:void()'>rect</a> in the surface with <a href='javascript:void()'>color.</a>
+</p>
+
+<h4><a name='_AND_surface_AND_drawing_AND_get'>get( x, y )</a><br>
+<a name='_AND_surface_AND_drawing_AND_get'>get( coordinate )</a></h4>
+
+<p>These methods read single pixels on a surface.
+<a href='javascript:void()'>get</a> or <a href='javascript:void()'>[]</a> get the color of a pixel.
+The coordinate can be given as an [x,y] array or two separate numbers.
+<a href='javascript:void()'>get</a> is an alias for <a href='javascript:void()'>[].</a>
+These methods require the surface to be locked if necessary.
+<a href='javascript:void()'>[]=</a> and <a href='javascript:void()'>[]</a> are the only methods in RUDL that take separate x and y coordinates.
+See also: <a href='javascript:void()'>Surface.plot,</a> <a href='javascript:void()'>Surface.[]=</a>
+</p>
+
+<h4><a name='_AND_surface_AND_drawing_AND_plot'>plot( x, y, color ) &rarr; self</a><br>
+<a name='_AND_surface_AND_drawing_AND_plot'>plot( coordinate, color ) &rarr; self</a></h4>
+<h4><a name='_AND_surface_AND_drawing_AND_print'>print( coord, text, color ) &rarr; self</a></h4>
+
+<p>Puts <a href='javascript:void()'>text</a> on the surface in a monospaced 8x8 standard old ASCII font.
+</p>
+
+<h2><a name='_AND_surface_AND_drawing__circles'>Drawing: Circles</a></h2>
+<h4><a name='_AND_surface_AND_drawing__circles_AND_antialiased_circle'>antialiased_circle( coord, radius, color )  &rarr; self</a></h4>
+<h4><a name='_AND_surface_AND_drawing__circles_AND_antialiased_ellipse'>antialiased_ellipse( coord, radius_x, radius_y, color )  &rarr; self</a></h4>
+<h4><a name='_AND_surface_AND_drawing__circles_AND_circle'>circle( coord, radius, color )  &rarr; self</a></h4>
+<h4><a name='_AND_surface_AND_drawing__circles_AND_ellipse'>ellipse( coord, radius_x, radius_y, color )  &rarr; self</a></h4>
+<h4><a name='_AND_surface_AND_drawing__circles_AND_filled_circle'>filled_circle( coord, radius, color )  &rarr; self</a></h4>
+<h4><a name='_AND_surface_AND_drawing__circles_AND_filled_ellipse'>filled_ellipse( coord, radius_x, radius_y, color )  &rarr; self</a></h4>
+<h4><a name='_AND_surface_AND_drawing__circles_AND_filled_pie'>filled_pie( coord, radius, start, end, color )  &rarr; self</a></h4>
+<h2><a name='_AND_surface_AND_drawing__polygons'>Drawing: Polygons</a></h2>
+
+<p>The polygon methods take an array of [x,y], like [[10,10],[40,60],[16,66]].
+</p>
+
+<h4><a name='_AND_surface_AND_drawing__polygons_AND_antialiased_polygon'>antialiased_polygon( coord_list, color) &rarr; self</a></h4>
+<h4><a name='_AND_surface_AND_drawing__polygons_AND_filled_polygon'>filled_polygon( coord_list, color ) &rarr; self</a></h4>
+<h4><a name='_AND_surface_AND_drawing__polygons_AND_polygon'>polygon( coord_list, color )  &rarr; self</a></h4>
+<h2><a name='_AND_surface_AND_drawing__straight_stuff'>Drawing: Straight stuff</a></h2>
+<h4><a name='_AND_surface_AND_drawing__straight_stuff_AND_antialiased_line'>antialiased_line( coord1, coord2, color )  &rarr; self</a></h4>
+<h4><a name='_AND_surface_AND_drawing__straight_stuff_AND_filled_rectangle'>filled_rectangle( rect, color ) &rarr; self</a></h4>
+
+<p>Filled_rectangle is a lot like <a href='javascript:void()'>fill.</a>
+Fill comes from SDL, filled_rectangle from SDL_gfx,
+choose whichever you like best.
+</p>
+
+<h4><a name='_AND_surface_AND_drawing__straight_stuff_AND_horizontal_line'>horizontal_line( coord, endx, color ) &rarr; self</a></h4>
+<h4><a name='_AND_surface_AND_drawing__straight_stuff_AND_line'>line( coord1, coord2, color )</a></h4>
+<h4><a name='_AND_surface_AND_drawing__straight_stuff_AND_rectangle'>rectangle( rect, color ) &rarr; self</a></h4>
+<h4><a name='_AND_surface_AND_drawing__straight_stuff_AND_vertical_line'>vertical_line( coord, endy, color ) &rarr; self</a></h4>
+<h2><a name='_AND_surface_AND_information'>Information</a></h2>
+<h4><a name='_AND_surface_AND_information_AND_bitsize'>bitsize</a></h4>
+
+<p>Returns the number of bits used to represent each pixel.
+This value may not exactly fill the number of bytes used per pixel.
+For example a 15 bit Surface still requires a full 2 bytes.
+</p>
+
+<h4><a name='_AND_surface_AND_information_AND_bytesize'>bytesize</a></h4>
+
+<p>Returns the number of bytes used to store each pixel.
+</p>
+
+<h4><a name='_AND_surface_AND_information_AND_flags'>flags</a></h4>
+
+<p>Returns the current state flags for the surface.
+</p>
+
+<h4><a name='_AND_surface_AND_information_AND_losses'>losses &rarr; Array[redloss, greenloss, blueloss, alphaloss]</a></h4>
+
+<p>Returns the bitloss for each color plane.
+The loss is the number of bits removed for each colorplane from a full 8 bits of
+resolution. A value of 8 usually indicates that colorplane is not used
+(like the alpha plane)
+</p>
+
+<h4><a name='_AND_surface_AND_information_AND_masks'>masks &rarr; Array[redmask, greenmask, bluemask, alphamask]</a></h4>
+
+<p>Returns the bitmasks for each color plane.
+The bitmask is used to isolate each colorplane value from a mapped color value.
+A value of zero means that colorplane is not used (like alpha)
+</p>
+
+<h4><a name='_AND_surface_AND_information_AND_pitch'>pitch</a></h4>
+
+<p>The surface pitch is the number of bytes used in each scanline.
+This function should rarely needed, mainly for any special-case debugging.
+</p>
+
+<h4><a name='_AND_surface_AND_information_AND_shifts'>shifts &rarr; Array[redshift, greenshift, blueshift, alphashift]</a></h4>
+
+<p>Returns the bitshifts used for each color plane.
+The shift is determine how many bits left-shifted a colorplane value is in a
+mapped color value.
+</p>
+
+<h2><a name='_AND_surface_AND_initializers'>Initializers</a></h2>
+<h4><a name='_AND_surface_AND_initializers_AND_load_new'>load_new( filename ) &rarr; Surface</a></h4>
+
+<p>This creates a <a href='javascript:void()'>Surface</a> with an image in it,
+loaded from disk from <a href='javascript:void()'>filename</a> by using load_new.
+The file should be in a supported file format.
+If the SDL_image library was found during RUDL's installation,
+it will load the following formats:
+BMP, PNM, XPM, XCF, PCX, GIF, JPEG, TIFF, PNG, TGA and LBM.
+If the SDL_image library was not found, only simple BMP loading is supported.
+Simple means: not all BMP files can be loaded.
+</p>
+
+<h4><a name='_AND_surface_AND_initializers_AND_new'>new( size ) &rarr; Surface</a><br>
+<a name='_AND_surface_AND_initializers_AND_new'>new( size, surface ) &rarr; Surface</a><br>
+<a name='_AND_surface_AND_initializers_AND_new'>new( size, flags ) &rarr; Surface</a><br>
+<a name='_AND_surface_AND_initializers_AND_new'>new( size, flags, surface ) &rarr; Surface</a><br>
+<a name='_AND_surface_AND_initializers_AND_new'>new( size, flags, depth ) &rarr; Surface</a><br>
+<a name='_AND_surface_AND_initializers_AND_new'>new( size, flags, depth, masks ) &rarr; Surface</a></h4>
+
+<p>All these methods create a new <a href='javascript:void()'>Surface</a> with <a href='javascript:void()'>size</a> = [w, h].
+If only <a href='javascript:void()'>size</a> is supplied, the rest of the arguments will be set to reasonable values.
+If a surface is supplied, it is used to copy the values from that aren't given.
+</p>
+<p><a href='javascript:void()'>flags</a> is, according to SDL's documentation:
+<ul>
+<li>SWSURFACE:
+	SDL will create the surface in system memory.
+	This improves the performance of pixel level access,
+	however you may not be able to take advantage of some types of hardware blitting.
+<li>HWSURFACE:
+	SDL will attempt to create the surface in video memory.
+	This will allow SDL to take advantage of Video->Video blits (which are often accelerated).
+<li>SRCCOLORKEY:
+	This flag turns on colourkeying for blits from this surface.
+	If HWSURFACE is also specified and colourkeyed blits are hardware-accelerated,
+	then SDL will attempt to place the surface in video memory.
+	Use <a href='javascript:void()'>Surface#set_colorkey</a> to set or clear this flag after surface creation.
+<li>SRCALPHA:
+	This flag turns on alpha-blending for blits from this surface.
+	If HWSURFACE is also specified and alpha-blending blits are hardware-accelerated,
+	then the surface will be placed in video memory if possible.
+	Use <a href='javascript:void()'>Surface#set_alpha</a> to set or clear this flag after surface creation.
+	For a 32 bitdepth surface, an alpha mask will automatically be added,
+	in other cases, you will have to specify a mask.
+</ul>
+</p>
+<p><a href='javascript:void()'>depth</a> is bitdepth, like 8, 15, 16, 24 or 32.
+</p>
+<p><a href='javascript:void()'>masks</a> describes the format for the pixels and is an array of [R, G, B, A]
+containing 32 bit values with bits set where the colorcomponent should be stored.
+For example: [0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF] describes a 32 bit color
+with red in the highest values and an alpha channel. If it is not specified, the following
+defaults are used:
+</p>
+<p><pre>
+........ ........ ........ .RRGGGBB (8bpp)
+........ ........ ....RRRR GGGGBBBB (12bpp)
+........ ........ .RRRRRGG GGGBBBBB (15bpp)
+........ ........ RRRRRGGG GGGBBBBB (16bpp)
+........ RRRRRRRR GGGGGGGG BBBBBBBB (24 bpp)
+........ RRRRRRRR GGGGGGGG BBBBBBBB (32 bpp)
+RRRRRRRR GGGGGGGG BBBBBBBB AAAAAAAA (32 bpp, SRCALPHA set)
+</pre>
+</p>
+<p>Normally this shouldn't have to be of interest.
+</p>
+
+<h4><a name='_AND_surface_AND_initializers_AND_shared_new'>shared_new( surface ) &rarr; Surface</a></h4>
+
+<p>This method is two things:
+</p>
+<p><ol>
+<li>a way to share the same bunch of data (width, height, bpp, pixeldata) between two Surface objects.
+	Please don't use it this way if there isn't a very good reason for it.
+<li>a way to import foreign objects that wrap an SDL_Surface*.
+	If that doesn't mean anything to you, please ignore this point.
+	It takes the pointer from the foreign object and creates a new Surface that wraps it.
+</ol>
+</p>
+<p>Garbage collection problems should be prevented by giving the new surface
+a reference to <a href='javascript:void()'>surface</a>
+</p>
+<p>Note that if the original surface is destroyed by a call to <a href='javascript:void()'>Surface.destroy,</a>
+the shared ones will be invalidated too!
+</p>
+
+<h4><a name='_AND_surface_AND_initializers_AND_string.to_surface'>String.to_surface &rarr; Surface</a></h4>
+
+<p>This creates a <a href='javascript:void()'>Surface</a> with an image in it,
+loaded by treating <a href='javascript:void()'>String</a> as the image data when using <a href='javascript:void()'>to_surface.</a>
+The <a href='javascript:void()'>string</a> should be in a supported file format,
+just like the file for <a href='javascript:void()'>load_new</a> should be.
+</p>
+
+<h2><a name='_AND_surface_AND_locking'>Locking</a></h2>
+
+<p>These methods control the locking of surfaces.
+If you ever encounter a locking error,
+you might try these out.
+Locking errors are expected when trying to access video hardware.
+Keep a <a href='javascript:void()'>Surface</a> locked for as short a time as possible.
+</p>
+
+<h4><a name='_AND_surface_AND_locking_AND_lock'>lock &rarr; self</a></h4>
+
+<p>Locks the surface.
+</p>
+
+<h4><a name='_AND_surface_AND_locking_AND_locked'>locked? &rarr; boolean</a></h4>
+
+<p>Returns true when the surface is locked.
+</p>
+
+<h4><a name='_AND_surface_AND_locking_AND_must_lock'>must_lock &rarr; boolean</a></h4>
+
+<p>Returns true when a surface needs locking for pixel access.
+</p>
+
+<h4><a name='_AND_surface_AND_locking_AND_unlock'>unlock &rarr; self</a></h4>
+
+<p>Unlocks a surface that was locked with <a href='javascript:void()'>lock</a> and returns self.
+</p>
+
+<h2><a name='_AND_surface_AND_methods'>Methods</a></h2>
+<h4><a name='_AND_surface_AND_methods_AND_blit'>blit( source, coordinate ) &rarr; Array</a><br>
+<a name='_AND_surface_AND_methods_AND_blit'>blit( source, coordinate, sourceRect ) &rarr; Array</a></h4>
+
+<p>This method blits (copies, pastes, draws) <a href='javascript:void()'>source</a> onto the surface it is called on.
+<a href='javascript:void()'>coordinate</a> is the position [x, y] where <a href='javascript:void()'>source</a> will end up in the destination surface.
+<a href='javascript:void()'>sourcerect</a> is the area in the <a href='javascript:void()'>source</a> bitmap that you want blitted.
+Not supplying it will blit the whole <a href='javascript:void()'>source.</a>
+</p>
+<p>Returns the rectangle array ([x,y,w,h]) in the surface that was changed.
+</p>
+
+<h4><a name='_AND_surface_AND_methods_AND_convert'>convert &rarr; Surface</a><br>
+<a name='_AND_surface_AND_methods_AND_convert'>convert! &rarr; self</a></h4>
+
+<p>Creates a new version of the surface in the current display's format,
+making it faster to blit.
+</p>
+
+<h4><a name='_AND_surface_AND_methods_AND_convert_alpha'>convert_alpha &rarr; Surface</a><br>
+<a name='_AND_surface_AND_methods_AND_convert_alpha'>convert_alpha! &rarr; self</a></h4>
+
+<p>Like <a href='javascript:void()'>convert,</a> creates a new version of the surface in the current display's format,
+making it faster to blit.
+The alpha version optimizes for fast alpha blitting.
+</p>
+
+<h4><a name='_AND_surface_AND_methods_AND_destroy'>destroy &rarr; nil</a></h4>
+
+<p>Frees memory used by this surface.
+The surface is no longer useable after this call.
+</p>
+
+<h4><a name='_AND_surface_AND_methods_AND_immodest_export'>immodest_export( other_surface ) &rarr; self</a></h4>
+
+<p>Like Surface.share, but this works the other way around.
+It will destroy the <a href='javascript:void()'>other_surface</a> then make it share the data in itself
+and setting a reference on <a href='javascript:void()'>other_surface</a> back to <a href='javascript:void()'>self.</a>
+It's called immodest because it interferes with another object, bluntly
+assuming it contains a SDL_Surface pointer and changing it to something
+else...
+</p>
+
+<h4><a name='_AND_surface_AND_methods_AND_save_bmp'>save_bmp( filename ) &rarr; self</a></h4>
+
+<p>This is the only method in RUDL which stores surface data.
+Pass <a href='javascript:void()'>save_bmp</a> the <a href='javascript:void()'>filename</a> and the surface data will be saved to that file.
+</p>
+
+<h4><a name='_AND_surface_AND_methods_AND_share'>share( other_surface ) &rarr; self</a></h4>
+
+<p>Like <a href='javascript:void()'>Surface.shared_new,</a> but this works on an existing surface.
+It will destroy this surface, then make it share <a href='javascript:void()'>other_surface</a> 's data.
+</p>
+
+<h2><a name='_AND_surface_AND_palette_manipulation'>Palette manipulation</a></h2>
+<h4><a name='_AND_surface_AND_palette_manipulation_AND_palette'>palette &rarr; Array[[R,G,B], [R,G,B],....]</a></h4>
+<h4><a name='_AND_surface_AND_palette_manipulation_AND_set_palette'>set_palette( first, colors ) &rarr; self</a></h4>
+
+<p>These methods return or set the 256 color palette that is part of 8 bit <a href='javascript:void()'>Surface</a> s.
+<a href='javascript:void()'>first</a> is the first color to change.
+<a href='javascript:void()'>colors</a> and the return value of <a href='javascript:void()'>palette</a> are arrays of colors like
+[[50,80,120], [255,255,0]]
+=end
+</p>
+
+<h2><a name='_AND_surface_AND_scaling__flipping_and_rotating'>Scaling, Flipping and Rotating</a></h2>
+<h4><a name='_AND_surface_AND_scaling__flipping_and_rotating_AND_mirror_x'>mirror_x &rarr; Surface</a></h4>
+
+<p>Mirrors the surface horizontally into a new <a href='javascript:void()'>Surface.</a>
+</p>
+
+<h4><a name='_AND_surface_AND_scaling__flipping_and_rotating_AND_mirror_y'>mirror_y &rarr; Surface</a></h4>
+
+<p>Mirrors the surface vertically into a new Surface.
+</p>
+
+<h4><a name='_AND_surface_AND_scaling__flipping_and_rotating_AND_rotozoom'>rotozoom( angle, zoom, smooth ) &rarr; Surface</a></h4>
+
+<p>Returns a new surface that is rotated <a href='javascript:void()'>angle</a> degrees and zoomed
+<a href='javascript:void()'>zoom</a> times (fractions are OK).
+This method returns a 32 bit surface.
+Exception: for now it returns an 8 bit surface when fed an 8 bit surface.
+If <a href='javascript:void()'>smooth</a> is true and the surface is not 8 bits,
+bilinear interpolation will be applied, resulting in a smoother image.
+</p>
+
+<h4><a name='_AND_surface_AND_scaling__flipping_and_rotating_AND_scale2x'>scale2x &rarr; Surface</a><br>
+<a name='_AND_surface_AND_scaling__flipping_and_rotating_AND_scale2x'>scale2x( dest_surface ) &rarr; Surface</a><br>
+<a name='_AND_surface_AND_scaling__flipping_and_rotating_AND_scale2x'>scale2x( dest_surface, coordinate ) &rarr; Surface</a></h4>
+
+<p>Scales the surface to double size with the Scale2x algorithm developed
+by Andrea Mazzoleni.
+See <a href='http://scale2x.sourceforge.net/'>the project page</a>.
+</p>
+<p>Creates a new surface to hold the result, or reuses <a href='javascript:void()'>dest_surface,</a>
+which must be at least twice as wide and twice as high as this surface,
+and have the same depth.
+</p>
+<p><a href='javascript:void()'>coordinate</a> is the [x, y] coordinate where you want the scaled image
+positioned. This way you can draw it directly on screen at the wanted
+position, without having to use a temporary Surface.
+</p>
+
+<h4><a name='_AND_surface_AND_scaling__flipping_and_rotating_AND_zoom'>zoom( zoom_horizontal, zoom_vertical, smooth ) &rarr; Surface</a></h4>
+
+<p>Returns a new surface that is zoomed.
+1.0 doesn't zoom, bigger than 1.0 zooms in, smaller than 1.0 zooms out.
+This method returns a 32 bit surface.
+Exception: for now it returns an 8 bit surface when fed an 8 bit surface.
+If <a href='javascript:void()'>smooth</a> is true and the surface is not 8 bits,
+bilinear interpolation will be applied, resulting in a smoother image.
+(The last two methods are from Andreas Schiffler's SDL_rotozoom, aschiffler@home.com)
+</p>
+
+<h2><a name='_AND_surface_AND_size_methods'>Size methods</a></h2>
+
+<p>These methods return the size of the surface.
+</p>
+
+<h4><a name='_AND_surface_AND_size_methods_AND_h'>h &rarr; Number</a></h4>
+
+<p>Returns height in pixels.
+</p>
+
+<h4><a name='_AND_surface_AND_size_methods_AND_rect'>rect &rarr; Array[0, 0, w, h]</a></h4>
+<h4><a name='_AND_surface_AND_size_methods_AND_size'>size &rarr; Array[w,h]</a></h4>
+<h4><a name='_AND_surface_AND_size_methods_AND_w'>w &rarr; Number</a></h4>
+
+<p>Returns width in pixels.
+</p>
+
+
+<br><br><br><br>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<html>
+<head>
+<title>Timer</title>
+<html>
+<head>
+<link rel='stylesheet' title='Dokumentat' href='../dokumentat.css' media='screen,projection,print' />
+<link rel='Contents' href='index.html'>
+</head>
+<body>
+<h1><a name='_AND_eventtimer'>EventTimer</a></h1>
+
+<p>A class that controls delivering <a href='javascript:void()'>TimerEvent</a> s on a regular basis.
+</p>
+
+<h2><a name='_AND_eventtimer_AND_class_methods'>Class Methods</a></h2>
+<h4><a name='_AND_eventtimer_AND_class_methods_AND_new'>new( interval, id ) &rarr; EventTimer</a></h4>
+
+<p>Will create a EventTimer object that controls sending <a href='javascript:void()'>TimerEvent</a> s every <a href='javascript:void()'>interval</a>
+milliseconds, having their id-field set to <a href='javascript:void()'>id</a> - which is a number.
+</p>
+
+<h2><a name='_AND_eventtimer_AND_instance_methods'>Instance Methods</a></h2>
+<h4><a name='_AND_eventtimer_AND_instance_methods_AND_stop'>stop &rarr; boolean</a></h4>
+
+<p>Will stop this EventTimer from posting more <a href='javascript:void()'>TimerEvent</a> s.
+</p>
+
+<h1><a name='_AND_timer'>Timer</a></h1>
+<h2><a name='_AND_timer_AND_class_methods'>Class Methods</a></h2>
+<h4><a name='_AND_timer_AND_class_methods_AND_delay'>delay( milliseconds ) &rarr; nil</a></h4>
+
+<p>Will do nothing for <a href='javascript:void()'>milliseconds</a> milliseconds.
+It is not guaranteed to be exact and has different resolution on different platforms.
+Expect a resolution of 10 to 20 milliseconds at worst.
+</p>
+
+<h4><a name='_AND_timer_AND_class_methods_AND_ticks'>ticks &rarr; Number</a></h4>
+
+<p>Returns the time in milliseconds since RUDL was required.
+</p>
+
+<h1><a name='_AND_timerevent'>TimerEvent</a></h1>
+
+<p>This event is posted regularly by an <a href='javascript:void()'>EventTimer</a> object.
+</p>
+
+<h4><a name='_AND_timerevent_AND_id'>id &rarr; Number</a></h4>
+
+<p>This is the EventTimer's <a href='javascript:void()'>id.</a>
+</p>
+
+
+<br><br><br><br>
+</body>
+</html>

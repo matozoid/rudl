@@ -1,0 +1,244 @@
+<html>
+<head>
+<title>DisplaySurface</title>
+<html>
+<head>
+<link rel='stylesheet' title='Dokumentat' href='../dokumentat.css' media='screen,projection,print' />
+<link rel='Contents' href='index.html'>
+</head>
+<body>
+<h1><a name='_AND_displaysurface'>DisplaySurface</a></h1>
+
+<p>The DisplaySurface is the surface that represents the window or the full screen that you
+will be drawing and blitting on.
+Since it is inherited from <a href='javascript:void()'>Surface,</a> it can be used just like an ordinary surface.
+You will need to create a DisplaySurface to show anything on your screen.
+</p>
+
+<h2><a name='_AND_displaysurface_AND_initializers'>Initializers</a></h2>
+<h4><a name='_AND_displaysurface_AND_initializers_AND_new'>new( size ) &rarr; DisplaySurface</a><br>
+<a name='_AND_displaysurface_AND_initializers_AND_new'>new( size, flags ) &rarr; DisplaySurface</a><br>
+<a name='_AND_displaysurface_AND_initializers_AND_new'>new( size, flags, depth ) &rarr; DisplaySurface</a></h4>
+
+<p><ul>
+<li><a href='javascript:void()'>size</a> is the requested size for the new display in [w,h] format.
+<li><a href='javascript:void()'>flags</a> is a combination of the following:
+	<ul>
+	<li><code>SWSURFACE</code>, to create the display in normal memory,
+	<li><code>HWSURFACE</code>, to create the display in the memory of your video hardware, if possible,
+	<li><code>ASYNCBLIT</code>, to (i quote) "enable the use of asynchronous to the display surface.
+		This will usually slow down blitting on single CPU machines, but may provide a speed increase on SMP systems."
+	<li><code>RESIZABLE</code>, to make a resizable display (see events to find the event that it sends),
+	<li><code>HWPALETTE</code>, to grab the system palette,
+	<li><code>DOUBLEBUF</code>, to enable double buffered hardware pageflipping. Use <a href='javascript:void()'>flip</a> with this.
+	<li><code>FULLSCREEN</code>, attempts to grab all of the screen,
+	<li><code>NOFRAME</code>, leaves the frame off the window.
+	<li><code>OPENGL</code>, to create an OpenGL window.
+	</ul>
+<li><a href='javascript:void()'>depth</a> selects the bits per pixel value (8 is 256 colors, 16 is thousands of colors,
+	24 and 32 are millions of colors). If it is not supplied, a good one will be selected for you.
+</ul>
+</p>
+
+<h2><a name='_AND_displaysurface_AND_methods'>Methods</a></h2>
+<h4><a name='_AND_displaysurface_AND_methods_AND_destroy'>destroy &rarr; nil</a></h4>
+
+<p>Destroys the display, removing the window or returning from fullscreen mode.
+Do not call methods on a destroyed DisplaySurface!
+</p>
+
+<h4><a name='_AND_displaysurface_AND_methods_AND_displaysurface.get'>DisplaySurface.get &rarr; DisplaySurface or nil</a></h4>
+
+<p>Gets the current DisplaySurface, or nil if there isn't one.
+</p>
+
+<h4><a name='_AND_displaysurface_AND_methods_AND_driver'>driver &rarr; String</a></h4>
+
+<p>Returns the name of the videodriver that is being used.
+</p>
+
+<h4><a name='_AND_displaysurface_AND_methods_AND_flip'>flip &rarr; self</a></h4>
+
+<p>This will update the contents of the entire display.
+If your display mode is using the flags <code>HWSURFACE</code> and <code>DOUBLEBUF</code>, this
+will wait for a vertical retrace (if the video driver supports it)
+and swap the surfaces.
+If you are using a different type of display mode, it will simply update
+the entire contents of the surface.
+</p>
+<p>When using an OpenGL display mode this will perform a gl buffer swap.
+</p>
+
+<h4><a name='_AND_displaysurface_AND_methods_AND_gamma'>gamma=( [r,g,b] ) &rarr; boolean</a><br>
+<a name='_AND_displaysurface_AND_methods_AND_gamma'>gamma=( intensity ) &rarr; boolean</a></h4>
+
+<p>Sets the gamma value for the display when this is supported.
+<a href='javascript:void()'>intensity</a> is a shortcut for values where r=g=b.
+</p>
+
+<h4><a name='_AND_displaysurface_AND_methods_AND_info'>info</a></h4>
+
+<p>See <a href='javascript:void()'>best_mode_info</a>
+</p>
+
+<h4><a name='_AND_displaysurface_AND_methods_AND_toggle_fullscreen'>toggle_fullscreen</a></h4>
+
+<p>Toggles between fullscreen and windowed mode.
+The code is experimental and is known to crash in some cases,
+please report problems if found.
+It might be better to not use this at all and use DisplaySurface.destroy to dispose
+of the current DisplaySurface and create a new one with DisplaySurface.new with the
+FULLSCREEN flag toggled.
+</p>
+
+<h4><a name='_AND_displaysurface_AND_methods_AND_update'>update &rarr; self</a><br>
+<a name='_AND_displaysurface_AND_methods_AND_update'>update( rect ) &rarr; self</a></h4>
+
+<p>This call will update a section (or sections) of the display screen.
+You must update an area of your display when you change its contents.
+<a href='javascript:void()'>rect</a> is an array of rectangles.
+If passed with no arguments, this will update the entire display surface.
+</p>
+<p>This call cannot be used on OpenGL displays, and will generate an exception.
+</p>
+
+<h2><a name='_AND_displaysurface_AND_opengl'>OpenGL</a></h2>
+
+<p>RUDL supports setting up an OpenGL window in a cross platform way.
+Several other methods apply. See <a href='javascript:void()'>flip</a> and <a href='javascript:void()'>new.</a>
+</p>
+
+<h4><a name='_AND_displaysurface_AND_opengl_AND_videosurface.gl_get_attribute'>VideoSurface.gl_get_attribute( name ) &rarr; Number</a></h4>
+
+<p>From the SDL documentation:
+</p>
+<p>Get an attribute of the OpenGL subsystem from the windowing
+interface, such as glX. This is of course different from getting
+the values from SDL's internal OpenGL subsystem, which only
+stores the values you request before initialization.
+</p>
+<p>Developers should track the values they pass into SDL_GL_SetAttribute
+themselves if they want to retrieve these values.
+</p>
+
+<h4><a name='_AND_displaysurface_AND_opengl_AND_videosurface.gl_set_attribute'>VideoSurface.gl_set_attribute( name, value ) &rarr; self</a></h4>
+
+<p>Set an attribute of the OpenGL subsystem before intialization.
+</p>
+
+<h2><a name='_AND_displaysurface_AND_surfaceslostexception'>SurfacesLostException</a></h2>
+
+<p></p>
+<p>This gruesome thing is thrown by <a href='javascript:void()'>Surface#blit</a> when Windows manages to destroy all your
+surfaces.
+This might happen when switching to another application, for example.
+The only thing to rescue your application is by waiting for blit to stop throwing exceptions,
+then reloading all your surfaces.
+</p>
+
+<h2><a name='_AND_displaysurface_AND_video_modes'>Video modes</a></h2>
+<h4><a name='_AND_displaysurface_AND_video_modes_AND_best_mode_info'>best_mode_info</a></h4>
+
+<p>This method returns a hash filled with information about the video hardware.
+</p>
+<p>These entries are true or false:
+<ul>
+<li>hardware surfaces available
+<li>window manager available
+<li>hardware to hardware blits accelerated
+<li>hardware to hardware colorkey blits accelerated
+<li>hardware to hardware alpha blits accelerated
+<li>software to hardware blits accelerated
+<li>software to hardware colorkey blits accelerated
+<li>software to hardware alpha blits accelerated
+<li>color fills accelerated
+<li>video memory (in kilobytes)
+</ul>
+</p>
+<p>There is currently no difference between <a href='javascript:void()'>best_mode_info</a> and <a href='javascript:void()'>info,</a>
+except that one is a class method and the other an instance method,
+but there may be differences in the future.
+</p>
+
+<h4><a name='_AND_displaysurface_AND_video_modes_AND_displaysurface.mode_ok'>DisplaySurface.mode_ok? &rarr; boolean</a></h4>
+
+<p>Like <a href='javascript:void()'>new,</a> but doesn't set the mode, only returns true if the mode can be set,
+and false if it can't.
+</p>
+
+<h4><a name='_AND_displaysurface_AND_video_modes_AND_displaysurface.modes'>DisplaySurface.modes &rarr; [w,h] or nil</a><br>
+<a name='_AND_displaysurface_AND_video_modes_AND_displaysurface.modes'>DisplaySurface.modes( bitdepth ) &rarr; [w,h] or nil</a><br>
+<a name='_AND_displaysurface_AND_video_modes_AND_displaysurface.modes'>DisplaySurface.modes( bitdepth, flags ) &rarr; [w,h] or nil</a></h4>
+
+<p>Lists available modes for a certain <a href='javascript:void()'>bitdepth</a> and optionally only those modes that
+can do <a href='javascript:void()'>flags.</a>
+Flags are like those in <a href='javascript:void()'>DisplaySurface.new.</a>
+No flags is the same as passing <code>FULLSCREEN</code>.
+Return value nil means any mode is ok, an empty array means <em>no</em> mode is supported.
+</p>
+
+<h2><a name='_AND_displaysurface_AND_windowing_system'>Windowing system</a></h2>
+<h4><a name='_AND_displaysurface_AND_windowing_system_AND_active'>active? &rarr; boolean</a></h4>
+
+<p>Returns true if the application is active (i.e. not minimized).
+</p>
+
+<h4><a name='_AND_displaysurface_AND_windowing_system_AND_caption'>caption &rarr; [String, String]</a></h4>
+
+<p>Returns the title and icontitle of the window.
+</p>
+
+<h4><a name='_AND_displaysurface_AND_windowing_system_AND_iconify'>iconify &rarr; boolean</a></h4>
+
+<p>Iconifies (minimizes) the application.
+Returns true if successful.
+</p>
+
+<h4><a name='_AND_displaysurface_AND_windowing_system_AND_set_caption'>set_caption( title ) &rarr; self</a><br>
+<a name='_AND_displaysurface_AND_windowing_system_AND_set_caption'>set_caption( title, icontitle ) &rarr; self</a></h4>
+
+<p>Sets the title of the window (if the application runs in a window) to <a href='javascript:void()'>title.</a>
+Supplying <a href='javascript:void()'>icontitle</a> sets the title of the icon that shows when the application is iconified to <a href='javascript:void()'>icontitle,</a>
+or <a href='javascript:void()'>title</a> if <a href='javascript:void()'>icontitle</a> is not supplied.
+</p>
+
+<h4><a name='_AND_displaysurface_AND_windowing_system_AND_set_icon'>set_icon( icon_surface ) &rarr; nil</a><br>
+<a name='_AND_displaysurface_AND_windowing_system_AND_set_icon'>set_icon( icon_surface, mask_string ) &rarr; nil</a></h4>
+
+<p>Sets the icon for the display window.
+</p>
+<p>The SDL docs say this must be called before calling DisplaySurface.new, but
+at least on Windows this is not true. This method exists also as a class method
+of DisplaySurface.
+</p>
+<p>Win32 icons must be 32x32 to work properly.
+</p>
+<p>If <a href='javascript:void()'>icon_surface</a> has a colorkey set, that color will be transparent. (Since
+SDL currently handles that wrong, RUDL generates the mask instead, unless
+you supply nil for mask_string.)
+Alternatively, you can supply <a href='javascript:void()'>mask_string</a> where each byte represents
+the visibility of 8 pixels (MSB is the leftmost pixel, 0 means transparent).
+</p>
+
+<h2><a name='_AND_displaysurface_AND_windowing_system_input_event_classes'>Windowing system input event classes</a></h2>
+
+<p><dl>
+</p>
+<p><dt> ResizeEvent
+<dd> Contains <a href='javascript:void()'>size,</a> which is a [w, h] array indicating the new size of the window.
+<dt> ActiveEvent
+<dd> Contains <a href='javascript:void()'>gain</a> and <a href='javascript:void()'>state.</a>
+<dt> QuitEvent
+<dd> This event signals that the user or the program itself has requested to be terminated.
+It is triggered when the close button of the window is pressed.
+<dt> VideoExposeEvent
+<dd> Triggered when the screen has been modified outside of the application,
+usually by the window manager and needs to be redrawn.
+</p>
+<p></dl>
+</p>
+
+
+<br><br><br><br>
+</body>
+</html>

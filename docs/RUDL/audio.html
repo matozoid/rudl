@@ -1,0 +1,350 @@
+<html>
+<head>
+<title>Audio</title>
+<html>
+<head>
+<link rel='stylesheet' title='Dokumentat' href='../dokumentat.css' media='screen,projection,print' />
+<link rel='Contents' href='index.html'>
+</head>
+<body>
+
+<p>On this page, there are various classes for sound output.
+The system consists of a mixer that will mix several sounds,
+and one piece of music.
+</p>
+<p>The <a href='javascript:void()'>Sound</a> class represents a particular sound sample. It can
+be played on any Channel of the Mixer.
+</p>
+<p>The Mixer has a certain amount of Channels.
+Channels can be told to play a certain Sound.
+It is not possible to play more Sounds at once than there are Channels.
+</p>
+<p>A separate Channel is kept by the Mixer for playing Music files.
+Since it's only one channel, only one song can play at a time.
+</p>
+<p>This is a wrapper around <a href='http://www.libsdl.org/projects/SDL_mixer/'>SDL_mixer</a>.
+</p>
+
+<h1><a name='_AND_channel'>Channel</a></h1>
+
+<p>A Channel is an interface object to one of the mixer's channels.
+It can be used for manipulating sound on a particular channel.
+</p>
+
+<h2><a name='_AND_channel_AND_class_methods'>Class Methods</a></h2>
+<h4><a name='_AND_channel_AND_class_methods_AND_new'>new( number )</a></h4>
+
+<p>Creates a Channel interface object for mixer channel <a href='javascript:void()'>number.</a>
+</p>
+
+<h2><a name='_AND_channel_AND_play_control'>Play control</a></h2>
+
+<p>These are pretty self-explanatory.
+<a href='javascript:void()'>play</a> plays <a href='javascript:void()'>Sound</a> <a href='javascript:void()'>sound</a> 1 + <a href='javascript:void()'>loops</a> times, for a maximum time of <a href='javascript:void()'>maxtime</a> milliseconds.
+</p>
+
+<h4><a name='_AND_channel_AND_play_control_AND_busy'>busy &rarr; boolean</a></h4>
+<h4><a name='_AND_channel_AND_play_control_AND_pause'>pause &rarr; self</a></h4>
+<h4><a name='_AND_channel_AND_play_control_AND_play'>play( sound, loops, maxtime ) &rarr; self</a><br>
+<a name='_AND_channel_AND_play_control_AND_play'>play( sound, loops ) &rarr; self</a><br>
+<a name='_AND_channel_AND_play_control_AND_play'>play( sound ) &rarr; self</a></h4>
+<h4><a name='_AND_channel_AND_play_control_AND_stop'>stop &rarr; self</a></h4>
+<h4><a name='_AND_channel_AND_play_control_AND_unpause'>unpause &rarr; self</a></h4>
+<h2><a name='_AND_channel_AND_positioning'>Positioning</a></h2>
+<h4><a name='_AND_channel_AND_positioning_AND_reverse_stereo'>reverse_stereo( reverse ) &rarr; self</a></h4>
+
+<p>Causes a channel to reverse its stereo. This is handy if the user has his
+speakers hooked up backwards, or you would like to have a minor bit of
+psychedelia in your sound code.  :)  Calling this function with <a href='javascript:void()'>reverse</a>
+set to true reverses the chunks's usual channels. If <a href='javascript:void()'>reverse</a> is false,
+the effect is unregistered.
+</p>
+
+<h4><a name='_AND_channel_AND_positioning_AND_set_distance'>set_distance( distance ) &rarr; self</a></h4>
+
+<p><a href='javascript:void()'>Distance</a> is a number between 0.0 and 1.0 that specifies the space
+between the sound and the listener. The larger the number, the further
+away the sound is. Using 1.0 does not guarantee that the channel will be
+culled from the mixing process or be completely silent. For efficiency,
+the precision of this effect may be limited (distance 0 through 0.1 might
+all produce the same effect, 0.1 through 0.2 are equal, etc). Setting
+<a href='javascript:void()'>distance</a> to 0 unregisters this effect, since the data would be
+unchanged.
+</p>
+
+<h4><a name='_AND_channel_AND_positioning_AND_set_panning'>set_panning( left, right ) &rarr; self</a></h4>
+
+<p>Set the panning of a channel. The left and right channels are specified
+as numbers between 0.0 and 1.0, quietest to loudest, respectively.
+Technically, this is just individual volume control for a sample with
+two (stereo) channels, so it can be used for more than just panning.
+If you want real panning, call it like this:
+<p class='example'>channel.set_panning(left, 1.0-left);</p>
+</p>
+<p>...which isn't so hard.
+</p>
+
+<h4><a name='_AND_channel_AND_positioning_AND_set_position'>set_position( angle, distance ) &rarr; self</a></h4>
+
+<p>Set the position of a channel. <a href='javascript:void()'>angle</a> is an number from 0 to 360, that
+specifies the location of the sound in relation to the listener. <a href='javascript:void()'>angle</a>
+will be reduced as neccesary (540 becomes 180 degrees, -100 becomes 260).
+<a href='javascript:void()'>Angle</a> 0 is due north, and rotates clockwise as the value increases.
+For efficiency, the precision of this effect may be limited (angles 1
+through 7 might all produce the same effect, 8 through 15 are equal, etc).
+</p>
+<p><a href='javascript:void()'>distance</a> is a number between 0.0 and 1.0 that specifies the space
+between the sound and the listener. The larger the number, the further
+away the sound is. Using 1.0 does not guarantee that the channel will be
+culled from the mixing process or be completely silent. For efficiency,
+the precision of this effect may be limited (<a href='javascript:void()'>distance</a> 0 through 0.1 might
+all produce the same effect, 0.1 through 0.2 are equal, etc). Setting <a href='javascript:void()'>angle</a>
+and <a href='javascript:void()'>distance</a> to 0 unregisters this effect, since the data would be
+unchanged.
+</p>
+
+<h2><a name='_AND_channel_AND_volume_methods'>Volume methods</a></h2>
+<h4><a name='_AND_channel_AND_volume_methods_AND_fade_out'>fade_out( milliseconds )</a></h4>
+
+<p>fade_out fades the channel to silence in <a href='javascript:void()'>milliseconds</a> milliseconds.
+</p>
+
+<h4><a name='_AND_channel_AND_volume_methods_AND_volume'>volume</a><br>
+<a name='_AND_channel_AND_volume_methods_AND_volume'>volume=( loudness )</a></h4>
+
+<p>Get and set the volume of a <a href='javascript:void()'>RUDL::Channel.</a>
+Volumes range from 0.0 to 1.0.
+</p>
+
+<h1><a name='_AND_mixer'>Mixer</a></h1>
+
+<p>Mixer is the main sound class.
+All methods are available as class and instance methods.
+</p>
+
+<h2><a name='_AND_mixer_AND_initializers'>Initializers</a></h2>
+<h4><a name='_AND_mixer_AND_initializers_AND_destroy'>destroy &rarr; self</a></h4>
+
+<p>(was Mixer.quit)
+Uninitializes the Mixer.
+If you really want to do this, then be warned that all Music objects will be destroyed too!
+</p>
+
+<h4><a name='_AND_mixer_AND_initializers_AND_new'>new &rarr; Mixer</a><br>
+<a name='_AND_mixer_AND_initializers_AND_new'>new( frequency ) &rarr; Mixer</a><br>
+<a name='_AND_mixer_AND_initializers_AND_new'>new( frequency, format ) &rarr; Mixer</a><br>
+<a name='_AND_mixer_AND_initializers_AND_new'>new( frequency, format, stereo ) &rarr; Mixer</a><br>
+<a name='_AND_mixer_AND_initializers_AND_new'>new( frequency, format, stereo, buffersize ) &rarr; Mixer</a></h4>
+
+<p>Initializes the sound system.
+This call is not neccesary, the mixer will call <a href='javascript:void()'>Mixer.new</a> when it is needed.
+When you disagree with the defaults (at the time of writing: 16 bit, 22kHz, stereo, 4096)
+you can set them yourself, but do this <em>before</em> using any sound related method!
+<ul>
+<li><a href='javascript:void()'>frequency</a> is a number like 11025, 22050 or 44100.
+<li><a href='javascript:void()'>format</a> is AUDIO_S8 for 8 bit samples or AUDIO_S16SYS for 16 bit samples.
+  Other possibilities are listed at the bottom of this page.
+<li><a href='javascript:void()'>channels</a> is 1 (mono) or 2 (stereo.)
+<li><a href='javascript:void()'>buffersize</a> is how many samples are calculated in one go.
+  4096 by default.
+  Set higher if your sound stutters.
+</ul>
+</p>
+<p><a href='javascript:void()'>Mixer.new</a> will return a <a href='javascript:void()'>Mixer</a> object, but if you don't want it, you can
+discard it and use class methods instead.
+</p>
+
+<h2><a name='_AND_mixer_AND_mass_channel_operations'>Mass Channel Operations</a></h2>
+
+<p>These work on all channels at once.
+</p>
+
+<h4><a name='_AND_mixer_AND_mass_channel_operations_AND_pause'>pause</a></h4>
+<h4><a name='_AND_mixer_AND_mass_channel_operations_AND_stop'>stop</a></h4>
+<h4><a name='_AND_mixer_AND_mass_channel_operations_AND_unpause'>unpause</a></h4>
+<h2><a name='_AND_mixer_AND_methods'>Methods</a></h2>
+<h4><a name='_AND_mixer_AND_methods_AND_busy'>busy? &rarr; boolean</a></h4>
+
+<p>Returns the number of current active channels.
+This is not the total channels,
+but the number of channels that are currently playing sound.
+</p>
+
+<h4><a name='_AND_mixer_AND_methods_AND_driver'>driver &rarr; String</a></h4>
+
+<p>Returns the name of the driver doing the sound output.
+</p>
+
+<h4><a name='_AND_mixer_AND_methods_AND_fade_out'>fade_out( millisecs )</a></h4>
+
+<p>Fades away all sound to silence in millisecs milliseconds.
+</p>
+
+<h4><a name='_AND_mixer_AND_methods_AND_find_free_channel'>find_free_channel &rarr; Channel or nil</a></h4>
+<h4><a name='_AND_mixer_AND_methods_AND_find_oldest_channel'>find_oldest_channel &rarr; Channel or nil</a></h4>
+
+<p>Both functions search for a channel that can be used to play new sounds on.
+<a href='javascript:void()'>find_free_channel</a> finds a channel that is not playing anything and returns nil
+if there is no such channel.
+<a href='javascript:void()'>find_oldest_channel</a> finds the channel that has been playing for the longest time.
+</p>
+
+<h4><a name='_AND_mixer_AND_methods_AND_format'>format</a></h4>
+
+<p>These get the parameters that Mixer is playing at.
+It returns an array of [format (like AUDIO_S8), channels, frequency].
+See also <a href='javascript:void()'>Mixer@init.</a>
+</p>
+
+<h4><a name='_AND_mixer_AND_methods_AND_reserved'>reserved=( amount ) &rarr; self</a></h4>
+
+<p>This sets aside the first ((|amount|)) channels.
+They can only be played on by directly creating a Channel object and playing on it.
+No other function will take these channels for playing.
+</p>
+
+<h1><a name='_AND_music'>Music</a></h1>
+
+<p>This encapsulates a song.
+For some reason, SDL will only play one song at a time, and even though most of the
+Music methods are instance methods, some will act on the playing Music only.
+</p>
+
+<h2><a name='_AND_music_AND_constants'>Constants</a></h2>
+
+<p>#<a href='javascript:void()'>file</a>
+These are for indicating an audio format:
+<code>AUDIO_U8, AUDIO_S8, AUDIO_U16LSB, AUDIO_S16LSB, AUDIO_U16MSB, AUDIO_S16MSB,
+AUDIO_U16, AUDIO_S16, AUDIO_U16SYS, AUDIO_S16SYS</code>
+</p>
+
+<h2><a name='_AND_music_AND_initializers'>Initializers</a></h2>
+<h4><a name='_AND_music_AND_initializers_AND_destroy'>destroy</a></h4>
+
+<p>Frees the music from memory,
+thereby rendering the music instance useless.
+Ruby will crash if you use it anyway.
+#<a href='javascript:void()'>file</a> - need to fix Dokumentat for this
+<a href='javascript:void()'>section</a> Events
+<a href='javascript:void()'>class</a> EndOfMusicEvent
+This event is posted when the current music has ended.
+</p>
+
+<h4><a name='_AND_music_AND_initializers_AND_new'>new( filename )</a></h4>
+
+<p>Creates a new Music object from a MOD, XM, MIDI, MP3 or OGG file (I think.)
+</p>
+
+<h2><a name='_AND_music_AND_methods'>Methods</a></h2>
+<h4><a name='_AND_music_AND_methods_AND_post_end_event'>post_end_event &rarr; boolean</a><br>
+<a name='_AND_music_AND_methods_AND_post_end_event'>post_end_event=( on_or_off ) &rarr; self</a></h4>
+
+<p>Returns, or sets whether an <a href='javascript:void()'>EndOfMusicEvent</a> will be posted when the current music stops playing.
+<a href='javascript:void()'>on_or_off</a> is true or false.
+</p>
+
+<h2><a name='_AND_music_AND_play_control'>Play control</a></h2>
+
+<p>All pretty straight forward, except that they all act on the playing music, not the current one.
+</p>
+
+<h4><a name='_AND_music_AND_play_control_AND_busy'>busy?</a></h4>
+<h4><a name='_AND_music_AND_play_control_AND_pause'>pause</a></h4>
+<h4><a name='_AND_music_AND_play_control_AND_play'>play</a><br>
+<a name='_AND_music_AND_play_control_AND_play'>play( loops )</a></h4>
+
+<p>Plays this piece of music, stopping the previously playing one.
+Plays the music one time, or <a href='javascript:void()'>loops</a> + 1 times if you pass <a href='javascript:void()'>loops.</a>
+</p>
+
+<h4><a name='_AND_music_AND_play_control_AND_restart'>restart</a></h4>
+<h4><a name='_AND_music_AND_play_control_AND_stop'>stop</a></h4>
+<h4><a name='_AND_music_AND_play_control_AND_unpause'>unpause</a></h4>
+<h2><a name='_AND_music_AND_volume_methods'>Volume methods</a></h2>
+
+<p>These methods work on the currently playing music.
+</p>
+
+<h4><a name='_AND_music_AND_volume_methods_AND_fade_out'>fade_out( milliseconds )</a></h4>
+
+<p>fades out <em>the currently playing music</em> to silence in <a href='javascript:void()'>milliseconds.</a>
+</p>
+
+<h4><a name='_AND_music_AND_volume_methods_AND_volume'>volume &rarr; Number</a><br>
+<a name='_AND_music_AND_volume_methods_AND_volume'>volume=( loudness ) &rarr; self</a></h4>
+
+<p>volume and volume= get and set the volume.
+Volume ranges from 0.0 to 1.0.
+</p>
+
+<h1><a name='_AND_sound'>Sound</a></h1>
+
+<p>Sound is a single sample.
+It is loaded from a WAV file.
+</p>
+
+<h2><a name='_AND_sound_AND_initializers'>Initializers</a></h2>
+
+<p>Creates a new <a href='javascript:void()'>Sound</a> object with the sound in file <a href='javascript:void()'>filename.</a>
+</p>
+
+<h4><a name='_AND_sound_AND_initializers_AND_import'>import( sampledata )</a></h4>
+
+<p>This method imports raw sampledata.
+If it is not in the Mixer's format, use <a href='javascript:void()'>Mixer@convert</a> first.
+</p>
+
+<h4><a name='_AND_sound_AND_initializers_AND_load_new'>load_new( filename )</a></h4>
+<h4><a name='_AND_sound_AND_initializers_AND_new'>new</a><br>
+<a name='_AND_sound_AND_initializers_AND_new'>new( filename )</a></h4>
+<h4><a name='_AND_sound_AND_initializers_AND_string.to_sound'>String.to_sound</a></h4>
+
+<p>Creates a new <a href='javascript:void()'>RUDL::Sound</a> object with the sound (in .WAV format) in the string.
+</p>
+
+<h2><a name='_AND_sound_AND_volume_methods'>Volume methods</a></h2>
+<h4><a name='_AND_sound_AND_volume_methods_AND_fade_out'>fade_out( milliseconds )</a></h4>
+<h4><a name='_AND_sound_AND_volume_methods_AND_format'>format</a></h4>
+
+<p>Returns the format of the <a href='javascript:void()'>Sound,</a> which is always the same as the Mixer's format.
+See <a href='javascript:void()'>Mixer.format</a>
+</p>
+
+<h4><a name='_AND_sound_AND_volume_methods_AND_play'>play( loops, maxtime ) &rarr; Channel or nil</a></h4>
+
+<p>Starts playing a song on an available channel.
+If no channels are available, it will not play and return <a href='javascript:void()'>nil.</a>
+<a href='javascript:void()'>Loops</a> controls how many extra times the sound will play, a negative loop will play
+indefinitely, it defaults to 0.
+<a href='javascript:void()'>Maxtime</a> is the number of total milliseconds that the sound will play.
+It defaults to forever (-1).
+</p>
+<p>Returns a channel object for the channel that is selected to play the sound.
+</p>
+<p>Returns nil if for some reason no channel is found.
+</p>
+
+<h4><a name='_AND_sound_AND_volume_methods_AND_stop'>stop &rarr; self</a></h4>
+
+<p>Stops all channels playing this <a href='javascript:void()'>Sound.</a>
+</p>
+
+<h4><a name='_AND_sound_AND_volume_methods_AND_to_s'>to_s &rarr; String</a></h4>
+
+<p>Returns a string with the sampledata.
+</p>
+
+<h4><a name='_AND_sound_AND_volume_methods_AND_volume'>volume</a><br>
+<a name='_AND_sound_AND_volume_methods_AND_volume'>volume=( loudness )</a></h4>
+
+<p>These are volume methods.
+<a href='javascript:void()'>fade_out</a> fades all instances of this sound that are playing to silence in <a href='javascript:void()'>milliseconds</a> milliseconds.
+<a href='javascript:void()'>volume</a> returns the current volume.
+<a href='javascript:void()'>volume=</a> sets the volume to loudness.
+Volumes range from 0.0 to 1.0.
+</p>
+
+
+<br><br><br><br>
+</body>
+</html>
