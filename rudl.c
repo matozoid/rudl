@@ -14,7 +14,11 @@
 
 // For getting versions:
 #ifdef HAVE_SDL_MIXER_H
-#include "sdl_mixer.h"
+	#include "SDL_mixer.h"
+	#ifndef MIX_MAJOR_VERSION
+		#define MIX_MAJOR_VERSION 0
+		#define MIX_MINOR_VERSION 0
+	#endif
 #endif
 //
 

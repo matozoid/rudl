@@ -15,6 +15,10 @@ Just install it.
 <P>Like other extensions:
 <P>ruby extconf.rb
 <P>should create a makefile, or complain.
+If it says it can't find things,
+make sure you've got everything under "Required libraries" installed.
+RUDL doesn't <I>need</I> everything, just SDL actually,
+but it will be severely handicapped without all libraries.
 If it complains, and you wished it would say a little more, you can edit extconf.rb
 and uncomment the DEBUG-flag.
 <P>make
@@ -27,16 +31,33 @@ and uncomment the DEBUG-flag.
 <P>Don't trust this chapter, this is changing rapidly.
 
 <H5>Source</H5>
-Install CygWin first, then install Ruby
-(<A HREF="http://www.rubycentral.com/">this version</A>)
-in the same directory.
-Put the RUDL source in your cygwin home directory,
-and continue like in Linux.
+I'll write this later.
 
 <H5>Binary</H5>
 <P>Starting with 0.6, there will be binary versions.
-All that will have to be done is run a small script and it should be installed.
-Offcourse, you'll need to get the following libraries:
+They are compiled with Microsoft Visual C 6.
+<P>Here's how to install one:
+<OL>
+<LI>Grab <A HREF="http://froukepc.dhs.org/rudl/download/binary/ruby/mswin32-ruby1.6.6-i586.zip">compiled Ruby</A>
+<LI>Grab <A HREF="http://froukepc.dhs.org/rudl/download/binary/mswin32-rudl-0.6-bin-for-ruby-1.6.6-test.zip">compiled RUDL</A>
+<LI>Grab <A HREF="http://froukepc.dhs.org/rudl/download/runtime-dll-so/mswin32-rudl-0.6-test-dll.zip">compiled support libraries</A>
+(see also "Required libraries")
+<LI>Grab <A HREF="http://froukepc.dhs.org/rudl/download/applications/polyscope-by-martin-stannard.zip">polyscope</A>
+<LI>Unzip Ruby from <B>mswin32-ruby1.6.6-i586.zip</B> to somewhere like <B>C:\RUBY</B>.
+<LI>Unzip RUDL.so from <B>mswin32-rudl-0.6-bin-for-ruby-1.6.6-test.zip</B> into <B>C:\RUBY\LIB\RUBY\1.6\I586-MSWIN32</B>
+<LI>Unzip the supporting dlls from <B>mswin32-rudl-0.6-test-dll.zip</B> into either <B>C:\WINDOWS\SYSTEM</B>,
+<B>C:\WINNT\SYSTEM</B> or some other directory where they can be found.
+<LI>Unzip <B>polyscope-by-martin-stannard.zip</B> anywhere.
+<LI>Start polyscope.rb.
+<LI>Windows should now pop up a window with a browse button.
+Browse to C:\RUBY\BIN\RUBY.EXE and tell Windows to always use that program to run rb files.
+If it doesn't pop up a window, your ruby files are associated with another program, 
+probably another ruby somewhere on your system.
+In an explorer, go to tools, folder options, where you can find the rb extension.
+Delete it and repeat from the previous point.
+<LI>Polyscope should run.</OL>
+
+<P>If it doesn't run, mail me...
 
 <H4>Required libraries</H4>
 
@@ -51,7 +72,6 @@ and <A HREF="http://www.info-zip.org/pub/infozip/zlib">zlib</A>.
 <P><A HREF="http://www.libsdl.org/projects/SDL_mixer/index.html">SDL_mixer</A>
 <P><A HREF="http://www.libsdl.org/projects/SDL_ttf/index.html">SDL_ttf</A>, which depends on
 libttf.
-Does anybody have a precompiled libSDL_ttf for Windows?
 
 <H3>Use RUDL</H3>
 
@@ -76,11 +96,11 @@ This might clash with other libraries who define the same names to be something 
 
 <P>The following datatypes are commonly used by RUDL:
 <P>When a coordinate, size or such is needed, RUDL works with array's of two numbers like
-[10,42].
+[10, 42].
 <P>When a rectangle is needed: either an array of four numbers, representing x,y from the 
-top left corner, and w,h for width and height: [x,y,w,h], or a Rect object, which has x, y,
+top left corner, and w,h for width and height: [x, y, width, height], or a Rect object, which has x, y,
 w and h members. Return values are of the array type.
-<P>When a color is needed, always use an array of [r, g, b] or [r, g, b, a].
+<P>When a color is needed, always use an array of [red, green, blue] or [red, green, blue, alpha].
 Return values are like this too, I don't know if sometimes returning three, sometimes
 returning four values is wanted...?
 <P>A palette is an array containing [r, g, b] arrays.
