@@ -180,20 +180,20 @@ end
 def resetPolys
 	$Polys = PolyScope.new(rand(8) + 2)
 	$Display.fill([0, 0, 0])
-	$Display.blit($Font.image , [0, 0])
+	#$Display.blit($Font.image , [0, 0])
 end
 	
 
 
 
-$Font = Font.new("goose.ttf", 50)
-$Font.makeWord("PolyScope", [205, 50, 240])
+#$Font = Font.new("goose.ttf", 50)
+#$Font.makeWord("PolyScope", [205, 50, 240])
 $Display=DisplaySurface.new($ScreenSize, HWSURFACE|FULLSCREEN)  #DOUBLEBUF| 
 $Display.fill([0, 0, 0])
 $Display.flip
 
 backImage = Surface.new([$ScreenX, $ScreenY]) 
-backImage.blit($Font.image , [0, 0])
+#backImage.blit($Font.image , [0, 0])
 
 resetPolys
 #backBuffer=Surface.new($ScreenSize, display.flags)
@@ -220,8 +220,6 @@ while true
 	sleep(0.01) if waitflag
 	$Clock += 0.02
 	i += 1
-	$Display.blit($Font.image , [0, 0]) ; $Display.fill([0, 0, 0]) if rand(1000) == 0
+	#$Display.blit($Font.image , [0, 0])
+	$Display.fill([0, 0, 0]) if rand(1000) == 0
 end
-
-
-
