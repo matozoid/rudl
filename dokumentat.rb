@@ -210,7 +210,7 @@ end
 
 class ClassEntry < Entry
 	def write(file)
-		file.write("<h2>Class #{@name}</h2>\n")
+		file.write("<h2>#{@name}</h2>\n")
 		file.write("#{@text}")
 		children.sort.each do |child|
 			child.write(file)
@@ -220,7 +220,7 @@ end
 
 class ModuleEntry < Entry
 	def write(file)
-		file.write("<h2>Module #{@name}</h2>\n")
+		file.write("<h2>#{@name}</h2>\n")
 		file.write("#{@text}")
 		children.sort.each do |child|
 			child.write(file)
@@ -230,7 +230,7 @@ end
 
 class SectionEntry < Entry
 	def write(file)
-		file.write("<h3>Section #{@name}</h3>\n")
+		file.write("<h3>#{@name}</h3>\n")
 		file.write("#{@text}")
 		children.sort.each do |child|
 			child.write(file)
@@ -240,7 +240,7 @@ end
 
 class MethodEntry < Entry
 	def write(file)
-		file.write("<h4>Method #{@name}</h4>\n")
+		file.write("<h4>#{@name}</h4>\n")
 		file.write("#{@text}")
 		children.sort.each do |child|
 			child.write(file)
