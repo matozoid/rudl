@@ -1,3 +1,8 @@
+#
+#
+### Revision:	$Revision: 1.13 $
+# Date:	$Date: 2003/09/25 22:53:36 $#
+
 puts '* Setting up for compilation'
 
 require 'mkmf'
