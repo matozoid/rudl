@@ -119,6 +119,8 @@ VALUE sDLEvent2RubyEvent(SDL_Event* event)
 			}*/
 	}
 
+	RUDL_ASSERT(newEvent!=Qnil, "Unknown event received from SDL (SDL too new for this RUDL version?)");
+
 	return newEvent;
 }
 
