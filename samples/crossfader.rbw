@@ -4,19 +4,23 @@
 
 # Simple way to crossfade:
 # - blit pic2 to the window
-# - pic1.set_alpha the current transparency (1%, 2%, 3%, 4%, 5% ...)
+# - pic1.set_alpha the current opacity (1%, 2%, 3%, 4%, 5% ...)
 # - blit pic1 to the window
 # - repeat
 
 # That way we have to do two blits every time.
 
 # This example shows a faster way to crossfade:
-# - pic1.set_alpha a new value (1/100, 1/99, 1/98, 1/97, 1/96 ...)
+# - pic1.set_alpha a "delta opacity" (1/100, 1/99, 1/98, 1/97, 1/96 ...)
 # - blit pic1 to the window
 # - repeat
 
 # This results in the same linear fade, with half the amount of blitting!
-# (accuracy can vary a little, but it's unnoticeable)
+# (though not quite half the cpu usage...)
+
+# Note that due to only 24-bit color accuracy, you might see color gradients
+# "crawl" during the fade, but only in some cases and if you look closely.
+
 
 
 require "RUDL"
@@ -62,7 +66,7 @@ loop do
 
     # are we fading currently?
     if n > 0
-        pic1.set_alpha(255/n)    # straight line (multiply by f(n)=[0..1] for curve)
+        pic1.set_alpha(255/n)
         win.blit(pic1, [0,0])
         win.update
         n -= 1
