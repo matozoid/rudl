@@ -1,5 +1,6 @@
 require 'getoptlong'
 require 'ftools'
+require 'pp'
 
 =begin
 --- Organizing documentation:
@@ -32,7 +33,10 @@ If you want to start documenting something else, close the comment and start ove
 --- Example:
 /**
 Welcome to RUDL.
-@file Audio --> Will output into file output_dir/project_name/audio.html. If you don't file, it will go into index.html.
+*/
+/**
+@file Audio
+--> Will output into file output_dir/project_name/audio.html. If you don't file, it will go into index.html.
 Optional description for the top of this file.
 */
 /**
@@ -100,47 +104,126 @@ index: {
 =end
 
 class Entry
+	attr_reader :children
+	attr_reader :name
+	
+	def initialize(name)
+		@name=name
+		@children=[]
+		@text=nil
+	end
+	
+	def <=>(other)
+		@name<=>other.name
+	end
+	
+	def ==(other)
+		@name==other.name
+	end
+	
 	def link
 		"<a href='index.html'>back</a>"
 	end
+	
+	def add_text(text)
+		if @text
+			@text=@text+text
+		else
+			@text=''
+		end
+	end
+	
+	def write(output_directory)
+		children.each do |child|
+			child.write(output_directory)
+		end
+	end
+end
+
+class RootEntry < Entry
 end
 
 class ProjectEntry < Entry
-	def initialize(name)
-		@name=name	end
-	
-	def link
-		"<a href='index.html'>#{@project_name}</a>"
-	end
 end
 
 class FileEntry < Entry
-	def initialize(name)
-		@name=name	end
-	
-	def link
-		"aaa"
-	end
+	def write(output_directory)
+		File.open(output_directory+'/'+@name.downcase+'.html', 'w') do |file|
+			children.sort.each do |child|
+				child.write(file)
+			end
+		end	end
 end
 
 class ClassEntry < Entry
-	def initialize(name)
-		@name=name	end
+	def write(file)
+		file.write("<h2>#{@name}</h2>\n")
+		file.write("#{@text}")
+	end
 end
 
 class ModuleEntry < Entry
-	def initialize(name)
-		@name=name	end
+	def write(file)
+		file.write("<h2>#{@name}</h2>\n")
+		file.write("#{@text}")
+	end
+end
+
+class SectionEntry < Entry
+	def write(file)
+		file.write("<h3>#{@name}</h3>\n")
+		file.write("#{@text}")
+	end
 end
 
 class MethodEntry < Entry
-	def initialize(name)
-		@name=name	end
+	def write(file)
+		file.write("<h3>#{@name}</h3>\n")
+		file.write("#{@text}")
+	end
 end
 
 class ParameterEntry < Entry
-	def initialize(name)
-		@name=name	end
+end
+
+class Path
+	attr_reader :path
+	def initialize(root)
+		@path=[root]
+	end
+	
+	def goto(entry)
+		last_in_path=@path[-1]
+		if last_in_path.children.include?(entry)
+			entry=last_in_path.children[last_in_path.children.index(entry)]
+		else
+			last_in_path.children.push entry
+		end
+		@path.push(entry)	end
+	
+	def goto_file_level
+		@path=@path[0..1] # bad, should be search for class
+	end
+	
+	def goto_section_level
+		@path=@path[0..2] # bad
+	end
+	
+	def goto_class_level
+	end
+	
+	def goto_method_level
+	end
+	
+	def backup_to(path, class_type)
+		while(@path.length>0 && @path[@path.length-1]!=class_type)
+			p @path
+			@path=@path[0..-2]
+		end	end
+	
+	def deepest_node
+		@path[-1]
+	end
 	
 end
 
@@ -149,40 +232,72 @@ class Dokumentat
 		say "Starting project #{project_name}"
 		@project_name=project_name
 		@project=ProjectEntry.new(@project_name)
-		@hierarchy={@project=>{}}
+		@root=RootEntry.new("root")
+		@root.children.push(@project)
 	end
-	
-	def backup_path_to_index_class(path, class_type)
-		while(path.length>0 && path[path.length-1]!=class_type)
-			p path
-			path=path[0..-2]
-		end	end
 	
 	def process_dir(source_path)
 		files=Dir[source_path]
 		files.each do |file_name|
-			path=[@project]
+			path=Path.new(@root)
+			path.goto(@project)
 			process_file(file_name, path)
 		end
 	end
 	
 	def process_file(file_name, path)
 		say "Processing file #{file_name}"
-		path.push FileEntry.new(file_name)
 		File.open(file_name, 'r') do |file|
 			file.read.scan(/\/\*\*\s*(.*?)\s*\*\//m)  do |block|
-				p block
-				#lines=
+				lines=block.to_s.split("\n")
+				section_mode=true
+				text=""
+				lines.each do |line|
+					if line[0]!=?@
+						section_mode=false
+					end
+					if section_mode
+						type, text=(line.match /@([^ ]*) (.*)/)[1..2]
+						case type.downcase
+							when 'file'
+								path.goto_file_level
+								path.goto(FileEntry.new(text))
+							when 'section'
+								path.goto_section_level
+								path.goto(SectionEntry.new(text))
+							when 'method'
+								path.goto_method_level
+								path.goto(MethodEntry.new(text))
+							when 'class'
+								path.goto_class_level
+								path.goto(ClassEntry.new(text))
+							when 'module'
+								path.goto_class_level
+								path.goto(ModuleEntry.new(text))
+							else
+								say "Unknown section: #{line}"
+						end
+					else
+						if line.strip.length==0
+							text=text+'\n<p>'
+						else
+							text=text+line
+						end
+					end
+				end
+				path.deepest_node.add_text(text)
 			end
 		end
 	end
 	
 	def write(output_path)
 		say "Writing result to #{output_path}/"
-		File.makedirs(output_path)	end
+		File.makedirs(output_path)
+		pp @root
+		@root.write(output_path)	end
 	
 	def say(text)
-		puts text if($verbose)
+		puts text if $verbose
 	end
 end
 
