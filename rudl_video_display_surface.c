@@ -3,6 +3,9 @@ RUDL - a C library wrapping SDL for use in Ruby.
 Copyright (C) 2001, 2002, 2003  Danny van Bruggen
 
 $Log: rudl_video_display_surface.c,v $
+Revision 1.20  2003/12/23 01:29:30  rennex
+Tweaked docs
+
 Revision 1.19  2003/12/03 16:04:11  rennex
 Tweaked the docs a bit
 
@@ -394,7 +397,7 @@ static VALUE displaySurface_flip(VALUE self)
 /*
 =begin
 --- DisplaySurface#active?
-Returns true if the application is active.
+Returns true if the application is active (i.e. not minimized).
 =end */
 static VALUE displaySurface_active_(VALUE self)
 {
@@ -513,8 +516,8 @@ static VALUE displaySurface_set_icon(int argc, VALUE* argv, VALUE self)
 /*
 =begin
 --- DisplaySurface#iconify
-Iconifies the application.
-Returns true if it is succesfull.
+Iconifies (minimizes) the application.
+Returns true if successful.
 =end */
 static VALUE displaySurface_iconify(VALUE self)
 {
@@ -523,10 +526,10 @@ static VALUE displaySurface_iconify(VALUE self)
 
 /*
 =begin
---- DisplaySurface#gamma=([r,g,b])
---- DisplaySurface#gamma=(intensity)
+--- DisplaySurface#gamma=( [r,g,b] )
+--- DisplaySurface#gamma=( intensity )
 Sets the gamma value for the display when this is supported.
-Intensity is a shortcut for values where r=g=b.
+((|intensity|)) is a shortcut for values where r=g=b.
 =end */
 static VALUE displaySurface_gamma_(VALUE self, VALUE color)
 {
