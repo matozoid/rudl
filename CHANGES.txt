@@ -8,6 +8,7 @@ newest
  + added VideoExposeEvent which occurs when the window is uncovered
    (it was previously a nil event)
  + added automatic fixing of window clipping after a resize
+ + Added a new utility for small GUIs: GameGUI
 
  * fixed a couple typos that caused compilation errors on Linux
  * Surface#[] and []= now accept an [x,y] array as well as separate x,y coordinates.
@@ -19,6 +20,7 @@ newest
  * Fixed segfault when calling set_palette(0, nil) (e.g. when trying to copy
    the palette from a 16/24-bit surface)
  * Made DisplaySurface#destroy also a class method
+ * changed all C documentation to Dokumentat format
 
 
 0.7.1
