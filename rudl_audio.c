@@ -825,7 +825,7 @@ Returns the name of the driver doing the sound output.
 static VALUE mixer_driver(VALUE self)
 {
 	int bufsize=1024;
-	char*name=malloc(bufsize*sizeof(char));
+	char*name=ALLOC_N(char, bufsize);
 	char*result;
 	
 	initAudio();

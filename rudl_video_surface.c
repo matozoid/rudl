@@ -3,6 +3,9 @@ RUDL - a C library wrapping SDL for use in Ruby.
 Copyright (C) 2001, 2002, 2003  Danny van Bruggen
 
 $Log: rudl_video_surface.c,v $
+Revision 1.31  2003/12/29 20:15:04  tsuihark
+Changed malloc to ALLOC_N to prevent memory leaks
+
 Revision 1.30  2003/12/26 22:41:14  rennex
 Combined Surface#get and Surface#[] into one method
 
@@ -1125,7 +1128,7 @@ static VALUE surface_get_column(VALUE self, VALUE x)
     h=surface->h;
     pixelsize=surface->format->BytesPerPixel;
 
-    column=malloc(h*pixelsize);
+    column=ALLOC_N(char, h*pixelsize);
     src=((Uint8*)surface->pixels)+(NUM2INT(x))*pixelsize;
     dest=column;
     for(y=0; y<h; y++){
@@ -1221,7 +1224,7 @@ static VALUE surface_pixels(VALUE self)
         return rb_str_new(surface->pixels, image_size);
     }else{
         int y;
-        Uint8* tmp_pixels=malloc(image_size);
+        Uint8* tmp_pixels=ALLOC_N(char, image_size);
         VALUE retval;
         Uint16 bytewidth=surface->w*surface->format->BytesPerPixel;
 
