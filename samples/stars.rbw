@@ -15,92 +15,79 @@ include Constant
 #constants
 $winsize= [640, 480]
 $wincenter = [320, 240]
-$numstars = 10
 
 class Star
 	def initialize
 		dir = rand(100000)
 		velmult = rand(0)*.6+.4
-		@vel = [Math.sin(dir) * velmult, Math.cos(dir) * velmult]
-		@pos=$wincenter
+		@dx=Math.sin(dir) * velmult
+		@dy=Math.cos(dir) * velmult
+		@x=$wincenter[0]
+		@y=$wincenter[1]
+		@time=0
 	end
 
-	def draw(surface, color)
-		surface.plot(@pos, color)
+	def draw(surface)
+		color=[@time,@time,@time]
+		surface.filled_circle([@x,@y], @time/100, color)
 	end
 
 	def move
-		@pos[0] += @vel[0]
-		@pos[1] += @vel[1]
-		if @pos[0]<0 || @pos[0]>$winsize[0] || @pos[1]<0 || @pos[1]>$winsize[1]
-			return false
+		@x += @dx
+		@y += @dy
+		@time+=3
+		if @x<0 || @x>$winsize[0] || @y<0 || @y>$winsize[1]
+			Star.new
 		else
-			@vel[0] = @vel[0] * 1.05
-			@vel[1] = @vel[1] * 1.05
-			return true
+			@dx *= 1.05
+			@dy *= 1.05
+			self
 		end
 	end
 end
 
-def initialize_stars
-	stars = []
-	(0..$numstars).each {|x|
-		star=Star.new
-		vel, pos = star
-		steps = 2
-		#pos[0] = pos[0] + (vel[0] * steps)
-		#pos[1] = pos[1] + (vel[1] * steps)
-		#vel[0] = vel[0] * (steps * .09)
-		#vel[1] = vel[1] * (steps * .09)
-		stars.push star
-	}
-	move_stars(stars)
-	stars
-end
-
-def draw_stars(surface, stars, color)
-	stars.each {|star|
-		star.draw(surface, color)
-	}
-end
-
-def move_stars(stars)
-	p stars
-	stars.collect! {|star|
-		if !star.move
-			Star.new
-		else
-			star
+class Stars
+	def initialize(num_stars)
+		srand
+		@stars = []
+		num_stars.times do
+			@stars.push(Star.new)
 		end
-	}
-	p stars
-	exit
-end	
+	end
+
+	def move
+		@stars.collect! {|star|
+			star.move
+		}
+	end
+
+	def draw(surface)
+		@stars.each {|star|
+			star.draw(surface)
+		}
+	end
+end
 
 #create our starfield
-srand
-$stars = initialize_stars
+stars=Stars.new(150)
 
 #initialize and prepare screen
-display= DisplaySurface.new($winsize)
-display.set_caption 'pygame Stars Example'
-white = [255, 240, 200]
-black = [20, 20, 40]
-display.fill(black)
+display= DisplaySurface.new($winsize, FULLSCREEN|DOUBLEBUF|HWSURFACE)
+display.set_caption 'RUDL Stars Example'
 
 # main loop
 
 done = false
 while !done do
-#	p $stars
-	draw_stars(display, $stars, black)
-	move_stars($stars)
-	draw_stars(display, $stars, white)
+	display.fill([0,0,0])
+	stars.move
+	stars.draw(display)
+	display.antialiased_circle(Mouse.pos, 5, [255,0,0])
 	display.flip
 
 	event=EventQueue.poll
 	case event
-		when QuitEvent
+		when QuitEvent,KeyDownEvent
 			done = true
 		when MouseButtonDownEvent
 			$wincenter = event.pos

@@ -832,6 +832,47 @@ Uint32 internal_get(SDL_Surface* surface, Sint16 x, Sint16 y)
 	return color;
 }
 
+Uint32 internal_nonlocking_get(SDL_Surface* surface, Sint16 x, Sint16 y)
+{
+	SDL_PixelFormat* format = surface->format;
+	Uint8* pixels = (Uint8*)surface->pixels;
+	Uint32 color;
+	Uint8* pix;
+
+	SDL_LockSurface(surface);
+	pixels = (Uint8*)surface->pixels;
+
+	if(x < 0 || x >= surface->w || y < 0 || y >= surface->h){
+		return 0;
+	}
+
+	if(format->BytesPerPixel < 1 || format->BytesPerPixel > 4){
+		SDL_RAISE_S("invalid color depth for surface");
+	}
+
+	switch(format->BytesPerPixel){
+		case 1:
+			color = (Uint32)*((Uint8*)pixels + y * surface->pitch + x);
+			break;
+		case 2:
+			color = (Uint32)*((Uint16*)(pixels + y * surface->pitch) + x);
+			break;
+		case 3:
+			pix = ((Uint8*)(pixels + y * surface->pitch) + x * 3);
+#if SDL_BYTEORDER == SDL_LIL_ENDIAN
+			color = (pix[0]) + (pix[1]<<8) + (pix[2]<<16);
+#else
+			color = (pix[2]) + (pix[1]<<8) + (pix[0]<<16);
+#endif
+			break;
+		default: /*case 4:*/
+			color = *((Uint32*)(pixels + y * surface->pitch) + x);
+			break;
+	}
+	SDL_UnlockSurface(surface);
+	return color;
+}
+
 static VALUE surface_get(VALUE self, VALUE coordinate)
 {
 	SDL_Surface* surface=retrieveSurfacePointer(self);

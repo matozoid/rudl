@@ -4,9 +4,7 @@
 #ifdef HAVE_SDL_MIXER_H
 #include "SDL_mixer.h"
 
-// Thanks to Ruby-SDL (should be fixed a little though, I think? Looks like things
-// in here that are getting gc-protection are actually never freed. Then again,
-// who cares?)
+// Thanks to Ruby-SDL
 #define MAX_CHANNELS 256 /* should be more than enough */
 static VALUE playing_wave[MAX_CHANNELS];
 static VALUE playing_music=Qnil;

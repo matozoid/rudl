@@ -5,7 +5,17 @@
 #define RUDLVERSION_MAJOR 0
 #define RUDLVERSION_MINOR 6
 #define RUDLVERSION_PATCH 0
-#define DEBUG_RUDL
+//#define DEBUG_RUDL
+
+// Find out what "inline" looks like:
+#ifndef INLINE
+# ifdef __GNUC__
+#  define INLINE __inline__
+# else
+#  define INLINE __inline
+# endif
+#endif
+//
 
 #include "ruby.h"
 #include "rubyio.h"

@@ -202,10 +202,10 @@ static VALUE truetypefont_descent(VALUE self)
 
 /*
 =begin
---- TrueTypeFont#height
+--- TrueTypeFont#h
 Returns the average size of each glyph in the font.
 =end */
-static VALUE truetypefont_height(VALUE self)
+static VALUE truetypefont_h(VALUE self)
 {
 	return INT2NUM(TTF_FontHeight(retrieveTTFPointer(self)));
 }
@@ -252,7 +252,7 @@ static VALUE truetypefont_underline__(VALUE self, VALUE onOrOff)
 /*
 =begin
 --- TrueTypeFont#size( text )
-Returns the size in pixels that this text would need.
+Returns the size in pixels that this text would need. [w,h]
 =end */
 static VALUE truetypefont_size(VALUE self, VALUE text)
 {
@@ -271,7 +271,7 @@ void initTrueTypeFontClasses()
 	rb_define_method(classTTF, "bold?", truetypefont_bold_, 0);
 	rb_define_method(classTTF, "italic?", truetypefont_italic_, 0);
 	rb_define_method(classTTF, "descent", truetypefont_descent, 0);
-	rb_define_method(classTTF, "height", truetypefont_height, 0);
+	rb_define_method(classTTF, "h", truetypefont_h, 0);
 	rb_define_method(classTTF, "linesize", truetypefont_linesize, 0);
 	rb_define_method(classTTF, "underline?", truetypefont_underline_, 0);
 	rb_define_method(classTTF, "render", truetypefont_render, -1);
@@ -279,5 +279,7 @@ void initTrueTypeFontClasses()
 	rb_define_method(classTTF, "italic=", truetypefont_italic__, 1);
 	rb_define_method(classTTF, "underline=", truetypefont_underline__, 1);
 	rb_define_method(classTTF, "size", truetypefont_size, 1);
+
+	rb_alias(classTTF, rb_intern("height"), rb_intern("h"));
 #endif
 }

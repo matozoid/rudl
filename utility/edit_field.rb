@@ -244,7 +244,7 @@ module RUDL
 		end
 
 		def draw_cursor(x)
-			@text_surface.line [x,0], [x,@font.height], @foreground_color if blinkstate
+			@text_surface.line [x,0], [x,@font.h], @foreground_color if blinkstate
 		end
 	end
 

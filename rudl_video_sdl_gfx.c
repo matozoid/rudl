@@ -87,7 +87,6 @@ static VALUE surface_array_plot(VALUE self, VALUE x, VALUE y, VALUE color)
 static VALUE surface_horizontal_line(VALUE self, VALUE coord, VALUE endx, VALUE color)
 {
 	Sint16 x,y;
-	DEBUG_S("sdl_gfx");
 	PARAMETER2COORD(coord, &x, &y);
 	if(hlineColor(retrieveSurfacePointer(self), x, NUM2Sint16(endx), y, VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
 	return self;
@@ -328,8 +327,8 @@ static VALUE surface_print(VALUE self, VALUE coord, VALUE text, VALUE color)
 }
 #endif
 
+#ifdef HAVE_SDL_IMAGEFILTER_H
 /*
-
 Unsupported for now (don't know how they work yet)
 == SDL_gfx: SDL_imageFilter
 --- Surface#filterMMXdetect
@@ -402,6 +401,7 @@ int SDL_imageFilterConvolveKernel7x7ShiftRight(unsigned char *Src, unsigned char
 int SDL_imageFilterConvolveKernel9x9ShiftRight(unsigned char *Src, unsigned char *Dest, int rows, int columns, signed short *Kernel, unsigned char NRightShift);
 int SDL_imageFilterSobelX(unsigned char *Src, unsigned char *Dest, int rows, int columns);
 */
+#endif
 ///////////////////////////////// INIT
 void initVideoSDLGFXClasses()
 {

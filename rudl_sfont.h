@@ -2,5 +2,6 @@
 #include "rudl.h"
 
 VALUE classSFont;
+VALUE classBitmapFont;
 
 extern void initSFontClasses();

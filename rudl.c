@@ -276,4 +276,6 @@ DECKLSPECKL void Init_RUDL()
 	initSFontClasses();
 	//initMappyClasses();
 	initSDL();
+
+	koe(5);
 }

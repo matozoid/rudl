@@ -204,4 +204,6 @@ The number of the button that was pressed.
 	classMouseButtonDownEvent=rb_define_class_under(moduleRUDL, "MouseButtonDownEvent", classEvent);
 	rb_define_attr(classMouseButtonDownEvent, "pos", 1, 1);
 	rb_define_attr(classMouseButtonDownEvent, "button", 1, 1);
+
+	koe(1);
 }
