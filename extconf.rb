@@ -1,4 +1,7 @@
 # $Log: extconf.rb,v $
+# Revision 1.19  2004/05/13 12:51:08  rennex
+# Added more spaces around compiler flags, just in case
+#
 # Revision 1.18  2003/11/28 22:24:58  rennex
 # Fixed bugs that caused errors on Linux.
 #
@@ -58,11 +61,11 @@ unix=!windows
 $CFLAGS+=" -funroll-loops " if !mswin32
 
 $CFLAGS+=" -Wall " if unix||cygwin
-$CPPFLAGS+="-GX " if mswin32
+$CPPFLAGS+=" -GX " if mswin32
 
 if unix
-    $CFLAGS += `#{sdl_config} --cflags`.chomp
-    $LDFLAGS += `#{sdl_config} --libs`.chomp
+    $CFLAGS += " " + `#{sdl_config} --cflags`.chomp
+    $LDFLAGS += " " + `#{sdl_config} --libs`.chomp
 end
 
 puts '* Checking for optional files'
