@@ -91,6 +91,7 @@ static VALUE eventTimer_stop(VALUE obj)
 
 void initTimerClasses()
 {
+	DEBUG_S("initTimerClasses()");
 	classTimer=rb_define_module_under(moduleRUDL, "Timer");
 	rb_define_singleton_method(classTimer, "delay", timer_delay, 1);
 	rb_define_singleton_method(classTimer, "ticks", timer_getTicks, 0);

@@ -75,6 +75,7 @@ static VALUE RUDL_at_exit(VALUE obj)
 #ifdef HAVE_SDL_MIXER_H
 	quitAudio();
 #endif
+	quitVideo();
 	quitTTF();
 	SDL_Quit();
 	return Qnil;
@@ -215,21 +216,23 @@ It defines four version levels: major, minor, patch and deepest.
 --- Version#initialize( major=0, minor=0, patch=0, deepest=0 )
 Initializes a new Version object.
 --- Version#<( v )
-Compares this version number with the one in v.
+Compares this version number with the one in ((|v|)).
+Returns ((|true|)) if older.
 --- Version#to_s
-Returns the version as a string: major.minor.patch.deepest
+Returns the version as a string: "major.minor.patch.deepest"
 = SDLError
 SDLError is the class that is thrown when SDL or RUDL find an SDL-specific
 problem.
 = Constants
-All for the hacked ((|init|)):
+All for the hacked ((|init_subsystem|)) and ((|quit_subsystem|)),
+which should officially never be needed:
 
 INIT_TIMER, INIT_AUDIO, INIT_VIDEO, INIT_CDROM, INIT_JOYSTICK, INIT_NOPARACHUTE, INIT_EVERYTHING
 =end */
 
 DECKLSPECKL void Init_RUDL()
 {
-	DEBUG_S("Initializing RUDL");
+	DEBUG_S("Init_RUDL()");
 	moduleRUDL=rb_define_module("RUDL");
 
 	rb_define_singleton_method(moduleRUDL, "at_exit", RUDL_at_exit, 0);
@@ -289,3 +292,21 @@ DECKLSPECKL void Init_RUDL()
 	//initMappyClasses();
 	initSDL();
 }
+
+/*
+Note to self: RDOC tags
+= H1
+== H2
+=== H3
+==== H4
++ H5
+  (indented) SOURCE
+* UL LI
+(1) OL LI
+--- Class#|.method
+((|var|))
+(({class}))
+((*emphasis*))
+((< >))
+((<URL:http://enz>))
+*/

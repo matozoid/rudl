@@ -23,6 +23,8 @@ cygwin=/cygwin/ =~ RUBY_PLATFORM
 windows=mswin32||cygwin
 unix=!windows
 
+$CFLAGS+="-funroll-loops " if !mswin32
+
 $CFLAGS+="-Wall " if cygwin
 $CPPFLAGS+="-GX " if mswin32
 

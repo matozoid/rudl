@@ -65,7 +65,7 @@ static VALUE joystick_count(VALUE self)
 /*
 =begin
 == Instance Methods
---- Joystick.id
+--- Joystick#id
 Returns the id of the joystick as it was passed to ((<Joystick.new>)).
 =end */
 static VALUE joystick_id(VALUE self)
@@ -75,7 +75,7 @@ static VALUE joystick_id(VALUE self)
 
 /*
 =begin
---- Joystick.axes
+--- Joystick#axes
 Returns the amount of axes the joystick has.
 =end */
 static VALUE joystick_axes(VALUE self)
@@ -85,7 +85,7 @@ static VALUE joystick_axes(VALUE self)
 
 /*
 =begin
---- Joystick.balls
+--- Joystick#balls
 Returns the amount of trackballs the joystick has.
 =end */
 static VALUE joystick_balls(VALUE self)
@@ -95,7 +95,7 @@ static VALUE joystick_balls(VALUE self)
 
 /*
 =begin
---- Joystick.hats
+--- Joystick#hats
 Returns the amount of hats the joystick has.
 =end */
 static VALUE joystick_hats(VALUE self)
@@ -105,7 +105,7 @@ static VALUE joystick_hats(VALUE self)
 
 /*
 =begin
---- Joystick.buttons
+--- Joystick#buttons
 Returns the amount of buttons the joystick has.
 =end */
 static VALUE joystick_buttons(VALUE self)
@@ -115,7 +115,7 @@ static VALUE joystick_buttons(VALUE self)
 
 /*
 =begin
---- Joystick.axis( nr )
+--- Joystick#axis( nr )
 Returns the state of axis ((|nr|)), which is between -1 to 1.
 =end */
 static VALUE joystick_axis(VALUE self, VALUE nr)
@@ -125,7 +125,7 @@ static VALUE joystick_axis(VALUE self, VALUE nr)
 
 /*
 =begin
---- Joystick.ball( nr )
+--- Joystick#ball( nr )
 Returns the state of ball ((|nr|)), which is an array of [dx, dy] where dx and dy are between -1 to 1.
 =end */
 static VALUE joystick_ball(VALUE self, VALUE nr)
@@ -137,7 +137,7 @@ static VALUE joystick_ball(VALUE self, VALUE nr)
 
 /*
 =begin
---- Joystick.hat( nr )
+--- Joystick#hat( nr )
 Returns the state of hat ((|nr|)), which is an array of [dx, dy] where dx and dy can be -1, 0 or 1.
 =end */
 static VALUE joystick_hat(VALUE self, VALUE nr)
@@ -155,7 +155,7 @@ static VALUE joystick_hat(VALUE self, VALUE nr)
 }
 /*
 =begin
---- Joystick.button( nr )
+--- Joystick#button( nr )
 Returns the boolean state of button ((|nr|)).
 =end */
 static VALUE joystick_button(VALUE self, VALUE nr)
@@ -171,7 +171,8 @@ static VALUE joystick_close_hack(VALUE self)
 
 void initJoystickClasses()
 {
-	classJoystick=rb_define_module_under(moduleRUDL, "Joystick");
+	DEBUG_S("initJoystickClasses()");
+	classJoystick=rb_define_class_under(moduleRUDL, "Joystick", rb_cObject);
 	rb_define_singleton_method(classJoystick, "new", joystick_new, 1);
 	rb_define_singleton_method(classJoystick, "count", joystick_count, 0);
 	rb_define_method(classJoystick, "id", joystick_id, 0);
@@ -184,6 +185,14 @@ void initJoystickClasses()
 	rb_define_method(classJoystick, "hat", joystick_hat, 1);
 	rb_define_method(classJoystick, "button", joystick_button, 1);
 	rb_define_method(classJoystick, "close_hack", joystick_close_hack, 0);
+
+	rb_eval_string(
+		"module RUDL class Joystick				\n"
+		"	def to_s							\n"
+		"		\"Joystick #{id}, #{axes} axes, #{balls} balls, #{buttons} buttons, #{hats} hats\"	\n"
+		"	end									\n"
+		"end end								\n"
+	);
 	
 /*
 =begin

@@ -9,10 +9,16 @@
 = Key
 The Key class gives access to the keyboard without events.
 
+You can either call the class methods: "Key.something" directly, 
+or instantiate the class and lug along a reference to it and call
+instance methods on that: "k=Key.new" "k.something" (they will call
+class methods under the hood, so it's exactly the same)
+
 EventQueue.pump will update the state of Key,
 so if no keys seem to be pressed, call pump.
-== Class Methods
+== Class and instance Methods
 --- Key.focused?
+--- Key#focused?
 Returns true when the application has the keyboard input focus.
 =end */
 static VALUE key_getFocused(VALUE self)
@@ -24,6 +30,7 @@ static VALUE key_getFocused(VALUE self)
 /*
 =begin
 --- Key.modifiers
+--- Key#modifiers
 Returns the current modifier keys state.
 =end */
 static VALUE key_getModifiers(VALUE self)
@@ -35,6 +42,7 @@ static VALUE key_getModifiers(VALUE self)
 /*
 =begin
 --- Key.pressed?
+--- Key#pressed?
 Returns a hash containing all keys that are set, set to true.
 So, if K_b is pressed, the hash will contain a key,value pair of K_b => true.
 =end */
@@ -64,6 +72,7 @@ static VALUE key_getPressed(VALUE self)
 /*
 =begin
 --- Key.name( key )
+--- Key#name( key )
 Returns a string describing constant ((|key|))
 =end */
 static VALUE key_name(VALUE self, VALUE key)
@@ -75,6 +84,7 @@ static VALUE key_name(VALUE self, VALUE key)
 /*
 =begin
 --- Key.modifiers=( modifiers )
+--- Key#modifiers=( modifiers )
 Sets the keyboard modifier state.
 =end */
 static VALUE key_setModifiers(VALUE self, VALUE mods)
@@ -87,6 +97,7 @@ static VALUE key_setModifiers(VALUE self, VALUE mods)
 /*
 =begin
 --- Key.set_repeat( delay, interval )
+--- Key#set_repeat( delay, interval )
 Sets the keyboard to wait for ((|delay|)) milliseconds before starting repeat with 
 ((|interval|)) delay between repeats.
 Set both to zero to disable repeat.
@@ -102,13 +113,37 @@ static VALUE key_set_repeat(VALUE self, VALUE delay, VALUE interval)
 
 void initKeyClasses()
 {
-	classKey=rb_define_module_under(moduleRUDL, "Key");
+	DEBUG_S("initKeyClasses()");
+	classKey=rb_define_class_under(moduleRUDL, "Key", rb_cObject);
 	rb_define_singleton_method(classKey, "focused?", key_getFocused, 0);
 	rb_define_singleton_method(classKey, "modifiers", key_getModifiers, 0);
 	rb_define_singleton_method(classKey, "pressed?", key_getPressed, 0);
 	rb_define_singleton_method(classKey, "name", key_name, 1);
 	rb_define_singleton_method(classKey, "modifiers=", key_setModifiers, 1);
 	rb_define_singleton_method(classKey, "set_repeat", key_set_repeat, 2);
+
+	rb_eval_string(
+			"module RUDL class Key				\n"
+			"	def focused?					\n"
+			"		Key::focused?				\n"
+			"	end								\n"
+			"	def modifiers					\n"
+			"		Key::modifiers				\n"
+			"	end								\n"
+			"	def pressed?					\n"
+			"		Key::pressed?				\n"
+			"	end								\n"
+			"	def name(*a)					\n"
+			"		Key::name(*a)				\n"
+			"	end								\n"
+			"	def modifiers=(a)				\n"
+			"		Key::modifiers=(a)			\n"
+			"	end								\n"
+			"	def set_repeat(*a)				\n"
+			"		Key::name(*a)				\n"
+			"	end								\n"
+			"end end							\n"
+	);
 /*
 =begin
 = KeyUpEvent
@@ -123,6 +158,7 @@ The Unicode version of the key.
 	classKeyUpEvent=rb_define_class_under(moduleRUDL, "KeyUpEvent", classEvent);
 	rb_define_attr(classKeyUpEvent, "key", 1, 1);
 	rb_define_attr(classKeyUpEvent, "mod", 1, 1);
+	rb_define_attr(classKeyUpEvent, "unicode", 1, 1);
 
 /*
 =begin
@@ -132,10 +168,13 @@ This event is posted when a key is pressed and when it gets repeated (see Key#se
 The keycode for the pressed key.
 --- KeyDownEvent#mod
 The modifier keys state.
+--- KeyDownEvent#unicode
+The Unicode version of the key.
 =end */
 	classKeyDownEvent=rb_define_class_under(moduleRUDL, "KeyDownEvent", classEvent);
 	rb_define_attr(classKeyDownEvent, "key", 1, 1);
 	rb_define_attr(classKeyDownEvent, "mod", 1, 1);
+	rb_define_attr(classKeyDownEvent, "unicode", 1, 1);
 
 /*
 =begin

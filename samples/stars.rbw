@@ -85,11 +85,12 @@ while !done do
 	display.antialiased_circle(Mouse.pos, 5, [255,0,0])
 	display.flip
 
-	event=EventQueue.poll
-	case event
-		when QuitEvent,KeyDownEvent
-			done = true
-		when MouseButtonDownEvent
-			$wincenter = event.pos
+	while event=EventQueue.poll
+		case event
+			when QuitEvent,KeyDownEvent
+				done = true
+			when MouseButtonDownEvent
+				$wincenter = event.pos
+		end
 	end
 end

@@ -18,6 +18,10 @@ void initVideo()
 
 void quitVideo()
 {
+	rb_eval_string(
+		"ObjectSpace.each_object(RUDL::Surface) {|x|	\n"
+		"	x.destroy if(x.type==RUDL::Surface)			\n"
+		"}												\n");
 	if(SDL_WasInit(SDL_INIT_VIDEO)){
 		DEBUG_S("Stopping video subsystem");
 		SDL_QuitSubSystem(SDL_INIT_VIDEO);
@@ -59,8 +63,8 @@ __inline__ Uint32 VALUE2COLOR_NOMAP(VALUE colorObject)
 
 __inline__ Uint32 VALUE2COLOR(VALUE colorObject, SDL_PixelFormat* format)
 {
-	VALUE r,g,b,a;
 	if(rb_obj_is_kind_of(colorObject, rb_cArray)){
+		VALUE r,g,b,a;
 		switch(RARRAY(colorObject)->len){
 			case 3:
 				r=rb_ary_entry(colorObject, 0);
@@ -87,7 +91,8 @@ __inline__ Uint32 VALUE2COLOR(VALUE colorObject, SDL_PixelFormat* format)
 				return Qnil;
 		}
 	}else{
-		return NUM2UINT(colorObject);
+		Uint32 color=NUM2UINT(colorObject);
+		return SDL_MapRGBA(format, (Uint8)(color>>24), (Uint8)(color>>16&0xff), (Uint8)(color>>8&0xff), (Uint8)(color&0xff));
 	}
 }
 
@@ -121,6 +126,7 @@ __inline__ void PARAMETER2COORD(VALUE parameter, Sint16* x, Sint16* y)
 ///////////////////////////////// INIT
 void initVideoClasses()
 {
+	DEBUG_S("initVideoClasses()");
 	initVideoSurfaceClasses();
 	initVideoDisplaySurfaceClasses();
 	initVideoRectClasses();

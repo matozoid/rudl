@@ -11,7 +11,7 @@ include Constant
 
 $display=DisplaySurface.new([320, 200], HWSURFACE|DOUBLEBUF|FULLSCREEN)
 
-$MaxBadThings=50
+$MaxBadThings=15
 
 # contained_images parses the surface made from "crapola.bmp" in the following way:
 # 1. get color on 0,0 - call it bordercolor
@@ -21,16 +21,14 @@ $MaxBadThings=50
 #    and store it in the 2-dimensional result array.
 # 5. Repeat 2 until you run out of pixels.
 # 6. Find the next "line" of images and go back to 2.
-# 7. Return the two-dimensional array of found images
+# 7. Return the two-dimensional array of found images, or one dimensional if there was
+#    only one line.
 # This might be easier to see if you look at crapola.bmp.
-# Changed! I've changed the image, there's only one line now, and thus it returns
-# a one-dimensional array.
 $images=Surface.load_new('media/crapola.bmp').contained_images
 
 $score=0
 
 $sound_on=true
-
 if RUDL.versions.include? 'SDL_mixer'
 	begin
 		Mixer.init(44100, 16, 2)
@@ -323,7 +321,8 @@ class Ship < Sprite
 		if keystate[K_LCTRL] 
 			if !@endlessbulletstreamstopper
 				Bullet.new(@rect)
-				$sound['shoot'].play if $sound_on
+				sound_x=@rect.x/300.0
+				$sound['shoot'].play.set_panning(sound_x, 1.0-sound_x) if $sound_on
 				@endlessbulletstreamstopper=true
 			end
 		else
@@ -443,30 +442,32 @@ end
 def gameover
 	scrolltext='                                        '+
 	'(This scroller is not synchronized in any way, sorry!) '+
-	'Welcome to CRAPOLA, a crappy game to demonstrate RUDL, the accellerated multimedia '
+	'Welcome to CRAPOLA, a crappy game to demonstrate RUDL, the accellerated multimedia '+
 	'extension to Ruby. The cursor keys move your ship left and right. Left CTRL shoots '+
 	' and ALT-ENTER toggles fullscreen. Jeff Minter RU13Z... This game took a few hours to program... '+
 	'Don\'t look at the frame-skipping code, I\'m still figuring out what the best way to '+
-	'do that is... ¡Laamella Gad! - the wave of the past... Greetz in no order fly to '+
+	'do that is... Laamella Gad - the wave of the past... Greetz in no order fly to '+
 	'the Dynamic Duo  -  Hotline  -  911  -  the Yak Society  -  Papillon ... Ah whatever, '+
 	'those groups are long dead.  Greetings to Toshiro Kuwabara (thanks for rdtool), '+
-	'Yoshiyuki Kusano, Andrew Hunt, David Thomas, '+
+	'Yoshiyuki Kusano, Andrew Hunt, David Thomas, Nauglin, Leon Torres, Mike Sassak, Martin Stannard, '+
+	'Pete Shinners from Pygame, Patrick May, Ulf Ekstrom, Peter Thoman, Niklas Frykholm, Matthew Bloch, '+
+	'Massimiliano Mirra, '+
 	't h e - e l f  from NFA for the music which was ripped from some vague Amiga demo\'s, '+
 	'Karl Bartel (for SFont), Andreas Schiffler (next bugreport will come in when I find '+
 	'some time <:) ) Yukihiro "Matz" Matsumoto for Ruby, Sam Lantinga for SDL, Gerard, '+
-	'Judith, Marieke, Gijs, Katja, Patrick, Mat(t)hieu, Femnijl(c), Mimsje(c), Rachel, '+
-	'Bert, DiDi, PeterJ, Dossey, dhr. ing. Edelwater, Frouke!, Dennis, Ishi, Nekiwa, '+
+	'Judith, Marieke, Gijs, Katja, Patrick, Matje, Femnijl(c), Mimsje(c), Rachel, '+
+	'Bert, DiDi, PeterJ, Dossey, dhr. ing. Edelwater, Frouke, Dennis, Ishi, Nekiwa, '+
 	'Joepi, Jumbo, Able Lakes King, KLinZ, Margooks, McDuvel, Sletje, Ufor Anders, '+
-	'Bernadette, Roelof, Marc, '+
-	'Maurice, Martijn, Carline, the girl next door, Peggy, Manon and the mice running '+
+	'Bernadette, Roelof, Eric de kleine enz., '+
+	'Maurice, Martijn, Carline, Cathelijne next door, Peggy, Manon and the mice running '+
 	'through this house. Wrap is coming up. In producing RUDL, I used 30 Valkenburgs Wit, '+
-	'a P166/64MB and a P1000/128MB running Win98, a 486/80 20MB and a P166/16 running Linux '+
+	'a P166/64MB and a P1000/128MB running Win98, a 486/80 20MB and a P166 16MB running Linux '+
 	'(it\'s two generations of froukepc!), MSVC (for editing), '+
 	'a Wacom tablet for drawing graphics (yeah, I could just as well have drawn them '+
 	'with a mouse), boejon, tons of mail, mostly useless discussions on IRC, uh-oh, '+
 	'wrap time!'
 	Music.new('media/crapola_fire.mod').play(-1) if $sound_on
-	font=SFont.new(Surface.load_new('media/24p_copperplate_blue.png'))
+	font=BitmapFont.new(Surface.load_new('media/24p_copperplate_blue.png'))
 	logo=Surface.new(font.size('Crapola'))
 	font.puts(logo, [0,0], 'Crapola')
 	logo_x=(320-logo.w)/2

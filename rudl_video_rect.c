@@ -53,14 +53,11 @@ __inline__ static void array_set_h(VALUE array, double h)	{rb_ary_store(array, 3
 __inline__ void PARAMETER2CRECT(VALUE arg1, SDL_Rect* rect)
 {
 	VALUE tmp;
-	if(rb_obj_is_kind_of(arg1, rb_cArray)){
-		tmp=rb_ary_entry(arg1, 0);			rect->x=NUM2Sint16(tmp);
-		tmp=rb_ary_entry(arg1, 1);			rect->y=NUM2Sint16(tmp);
-		tmp=rb_ary_entry(arg1, 2);			rect->w=NUM2Uint16(tmp);
-		tmp=rb_ary_entry(arg1, 3);			rect->h=NUM2Uint16(tmp);
-	}else{
-		rb_raise(rb_eTypeError, "Wanted RUDL::Rect or array");
-	}
+	Check_Type(arg1, T_ARRAY);
+	tmp=rb_ary_entry(arg1, 0);			rect->x=NUM2Sint16(tmp);
+	tmp=rb_ary_entry(arg1, 1);			rect->y=NUM2Sint16(tmp);
+	tmp=rb_ary_entry(arg1, 2);			rect->w=NUM2Uint16(tmp);
+	tmp=rb_ary_entry(arg1, 3);			rect->h=NUM2Uint16(tmp);
 }
 
 __inline__ void RECT2CRECT(VALUE source, SDL_Rect* destination)
@@ -107,12 +104,15 @@ __inline__ static void normalize(VALUE self)
 = Rect
 Rect has been discarded.
 It's methods have moved to the standard Array.
-Rect is now a subclass of Array for backward compatability.
 = Array
 The standard Ruby array class has been extended to provide 
 methods for using it as a rectangle.
-Arrays like these have entries 0, 1, 2 and 3 set to integer values for
+Arrays like these have entries 0, 1, 2 and 3 set to floating point values for
 x, y, width and height.
+
+[10,15,20,25] would be a 20x25 rectangle at position 10,15.
+
+So far these methods are mostly untested.
 == Class Methods
 =end */
 
@@ -582,6 +582,8 @@ static VALUE rb_array_overlaps(VALUE self, VALUE otherRect)
 ///////////////////////////////// INIT
 void initVideoRectClasses()
 {
+	DEBUG_S("initVideoRectClasses()");
+
 	rb_define_singleton_method(rb_cArray, "collide_lists", rb_array_collide_lists, 2);
 	rb_define_singleton_method(rb_cArray, "union_list", rb_array_union_list, 1);
 
@@ -630,7 +632,7 @@ void initVideoRectClasses()
 	rb_define_method(rb_cArray, "clamp", rb_array_clamp, 1);
 	rb_define_method(rb_cArray, "clamp!", rb_array_clamp_bang, 1);
 
-	// Backward compatability:
+	// Backward compatability: (crap)
 	
 	rb_define_class_under(moduleRUDL, "Rect", rb_cArray);
 }

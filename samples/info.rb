@@ -15,7 +15,13 @@ RUDL.versions.each {|library, version|
 begin
 	puts
 	puts "Video hardware info:"
-	puts DisplaySurface.best_mode_info.sort.join("\n")
+	DisplaySurface.best_mode_info.sort.each {|name, value|
+		if value
+			puts "o #{name}"
+		else
+			puts "x #{name}"
+		end
+	}
 	puts
 	puts "Video modes: (F means fullscreen)"
 
@@ -47,4 +53,14 @@ begin
 	}
 rescue
 	puts "No video driver available"
+end
+
+joysticks=Joystick.count
+
+if joysticks==0
+	puts "No joysticks available"
+else
+	(0...joysticks).each {|i|
+		p Joystick.new(i)
+	}
 end

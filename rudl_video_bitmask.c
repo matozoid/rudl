@@ -199,6 +199,8 @@ static VALUE collision_map_array_get(VALUE self, VALUE x, VALUE y)
 ///////////////////////////////// INIT
 void initVideoSGEClasses()
 {
+	DEBUG_S("initVideoSGEClasses()");
+
 	rb_eval_string(
 		"module RUDL class Surface			\n"
 		"	attr_accessor :collision_map	\n"

@@ -125,10 +125,12 @@ This class is the interface to the eventsystem in SDL.
 Don't be put off by the amount of non-implemented methods, their absence doesn't bother
 me and I don't plan on implementing them before someone comes up with a good reason for
 their existence.
-== Class Methods
+== Class and instance Methods
 --- EventQueue.get
+--- EventQueue#get
 Returns all events in the queue.
 --- EventQueue.get( eventmask )
+--- EventQueue#get( eventmask )
 Not implemented.
 =end
 */
@@ -157,9 +159,11 @@ static VALUE eventqueue_get(int argc, VALUE* argv, VALUE self)
 /*
 =begin
 --- EventQueue.peek
+--- EventQueue#peek
 Returns the next event without removing it from the queue,
 or false when no events are available.
 --- EventQueue.peek( eventmask )
+--- EventQueue#peek( eventmask )
 Not implemented.
 =end */
 static VALUE eventqueue_peek(int argc, VALUE* argv, VALUE self)
@@ -185,6 +189,7 @@ static VALUE eventqueue_peek(int argc, VALUE* argv, VALUE self)
 /*
 =begin
 --- EventQueue.poll
+--- EventQueue#poll
 Returns the next event, or nil if the queue is empty.
 =end */
 static VALUE eventqueue_poll(VALUE self)
@@ -199,6 +204,7 @@ static VALUE eventqueue_poll(VALUE self)
 /*
 =begin
 --- EventQueue.post( event )
+--- EventQueue#post( event )
 Not implemented.
 =end */
 static VALUE eventqueue_post(VALUE self, VALUE event)
@@ -210,6 +216,7 @@ static VALUE eventqueue_post(VALUE self, VALUE event)
 /*
 =begin
 --- EventQueue.pump
+--- EventQueue#pump
 This method is responsible for getting events from the operating system into the
 SDL eventqueue.
 If your application seems unresponsive, 
@@ -224,6 +231,7 @@ static VALUE eventqueue_pump(VALUE self)
 /*
 =begin
 --- EventQueue.allowed=( eventtype )
+--- EventQueue#allowed=( eventtype )
 Not implemented.
 =end */
 static VALUE eventqueue_set_allowed(VALUE self, VALUE eventType)
@@ -235,6 +243,7 @@ static VALUE eventqueue_set_allowed(VALUE self, VALUE eventType)
 /*
 =begin
 --- EventQueue.blocked=( eventtype )
+--- EventQueue#blocked=( eventtype )
 Not implemented.
 =end */
 static VALUE eventqueue_set_blocked(VALUE self, VALUE eventType)
@@ -247,6 +256,8 @@ static VALUE eventqueue_set_blocked(VALUE self, VALUE eventType)
 =begin
 --- EventQueue.grab
 --- EventQueue.grab=( grab )
+--- EventQueue#grab
+--- EventQueue#grab=( grab )
 Controls grabbing of all mouse and keyboard input for the display.
 Grabbing the input is not neccessary to receive keyboard and mouse events, 
 but it ensures all input will go to your application.
@@ -254,6 +265,7 @@ It also keeps the mouse locked inside your window.
 It is best to not always grab the input, 
 since it prevents the end user from doing anything else on their system.
 ((|grab|)) is true or false.
+Returns self.
 =end */
 static VALUE eventqueue_set_grab(VALUE self, VALUE grabOn)
 {
@@ -273,6 +285,7 @@ static VALUE eventqueue_grab(VALUE self)
 /*
 =begin
 --- EventQueue.wait
+--- EventQueue#wait
 Wait for an event to arrive.
 Returns that event.
 =end */
@@ -287,26 +300,31 @@ static VALUE eventqueue_wait(VALUE self)
 
 void initEventsClasses()
 {
+	DEBUG_S("initEventsClasses()");
 	classEventQueue=rb_define_module_under(moduleRUDL, "EventQueue");
-	rb_define_singleton_method(classEventQueue, "get", eventqueue_get, -1);
-	rb_define_singleton_method(classEventQueue, "peek", eventqueue_peek, -1);
-	rb_define_singleton_method(classEventQueue, "poll", eventqueue_poll, 0);
-	rb_define_singleton_method(classEventQueue, "post", eventqueue_post, 1);
-	rb_define_singleton_method(classEventQueue, "pump", eventqueue_pump, 0);
-	rb_define_singleton_method(classEventQueue, "allowed=", eventqueue_set_allowed, 1);
-	rb_define_singleton_method(classEventQueue, "blocked=", eventqueue_set_blocked, 1);
-	rb_define_singleton_method(classEventQueue, "grab=", eventqueue_set_grab, 1);
-	rb_define_singleton_method(classEventQueue, "grab", eventqueue_grab, 0);
-	rb_define_singleton_method(classEventQueue, "wait", eventqueue_wait, 0);
+	rb_define_singleton_and_instance_method(classEventQueue, "get", eventqueue_get, -1);
+	rb_define_singleton_and_instance_method(classEventQueue, "peek", eventqueue_peek, -1);
+	rb_define_singleton_and_instance_method(classEventQueue, "poll", eventqueue_poll, 0);
+	rb_define_singleton_and_instance_method(classEventQueue, "post", eventqueue_post, 1);
+	rb_define_singleton_and_instance_method(classEventQueue, "pump", eventqueue_pump, 0);
+	rb_define_singleton_and_instance_method(classEventQueue, "allowed=", eventqueue_set_allowed, 1);
+	rb_define_singleton_and_instance_method(classEventQueue, "blocked=", eventqueue_set_blocked, 1);
+	rb_define_singleton_and_instance_method(classEventQueue, "grab=", eventqueue_set_grab, 1);
+	rb_define_singleton_and_instance_method(classEventQueue, "grab", eventqueue_grab, 0);
+	rb_define_singleton_and_instance_method(classEventQueue, "wait", eventqueue_wait, 0);
 /*
 =begin
 --- EventQueue.flush
+--- EventQueue#flush
 Flushes all events from the queue.
 =end */
 	rb_eval_string(
 		"module RUDL module EventQueue				\n"
 		"	def EventQueue.flush					\n"
 		"		true while EventQueue.poll			\n"
+		"	end										\n"
+		"	def flush								\n"
+		"		true while poll						\n"
 		"	end										\n"
 		"end end									\n");
 

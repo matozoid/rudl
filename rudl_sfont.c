@@ -66,6 +66,7 @@ static VALUE sfont_new(VALUE self, VALUE surface)
 
 	SFont_FontInfo* font=(SFont_FontInfo*)malloc(sizeof(SFont_FontInfo));
 	font->Surface=retrieveSurfacePointer(surface);
+	SDL_VERIFY(font->Surface!=NULL);
 
 	if (SDL_MUSTLOCK(font->Surface)) SDL_LockSurface(font->Surface);
 
@@ -148,6 +149,7 @@ static VALUE sfont_size(VALUE self, VALUE ruby_text)
 
 void initSFontClasses()
 {
+	DEBUG_S("initSFontClasses()");
 	classSFont=rb_define_class_under(moduleRUDL, "SFont", rb_cObject);
 	rb_define_singleton_method(classSFont, "new", sfont_new, 1);
 	rb_define_method(classSFont, "print", sfont_print, 3);

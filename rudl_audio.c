@@ -44,7 +44,7 @@ void quitAudio()
 	// the mixer was closed. This will give some ugly bogus Music objects
 	// though, but hey, it wasn't me who closed and opened the mixer and reused
 	// some Music objects!
-	rb_eval_string("ObjectSpace.each_object(RUDL::Music) {|x| x.dealloc}");
+	rb_eval_string("ObjectSpace.each_object(RUDL::Music) {|x| x.destroy}");
 	if(SDL_WasInit(SDL_INIT_AUDIO)){
 		Mix_CloseAudio();
 		SDL_QuitSubSystem(SDL_INIT_AUDIO);
@@ -168,6 +168,96 @@ static VALUE channel_unpause(VALUE self)
 	Mix_Resume(retrieveChannelNumber(self));
 	return self;
 }
+/*
+=begin
+--- Channel#set_panning( left, right )
+Set the panning of a channel. The left and right channels are specified
+as numbers between 0.0 and 1.0, quietest to loudest, respectively.
+Technically, this is just individual volume control for a sample with
+two (stereo) channels, so it can be used for more than just panning.
+If you want real panning, call it like this:
+
+  channel.set_panning(left, 1.0-left);
+
+...which isn't so hard.
+
+Returns self.
+=end */
+static VALUE channel_set_panning(VALUE self, VALUE left, VALUE right)
+{
+	double l=NUM2DBL(left);
+	double r=NUM2DBL(right);
+	RUDL_ASSERT(l<=1.0, "left volume too high");
+	RUDL_ASSERT(l>=0.0, "left volume too low");
+	RUDL_ASSERT(r<=1.0, "right volume too high");
+	RUDL_ASSERT(r>=0.0, "right volume too low");
+	SDL_VERIFY(Mix_SetPanning(retrieveChannelNumber(self), (Uint8)(l*255), (Uint8)(r*255)));
+	return self;
+}
+
+/*
+=begin
+--- Channel#set_position( angle, distance )
+Set the position of a channel. ((|angle|)) is an number from 0 to 360, that
+specifies the location of the sound in relation to the listener. ((|angle|))
+will be reduced as neccesary (540 becomes 180 degrees, -100 becomes 260).
+Angle 0 is due north, and rotates clockwise as the value increases.
+For efficiency, the precision of this effect may be limited (angles 1
+through 7 might all produce the same effect, 8 through 15 are equal, etc).
+
+((|distance|)) is a number between 0.0 and 1.0 that specifies the space
+between the sound and the listener. The larger the number, the further
+away the sound is. Using 1.0 does not guarantee that the channel will be
+culled from the mixing process or be completely silent. For efficiency,
+the precision of this effect may be limited (distance 0 through 0.1 might
+all produce the same effect, 0.1 through 0.2 are equal, etc). Setting ((|angle|))
+and ((|distance|)) to 0 unregisters this effect, since the data would be
+unchanged.
+ 
+Returns self.
+=end */
+static VALUE channel_set_position(VALUE self, VALUE angle, VALUE distance)
+{
+	SDL_VERIFY(Mix_SetPosition(retrieveChannelNumber(self), (Sint16)NUM2INT(angle), (Sint8)(NUM2DBL(distance)*255)));
+	return self;
+}
+
+/*
+=begin
+--- Channel#set_distance( distance )
+((|distance|)) is a number between 0.0 and 1.0 that specifies the space
+between the sound and the listener. The larger the number, the further
+away the sound is. Using 1.0 does not guarantee that the channel will be
+culled from the mixing process or be completely silent. For efficiency,
+the precision of this effect may be limited (distance 0 through 0.1 might
+all produce the same effect, 0.1 through 0.2 are equal, etc). Setting 
+((|distance|)) to 0 unregisters this effect, since the data would be
+unchanged.
+
+Returns self.
+=end */
+static VALUE channel_set_distance(VALUE self, VALUE distance)
+{
+	SDL_VERIFY(Mix_SetDistance(retrieveChannelNumber(self), (Uint8)(NUM2DBL(distance)*255)));
+	return self;
+}
+
+/*
+=begin
+--- Channel#reverse_stereo( reverse )
+Causes a channel to reverse its stereo. This is handy if the user has his
+speakers hooked up backwards, or you would like to have a minor bit of
+psychedelia in your sound code.  :)  Calling this function with ((|reverse|))
+set to true reverses the chunks's usual channels. If ((|reverse|)) is false,
+the effect is unregistered.
+
+Returns self.
+=end */
+static VALUE channel_reverse_stereo(VALUE self, VALUE reverse)
+{
+	SDL_VERIFY(Mix_SetReverseStereo(retrieveChannelNumber(self), NUM2BOOL(reverse)));
+	return self;
+}
 /////////////// SOUND
 Mix_Chunk* retrieveMixChunk(VALUE self)
 {
@@ -242,6 +332,7 @@ Loops controls how many extra times the sound will play, a negative loop will pl
 indefinitely, it defaults to 0.
 Maxtime is the number of total milliseconds that the sound will play.
 It defaults to forever (-1).
+
 Returns a channel object for the channel that is selected to play the sound.
 --- Channel#stop
 Stops all channels playing this (({Sound})).
@@ -287,21 +378,24 @@ static VALUE sound_get_num_channels(VALUE self)
 =begin
 = Mixer
 Mixer is the main sound class.
-Since there is only one of these, all methods are class methods.
-== Class Methods
---- Mixer.init
---- Mixer.init( frequency )
---- Mixer.init( frequency, size )
---- Mixer.init( frequency, size, stereo )
+
+== Class and instance Methods
+--- Mixer.new
+--- Mixer.new( frequency )
+--- Mixer.new( frequency, size )
+--- Mixer.new( frequency, size, stereo )
 Initializes the sound system.
-This call is not neccesary, the mixer will call (({Mixer.init})) when it is needed.
+This call is not neccesary, the mixer will call (({Mixer.new})) when it is needed.
 When you disagree with the defaults (at the time of writing: 16 bit, 22kHz, stereo)
 you can set them yourself, but do this ((*before*)) using any sound related method!
 * ((|frequency|)) is a number like 11025, 22050 or 44100.
 * ((|size|)) is AUDIO_S8 for 8 bit samples or AUDIO_S16SYS for 16 bit samples.
 * ((|stereo|)) is 1 (mono) or 2 (stereo.)
+
+(({Mixer.new})) will return a Mixer object, but if you don't want it, you can
+discard it and use class methods instead.
 =end */
-static VALUE mixer_init(int argc, VALUE* argv, VALUE self)
+static VALUE mixer_initialize(int argc, VALUE* argv, VALUE self)
 {
 	int frequency = MIX_DEFAULT_FREQUENCY;
 	Uint16 size = MIX_DEFAULT_FORMAT;
@@ -333,6 +427,7 @@ static VALUE mixer_init(int argc, VALUE* argv, VALUE self)
 /*
 =begin
 --- Mixer.destroy
+--- Mixer#destroy
 (was Mixer.quit)
 Uninitializes the Mixer.
 If you really want to do this, then be warned that all Music objects will be destroyed too!
@@ -346,6 +441,7 @@ static VALUE mixer_destroy(VALUE self)
 /*
 =begin
 --- Mixer.fade_out( millisecs )
+--- Mixer#fade_out( millisecs )
 Fades away all sound to silence in millisecs milliseconds.
 =end */
 static VALUE mixer_fade_out(VALUE self, VALUE time)
@@ -359,6 +455,8 @@ static VALUE mixer_fade_out(VALUE self, VALUE time)
 =begin
 --- Mixer.find_free_channel
 --- Mixer.find_oldest_channel
+--- Mixer#find_free_channel
+--- Mixer#find_oldest_channel
 Both functions search for a channel that can be used to play new sounds on.
 find_free_channel finds a channel that is not playing anything and returns nil 
 if there is no such channel.
@@ -385,6 +483,7 @@ static VALUE mixer_find_oldest_channel(VALUE self)
 /*
 =begin
 --- Mixer.busy?
+--- Mixer#busy?
 Returns the number of current active channels.
 This is not the total channels, 
 but the number of channels that are currently playing sound.
@@ -401,6 +500,8 @@ static VALUE mixer_get_busy(VALUE self)
 =begin
 --- Mixer.num_channels
 --- Mixer.num_channels=( amount )
+--- Mixer#num_channels
+--- Mixer#num_channels=( amount )
 Gets or sets the current number of channels available for the mixer.
 This value defaults to 8 when the mixer is first initialized.
 RUDL imposes a channel limit of 256.
@@ -429,6 +530,9 @@ static VALUE mixer_set_num_channels(VALUE self, VALUE channelsValue)
 --- Mixer.pause
 --- Mixer.unpause
 --- Mixer.stop
+--- Mixer#pause
+--- Mixer#unpause
+--- Mixer#stop
 These work on all channels at once.
 =end */
 static VALUE mixer_pause(VALUE self)
@@ -455,6 +559,7 @@ static VALUE mixer_unpause(VALUE self)
 /*
 =begin
 --- Mixer.reserved=( amount )
+--- Mixer#reserved=( amount )
 This sets aside the first ((|amount|)) channels.
 They can only be played on by directly creating a Channel object and playing on it.
 No other function will take these channels for playing.
@@ -635,9 +740,11 @@ static VALUE music_destroy(VALUE self)
 }
 #endif
 /////////////// INIT
+
 void initAudioClasses()
 {
 #ifdef HAVE_SDL_MIXER_H
+	DEBUG_S("initAudioClasses()");
 	classChannel=rb_define_class_under(moduleRUDL, "Channel", rb_cObject);
 	rb_define_singleton_method(classChannel, "new", channel_new, 1);
 	rb_define_method(classChannel, "fade_out", channel_fade_out, 1);
@@ -648,6 +755,10 @@ void initAudioClasses()
 	rb_define_method(classChannel, "stop", channel_stop, 0);
 	rb_define_method(classChannel, "pause", channel_pause, 0);
 	rb_define_method(classChannel, "unpause", channel_unpause, 0);
+	rb_define_method(classChannel, "set_panning", channel_set_panning, 2);
+	rb_define_method(classChannel, "set_position", channel_set_position, 2);
+	rb_define_method(classChannel, "distance=", channel_set_distance, 1);
+	rb_define_method(classChannel, "reverse_stereo", channel_reverse_stereo, 2);
 
 	classSound=rb_define_class_under(moduleRUDL, "Sound", rb_cObject);
 	rb_define_singleton_method(classSound, "new", sound_new, 1);
@@ -658,19 +769,19 @@ void initAudioClasses()
 	rb_define_method(classSound, "volume=", sound_set_volume, 1);
 	rb_define_method(classSound, "stop", sound_stop, 0);
 
-	classMixer=rb_define_module_under(moduleRUDL, "Mixer");
-	rb_define_singleton_method(classMixer, "init", mixer_init, -1);
-	rb_define_singleton_method(classMixer, "destroy", mixer_destroy, 0);
-	rb_define_singleton_method(classMixer, "fade_out", mixer_fade_out, 1);
-	rb_define_singleton_method(classMixer, "find_free_channel", mixer_find_free_channel, 0);
-	rb_define_singleton_method(classMixer, "find_oldest_channel", mixer_find_oldest_channel, 0);
-	rb_define_singleton_method(classMixer, "busy?", mixer_get_busy, 0);
-	rb_define_singleton_method(classMixer, "num_channels", mixer_get_num_channels, 0);
-	rb_define_singleton_method(classMixer, "pause", mixer_pause, 0);
-	rb_define_singleton_method(classMixer, "num_channels=", mixer_set_num_channels, 1);
-	rb_define_singleton_method(classMixer, "reserved=", mixer_set_reserved, 1);
-	rb_define_singleton_method(classMixer, "stop", mixer_stop, 0);
-	rb_define_singleton_method(classMixer, "unpause", mixer_unpause, 0);
+	classMixer=rb_define_class_under(moduleRUDL, "Mixer", rb_cObject);
+	rb_define_method(classMixer, "initialize", mixer_initialize, -1);
+	rb_define_singleton_and_instance_method(classMixer, "destroy", mixer_destroy, 0);
+	rb_define_singleton_and_instance_method(classMixer, "fade_out", mixer_fade_out, 1);
+	rb_define_singleton_and_instance_method(classMixer, "find_free_channel", mixer_find_free_channel, 0);
+	rb_define_singleton_and_instance_method(classMixer, "find_oldest_channel", mixer_find_oldest_channel, 0);
+	rb_define_singleton_and_instance_method(classMixer, "busy?", mixer_get_busy, 0);
+	rb_define_singleton_and_instance_method(classMixer, "num_channels", mixer_get_num_channels, 0);
+	rb_define_singleton_and_instance_method(classMixer, "pause", mixer_pause, 0);
+	rb_define_singleton_and_instance_method(classMixer, "num_channels=", mixer_set_num_channels, 1);
+	rb_define_singleton_and_instance_method(classMixer, "reserved=", mixer_set_reserved, 1);
+	rb_define_singleton_and_instance_method(classMixer, "stop", mixer_stop, 0);
+	rb_define_singleton_and_instance_method(classMixer, "unpause", mixer_unpause, 0);
 
 	classMusic=rb_define_class_under(moduleRUDL, "Music", rb_cObject);
 	rb_define_singleton_method(classMusic, "new", music_new, 1);
@@ -686,7 +797,10 @@ void initAudioClasses()
 	rb_define_method(classMusic, "pause", music_pause, 0);
 	rb_define_method(classMusic, "unpause", music_unpause, 0);
 	rb_define_method(classMusic, "destroy", music_destroy, 0);
+
+	// Backward compatibility
 	rb_alias(classMusic, rb_intern("dealloc"), rb_intern("destroy"));
+	rb_define_singleton_method(classMixer, "init", mixer_initialize, -1);
 /*
 =begin
 = EndOfMusicEvent

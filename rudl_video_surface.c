@@ -11,7 +11,7 @@
 =begin
 <<< docs/head
 = Surface
-A surface is a two dimensional array of pixels with some information about those pixels.
+A (({Surface})) is a two dimensional array of pixels with some information about those pixels.
 This might not seem like much, but it is just about the most important class in RUDL.
 =end */
 
@@ -182,6 +182,8 @@ static VALUE surface_load_new(VALUE self, VALUE filename)
 --- Surface#destroy
 Frees memory used by this surface.
 The surface is no longer useable after this call.
+
+Returns nil.
 =end */
 static VALUE surface_destroy(VALUE self)
 {
@@ -199,6 +201,7 @@ This method blits (copies, pastes, draws) ((|source|)) onto the (({Surface})) it
 ((|coordinate|)) is the position [x, y] where ((|source|)) will end up in the destination (({Surface})).
 ((|sourcerect|)) is the area in the ((|source|)) bitmap that you want blitted.
 Not supplying it will blit the whole ((|source|)).
+
 Returns the rectangle array ([x,y,w,h]) in (({Surface})) that was changed.
 =end */
 static VALUE surface_blit(int argc, VALUE* argv, VALUE self)
@@ -239,12 +242,14 @@ static VALUE surface_blit(int argc, VALUE* argv, VALUE self)
 --- Surface#convert_alpha
 Creates a new version of the surface in the current display's format, 
 making it faster to blit.
-Returns the converted surface.
 The alpha version optimizes for fast alpha blitting.
+
+Returns the converted surface.
 --- Surface#convert!
 --- Surface#convert_alpha!
-Like convert and convert_alpha, but these change the surface itself and
-return self.
+Like convert and convert_alpha, but these change the surface itself.
+
+Returns self.
 =end */
 static VALUE surface_convert(VALUE self)
 {
@@ -307,12 +312,13 @@ static VALUE surface_convert_alpha_(VALUE self)
 --- Surface#unlock
 --- Surface#locked?
 These methods control the locking of surfaces.
-Most, if not all methods do this for you.
 If you ever encounter a locking error,
 you might try these out.
+Locking errors are expected when trying to access video hardware.
+Keep (({Surface}))s locked for as short a time as possible.
 * must_lock returns true when a surface needs locking for pixel access.
-* lock locks the surface.
-* unlock unlocks it again.
+* lock locks the surface and returns self.
+* unlock unlocks it again and returns self.
 * locked? returns true when the surface is locked.
 =end */
 static VALUE surface_lock(VALUE self)
@@ -342,6 +348,8 @@ static VALUE surface_locked_(VALUE self)
 --- Surface#save_bmp( filename ) => self
 This is the only method in RUDL which stores surface data.
 Pass it the filename and the surface data will be saved to that file.
+
+Returns self;
 =end */
 static VALUE surface_save_bmp(VALUE self, VALUE filename)
 {
@@ -356,7 +364,9 @@ static VALUE surface_save_bmp(VALUE self, VALUE filename)
 --- Surface#size
 --- Surface#rect
 These methods return the size of the surface.
-w returns width, h returns height, size returns [w, h] and rect returns an array of [0, 0, w, h].
+w returns width, 
+h returns height, 
+size returns [w, h] and rect returns an array of [0, 0, w, h].
 =end */
 static VALUE surface_size(VALUE self)
 {
@@ -400,6 +410,9 @@ These methods control the color that will be completely transparent (it will not
 to the destination surface.)
 The only flag is "RLEACCEL" which will encode the bitmap in a more efficient way for blitting,
 by skipping the transparent pixels.
+
+((|colorkey|)) returns the current colorkey color.
+The others return self;
 =end */
 static VALUE surface_set_colorkey(int argc, VALUE* argv, VALUE self)
 {
@@ -440,6 +453,8 @@ static VALUE surface_colorkey(VALUE self)
 --- Surface#fill( color )
 --- Surface#fill( color, rect )
 Fills rectangle ((|rect|)) in the surface with ((|color|)).
+
+Returns self.
 =end */
 static VALUE surface_fill(int argc, VALUE* argv, VALUE self)
 {
@@ -527,7 +542,7 @@ static VALUE surface_losses(VALUE self)
 /*
 =begin
 --- Surface#shifts
-Returns the bitshifts [redshift, greenshift, blueshift] used for each color plane.
+Returns the bitshifts [redshift, greenshift, blueshift, alphashift] used for each color plane.
 The shift is determine how many bits left-shifted a colorplane value is in a
 mapped color value.
 =end */
@@ -605,12 +620,9 @@ static VALUE surface_set_palette(VALUE self, VALUE firstValue, VALUE colors)
 
 	VALUE tmp;
 
-	if(!rb_obj_is_kind_of(colors, rb_cArray)){
-		SDL_RAISE_S("Need array of colors");
-		return Qnil;
-	}
-	amount=RARRAY(colors)->len;
+	RUDL_ASSERT(rb_obj_is_kind_of(colors, rb_cArray), "Need array of colors");
 
+	amount=RARRAY(colors)->len;
 
 	if(!pal) return Qfalse;
 
@@ -634,12 +646,12 @@ static VALUE surface_set_palette(VALUE self, VALUE firstValue, VALUE colors)
 --- Surface#unset_alpha
 --- Surface#set_alpha( alpha )
 --- Surface#set_alpha( alpha, flags )
-Gets or sets the overall transparency for the surface.
-An alpha of 0 is fully transparent, an alpha of 255 is fully opaque.
+Gets or sets the overall transparency for the (({Surface})).
+An ((|alpha|)) of 0 is fully transparent, an ((|alpha|)) of 255 is fully opaque.
 If your surface has a pixel alpha channel, it will override the overall surface transparency.
 You'll need to change the actual pixel transparency to make changes.
-If your image also has pixel alpha values, will be used repeatedly, you
-will probably want to pass the RLEACCEL flag to the call.
+If your image also has pixel alpha values and will be used repeatedly, you
+will probably want to pass the ((|RLEACCEL|)) flag to the call.
 This will take a short time to compile your surface, and increase the blitting speed.
 =end */
 static VALUE surface_set_alpha(int argc, VALUE* argv, VALUE self)
@@ -721,7 +733,7 @@ static VALUE surface_subsurface(VALUE self)
 =begin
 --- Surface#contained_images
 Returns an array of surfaces that are found by parsing this surface in a certain way.
-An example is in the samples directory.
+An example is in the samples directory, in crapola.rbw.
 This is not part of SDL, it is RUDL-specific.
 =end */
 static VALUE surface_contained_images(VALUE self)
@@ -785,6 +797,7 @@ static VALUE surface_contained_images(VALUE self)
 		dstrect.y=0;
 
 		if(SDL_BlitSurface(surface, &srcrect, tmp, &dstrect)!=0) SDL_RAISE;
+	
 		rb_ary_push(imageLine, createSurfaceObject(tmp));
 
 		// Find next line
@@ -846,7 +859,7 @@ static VALUE surface_contained_images(VALUE self)
 These methods read single pixels on a surface.
 ((|get|)) or ((|[]|)) get the color of a pixel.
 These methods require the surface to be locked if neccesary.
-((|[]=|)) and ((|[]|)) are the only methods in RUDL that take a seperate x and y coordinate.
+((|[]=|)) and ((|[]|)) are the only methods in RUDL that take a seperate ((|x|)) and ((|y|)) coordinate.
 =end */
 __inline__ Uint32 internal_get(SDL_Surface* surface, Sint16 x, Sint16 y)
 {
@@ -862,9 +875,8 @@ __inline__ Uint32 internal_get(SDL_Surface* surface, Sint16 x, Sint16 y)
 		return 0;
 	}
 
-	if(format->BytesPerPixel < 1 || format->BytesPerPixel > 4){
-		SDL_RAISE_S("invalid color depth for surface");
-	}
+	RUDL_ASSERT(format->BytesPerPixel>=1, "Color depth too small for surface (<1)");
+	RUDL_ASSERT(format->BytesPerPixel<=4, "Color depth too large for surface (>4)");
 
 	switch(format->BytesPerPixel){
 		case 1:
@@ -903,9 +915,8 @@ __inline__ Uint32 internal_nonlocking_get(SDL_Surface* surface, Sint16 x, Sint16
 		return 0;
 	}
 
-	if(format->BytesPerPixel < 1 || format->BytesPerPixel > 4){
-		SDL_RAISE_S("invalid color depth for surface");
-	}
+	RUDL_ASSERT(format->BytesPerPixel>=1, "Color depth too small for surface (<1)");
+	RUDL_ASSERT(format->BytesPerPixel<=4, "Color depth too large for surface (>4)");
 
 	switch(format->BytesPerPixel){
 		case 1:
@@ -977,24 +988,31 @@ __inline__ static void copy_surface_to_line(SDL_Surface* surface, int y, Uint8* 
 --- Surface#each_row { |row_of_pixels| ... }
 --- Surface#each_row! { |row_of_pixels| ... }
 These methods manipulate rows of pixels.
-Surface#rows returns an array of strings with one row of imagedata each.
-get and set get and set a single such row.
-each_row and each_row! iterate through the rows, 
+(({Surface}))#((|rows|)) returns an array of strings with one row of imagedata each.
+((|get_row|)) and ((|set_row|)) get and set a single such row.
+((|each_row|)) and ((|each_row!|)) iterate through the rows, 
 passing each of them to the supplied codeblock.
-For more info, see Surface#pixels.
+For more info, see (({Surface}))#((|pixels|)).
 =end */
 static VALUE surface_get_row(VALUE self, VALUE y)
 {
 	GET_SURFACE;
+
+	RUDL_ASSERT(NUM2INT(y)<surface->h, "y>surface.h");
+	RUDL_ASSERT(NUM2INT(y)>=0, "y<0");
+	
 	return rb_str_new(get_line_pointer(surface, NUM2INT(y)), surface->w*surface->format->BytesPerPixel);
 }
 
 static VALUE surface_set_row(VALUE self, VALUE y, VALUE pixels)
 {
 	GET_SURFACE;
-	if(RSTRING(pixels)->len<surface->w*surface->format->BytesPerPixel){
-		SDL_RAISE("Not enough data for a complete row");
-	}
+
+	RUDL_ASSERT(NUM2INT(y)<surface->h, "y>surface.h");
+	RUDL_ASSERT(NUM2INT(y)>=0, "y<0");
+
+	RUDL_ASSERT(RSTRING(pixels)->len >= surface->w*surface->format->BytesPerPixel, "Not enough data for a complete row");
+
 	copy_line_to_surface(surface, NUM2INT(y), RSTRING(pixels)->ptr);
 	return self;
 }
@@ -1007,11 +1025,13 @@ void define_ruby_row_methods()
 		"		(0...h).each {|y|				\n"
 		"			yield(get_row(y))			\n"
 		"		}								\n"
+		"		self							\n"
 		"	end									\n"
 		"	def each_row!						\n"
 		"		(0...h).each {|y|					\n"
 		"			set_row(y, yield(get_row(y)))	\n"
 		"		}									\n"
+		"		self							\n"
 		"	end									\n"
 		"	def rows							\n"
 		"		retval=[]						\n"
@@ -1019,9 +1039,10 @@ void define_ruby_row_methods()
 		"		retval							\n"
 		"	end									\n"
 		"	def rows=(rows)						\n"
-		"		(0..h).each {|row|				\n"
+		"		(0...h).each {|row|				\n"
 		"			set_row(row, rows[row])		\n"
 		"		}								\n"
+		"		self							\n"
 		"	end									\n"
 		"end end								\n"
 	);
@@ -1035,11 +1056,11 @@ void define_ruby_row_methods()
 --- Surface#each_column { |column_of_pixels| ... }
 --- Surface#each_column! { |column_of_pixels| ... }
 These methods manipulate columns of pixels.
-Surface#columns returns an array of strings with one column of imagedata each.
-get and set get and set a single such column.
-each_column and each_column! iterate through the columns, 
+(({Surface}))#((|columns|)) returns an array of strings with one column of imagedata each.
+((|get_column|)) and ((|set_column|)) get and set a single such column.
+((|each_column|)) and ((|each_column!|)) iterate through the columns, 
 passing each of them to the supplied codeblock.
-For more info, see Surface#pixels.
+For more info, see (({Surface}))#((|pixels|)).
 =end */
 static VALUE surface_get_column(VALUE self, VALUE x)
 {
@@ -1049,6 +1070,9 @@ static VALUE surface_get_column(VALUE self, VALUE x)
 	Uint8* src, *dest, *column;
 
 	GET_SURFACE;
+
+	RUDL_ASSERT(NUM2INT(x)<surface->w, "x>surface.w");
+	RUDL_ASSERT(NUM2INT(x)>=0, "x<0");
 	
 	h=surface->h;
 	pixelsize=surface->format->BytesPerPixel;
@@ -1073,6 +1097,9 @@ static VALUE surface_set_column(VALUE self, VALUE x, VALUE pixels)
 	Uint8* src, *dest;
 
 	GET_SURFACE;
+
+	RUDL_ASSERT(NUM2INT(x)<surface->w, "x>surface.w");
+	RUDL_ASSERT(NUM2INT(x)>=0, "x<0");
 	
 	h=surface->h;
 	pixelsize=surface->format->BytesPerPixel;
@@ -1096,21 +1123,24 @@ void define_ruby_column_methods()
 		"		(0...w).each {|x|				\n"
 		"			yield(get_column(x))		\n"
 		"		}								\n"
+		"		self							\n"
 		"	end									\n"
 		"	def each_column!					\n"
 		"		(0...w).each {|x|						\n"
 		"			set_column(x, yield(get_column(x)))	\n"
 		"		}										\n"
+		"		self									\n"
 		"	end									\n"
 		"	def columns							\n"
 		"		retval=[]							\n"
 		"		each_column {|c| retval.push(c)}	\n"
 		"		retval								\n"
 		"	end									\n"
-		"	def columns=(cols)						\n"
-		"		(0..w).each {|col|				\n"
+		"	def columns=(cols)					\n"
+		"		(0...w).each {|col|				\n"
 		"			set_column(col, cols[col])	\n"
 		"		}								\n"
+		"		self							\n"
 		"	end									\n"
 		"end end								\n"
 	);
@@ -1124,7 +1154,7 @@ These methods get and set all image data at once.
 The transport medium is a string with binary data in it.
 The data is raw, no fancy color arrays here.
 If bytesize (the amount of bytes used to describe the color of a pixel) is
-four, for example, a row of 10 pixels will return a string of 40 characters.
+four, for example, a (({Surface})) of 5x5 pixels will return a string of length (5x5x4).
 If the colorformat is specified as BGRA, then character zero will be the
 B component, character one the G component etc.
 Eight bit color surfaces store one byte indexes into the palette.
@@ -1161,22 +1191,20 @@ static VALUE surface_set_pixels(VALUE self, VALUE pixels)
 	Uint8* pixelpointer;
 
 	GET_SURFACE;
-	
+
+	Check_Type(pixels, T_STRING);
 	size=surface->w*surface->h*surface->format->BytesPerPixel;
 	pixelpointer=RSTRING(pixels)->ptr;
 	
-	if(RSTRING(pixels)->len<size){
-		SDL_RAISE_S("Not enough data in string");
-		return Qnil;
+	RUDL_ASSERT(RSTRING(pixels)->len>=size, "Not enough data in string");
+
+	if(surface->pitch==surface->w){
+		memcpy(surface->pixels, pixelpointer, size);
 	}else{
-		if(surface->pitch==surface->w){
-			memcpy(surface->pixels, pixelpointer, size);
-		}else{
-			int y;
-			Uint16 bytewidth=surface->w*surface->format->BytesPerPixel;
-			for(y=0; y<surface->h; y++){
-				copy_line_to_surface(surface, y, pixelpointer+y*bytewidth);
-			}
+		int y;
+		Uint16 bytewidth=surface->w*surface->format->BytesPerPixel;
+		for(y=0; y<surface->h; y++){
+			copy_line_to_surface(surface, y, pixelpointer+y*bytewidth);
 		}
 	}
 	return self;
@@ -1185,6 +1213,8 @@ static VALUE surface_set_pixels(VALUE self, VALUE pixels)
 ///////////////////////////////// INIT
 void initVideoSurfaceClasses()
 {
+	DEBUG_S("initVideoSurfaceClasses()");
+
 	classSurface=rb_define_class_under(moduleRUDL, "Surface", rb_cObject);
 	rb_define_singleton_method(classSurface, "new", surface_new, -1);
 	rb_define_singleton_method(classSurface, "load_new", surface_load_new, 1);

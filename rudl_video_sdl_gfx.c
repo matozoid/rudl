@@ -408,6 +408,7 @@ int SDL_imageFilterSobelX(unsigned char *Src, unsigned char *Dest, int rows, int
 ///////////////////////////////// INIT
 void initVideoSDLGFXClasses()
 {
+	DEBUG_S("initVideoSDLGFXClasses()");
 	//classSurfaceArray=rb_define_class_under(moduleRUDL, "SurfaceArray", rb_cObject);
 	#ifdef HAVE_SDL_GFXPRIMITIVES_H
 	rb_define_method(classSurface, "plot", surface_plot, 2);

@@ -269,10 +269,9 @@ This call will update a section (or sections) of the display screen.
 You must update an area of your display when you change its contents.
 ((|rect|)) is, starting from v0.4, an array of rectangles.
 If passed with no arguments, this will update the entire display surface.
-=end
+
 This call cannot be used on OPENGL displays, and will generate an exception.
-If you have many rects that need updating,
-it is best to combine them into an array and pass them all at once.
+=end
 */
 static VALUE displaySurface_update(int argc, VALUE* argv, VALUE self)
 {
@@ -280,7 +279,6 @@ static VALUE displaySurface_update(int argc, VALUE* argv, VALUE self)
 	VALUE rectObject;
 	int i, total_rects;
 	SDL_Rect* rects;
-
 
 	GET_SURFACE;
 
@@ -293,9 +291,15 @@ static VALUE displaySurface_update(int argc, VALUE* argv, VALUE self)
 		case 1:
 			Check_Type(rectObject, T_ARRAY);
 			total_rects=RARRAY(rectObject)->len;
-			rects=malloc(sizeof(rects)*total_rects);
+			rects=malloc(sizeof(SDL_Rect)*total_rects);
 			for(i=0; i<total_rects; i++){
 				PARAMETER2CRECT(rb_ary_entry(rectObject, i), rects+i);
+				RUDL_ASSERT((rects+i)->w != 0, "rectangle width is zero");
+				RUDL_ASSERT((rects+i)->h != 0, "rectangle height is zero");
+				RUDL_ASSERT((rects+i)->x >= 0, "rectangle out of bounds at left");
+				RUDL_ASSERT((rects+i)->y >= 0, "rectangle out of bounds at top");
+				RUDL_ASSERT((rects+i)->x+(rects+i)->w <= surface->w, "rectangle out of bounds at right");
+				RUDL_ASSERT((rects+i)->y+(rects+i)->h <= surface->h, "rectangle out of bounds at bottom");
 			}
 			SDL_UpdateRects(surface, total_rects, rects);
 			free(rects);
@@ -591,27 +595,55 @@ static VALUE displaySurface_toggle_fullscreen(VALUE self)
 	result=INT2BOOL(attempt_fullscreen_toggle(&surface, NULL)!=0);
 	DATA_PTR(self)=surface;
 	return result;
-	//return INT2BOOL(SDL_WM_ToggleFullScreen(retrieveSurfacePointer(self))!=0);
+	//return INT2BOOL(SDL_WM_ToggleFullScreen(retrieveSurfacePointer(self))!=0); <- old code
 }
+/*
+=begin
+--- DisplaySurface.gl_set_attribute( name, value )
+Set an attribute of the OpenGL subsystem before intialization.
 
-static VALUE displaySurface_gl_get_attribute(VALUE self, VALUE attribute, VALUE value)
-{
-}
+Returns self.
+=end */
 
-/* I'll do this another day
 static VALUE displaySurface_gl_set_attribute(VALUE self, VALUE attribute, VALUE value)
-int SDL_GL_SetAttribute(SDL_GLattr attr, int value);
-int SDL_GL_GetAttribute(SDL_GLattr attr, int* value);
-*/
+{
+	SDL_VERIFY(SDL_GL_SetAttribute(NUM2INT(attribute), NUM2INT(value))==0);
+	return self;
+}
+
+/*
+=begin
+--- DisplaySurface.gl_get_attribute( name )
+From the SDL documentation:
+
+Get an attribute of the OpenGL subsystem from the windowing
+interface, such as glX. This is of course different from getting
+the values from SDL's internal OpenGL subsystem, which only
+stores the values you request before initialization.
+
+Developers should track the values they pass into SDL_GL_SetAttribute
+themselves if they want to retrieve these values.
+=end */
+static VALUE displaySurface_gl_get_attribute(VALUE self, VALUE attribute)
+{
+	int buf;
+	
+	SDL_VERIFY(SDL_GL_GetAttribute(NUM2INT(attribute), &buf)==0);
+	return INT2NUM(buf);
+}
 
 ///////////////////////////////// INIT
 void initVideoDisplaySurfaceClasses()
 {
+	DEBUG_S("initVideoDisplaySurfaceClasses()");
+
 	classDisplaySurface=rb_define_class_under(moduleRUDL, "DisplaySurface", classSurface);
 	rb_define_singleton_method(classDisplaySurface, "new", displaySurface_new, -1);
 	rb_define_singleton_method(classDisplaySurface, "modes", displaySurface_modes, -1);
 	rb_define_singleton_method(classDisplaySurface, "mode_ok?", displaySurface_mode_ok_, -1);
 	rb_define_singleton_method(classDisplaySurface, "best_mode_info", displaySurface_best_mode_info, 0);
+	rb_define_singleton_method(classDisplaySurface, "gl_set_attribute", displaySurface_gl_set_attribute, 2);
+	rb_define_singleton_method(classDisplaySurface, "gl_get_attribute", displaySurface_gl_get_attribute, 1);
 	rb_define_method(classDisplaySurface, "driver", displaySurface_driver, 0);
 	rb_define_method(classDisplaySurface, "info", displaySurface_info, 0);
 	rb_define_method(classDisplaySurface, "update", displaySurface_update, -1);

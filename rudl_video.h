@@ -34,8 +34,8 @@ extern void initVideo();
 
 extern VALUE createSurfaceObject(SDL_Surface* surface);
 extern SDL_Surface* retrieveSurfacePointer(VALUE self);
-extern Uint32 internal_get(SDL_Surface* surface, Sint16 x, Sint16 y);
-extern Uint32 internal_nonlocking_get(SDL_Surface* surface, Sint16 x, Sint16 y);
+extern Uint32 __inline__ internal_get(SDL_Surface* surface, Sint16 x, Sint16 y);
+extern Uint32 __inline__ internal_nonlocking_get(SDL_Surface* surface, Sint16 x, Sint16 y);
 
 extern Uint32 VALUE2COLOR(VALUE colorObject, SDL_PixelFormat* format);
 extern Uint32 VALUE2COLOR_NOMAP(VALUE colorObject);
