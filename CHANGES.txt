@@ -6,7 +6,7 @@ newest
    set_alpha(nil) does the same as unset_alpha.
  - Surface.new now copies the palette if a 8-bit surface was supplied
  - added DisplaySurface.set_icon for setting the window icon
- - fixed a couple bugs that caused compilation errors on Linux
+ - fixed a couple typos that caused compilation errors on Linux
  - added VideoExposeEvent which occurs when the window is uncovered
  - added CHANGES.txt
 
