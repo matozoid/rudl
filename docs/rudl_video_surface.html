@@ -1,0 +1,199 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html 
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>../rudl_video_surface.c</title>
+</head>
+<body>
+<A HREF="index.html">Back to index</A>
+
+
+<h1><a name="label:0" id="label:0">Surface</a></h1><!-- RDLabel: "Surface" -->
+<p>A surface is a two dimensional array of pixels with some information about those pixels.
+This might not seem like much, but it is just about the most important class in RUDL.</p>
+<h2><a name="label:1" id="label:1">Class Methods</a></h2><!-- RDLabel: "Class Methods" -->
+<dl>
+<dt><a name="label:2" id="label:2"><code>Surface.new( <var>size</var> )</code></a><!-- RDLabel: "Surface.new" -->
+<dt><a name="label:3" id="label:3"><code>Surface.new( <var>size</var>, <var>surface</var> )</code></a><!-- RDLabel: "Surface.new" -->
+<dt><a name="label:4" id="label:4"><code>Surface.new( <var>size</var>, <var>flags</var> )</code></a><!-- RDLabel: "Surface.new" -->
+<dt><a name="label:5" id="label:5"><code>Surface.new( <var>size</var>, <var>flags</var>, <var>surface</var> )</code></a><!-- RDLabel: "Surface.new" -->
+<dt><a name="label:6" id="label:6"><code>Surface.new( <var>size</var>, <var>flags</var>, <var>depth</var> )</code></a><!-- RDLabel: "Surface.new" -->
+<dt><a name="label:7" id="label:7"><code>Surface.new( <var>size</var>, <var>flags</var>, <var>depth</var>, <var>masks</var> )</code></a><!-- RDLabel: "Surface.new" -->
+</dl>
+<p>All these methods create a new <code>Surface</code> with <var>size</var> = [w, h].
+If only <var>size</var> is supplied, the rest of the arguments will be set to reasonable values.
+If a surface is supplied, it is used to copy the values from that aren't given.</p>
+<p><var>flags</var> is, quoted from SDL's documentation:</p>
+<ul>
+<li>SWSURFACE: SDL will create the surface in system memory. This improves the performance 
+  of pixel level access, however you may not be able to take advantage of some types of
+  hardware blitting.</li>
+<li>HWSURFACE: SDL will attempt to create the surface in video memory. This will allow SDL 
+  to take advantage of Video-&gt;Video blits (which are often accelerated).</li>
+<li>SRCCOLORKEY: With this flag SDL will attempt to find the best location for this surface, 
+  either in system memory or video memory, to obtain hardware colorkey blitting support.</li>
+<li>SRCALPHA: With this flag SDL will attempt to find the best location for this surface, 
+  either in system memory or video memory, to obtain hardware alpha support.</li>
+</ul>
+<p><var>depth</var> is bitdepth, like 8, 15, 16, 24 or 32.</p>
+<p><var>masks</var> describes the format for the pixels and is an array of [R, G, B, A]</p>
+<dl>
+<dt><a name="label:8" id="label:8"><code>Surface.load_new( <var>filename</var> )</code></a><!-- RDLabel: "Surface.load_new" -->
+</dl>
+<p>This creates a <code>Surface</code> with an image in it, loaded from <var>filename</var>.
+If the SDL_image library was found during RUDL's installation, it will load many formats, like
+BMP, PNM, XPM, PCX, GIF, JPEG, PNG and TGA.
+If the SDL_image library was not found, only BMP loading is supported.</p>
+<dl>
+<dt><a name="label:9" id="label:9"><code>Surface.destroy</code></a><!-- RDLabel: "Surface.destroy" -->
+</dl>
+<p>Frees memory used by this surface.
+The surface is no longer useable after this call.</p>
+<h2><a name="label:10" id="label:10">Instance Methods</a></h2><!-- RDLabel: "Instance Methods" -->
+<dl>
+<dt><a name="label:11" id="label:11"><code>Surface#blit( <var>source</var>, <var>coordinate</var> )</code></a><!-- RDLabel: "Surface#blit" -->
+<dt><a name="label:12" id="label:12"><code>Surface#blit( <var>source</var>, <var>coordinate</var>, <var>sourceRect</var> )</code></a><!-- RDLabel: "Surface#blit" -->
+</dl>
+<p>This method blits <var>source</var> onto the <code>Surface</code>.
+<var>coordinate</var> is the position [x, y] where <var>source</var> will end up in the destination <code>Surface</code>.
+<var>sourcerect</var> can be used to blit only a portion of the <var>source</var>.</p>
+<dl>
+<dt><a name="label:13" id="label:13"><code>Surface#convert</code></a><!-- RDLabel: "Surface#convert" -->
+<dt><a name="label:14" id="label:14"><code>Surface#convert_alpha</code></a><!-- RDLabel: "Surface#convert_alpha" -->
+</dl>
+<p>Converts this surface to the current display's format, making it faster to blit.
+The alpha version optimizes for fast alpha blitting.</p>
+<dl>
+<dt><a name="label:15" id="label:15"><code>Surface#lock</code></a><!-- RDLabel: "Surface#lock" -->
+<dt><a name="label:16" id="label:16"><code>Surface#must_lock</code></a><!-- RDLabel: "Surface#must_lock" -->
+<dt><a name="label:17" id="label:17"><code>Surface#unlock</code></a><!-- RDLabel: "Surface#unlock" -->
+<dt><a name="label:18" id="label:18"><code>Surface#locked?</code></a><!-- RDLabel: "Surface#locked?" -->
+</dl>
+<p>These methods control the locking of surfaces.
+Most, if not all methods do this for you.
+If you ever encounter a locking error,
+you might try these out.</p>
+<ul>
+<li>must_lock returns true when a surface needs locking for pixel access.</li>
+<li>lock locks the surface.</li>
+<li>unlock unlocks it again.</li>
+<li>locked? returns true when the surface is locked.</li>
+</ul>
+<dl>
+<dt><a name="label:19" id="label:19"><code>Surface#save_bmp( <var>filename</var> ) =&gt; <var>self</var></code></a><!-- RDLabel: "Surface#save_bmp" -->
+</dl>
+<p>This is the only method in RUDL which stores surface data.
+Pass it the filename and the surface data will be saved to that file.</p>
+<dl>
+<dt><a name="label:20" id="label:20"><code>Surface#w</code></a><!-- RDLabel: "Surface#w" -->
+<dt><a name="label:21" id="label:21"><code>Surface#h</code></a><!-- RDLabel: "Surface#h" -->
+<dt><a name="label:22" id="label:22"><code>Surface#size</code></a><!-- RDLabel: "Surface#size" -->
+<dt><a name="label:23" id="label:23"><code>Surface#rect</code></a><!-- RDLabel: "Surface#rect" -->
+</dl>
+<p>These methods return the size of the surface.
+w returns width, h returns height, size returns [w, h] and rect returns an array of [0, 0, w, h].</p>
+<dl>
+<dt><a name="label:24" id="label:24"><code>Surface#colorkey</code></a><!-- RDLabel: "Surface#colorkey" -->
+<dt><a name="label:25" id="label:25"><code>Surface#unset_colorkey</code></a><!-- RDLabel: "Surface#unset_colorkey" -->
+<dt><a name="label:26" id="label:26"><code>Surface#set_colorkey( <var>color</var> )</code></a><!-- RDLabel: "Surface#set_colorkey" -->
+<dt><a name="label:27" id="label:27"><code>Surface#set_colorkey( <var>color</var>, <var>flags</var> )</code></a><!-- RDLabel: "Surface#set_colorkey" -->
+</dl>
+<p>These methods control the color that will be completely transparent (it will not be copied 
+to the destination surface.)
+The only flag is "RLEACCEL" which will encode the bitmap in a more efficient way for blitting,
+by skipping the transparent pixels.</p>
+<dl>
+<dt><a name="label:28" id="label:28"><code>Surface#fill( <var>color</var> )</code></a><!-- RDLabel: "Surface#fill" -->
+<dt><a name="label:29" id="label:29"><code>Surface#fill( <var>color</var>, <var>rect</var> )</code></a><!-- RDLabel: "Surface#fill" -->
+</dl>
+<p>Fills rectangle <var>rect</var> in the surface with <var>color</var>.</p>
+<dl>
+<dt><a name="label:30" id="label:30"><code>Surface#pitch</code></a><!-- RDLabel: "Surface#pitch" -->
+</dl>
+<p>The surface pitch is the number of bytes used in each scanline.
+This function should rarely needed, mainly for any special-case debugging.</p>
+<dl>
+<dt><a name="label:31" id="label:31"><code>Surface#bitsize</code></a><!-- RDLabel: "Surface#bitsize" -->
+</dl>
+<p>Returns the number of bits used to represent each pixel.
+This value may not exactly fill the number of bytes used per pixel.
+For example a 15 bit Surface still requires a full 2 bytes.</p>
+<dl>
+<dt><a name="label:32" id="label:32"><code>Surface#bytesize</code></a><!-- RDLabel: "Surface#bytesize" -->
+</dl>
+<p>Returns the number of bytes used to store each pixel.</p>
+<dl>
+<dt><a name="label:33" id="label:33"><code>Surface#flags</code></a><!-- RDLabel: "Surface#flags" -->
+</dl>
+<p>Returns the current state flags for the surface.</p>
+<dl>
+<dt><a name="label:34" id="label:34"><code>Surface#losses</code></a><!-- RDLabel: "Surface#losses" -->
+</dl>
+<p>Returns the bitloss for each color plane.
+The loss is the number of bits removed for each colorplane from a full 8 bits of
+resolution. A value of 8 usually indicates that colorplane is not used
+(like the alpha)</p>
+<p>Returns an array of [redloss, greenloss, blueloss, alphaloss]</p>
+<dl>
+<dt><a name="label:35" id="label:35"><code>Surface#shifts</code></a><!-- RDLabel: "Surface#shifts" -->
+</dl>
+<p>Returns the bitshifts [redshift, greenshift, blueshift] used for each color plane.
+The shift is determine how many bits left-shifted a colorplane value is in a
+mapped color value.</p>
+<dl>
+<dt><a name="label:36" id="label:36"><code>Surface#masks</code></a><!-- RDLabel: "Surface#masks" -->
+</dl>
+<p>Returns the bitmasks [redmask, greenmask, bluemask, alphamask] for each color plane.
+The bitmask is used to isolate each colorplane value from a mapped color value.
+A value of zero means that colorplane is not used (like alpha)</p>
+<dl>
+<dt><a name="label:37" id="label:37"><code>Surface#palette</code></a><!-- RDLabel: "Surface#palette" -->
+<dt><a name="label:38" id="label:38"><code>Surface#set_palette( <var>first</var>, <var>colors</var> )</code></a><!-- RDLabel: "Surface#set_palette" -->
+</dl>
+<p>These methods return or set the 256 color palette that is part of 8 bit <code>Surface</code>s.
+<var>first</var> is the first color to change.
+<var>colors</var> and the return value of <var>palette</var> are arrays of colors like
+[[50,80,120], [255,255,0]]</p>
+<dl>
+<dt><a name="label:39" id="label:39"><code>Surface#alpha</code></a><!-- RDLabel: "Surface#alpha" -->
+<dt><a name="label:40" id="label:40"><code>Surface#unset_alpha</code></a><!-- RDLabel: "Surface#unset_alpha" -->
+<dt><a name="label:41" id="label:41"><code>Surface#set_alpha( <var>alpha</var> )</code></a><!-- RDLabel: "Surface#set_alpha" -->
+<dt><a name="label:42" id="label:42"><code>Surface#set_alpha( <var>alpha</var>, <var>flags</var> )</code></a><!-- RDLabel: "Surface#set_alpha" -->
+</dl>
+<p>Gets or sets the overall transparency for the surface.
+An alpha of 0 is fully transparent, an alpha of 255 is fully opaque.
+If your surface has a pixel alpha channel, it will override the overall surface transparency.
+You'll need to change the actual pixel transparency to make changes.
+If your image also has pixel alpha values, will be used repeatedly, you
+will probably want to pass the RLEACCEL flag to the call.
+This will take a short time to compile your surface, and increase the blitting speed.</p>
+<dl>
+<dt><a name="label:43" id="label:43"><code>Surface#clip</code></a><!-- RDLabel: "Surface#clip" -->
+<dt><a name="label:44" id="label:44"><code>Surface#unset_clip</code></a><!-- RDLabel: "Surface#unset_clip" -->
+<dt><a name="label:45" id="label:45"><code>Surface#clip=( <var>rect</var> )</code></a><!-- RDLabel: "Surface#clip=" -->
+</dl>
+<p>Retrieves, removes or sets the clipping rectangle for surfaces that are
+blitted to this surface.</p>
+<dl>
+<dt><a name="label:46" id="label:46"><code>Surface#subsurface</code></a><!-- RDLabel: "Surface#subsurface" -->
+</dl>
+<p>Not implemented</p>
+<dl>
+<dt><a name="label:47" id="label:47"><code>Surface#contained_images</code></a><!-- RDLabel: "Surface#contained_images" -->
+</dl>
+<p>Returns an array of surfaces that are found by parsing this surface in a certain way.
+An example is in the samples directory.
+This is not part of SDL, it is RUDL-specific.</p>
+<dl>
+<dt><a name="label:48" id="label:48"><code>Surface#get( <var>coordinate</var> )</code></a><!-- RDLabel: "Surface#get" -->
+<dt><a name="label:49" id="label:49"><code>Surface#[ <var>x</var>, <var>y</var> ]</code></a><!-- RDLabel: "Surface#[ x, y ]" -->
+</dl>
+<p>These methods read single pixels on a surface.
+<var>get</var> or <var>[]</var> get the color of a pixel.
+These methods require the surface to be locked if neccesary.
+<var>[]=</var> and <var>[]</var> are the only methods in RUDL that take a seperate x and y coordinate.</p>
+
+</body>
+</html>

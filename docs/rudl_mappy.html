@@ -1,0 +1,92 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html 
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>../rudl_mappy.c</title>
+</head>
+<body>
+<h1><a name="label:0" id="label:0">Mappy</a></h1><!-- RDLabel: "Mappy" -->
+<p>This wraps the SDLMappy library made by Regis Quercioli.
+Read about it on <a href="http://membres.tripod.fr/edorul/SDLMappye.htm">&lt;URL:http://membres.tripod.fr/edorul/SDLMappye.htm&gt;</a>.
+The state of SDLMappy seems to be "abandoned in the middle of development" but
+more work will be done on it.
+This doc is also rather silly because of that.</p>
+<h2><a name="label:1" id="label:1">Class Methods</a></h2><!-- RDLabel: "Class Methods" -->
+<dl>
+<dt><a name="label:2" id="label:2"><code>Mappy.new( <var>filename</var>, <var>destination_rect</var> )</code></a><!-- RDLabel: "Mappy.new" -->
+</dl>
+<p><var>filename</var> is the name of an FMP file to load (maybe MAP too?).
+It seems like only v0.5 normal grid-like maps can be loaded.
+<var>destination_rect</var> is supposed to be the rect where the map will be displayed,
+but it doesn't seem to use it at all.</p>
+<dl>
+<dt><a name="label:3" id="label:3"><code>Mappy#draw_background( <var>surface</var> )</code></a><!-- RDLabel: "Mappy#draw_background" -->
+<dt><a name="label:4" id="label:4"><code>Mappy#draw_background_transparent( <var>surface</var> )</code></a><!-- RDLabel: "Mappy#draw_background_transparent" -->
+</dl>
+<p>Draws the current layer on the surface.
+The transparent version draws with colorkeying.</p>
+<dl>
+<dt><a name="label:5" id="label:5"><code>Mappy#reset_animations</code></a><!-- RDLabel: "Mappy#reset_animations" -->
+</dl>
+<p>Sets all animations in their starting positions.</p>
+<dl>
+<dt><a name="label:6" id="label:6"><code>Mappy#update_animations</code></a><!-- RDLabel: "Mappy#update_animations" -->
+</dl>
+<p>Advances the animations.</p>
+<dl>
+<dt><a name="label:7" id="label:7"><code>Mappy#create_parallax( <var>filename</var> )</code></a><!-- RDLabel: "Mappy#create_parallax" -->
+</dl>
+<p>Creates a parallax layer or so from an image file, whatever that may mean.</p>
+<dl>
+<dt><a name="label:8" id="label:8"><code>Mappy#draw_parallax( <var>surface</var> )</code></a><!-- RDLabel: "Mappy#draw_parallax" -->
+</dl>
+<p>Draws the parallax layer on the surface.</p>
+<dl>
+<dt><a name="label:9" id="label:9"><code>Mappy#restore_parallax</code></a><!-- RDLabel: "Mappy#restore_parallax" -->
+</dl>
+<p>Reloads the parallax layer, where it is used, I don't know.</p>
+<dl>
+<dt><a name="label:10" id="label:10"><code>Mappy#layer=( <var>number</var> )</code></a><!-- RDLabel: "Mappy#layer=" -->
+</dl>
+<p><var>number</var> is the layer you want to work with.
+If that layer doesn't exist, it raises SDL_Error.</p>
+<dl>
+<dt><a name="label:11" id="label:11"><code>Mappy#tile( <var>coord</var> )</code></a><!-- RDLabel: "Mappy#tile" -->
+<dt><a name="label:12" id="label:12"><code>Mappy#set_block( <var>coord</var> )</code></a><!-- RDLabel: "Mappy#set_block" -->
+</dl>
+<p>These methods confuse me.
+Please refer to the original documentation until I find out what each of these
+does exactly.</p>
+<dl>
+<dt><a name="label:13" id="label:13"><code>Mappy#block( <var>coord</var> )</code></a><!-- RDLabel: "Mappy#block" -->
+</dl>
+<p>This returns a MappyBlock from the map.
+Changing its members should change the block on the map
+(or maybe all identical blocks on the map?)</p>
+<dl>
+<dt><a name="label:14" id="label:14"><code>Mappy#bpp</code></a><!-- RDLabel: "Mappy#bpp" -->
+</dl>
+<p>Returns the bits per pixel value.
+It would be nice if the surface that the map is going to be blitted on has the same value,
+since that will save a lot of conversions.
+There is no way to convert the map to another bitdepth.</p>
+<dl>
+<dt><a name="label:15" id="label:15"><code>Mappy#size_in_pixels</code></a><!-- RDLabel: "Mappy#size_in_pixels" -->
+<dt><a name="label:16" id="label:16"><code>Mappy#size_in_blocks</code></a><!-- RDLabel: "Mappy#size_in_blocks" -->
+</dl>
+<p>These return the size of the map in pixels and in blocks.</p>
+<dl>
+<dt><a name="label:17" id="label:17"><code>Mappy#blocksize</code></a><!-- RDLabel: "Mappy#blocksize" -->
+</dl>
+<p>Returns the size of the blocks that the map is made of.</p>
+<dl>
+<dt><a name="label:18" id="label:18"><code>Mappy#pos=coord</code></a><!-- RDLabel: "Mappy#pos=coord" -->
+<dt><a name="label:19" id="label:19"><code>Mappy#pos</code></a><!-- RDLabel: "Mappy#pos" -->
+</dl>
+<p>With these you can move the viewport to another part of the map.
+<var>coord</var> is [x, y].</p>
+
+</body>
+</html>

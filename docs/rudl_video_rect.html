@@ -1,0 +1,101 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html 
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>../rudl_video_rect.c</title>
+</head>
+<body>
+<A HREF="index.html">Back to index</A>
+
+
+<h1><a name="label:0" id="label:0">Rect</a></h1><!-- RDLabel: "Rect" -->
+<h2><a name="label:1" id="label:1">Class Methods</a></h2><!-- RDLabel: "Class Methods" -->
+<dl>
+<dt><a name="label:2" id="label:2"><code>Rect.new( <var>x</var>, <var>y</var>, <var>w</var>, <var>h</var> )</code></a><!-- RDLabel: "Rect.new" -->
+<dt><a name="label:3" id="label:3"><code>Rect.new( <var>rectangle</var> )</code></a><!-- RDLabel: "Rect.new" -->
+</dl>
+<p>Creates a new Rect object that can be used as a parameter to methods instead of
+an [x, y, w, h] array.</p>
+<h2><a name="label:4" id="label:4">Instance Methods</a></h2><!-- RDLabel: "Instance Methods" -->
+<dl>
+<dt><a name="label:5" id="label:5"><code>Rect.collide_lists( <var>l1</var>, <var>l2</var> ) <var>BOGUS</var></code></a><!-- RDLabel: "Rect.collide_lists" -->
+</dl>
+<p>This method looks through list <var>l1</var>,
+checking collisions with every object in list <var>l2</var>.
+It does this by calling "rect" on all objects, expecting an array of [x,y,w,h] back,
+defining the area this object is in.
+It yields (object_from_l1, object_from_l2) for every collision it detects.
+A more advanced collision detection method can be found in CollisionMap.</p>
+<dl>
+<dt><a name="label:6" id="label:6"><code>Rect#x</code></a><!-- RDLabel: "Rect#x" -->
+<dt><a name="label:7" id="label:7"><code>Rect#y</code></a><!-- RDLabel: "Rect#y" -->
+<dt><a name="label:8" id="label:8"><code>Rect#w</code></a><!-- RDLabel: "Rect#w" -->
+<dt><a name="label:9" id="label:9"><code>Rect#h</code></a><!-- RDLabel: "Rect#h" -->
+</dl>
+<p>These can be set and read at will.</p>
+<dl>
+<dt><a name="label:10" id="label:10"><code>Rect#to_ary</code></a><!-- RDLabel: "Rect#to_ary" -->
+</dl>
+<p>Returns [x, y, w, h]</p>
+<dl>
+<dt><a name="label:11" id="label:11"><code>Rect#move( <var>delta</var> )</code></a><!-- RDLabel: "Rect#move" -->
+<dt><a name="label:12" id="label:12"><code>Rect#move!( <var>delta</var> )</code></a><!-- RDLabel: "Rect#move!" -->
+</dl>
+<p>Returns a new rectangle which is the base rectangle moved by the given amount.</p>
+<dl>
+<dt><a name="label:13" id="label:13"><code>Rect#normalize</code></a><!-- RDLabel: "Rect#normalize" -->
+<dt><a name="label:14" id="label:14"><code>Rect#normalize!</code></a><!-- RDLabel: "Rect#normalize!" -->
+</dl>
+<p>If w and h aren't positive,
+this will change them to positive and keep the rect covering the same space.</p>
+<dl>
+<dt><a name="label:15" id="label:15"><code>Rect#inflate( <var>sizes</var> )</code></a><!-- RDLabel: "Rect#inflate" -->
+<dt><a name="label:16" id="label:16"><code>Rect#inflate!( <var>sizes</var> )</code></a><!-- RDLabel: "Rect#inflate!" -->
+</dl>
+<p>Returns a rectangle which has the sizes changed by the given amounts.
+<var>sizes</var> is an array of [dx, dy].
+The rectangle shrinks and expands around the rectangle's center.
+Negative values will shrink the rectangle.</p>
+<dl>
+<dt><a name="label:17" id="label:17"><code>Rect#union( <var>rect</var> )</code></a><!-- RDLabel: "Rect#union" -->
+<dt><a name="label:18" id="label:18"><code>Rect#union!( <var>rect</var> )</code></a><!-- RDLabel: "Rect#union!" -->
+</dl>
+<p>Returns a new rectangle that completely covers the given inputs.
+There may be area inside the newrectangle that is not covered by the inputs.</p>
+<dl>
+<dt><a name="label:19" id="label:19"><code>Rect#contains( <var>thing</var> )</code></a><!-- RDLabel: "Rect#contains" -->
+</dl>
+<p>Returns whether thing (a Rect, [x, y, w, h] or [x, y]) fits completely within the rectangle.</p>
+<dl>
+<dt><a name="label:20" id="label:20"><code>Rect#find_overlapping_rect( <var>rects</var> )</code></a><!-- RDLabel: "Rect#find_overlapping_rect" -->
+</dl>
+<p>Returns the first rectangle in the list to overlap the base rectangle.
+Once an overlap is found, this will stop checking the remaining list.
+If no overlap is found, it will return nil.</p>
+<dl>
+<dt><a name="label:21" id="label:21"><code>Rect#find_overlapping_rects( <var>rects</var> )</code></a><!-- RDLabel: "Rect#find_overlapping_rects" -->
+</dl>
+<p>Returns an array with the rectangles in the list to overlap the base rectangle.
+If no overlap is found, it will return [].</p>
+<dl>
+<dt><a name="label:22" id="label:22"><code>Rect#clip( <var>rect</var> )</code></a><!-- RDLabel: "Rect#clip" -->
+<dt><a name="label:23" id="label:23"><code>Rect#clip!( <var>rect</var> )</code></a><!-- RDLabel: "Rect#clip!" -->
+</dl>
+<p>Returns a new rectangle that is the given rectangle cropped to the inside of the base rectangle.
+If the two rectangles do not overlap to begin with, you will get a rectangle with 0 size.</p>
+<dl>
+<dt><a name="label:24" id="label:24"><code>Rect#clamp( <var>rect</var> )</code></a><!-- RDLabel: "Rect#clamp" -->
+<dt><a name="label:25" id="label:25"><code>Rect#clamp!( <var>rect</var> )</code></a><!-- RDLabel: "Rect#clamp!" -->
+</dl>
+<p>Returns a new rectangle that is moved to be completely inside the base rectangle.
+If the given rectangle is too large for the base rectangle in an axis, 
+it will be centered on that axis.</p>
+<dl>
+<dt><a name="label:26" id="label:26"><code>Rect#overlap( <var>rect</var> )</code></a><!-- RDLabel: "Rect#overlap" -->
+</dl>
+<p>Returns true if any area of the two rectangles overlaps.</p>
+
+</body>
+</html>

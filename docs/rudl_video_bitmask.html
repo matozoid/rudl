@@ -1,0 +1,56 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html 
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>../rudl_video_bitmask.c</title>
+</head>
+<body>
+<A HREF="index.html">Back to index</A>
+
+
+<h1><a name="label:0" id="label:0">CollisionMap</a></h1><!-- RDLabel: "CollisionMap" -->
+<p>This code is "BitMask" from <a href="http://www.ifm.liu.se/~ulfek/bitmask/Bitmask.html">&lt;URL:http://www.ifm.liu.se/~ulfek/bitmask/Bitmask.html&gt;</a></p>
+<p>This class contains a map of all the visible pixels in a surface.
+(That's the ones that don't have the color key's color)
+With it, you can detect whether any pixels in a surface and another
+surface overlap when they are at two specific positions.</p>
+<h2><a name="label:1" id="label:1">Class Methods</a></h2><!-- RDLabel: "Class Methods" -->
+<dl>
+<dt><a name="label:2" id="label:2"><code>CollisionMap#new( <var>surface</var> )</code></a><!-- RDLabel: "CollisionMap#new" -->
+</dl>
+<p>Creates a new collision map with the information from surface.
+The map will not be automatically updated when the surface contents
+change, so a new <code>CollisionMap</code> will have to be made each time.</p>
+<p>Surface has an attribute, <var>collision_map</var>, that you can use to attach
+a <code>CollisionMap</code> to.
+RUDL doesn't use that attribute for itself.
+The syntax would be:</p>
+<p>some_surface.collision_map=CollisionMap.new( some_surface )</p>
+<dl>
+<dt><a name="label:3" id="label:3"><code>CollisionMap#collides_with( <var>own_coord</var>, <var>other_map</var>, <var>other_coord</var> )</code></a><!-- RDLabel: "CollisionMap#collides_with" -->
+</dl>
+<p>This returns the first found overlapping (colliding) pixel for two collision maps,
+or nil if no collision occurred.
+The coordinates specify where the two maps are, 
+which will probably mean that the two surfaces are blitted to the screen at those coordinates.</p>
+<p>If using the Surface#collision_map attribute, you would get for one surface at [10,10] and
+another at [20,20]:
+onesurface.collision_map( [10,10], other_surface.collision_map, [20,20] )</p>
+<dl>
+<dt><a name="label:4" id="label:4"><code>CollisionMap.destroy</code></a><!-- RDLabel: "CollisionMap.destroy" -->
+</dl>
+<p>Removes the map from memory.
+This instance of CollisionMap will be useless from this call on.</p>
+<dl>
+<dt><a name="label:5" id="label:5"><code>CollisionMap.set( <var>coord</var> )</code></a><!-- RDLabel: "CollisionMap.set" -->
+<dt><a name="label:6" id="label:6"><code>CollisionMap.unset( <var>coord</var> )</code></a><!-- RDLabel: "CollisionMap.unset" -->
+</dl>
+<p>This fills and erases one point in the collision map,
+in case you want to have collision with parts of a surface that
+weren't color keyed, or you want parts of the surface to appear
+"untouchable"</p>
+
+</body>
+</html>
