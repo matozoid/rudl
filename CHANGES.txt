@@ -6,9 +6,9 @@ newest
  + added Surface#scale2x
  + added VideoExposeEvent which occurs when the window is uncovered
    (it was previously a nil event)
+ + added automatic fixing of window clipping after a resize
 
  * fixed a couple typos that caused compilation errors on Linux
- * fixed window clipping after a resize (no need to do it manually any more)
  * Surface#[] and []= now accept an [x,y] array as well as separate x,y coordinates.
    They are now the same methods as Surface#get and Surface#plot, respectively.
  * changed the default window title to "RUDL window"

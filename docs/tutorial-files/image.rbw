@@ -6,13 +6,13 @@ win = DisplaySurface.new([300,200])
 win.fill [128,128,128]
 
 ball = Surface.load_new("ball.gif")
-win.blit(ball, [90,70])
+win.blit(ball, [90,50])
 
 ball.set_colorkey [255,255,255]
-win.blit(ball, [160,70])
+win.blit(ball, [160,50])
 
 ball.set_alpha 128
-win.blit(ball, [125,100])
+win.blit(ball, [125,80])
 
 win.update
 
