@@ -3,6 +3,9 @@ RUDL - a C library wrapping SDL for use in Ruby.
 Copyright (C) 2001, 2002, 2003  Danny van Bruggen
 
 $Log: rudl_video_surface.c,v $
+Revision 1.25  2003/11/28 22:24:58  rennex
+Fixed bugs that caused errors on Linux.
+
 Revision 1.24  2003/10/26 15:29:32  tsuihark
 Did stuff
 
@@ -51,35 +54,35 @@ ID id_shared_surface_reference;
 
 __inline__ VALUE createSurfaceObject(SDL_Surface* surface)
 {
-	return Data_Wrap_Struct(classSurface, 0, SDL_FreeSurface, surface);
+    return Data_Wrap_Struct(classSurface, 0, SDL_FreeSurface, surface);
 }
 
 __inline__ SDL_Surface* retrieveSurfacePointer(VALUE self)
 {
-	SDL_Surface* surface;
-	Data_Get_Struct(self, SDL_Surface, surface);
-	return surface;
+    SDL_Surface* surface;
+    Data_Get_Struct(self, SDL_Surface, surface);
+    return surface;
 }
 
-__inline__ void setMasksFromBPP(Uint32 bpp, boolean alphaWanted, Uint32* Rmask, Uint32* Gmask, Uint32* Bmask, Uint32* Amask)
+__inline__ void setMasksFromBPP(Uint32 bpp, bool alphaWanted, Uint32* Rmask, Uint32* Gmask, Uint32* Bmask, Uint32* Amask)
 {
-	*Amask = 0;
-	if(alphaWanted && (bpp==32||bpp==16)){
-		switch(bpp){
-			case 16: *Rmask=0xF<<12; *Gmask=0xF<<8; *Bmask=0xF<<4; *Amask=0xF;break;
-			case 32: *Rmask = 0xFF << 24; *Gmask = 0xFF << 16; *Bmask = 0xFF << 8; *Amask=0xFF; break;
-		}
-	}else{
-		switch(bpp){
-			case 8:  *Rmask = 0xFF >> 6 << 5; *Gmask = 0xFF >> 5 << 2; *Bmask = 0xFF >> 6; break;
-			case 12: *Rmask = 0xFF >> 4 << 8; *Gmask = 0xFF >> 4 << 4; *Bmask = 0xFF >> 4; break;
-			case 15: *Rmask = 0xFF >> 3 << 10; *Gmask = 0xFF >> 3 << 5; *Bmask = 0xFF >> 3; break;
-			case 16: *Rmask = 0xFF >> 3 << 11; *Gmask = 0xFF >> 2 << 5; *Bmask = 0xFF >> 3; break;
-			case 24:
-			case 32: *Rmask = 0xFF << 16; *Gmask = 0xFF << 8; *Bmask = 0xFF; break;
-			default: SDL_RAISE_S("no standard masks exist for given bitdepth");
-		}
-	}
+    *Amask = 0;
+    if(alphaWanted && (bpp==32||bpp==16)){
+        switch(bpp){
+            case 16: *Rmask=0xF<<12; *Gmask=0xF<<8; *Bmask=0xF<<4; *Amask=0xF;break;
+            case 32: *Rmask = 0xFF << 24; *Gmask = 0xFF << 16; *Bmask = 0xFF << 8; *Amask=0xFF; break;
+        }
+    }else{
+        switch(bpp){
+            case 8:  *Rmask = 0xFF >> 6 << 5; *Gmask = 0xFF >> 5 << 2; *Bmask = 0xFF >> 6; break;
+            case 12: *Rmask = 0xFF >> 4 << 8; *Gmask = 0xFF >> 4 << 4; *Bmask = 0xFF >> 4; break;
+            case 15: *Rmask = 0xFF >> 3 << 10; *Gmask = 0xFF >> 3 << 5; *Bmask = 0xFF >> 3; break;
+            case 16: *Rmask = 0xFF >> 3 << 11; *Gmask = 0xFF >> 2 << 5; *Bmask = 0xFF >> 3; break;
+            case 24:
+            case 32: *Rmask = 0xFF << 16; *Gmask = 0xFF << 8; *Bmask = 0xFF; break;
+            default: SDL_RAISE_S("no standard masks exist for given bitdepth");
+        }
+    }
 }
 
 
@@ -101,8 +104,8 @@ If a surface is supplied, it is used to copy the values from that aren't given.
 ((|flags|)) is, quoted from SDL's documentation:
 * SWSURFACE: SDL will create the surface in system memory. This improves the performance of pixel level access, however you may not be able to take advantage of some types of hardware blitting.
 * HWSURFACE: SDL will attempt to create the surface in video memory. This will allow SDL to take advantage of Video->Video blits (which are often accelerated).
-* SRCCOLORKEY: This flag turns on colourkeying for blits from this surface. If SDL_HWSURFACE is also specified and colourkeyed blits are hardware-accelerated, then	SDL will attempt to place the surface in video memory. Use SDL_SetColorKey to set or clear this flag after surface creation.
-* SRCALPHA: This flag turns on alpha-blending for blits from this surface. If SDL_HWSURFACE	is also specified and alpha-blending blits are hardware-accelerated, then the surface	will be placed in video memory if possible. Use SDL_SetAlpha to set or clear this flag	after surface creation. For a 32 bitdepth surface, an alpha mask will automatically be	added, in other cases, you will have to specify a mask.
+* SRCCOLORKEY: This flag turns on colourkeying for blits from this surface. If SDL_HWSURFACE is also specified and colourkeyed blits are hardware-accelerated, then SDL will attempt to place the surface in video memory. Use SDL_SetColorKey to set or clear this flag after surface creation.
+* SRCALPHA: This flag turns on alpha-blending for blits from this surface. If SDL_HWSURFACE is also specified and alpha-blending blits are hardware-accelerated, then the surface   will be placed in video memory if possible. Use SDL_SetAlpha to set or clear this flag  after surface creation. For a 32 bitdepth surface, an alpha mask will automatically be  added, in other cases, you will have to specify a mask.
 
 ((|depth|)) is bitdepth, like 8, 15, 16, 24 or 32.
 
@@ -130,80 +133,80 @@ Normally this shouldn't have to be of interest.
 =end */
 VALUE surface_new(int argc, VALUE* argv, VALUE self)
 {
-	Uint32 flags = 0;
-	Uint16 width, height;
-	short bpp=0;
-	Uint32 Rmask, Gmask, Bmask, Amask;
-	VALUE tmp;
-	bool wildGuess=false;
+    Uint32 flags = 0;
+    Uint16 width, height;
+    short bpp=0;
+    Uint32 Rmask, Gmask, Bmask, Amask;
+    VALUE tmp;
+    bool wildGuess=false;
 
-	VALUE sizeObject, surfaceOrFlagsObject, surfaceOrDepthObject, masksObject;
+    VALUE sizeObject, surfaceOrFlagsObject, surfaceOrDepthObject, masksObject;
 
-	SDL_PixelFormat* pix=NULL;
+    SDL_PixelFormat* pix=NULL;
 
-	initVideo();
+    initVideo();
 
-	rb_scan_args(argc, argv, "13", &sizeObject, &surfaceOrFlagsObject, &surfaceOrDepthObject, &masksObject);
+    rb_scan_args(argc, argv, "13", &sizeObject, &surfaceOrFlagsObject, &surfaceOrDepthObject, &masksObject);
 
-	PARAMETER2COORD(sizeObject, &width, &height);
+    PARAMETER2COORD(sizeObject, &width, &height);
 
-	if(argc>1){
-		if(rb_obj_is_kind_of(surfaceOrFlagsObject, classSurface)){ // got surface on pos 1
-			pix=retrieveSurfacePointer(surfaceOrFlagsObject)->format;
-			flags=retrieveSurfacePointer(surfaceOrFlagsObject)->flags;
-		}else{
-			flags=PARAMETER2FLAGS(surfaceOrFlagsObject);
+    if(argc>1){
+        if(rb_obj_is_kind_of(surfaceOrFlagsObject, classSurface)){ // got surface on pos 1
+            pix=retrieveSurfacePointer(surfaceOrFlagsObject)->format;
+            flags=retrieveSurfacePointer(surfaceOrFlagsObject)->flags;
+        }else{
+            flags=PARAMETER2FLAGS(surfaceOrFlagsObject);
 
-			if(argc>2){ // got surface on pos 2, or depth
+            if(argc>2){ // got surface on pos 2, or depth
 
-				if(rb_obj_is_kind_of(surfaceOrDepthObject, classSurface)){ // got Surface on pos 2
-					if(argc==3){
-						pix=retrieveSurfacePointer(surfaceOrDepthObject)->format;
-					}else{
-						SDL_RAISE_S("masks are taken from surface");
-						return Qnil;
-					}
-				}else{ // got depth
-					bpp=NUM2Sint16(surfaceOrDepthObject);
-					if(argc==4){ // got masks
-						Check_Type(masksObject, T_ARRAY);
-						if(RARRAY(masksObject)->len==4){
-							tmp=rb_ary_entry(masksObject, 0);	Rmask=NUM2UINT(tmp);
-							tmp=rb_ary_entry(masksObject, 1);	Gmask=NUM2UINT(tmp);
-							tmp=rb_ary_entry(masksObject, 2);	Bmask=NUM2UINT(tmp);
-							tmp=rb_ary_entry(masksObject, 3);	Amask=NUM2UINT(tmp);
-						}else{
-							SDL_RAISE_S("Need 4 elements in masks array");
-						}
-					}else{ // no masks
-						setMasksFromBPP(bpp, (flags&SDL_SRCALPHA)>0, &Rmask, &Gmask, &Bmask, &Amask);
-					}
-				}
-			}else{
-				wildGuess=true; // only size and flags given
-			}
-		}
-	}else{ // only size given... Guess a bit:
-		wildGuess=true;
-	}
+                if(rb_obj_is_kind_of(surfaceOrDepthObject, classSurface)){ // got Surface on pos 2
+                    if(argc==3){
+                        pix=retrieveSurfacePointer(surfaceOrDepthObject)->format;
+                    }else{
+                        SDL_RAISE_S("masks are taken from surface");
+                        return Qnil;
+                    }
+                }else{ // got depth
+                    bpp=NUM2Sint16(surfaceOrDepthObject);
+                    if(argc==4){ // got masks
+                        Check_Type(masksObject, T_ARRAY);
+                        if(RARRAY(masksObject)->len==4){
+                            tmp=rb_ary_entry(masksObject, 0);   Rmask=NUM2UINT(tmp);
+                            tmp=rb_ary_entry(masksObject, 1);   Gmask=NUM2UINT(tmp);
+                            tmp=rb_ary_entry(masksObject, 2);   Bmask=NUM2UINT(tmp);
+                            tmp=rb_ary_entry(masksObject, 3);   Amask=NUM2UINT(tmp);
+                        }else{
+                            SDL_RAISE_S("Need 4 elements in masks array");
+                        }
+                    }else{ // no masks
+                        setMasksFromBPP(bpp, (flags&SDL_SRCALPHA)>0, &Rmask, &Gmask, &Bmask, &Amask);
+                    }
+                }
+            }else{
+                wildGuess=true; // only size and flags given
+            }
+        }
+    }else{ // only size given... Guess a bit:
+        wildGuess=true;
+    }
 
-	if(wildGuess){
-		if(SDL_GetVideoSurface()){
-			pix = SDL_GetVideoSurface()->format;
-		}else{
-			pix = SDL_GetVideoInfo()->vfmt;
-		}
-	}
+    if(wildGuess){
+        if(SDL_GetVideoSurface()){
+            pix = SDL_GetVideoSurface()->format;
+        }else{
+            pix = SDL_GetVideoInfo()->vfmt;
+        }
+    }
 
-	if(pix){
-		bpp = pix->BitsPerPixel;
-		Rmask = pix->Rmask;
-		Gmask = pix->Gmask;
-		Bmask = pix->Bmask;
-		Amask = pix->Amask;
-	}
+    if(pix){
+        bpp = pix->BitsPerPixel;
+        Rmask = pix->Rmask;
+        Gmask = pix->Gmask;
+        Bmask = pix->Bmask;
+        Amask = pix->Amask;
+    }
 
-	return createSurfaceObject(SDL_CreateRGBSurface(flags, width, height, bpp, Rmask, Gmask, Bmask, Amask));
+    return createSurfaceObject(SDL_CreateRGBSurface(flags, width, height, bpp, Rmask, Gmask, Bmask, Amask));
 }
 
 /*
@@ -223,42 +226,42 @@ Simple means: not all BMP files can be loaded.
 =end */
 static VALUE surface_load_new(VALUE self, VALUE filename)
 {
-	SDL_Surface* surface=NULL;
-	initVideo();
+    SDL_Surface* surface=NULL;
+    initVideo();
 #ifdef HAVE_SDL_IMAGE_H
-	surface=IMG_Load(STR2CSTR(filename));
+    surface=IMG_Load(STR2CSTR(filename));
 #else
-	surface=SDL_LoadBMP(STR2CSTR(filename));
+    surface=SDL_LoadBMP(STR2CSTR(filename));
 #endif
-	if(!surface) SDL_RAISE;
-	return createSurfaceObject(surface);
+    if(!surface) SDL_RAISE;
+    return createSurfaceObject(surface);
 }
 
 static VALUE string_to_surface(VALUE self)
 {
-	SDL_RWops* rwops=NULL;
-	SDL_Surface* surface=NULL;
+    SDL_RWops* rwops=NULL;
+    SDL_Surface* surface=NULL;
 
-	initVideo();
+    initVideo();
 
-	rwops=SDL_RWFromMem(RSTRING(self)->ptr, RSTRING(self)->len);
+    rwops=SDL_RWFromMem(RSTRING(self)->ptr, RSTRING(self)->len);
 
 #ifdef HAVE_SDL_IMAGE_H
-	surface=IMG_Load_RW(rwops, 0);
+    surface=IMG_Load_RW(rwops, 0);
 #else
-	surface=SDL_LoadBMP_RW(rwops, 0);
+    surface=SDL_LoadBMP_RW(rwops, 0);
 #endif
 
-	SDL_FreeRW(rwops);
-	if(!surface) SDL_RAISE;
-	return createSurfaceObject(surface);
+    SDL_FreeRW(rwops);
+    if(!surface) SDL_RAISE;
+    return createSurfaceObject(surface);
 }
 
 static VALUE surface_destroy(VALUE self);
 
 void dont_free(void*_)
 {
-	DEBUG_S("dont_free");
+    DEBUG_S("dont_free");
 }
 
 /*
@@ -275,10 +278,10 @@ the shared ones will be invalidated too!
 =end */
 static VALUE surface_shared_new(VALUE self, VALUE other)
 {
-	VALUE new_surface=createSurfaceObject(DATA_PTR(other));
-	rb_ivar_set(new_surface, id_shared_surface_reference, other);
-	RDATA(new_surface)->dfree=dont_free;
-	return new_surface;
+    VALUE new_surface=createSurfaceObject(DATA_PTR(other));
+    rb_ivar_set(new_surface, id_shared_surface_reference, other);
+    RDATA(new_surface)->dfree=dont_free;
+    return new_surface;
 }
 
 /*
@@ -292,13 +295,13 @@ Returns self.
 =end */
 static VALUE surface_share(VALUE self, VALUE other)
 {
-	if(DATA_PTR(self)!=DATA_PTR(other)){
-		surface_destroy(self);
-		DATA_PTR(self)=DATA_PTR(other);
-		RDATA(self)->dfree=dont_free;
-		rb_ivar_set(self, id_shared_surface_reference, other);
-	}
-	return self;
+    if(DATA_PTR(self)!=DATA_PTR(other)){
+        surface_destroy(self);
+        DATA_PTR(self)=DATA_PTR(other);
+        RDATA(self)->dfree=dont_free;
+        rb_ivar_set(self, id_shared_surface_reference, other);
+    }
+    return self;
 }
 
 /*
@@ -315,13 +318,13 @@ Returns self.
 =end */
 static VALUE surface_immodest_export(VALUE self, VALUE other)
 {
-	if(DATA_PTR(self)!=DATA_PTR(other)){
-		surface_destroy(other);
-		DATA_PTR(other)=DATA_PTR(self);
-		RDATA(other)->dfree=dont_free;
-		rb_ivar_set(other, id_shared_surface_reference, self);
-	}
-	return self;
+    if(DATA_PTR(self)!=DATA_PTR(other)){
+        surface_destroy(other);
+        DATA_PTR(other)=DATA_PTR(self);
+        RDATA(other)->dfree=dont_free;
+        rb_ivar_set(other, id_shared_surface_reference, self);
+    }
+    return self;
 }
 
 /*
@@ -334,15 +337,15 @@ Returns nil.
 =end */
 static VALUE surface_destroy(VALUE self)
 {
-	if(RDATA(self)->dfree!=dont_free){
-		GET_SURFACE;
-		SDL_FreeSurface(surface);
-		DATA_PTR(self)=NULL;
-	}else{
-		rb_ivar_set(self, id_shared_surface_reference, Qnil);
-		DATA_PTR(self)=NULL;
-	}
-	return Qnil;
+    if(RDATA(self)->dfree!=dont_free){
+        GET_SURFACE;
+        SDL_FreeSurface(surface);
+        DATA_PTR(self)=NULL;
+    }else{
+        rb_ivar_set(self, id_shared_surface_reference, Qnil);
+        DATA_PTR(self)=NULL;
+    }
+    return Qnil;
 }
 
 /*
@@ -358,32 +361,32 @@ Returns the rectangle array ([x,y,w,h]) in (({Surface})) that was changed.
 =end */
 static VALUE surface_blit(int argc, VALUE* argv, VALUE self)
 {
-	SDL_Surface* src;
-	SDL_Surface* dest=retrieveSurfacePointer(self);
+    SDL_Surface* src;
+    SDL_Surface* dest=retrieveSurfacePointer(self);
 
-	int result;
-	SDL_Rect src_rect, dest_rect;
+    int result;
+    SDL_Rect src_rect, dest_rect;
 
-	VALUE sourceSurfaceObject, coordinateObject, sourceRectObject;
+    VALUE sourceSurfaceObject, coordinateObject, sourceRectObject;
 
-	rb_scan_args(argc, argv, "21", &sourceSurfaceObject, &coordinateObject, &sourceRectObject);
+    rb_scan_args(argc, argv, "21", &sourceSurfaceObject, &coordinateObject, &sourceRectObject);
 
-	src=retrieveSurfacePointer(sourceSurfaceObject);
-	PARAMETER2COORD(coordinateObject, &dest_rect.x, &dest_rect.y);
+    src=retrieveSurfacePointer(sourceSurfaceObject);
+    PARAMETER2COORD(coordinateObject, &dest_rect.x, &dest_rect.y);
 
-	if(argc==3){
-		PARAMETER2CRECT(sourceRectObject, &src_rect);
-		result=SDL_BlitSurface(src, &src_rect, dest, &dest_rect);
-	}else{
-		result=SDL_BlitSurface(src, NULL, dest, &dest_rect);
-	}
+    if(argc==3){
+        PARAMETER2CRECT(sourceRectObject, &src_rect);
+        result=SDL_BlitSurface(src, &src_rect, dest, &dest_rect);
+    }else{
+        result=SDL_BlitSurface(src, NULL, dest, &dest_rect);
+    }
 
-	switch(result){
-		case -1:SDL_RAISE;return Qnil;break;
-		case -2:rb_raise(classSurfacesLostException, "all surfaces lost their contents - reload graphics");return Qnil;break;
-	}
+    switch(result){
+        case -1:SDL_RAISE;return Qnil;break;
+        case -2:rb_raise(classSurfacesLostException, "all surfaces lost their contents - reload graphics");return Qnil;break;
+    }
 
-	return new_rect_from_SDL_Rect(&dest_rect);
+    return new_rect_from_SDL_Rect(&dest_rect);
 }
 
 /*
@@ -403,56 +406,56 @@ Returns self.
 =end */
 static VALUE surface_convert(VALUE self)
 {
-	GET_SURFACE;
-	surface=SDL_DisplayFormat(surface);
-	if(surface){
-		return createSurfaceObject(surface);
-	}else{
-		SDL_RAISE;
-		return Qnil;
-	}
+    GET_SURFACE;
+    surface=SDL_DisplayFormat(surface);
+    if(surface){
+        return createSurfaceObject(surface);
+    }else{
+        SDL_RAISE;
+        return Qnil;
+    }
 }
 
 static VALUE surface_convert_alpha(VALUE self)
 {
-	GET_SURFACE;
-	surface=SDL_DisplayFormatAlpha(surface);
-	if(surface){
-		return createSurfaceObject(surface);
-	}else{
-		SDL_RAISE;
-		return Qnil;
-	}
+    GET_SURFACE;
+    surface=SDL_DisplayFormatAlpha(surface);
+    if(surface){
+        return createSurfaceObject(surface);
+    }else{
+        SDL_RAISE;
+        return Qnil;
+    }
 }
 
 static VALUE surface_convert_(VALUE self)
 {
-	SDL_Surface* new_surface;
-	GET_SURFACE;
-	new_surface=SDL_DisplayFormat(surface);
-	if(new_surface){
-		SDL_FreeSurface(surface);
-		DATA_PTR(self)=new_surface;
-		return self;
-	}else{
-		SDL_RAISE;
-		return Qnil;
-	}
+    SDL_Surface* new_surface;
+    GET_SURFACE;
+    new_surface=SDL_DisplayFormat(surface);
+    if(new_surface){
+        SDL_FreeSurface(surface);
+        DATA_PTR(self)=new_surface;
+        return self;
+    }else{
+        SDL_RAISE;
+        return Qnil;
+    }
 }
 
 static VALUE surface_convert_alpha_(VALUE self)
 {
-	SDL_Surface* new_surface;
-	GET_SURFACE;
-	new_surface=SDL_DisplayFormatAlpha(surface);
-	if(new_surface){
-		SDL_FreeSurface(surface);
-		DATA_PTR(self)=new_surface;
-		return self;
-	}else{
-		SDL_RAISE;
-		return Qnil;
-	}
+    SDL_Surface* new_surface;
+    GET_SURFACE;
+    new_surface=SDL_DisplayFormatAlpha(surface);
+    if(new_surface){
+        SDL_FreeSurface(surface);
+        DATA_PTR(self)=new_surface;
+        return self;
+    }else{
+        SDL_RAISE;
+        return Qnil;
+    }
 }
 
 /*
@@ -473,24 +476,24 @@ Keep (({Surface}))s locked for as short a time as possible.
 =end */
 static VALUE surface_lock(VALUE self)
 {
-	if(SDL_LockSurface(retrieveSurfacePointer(self)) == -1) SDL_RAISE;
-	return self;
+    if(SDL_LockSurface(retrieveSurfacePointer(self)) == -1) SDL_RAISE;
+    return self;
 }
 
 static VALUE surface_must_lock(VALUE self)
 {
-	return INT2BOOL(SDL_MUSTLOCK(retrieveSurfacePointer(self)));
+    return INT2BOOL(SDL_MUSTLOCK(retrieveSurfacePointer(self)));
 }
 
 static VALUE surface_unlock(VALUE self)
 {
-	SDL_UnlockSurface(retrieveSurfacePointer(self));
-	return self;
+    SDL_UnlockSurface(retrieveSurfacePointer(self));
+    return self;
 }
 
 static VALUE surface_locked_(VALUE self)
 {
-	return INT2BOOL(retrieveSurfacePointer(self)->locked);
+    return INT2BOOL(retrieveSurfacePointer(self)->locked);
 }
 
 /*
@@ -502,8 +505,8 @@ It returns self.
 =end */
 static VALUE surface_save_bmp(VALUE self, VALUE filename)
 {
-	if(SDL_SaveBMP(retrieveSurfacePointer(self), STR2CSTR(filename))==-1) SDL_RAISE;
-	return self;
+    if(SDL_SaveBMP(retrieveSurfacePointer(self), STR2CSTR(filename))==-1) SDL_RAISE;
+    return self;
 }
 
 /*
@@ -519,32 +522,32 @@ size returns [w, h] and rect returns an array of [0, 0, w, h].
 =end */
 static VALUE surface_size(VALUE self)
 {
-	SDL_Surface* surface=retrieveSurfacePointer(self);
+    SDL_Surface* surface=retrieveSurfacePointer(self);
 
-	return rb_ary_new3(2, UINT2NUM(surface->w), UINT2NUM(surface->h));
+    return rb_ary_new3(2, UINT2NUM(surface->w), UINT2NUM(surface->h));
 }
 
 static VALUE surface_rect(VALUE self)
 {
-	SDL_Rect rect;
-	SDL_Surface* surface=retrieveSurfacePointer(self);
+    SDL_Rect rect;
+    SDL_Surface* surface=retrieveSurfacePointer(self);
 
-	rect.x=0;
-	rect.y=0;
-	rect.w=surface->w;
-	rect.h=surface->h;
+    rect.x=0;
+    rect.y=0;
+    rect.w=surface->w;
+    rect.h=surface->h;
 
-	return new_rect_from_SDL_Rect(&rect);
+    return new_rect_from_SDL_Rect(&rect);
 }
 
 static VALUE surface_w(VALUE self)
 {
-	return UINT2NUM(retrieveSurfacePointer(self)->w);
+    return UINT2NUM(retrieveSurfacePointer(self)->w);
 }
 
 static VALUE surface_h(VALUE self)
 {
-	return UINT2NUM(retrieveSurfacePointer(self)->h);
+    return UINT2NUM(retrieveSurfacePointer(self)->h);
 }
 
 /*
@@ -563,36 +566,36 @@ The others return self;
 =end */
 static VALUE surface_set_colorkey(int argc, VALUE* argv, VALUE self)
 {
-	SDL_Surface* surface=retrieveSurfacePointer(self);
-	Uint32 flags = 0, color = 0;
-	VALUE colorObject, flagsObject;
+    SDL_Surface* surface=retrieveSurfacePointer(self);
+    Uint32 flags = 0, color = 0;
+    VALUE colorObject, flagsObject;
 
-	switch(rb_scan_args(argc, argv, "11", &colorObject, &flagsObject)){
-		case 2: flags=PARAMETER2FLAGS(flagsObject);
-		case 1: flags|=SDL_SRCCOLORKEY;
-			color=VALUE2COLOR(colorObject, surface->format);
-	}
+    switch(rb_scan_args(argc, argv, "11", &colorObject, &flagsObject)){
+        case 2: flags=PARAMETER2FLAGS(flagsObject);
+        case 1: flags|=SDL_SRCCOLORKEY;
+            color=VALUE2COLOR(colorObject, surface->format);
+    }
 
-	if(SDL_SetColorKey(surface, flags, color)==-1) SDL_RAISE;
+    if(SDL_SetColorKey(surface, flags, color)==-1) SDL_RAISE;
 
-	return self;
+    return self;
 }
 
 static VALUE surface_unset_colorkey(VALUE self)
 {
-	if(SDL_SetColorKey(retrieveSurfacePointer(self), 0, 0)==-1) SDL_RAISE;
-	return self;
+    if(SDL_SetColorKey(retrieveSurfacePointer(self), 0, 0)==-1) SDL_RAISE;
+    return self;
 }
 
 static VALUE surface_colorkey(VALUE self)
 {
-	SDL_Surface* surface=retrieveSurfacePointer(self);
+    SDL_Surface* surface=retrieveSurfacePointer(self);
 
-	if(!(surface->flags&SDL_SRCCOLORKEY)){
-		return Qnil;
-	}
+    if(!(surface->flags&SDL_SRCCOLORKEY)){
+        return Qnil;
+    }
 
-	return COLOR2VALUE(surface->format->colorkey, surface);
+    return COLOR2VALUE(surface->format->colorkey, surface);
 }
 
 /*
@@ -605,21 +608,21 @@ Returns self.
 =end */
 static VALUE surface_fill(int argc, VALUE* argv, VALUE self)
 {
-	SDL_Rect rectangle;
-	SDL_Surface* surface=retrieveSurfacePointer(self);
+    SDL_Rect rectangle;
+    SDL_Surface* surface=retrieveSurfacePointer(self);
 
-	VALUE rect, color;
+    VALUE rect, color;
 
-	switch(rb_scan_args(argc, argv, "11", &color, &rect)){
-		case 1:
-			SDL_FillRect(surface, NULL, VALUE2COLOR(color, surface->format));
-			break;
-		case 2:
-			PARAMETER2CRECT(rect, &rectangle);
-			SDL_FillRect(surface, &rectangle, VALUE2COLOR(color, surface->format));
-			break;
-	}
-	return self;
+    switch(rb_scan_args(argc, argv, "11", &color, &rect)){
+        case 1:
+            SDL_FillRect(surface, NULL, VALUE2COLOR(color, surface->format));
+            break;
+        case 2:
+            PARAMETER2CRECT(rect, &rectangle);
+            SDL_FillRect(surface, &rectangle, VALUE2COLOR(color, surface->format));
+            break;
+    }
+    return self;
 }
 
 /*
@@ -630,8 +633,8 @@ This function should rarely needed, mainly for any special-case debugging.
 =end */
 static VALUE surface_pitch(VALUE self)
 {
-	GET_SURFACE;
-	return UINT2NUM(surface->pitch);
+    GET_SURFACE;
+    return UINT2NUM(surface->pitch);
 }
 
 /*
@@ -643,7 +646,7 @@ For example a 15 bit Surface still requires a full 2 bytes.
 =end */
 static VALUE surface_bitsize(VALUE self)
 {
-	return UINT2NUM(retrieveSurfacePointer(self)->format->BitsPerPixel);
+    return UINT2NUM(retrieveSurfacePointer(self)->format->BitsPerPixel);
 }
 
 /*
@@ -653,7 +656,7 @@ Returns the number of bytes used to store each pixel.
 =end */
 static VALUE surface_bytesize(VALUE self)
 {
-	return UINT2NUM(retrieveSurfacePointer(self)->format->BytesPerPixel);
+    return UINT2NUM(retrieveSurfacePointer(self)->format->BytesPerPixel);
 }
 
 /*
@@ -663,7 +666,7 @@ Returns the current state flags for the surface.
 =end */
 static VALUE surface_flags(VALUE self)
 {
-	return UINT2NUM(retrieveSurfacePointer(self)->flags);
+    return UINT2NUM(retrieveSurfacePointer(self)->flags);
 }
 
 /*
@@ -678,12 +681,12 @@ Returns an array of [redloss, greenloss, blueloss, alphaloss]
 =end */
 static VALUE surface_losses(VALUE self)
 {
-	SDL_Surface* surface=retrieveSurfacePointer(self);
-	return rb_ary_new3(4,
-			UINT2NUM(surface->format->Rloss),
-			UINT2NUM(surface->format->Gloss),
-			UINT2NUM(surface->format->Bloss),
-			UINT2NUM(surface->format->Aloss));
+    SDL_Surface* surface=retrieveSurfacePointer(self);
+    return rb_ary_new3(4,
+            UINT2NUM(surface->format->Rloss),
+            UINT2NUM(surface->format->Gloss),
+            UINT2NUM(surface->format->Bloss),
+            UINT2NUM(surface->format->Aloss));
 }
 
 /*
@@ -695,12 +698,12 @@ mapped color value.
 =end */
 static VALUE surface_shifts(VALUE self)
 {
-	SDL_Surface* surface=retrieveSurfacePointer(self);
-	return rb_ary_new3(4,
-			UINT2NUM(surface->format->Rshift),
-			UINT2NUM(surface->format->Gshift),
-			UINT2NUM(surface->format->Bshift),
-			UINT2NUM(surface->format->Ashift));
+    SDL_Surface* surface=retrieveSurfacePointer(self);
+    return rb_ary_new3(4,
+            UINT2NUM(surface->format->Rshift),
+            UINT2NUM(surface->format->Gshift),
+            UINT2NUM(surface->format->Bshift),
+            UINT2NUM(surface->format->Ashift));
 }
 
 /*
@@ -712,12 +715,12 @@ A value of zero means that colorplane is not used (like alpha)
 =end */
 static VALUE surface_masks(VALUE self)
 {
-	SDL_Surface* surface=retrieveSurfacePointer(self);
-	return rb_ary_new3(4,
-			UINT2NUM(surface->format->Rmask),
-			UINT2NUM(surface->format->Gmask),
-			UINT2NUM(surface->format->Bmask),
-			UINT2NUM(surface->format->Amask));
+    SDL_Surface* surface=retrieveSurfacePointer(self);
+    return rb_ary_new3(4,
+            UINT2NUM(surface->format->Rmask),
+            UINT2NUM(surface->format->Gmask),
+            UINT2NUM(surface->format->Bmask),
+            UINT2NUM(surface->format->Amask));
 }
 
 /*
@@ -731,60 +734,60 @@ These methods return or set the 256 color palette that is part of 8 bit (({Surfa
 =end */
 static VALUE surface_palette(VALUE self)
 {
-	SDL_Surface* surface = retrieveSurfacePointer(self);
-	SDL_Palette* pal = surface->format->palette;
+    SDL_Surface* surface = retrieveSurfacePointer(self);
+    SDL_Palette* pal = surface->format->palette;
 
-	int i;
+    int i;
 
-	VALUE retval;
-	VALUE color;
+    VALUE retval;
+    VALUE color;
 
-	if(!pal) return Qnil;
+    if(!pal) return Qnil;
 
-	retval=rb_ary_new2(256);
+    retval=rb_ary_new2(256);
 
-	for(i=0; i<256; i++){
-		color=rb_ary_new3(3,
-			UINT2NUM(pal->colors[i].r),
-			UINT2NUM(pal->colors[i].g),
-			UINT2NUM(pal->colors[i].b));
-		rb_ary_push(retval, color);
-	}
+    for(i=0; i<256; i++){
+        color=rb_ary_new3(3,
+            UINT2NUM(pal->colors[i].r),
+            UINT2NUM(pal->colors[i].g),
+            UINT2NUM(pal->colors[i].b));
+        rb_ary_push(retval, color);
+    }
 
-	return retval;
+    return retval;
 }
 
 static VALUE surface_set_palette(VALUE self, VALUE firstValue, VALUE colors)
 {
-	SDL_Surface* surface = retrieveSurfacePointer(self);
-	SDL_Palette* pal = surface->format->palette;
+    SDL_Surface* surface = retrieveSurfacePointer(self);
+    SDL_Palette* pal = surface->format->palette;
 
-	int first=NUM2INT(firstValue);
-	int amount;
-	int i;
-	SDL_Color newPal[256];
-	VALUE color;
+    int first=NUM2INT(firstValue);
+    int amount;
+    int i;
+    SDL_Color newPal[256];
+    VALUE color;
 
-	VALUE tmp;
+    VALUE tmp;
 
-	RUDL_ASSERT(rb_obj_is_kind_of(colors, rb_cArray), "Need array of colors");
+    RUDL_ASSERT(rb_obj_is_kind_of(colors, rb_cArray), "Need array of colors");
 
-	amount=RARRAY(colors)->len;
+    amount=RARRAY(colors)->len;
 
-	if(!pal) return Qfalse;
+    if(!pal) return Qfalse;
 
-	if(first+amount>256) amount=256-first;
+    if(first+amount>256) amount=256-first;
 
-	for(i=0; i<amount; i++){
-		color=rb_ary_entry(colors, i);
-		tmp=rb_ary_entry(color, 0);		newPal[i].r=NUM2Uint8(tmp);
-		tmp=rb_ary_entry(color, 1);		newPal[i].g=NUM2Uint8(tmp);
-		tmp=rb_ary_entry(color, 2);		newPal[i].b=NUM2Uint8(tmp);
-	}
+    for(i=0; i<amount; i++){
+        color=rb_ary_entry(colors, i);
+        tmp=rb_ary_entry(color, 0);     newPal[i].r=NUM2Uint8(tmp);
+        tmp=rb_ary_entry(color, 1);     newPal[i].g=NUM2Uint8(tmp);
+        tmp=rb_ary_entry(color, 2);     newPal[i].b=NUM2Uint8(tmp);
+    }
 
-	if(SDL_SetColors(surface, newPal, first, amount)==0) SDL_RAISE;
+    if(SDL_SetColors(surface, newPal, first, amount)==0) SDL_RAISE;
 
-	return self;
+    return self;
 }
 
 /*
@@ -803,37 +806,37 @@ This will take a short time to compile your surface, and increase the blitting s
 =end */
 static VALUE surface_set_alpha(int argc, VALUE* argv, VALUE self)
 {
-	SDL_Surface* surface = retrieveSurfacePointer(self);
-	Uint32 flags = SDL_SRCALPHA;
-	Uint8 alpha = 0;
+    SDL_Surface* surface = retrieveSurfacePointer(self);
+    Uint32 flags = SDL_SRCALPHA;
+    Uint8 alpha = 0;
 
-	VALUE alphaObject, flagsObject;
+    VALUE alphaObject, flagsObject;
 
-	switch(rb_scan_args(argc, argv, "11", &alphaObject, &flagsObject)){
-		case 2:
-			flags=PARAMETER2FLAGS(flagsObject);
-	}
+    switch(rb_scan_args(argc, argv, "11", &alphaObject, &flagsObject)){
+        case 2:
+            flags=PARAMETER2FLAGS(flagsObject);
+    }
 
-	alpha=(Uint8)NUM2UINT(alphaObject);
+    alpha=(Uint8)NUM2UINT(alphaObject);
 
-	if(SDL_SetAlpha(surface, flags, alpha) == -1) SDL_RAISE;
+    if(SDL_SetAlpha(surface, flags, alpha) == -1) SDL_RAISE;
 
-	return self;
+    return self;
 }
 
 static VALUE surface_unset_alpha(VALUE self)
 {
-	if(SDL_SetAlpha(retrieveSurfacePointer(self), 0, 0) == -1) SDL_RAISE;
-	return self;
+    if(SDL_SetAlpha(retrieveSurfacePointer(self), 0, 0) == -1) SDL_RAISE;
+    return self;
 }
 
 static VALUE surface_alpha(VALUE self)
 {
-	SDL_Surface* surface=retrieveSurfacePointer(self);
-	if(surface->flags&SDL_SRCALPHA){
-		return UINT2NUM(surface->format->alpha);
-	}
-	return Qnil;
+    SDL_Surface* surface=retrieveSurfacePointer(self);
+    if(surface->flags&SDL_SRCALPHA){
+        return UINT2NUM(surface->format->alpha);
+    }
+    return Qnil;
 }
 
 
@@ -847,21 +850,21 @@ blitted to this surface.
 =end */
 static VALUE surface_unset_clip(VALUE self)
 {
-	SDL_SetClipRect(retrieveSurfacePointer(self), NULL);
-	return self;
+    SDL_SetClipRect(retrieveSurfacePointer(self), NULL);
+    return self;
 }
 
 static VALUE surface_clip_(VALUE self, VALUE rectObject)
 {
-	SDL_Rect rect;
-	PARAMETER2CRECT(rectObject, &rect);
-	SDL_SetClipRect(retrieveSurfacePointer(self), &rect);
-	return self;
+    SDL_Rect rect;
+    PARAMETER2CRECT(rectObject, &rect);
+    SDL_SetClipRect(retrieveSurfacePointer(self), &rect);
+    return self;
 }
 
 static VALUE surface_clip(VALUE self)
 {
-	return new_rect_from_SDL_Rect(&(retrieveSurfacePointer(self)->clip_rect));
+    return new_rect_from_SDL_Rect(&(retrieveSurfacePointer(self)->clip_rect));
 }
 
 /*
@@ -881,120 +884,120 @@ These methods require the surface to be locked if neccesary.
 =end */
 __inline__ Uint32 internal_get(SDL_Surface* surface, Sint16 x, Sint16 y)
 {
-	SDL_PixelFormat* format = surface->format;
-	Uint8* pixels;
-	Uint32 color;
-	Uint8* pix;
+    SDL_PixelFormat* format = surface->format;
+    Uint8* pixels;
+    Uint32 color;
+    Uint8* pix;
 
-	if(x < 0 || x >= surface->w || y < 0 || y >= surface->h){
-		return 0;
-	}
+    if(x < 0 || x >= surface->w || y < 0 || y >= surface->h){
+        return 0;
+    }
 
-	SDL_LockSurface(surface);
-	pixels = (Uint8*)surface->pixels;
+    SDL_LockSurface(surface);
+    pixels = (Uint8*)surface->pixels;
 
-	RUDL_ASSERT(format->BytesPerPixel>=1, "Color depth too small for surface (<1)");
-	RUDL_ASSERT(format->BytesPerPixel<=4, "Color depth too large for surface (>4)");
+    RUDL_ASSERT(format->BytesPerPixel>=1, "Color depth too small for surface (<1)");
+    RUDL_ASSERT(format->BytesPerPixel<=4, "Color depth too large for surface (>4)");
 
-	switch(format->BytesPerPixel){
-		case 1:
-			color = (Uint32)*((Uint8*)pixels + y * surface->pitch + x);
-			break;
-		case 2:
-			color = (Uint32)*((Uint16*)(pixels + y * surface->pitch) + x);
-			break;
-		case 3:
-			pix = ((Uint8*)(pixels + y * surface->pitch) + x * 3);
+    switch(format->BytesPerPixel){
+        case 1:
+            color = (Uint32)*((Uint8*)pixels + y * surface->pitch + x);
+            break;
+        case 2:
+            color = (Uint32)*((Uint16*)(pixels + y * surface->pitch) + x);
+            break;
+        case 3:
+            pix = ((Uint8*)(pixels + y * surface->pitch) + x * 3);
 #if SDL_BYTEORDER == SDL_LIL_ENDIAN
-			color = (pix[0]) + (pix[1]<<8) + (pix[2]<<16);
+            color = (pix[0]) + (pix[1]<<8) + (pix[2]<<16);
 #else
-			color = (pix[2]) + (pix[1]<<8) + (pix[0]<<16);
+            color = (pix[2]) + (pix[1]<<8) + (pix[0]<<16);
 #endif
-			break;
-		default: /*case 4:*/
-			color = *((Uint32*)(pixels + y * surface->pitch) + x);
-			break;
-	}
-	SDL_UnlockSurface(surface);
-	return color;
+            break;
+        default: /*case 4:*/
+            color = *((Uint32*)(pixels + y * surface->pitch) + x);
+            break;
+    }
+    SDL_UnlockSurface(surface);
+    return color;
 }
 
 __inline__ Uint32 internal_nonlocking_get(SDL_Surface* surface, Sint16 x, Sint16 y)
 {
-	SDL_PixelFormat* format = surface->format;
-	Uint8* pixels;
-	Uint32 color;
-	Uint8* pix;
+    SDL_PixelFormat* format = surface->format;
+    Uint8* pixels;
+    Uint32 color;
+    Uint8* pix;
 
-	if(x < 0 || x >= surface->w || y < 0 || y >= surface->h){
-		return 0;
-	}
+    if(x < 0 || x >= surface->w || y < 0 || y >= surface->h){
+        return 0;
+    }
 
-	SDL_LockSurface(surface);
-	pixels = (Uint8*)surface->pixels;
+    SDL_LockSurface(surface);
+    pixels = (Uint8*)surface->pixels;
 
-	RUDL_ASSERT(format->BytesPerPixel>=1, "Color depth too small for surface (<1)");
-	RUDL_ASSERT(format->BytesPerPixel<=4, "Color depth too large for surface (>4)");
+    RUDL_ASSERT(format->BytesPerPixel>=1, "Color depth too small for surface (<1)");
+    RUDL_ASSERT(format->BytesPerPixel<=4, "Color depth too large for surface (>4)");
 
-	switch(format->BytesPerPixel){
-		case 1:
-			color = (Uint32)*((Uint8*)pixels + y * surface->pitch + x);
-			break;
-		case 2:
-			color = (Uint32)*((Uint16*)(pixels + y * surface->pitch) + x);
-			break;
-		case 3:
-			pix = ((Uint8*)(pixels + y * surface->pitch) + x * 3);
+    switch(format->BytesPerPixel){
+        case 1:
+            color = (Uint32)*((Uint8*)pixels + y * surface->pitch + x);
+            break;
+        case 2:
+            color = (Uint32)*((Uint16*)(pixels + y * surface->pitch) + x);
+            break;
+        case 3:
+            pix = ((Uint8*)(pixels + y * surface->pitch) + x * 3);
 #if SDL_BYTEORDER == SDL_LIL_ENDIAN
-			color = (pix[0]) + (pix[1]<<8) + (pix[2]<<16);
+            color = (pix[0]) + (pix[1]<<8) + (pix[2]<<16);
 #else
-			color = (pix[2]) + (pix[1]<<8) + (pix[0]<<16);
+            color = (pix[2]) + (pix[1]<<8) + (pix[0]<<16);
 #endif
-			break;
-		default: /*case 4:*/
-			color = *((Uint32*)(pixels + y * surface->pitch) + x);
-			break;
-	}
-	SDL_UnlockSurface(surface);
-	return color;
+            break;
+        default: /*case 4:*/
+            color = *((Uint32*)(pixels + y * surface->pitch) + x);
+            break;
+    }
+    SDL_UnlockSurface(surface);
+    return color;
 }
 
 static VALUE surface_get(VALUE self, VALUE coordinate)
 {
-	SDL_Surface* surface=retrieveSurfacePointer(self);
-	Sint16 x,y;
-	Uint8 r, g, b, a;
+    SDL_Surface* surface=retrieveSurfacePointer(self);
+    Sint16 x,y;
+    Uint8 r, g, b, a;
 
-	PARAMETER2COORD(coordinate, &x, &y);
+    PARAMETER2COORD(coordinate, &x, &y);
 
-	SDL_GetRGBA(internal_get(surface, x, y), surface->format, &r, &g, &b, &a);
+    SDL_GetRGBA(internal_get(surface, x, y), surface->format, &r, &g, &b, &a);
 
-	return rb_ary_new3(4, UINT2NUM(r), UINT2NUM(g), UINT2NUM(b), UINT2NUM(a));
+    return rb_ary_new3(4, UINT2NUM(r), UINT2NUM(g), UINT2NUM(b), UINT2NUM(a));
 }
 
 static VALUE surface_array_get(VALUE self, VALUE x, VALUE y)
 {
-	SDL_Surface* surface=retrieveSurfacePointer(self);
-	Uint8 r, g, b, a;
+    SDL_Surface* surface=retrieveSurfacePointer(self);
+    Uint8 r, g, b, a;
 
-	SDL_GetRGBA(internal_get(surface, NUM2Sint16(x), NUM2Sint16(y)), surface->format, &r, &g, &b, &a);
+    SDL_GetRGBA(internal_get(surface, NUM2Sint16(x), NUM2Sint16(y)), surface->format, &r, &g, &b, &a);
 
-	return rb_ary_new3(4, UINT2NUM(r), UINT2NUM(g), UINT2NUM(b), UINT2NUM(a));
+    return rb_ary_new3(4, UINT2NUM(r), UINT2NUM(g), UINT2NUM(b), UINT2NUM(a));
 }
 
 __inline__ static void* get_line_pointer(SDL_Surface* surface, int y)
 {
-	return (((Uint8*)surface->pixels)+surface->pitch*y);
+    return (((Uint8*)surface->pixels)+surface->pitch*y);
 }
 
 __inline__ static void copy_line_to_surface(SDL_Surface* surface, int y, Uint8* data)
 {
-	memcpy(get_line_pointer(surface, y), data, surface->w*surface->format->BytesPerPixel);
+    memcpy(get_line_pointer(surface, y), data, surface->w*surface->format->BytesPerPixel);
 }
 
 __inline__ static void copy_surface_to_line(SDL_Surface* surface, int y, Uint8* data)
 {
-	memcpy(data, get_line_pointer(surface, y), surface->w*surface->format->BytesPerPixel);
+    memcpy(data, get_line_pointer(surface, y), surface->w*surface->format->BytesPerPixel);
 }
 
 
@@ -1014,56 +1017,56 @@ For more info, see (({Surface}))#((|pixels|)).
 =end */
 static VALUE surface_get_row(VALUE self, VALUE y)
 {
-	GET_SURFACE;
+    GET_SURFACE;
 
-	RUDL_ASSERT(NUM2INT(y)<surface->h, "y>surface.h");
-	RUDL_ASSERT(NUM2INT(y)>=0, "y<0");
+    RUDL_ASSERT(NUM2INT(y)<surface->h, "y>surface.h");
+    RUDL_ASSERT(NUM2INT(y)>=0, "y<0");
 
-	return rb_str_new(get_line_pointer(surface, NUM2INT(y)), surface->w*surface->format->BytesPerPixel);
+    return rb_str_new(get_line_pointer(surface, NUM2INT(y)), surface->w*surface->format->BytesPerPixel);
 }
 
 static VALUE surface_set_row(VALUE self, VALUE y, VALUE pixels)
 {
-	GET_SURFACE;
+    GET_SURFACE;
 
-	RUDL_ASSERT(NUM2INT(y)<surface->h, "y>surface.h");
-	RUDL_ASSERT(NUM2INT(y)>=0, "y<0");
+    RUDL_ASSERT(NUM2INT(y)<surface->h, "y>surface.h");
+    RUDL_ASSERT(NUM2INT(y)>=0, "y<0");
 
-	RUDL_ASSERT(RSTRING(pixels)->len >= surface->w*surface->format->BytesPerPixel, "Not enough data for a complete row");
+    RUDL_ASSERT(RSTRING(pixels)->len >= surface->w*surface->format->BytesPerPixel, "Not enough data for a complete row");
 
-	copy_line_to_surface(surface, NUM2INT(y), RSTRING(pixels)->ptr);
-	return self;
+    copy_line_to_surface(surface, NUM2INT(y), RSTRING(pixels)->ptr);
+    return self;
 }
 
 void define_ruby_row_methods()
 {
-	rb_eval_string(
-		"module RUDL class Surface				\n"
-		"	def each_row						\n"
-		"		(0...h).each {|y|				\n"
-		"			yield(get_row(y))			\n"
-		"		}								\n"
-		"		self							\n"
-		"	end									\n"
-		"	def each_row!						\n"
-		"		(0...h).each {|y|					\n"
-		"			set_row(y, yield(get_row(y)))	\n"
-		"		}									\n"
-		"		self							\n"
-		"	end									\n"
-		"	def rows							\n"
-		"		retval=[]						\n"
-		"		each_row {|r| retval.push(r)}	\n"
-		"		retval							\n"
-		"	end									\n"
-		"	def rows=(rows)						\n"
-		"		(0...h).each {|row|				\n"
-		"			set_row(row, rows[row])		\n"
-		"		}								\n"
-		"		self							\n"
-		"	end									\n"
-		"end end								\n"
-	);
+    rb_eval_string(
+        "module RUDL class Surface              \n"
+        "   def each_row                        \n"
+        "       (0...h).each {|y|               \n"
+        "           yield(get_row(y))           \n"
+        "       }                               \n"
+        "       self                            \n"
+        "   end                                 \n"
+        "   def each_row!                       \n"
+        "       (0...h).each {|y|                   \n"
+        "           set_row(y, yield(get_row(y)))   \n"
+        "       }                                   \n"
+        "       self                            \n"
+        "   end                                 \n"
+        "   def rows                            \n"
+        "       retval=[]                       \n"
+        "       each_row {|r| retval.push(r)}   \n"
+        "       retval                          \n"
+        "   end                                 \n"
+        "   def rows=(rows)                     \n"
+        "       (0...h).each {|row|             \n"
+        "           set_row(row, rows[row])     \n"
+        "       }                               \n"
+        "       self                            \n"
+        "   end                                 \n"
+        "end end                                \n"
+    );
 }
 
 /*
@@ -1082,87 +1085,87 @@ For more info, see (({Surface}))#((|pixels|)).
 =end */
 static VALUE surface_get_column(VALUE self, VALUE x)
 {
-	int y;
-	int pixelsize;
-	int h;
-	Uint8* src, *dest, *column;
+    int y;
+    int pixelsize;
+    int h;
+    Uint8* src, *dest, *column;
 
-	GET_SURFACE;
+    GET_SURFACE;
 
-	RUDL_ASSERT(NUM2INT(x)<surface->w, "x>surface.w");
-	RUDL_ASSERT(NUM2INT(x)>=0, "x<0");
+    RUDL_ASSERT(NUM2INT(x)<surface->w, "x>surface.w");
+    RUDL_ASSERT(NUM2INT(x)>=0, "x<0");
 
-	h=surface->h;
-	pixelsize=surface->format->BytesPerPixel;
+    h=surface->h;
+    pixelsize=surface->format->BytesPerPixel;
 
-	column=malloc(h*pixelsize);
-	src=((Uint8*)surface->pixels)+(NUM2INT(x))*pixelsize;
-	dest=column;
-	for(y=0; y<h; y++){
-		memcpy(dest, src, pixelsize);
-		dest+=pixelsize;
-		src+=surface->pitch;
-	}
+    column=malloc(h*pixelsize);
+    src=((Uint8*)surface->pixels)+(NUM2INT(x))*pixelsize;
+    dest=column;
+    for(y=0; y<h; y++){
+        memcpy(dest, src, pixelsize);
+        dest+=pixelsize;
+        src+=surface->pitch;
+    }
 
-	return rb_str_new(column, h*pixelsize);
+    return rb_str_new(column, h*pixelsize);
 }
 
 static VALUE surface_set_column(VALUE self, VALUE x, VALUE pixels)
 {
-	int y;
-	int pixelsize;
-	int h;
-	Uint8* src, *dest;
+    int y;
+    int pixelsize;
+    int h;
+    Uint8* src, *dest;
 
-	GET_SURFACE;
+    GET_SURFACE;
 
-	RUDL_ASSERT(NUM2INT(x)<surface->w, "x>surface.w");
-	RUDL_ASSERT(NUM2INT(x)>=0, "x<0");
+    RUDL_ASSERT(NUM2INT(x)<surface->w, "x>surface.w");
+    RUDL_ASSERT(NUM2INT(x)>=0, "x<0");
 
-	h=surface->h;
-	pixelsize=surface->format->BytesPerPixel;
+    h=surface->h;
+    pixelsize=surface->format->BytesPerPixel;
 
-	dest=((Uint8*)surface->pixels)+(NUM2INT(x))*pixelsize;
-	src=RSTRING(pixels)->ptr;
-	for(y=0; y<h; y++){
-		memcpy(dest, src, pixelsize);
-		dest+=surface->pitch;
-		src+=pixelsize;
-	}
+    dest=((Uint8*)surface->pixels)+(NUM2INT(x))*pixelsize;
+    src=RSTRING(pixels)->ptr;
+    for(y=0; y<h; y++){
+        memcpy(dest, src, pixelsize);
+        dest+=surface->pitch;
+        src+=pixelsize;
+    }
 
-	return self;
+    return self;
 }
 
 void define_ruby_column_methods()
 {
-	rb_eval_string(
-		"module RUDL class Surface				\n"
-		"	def each_column						\n"
-		"		(0...w).each {|x|				\n"
-		"			yield(get_column(x))		\n"
-		"		}								\n"
-		"		self							\n"
-		"	end									\n"
-		"	def each_column!					\n"
-		"		(0...w).each {|x|						\n"
-		"			set_column(x, yield(get_column(x)))	\n"
-		"		}										\n"
-		"		self									\n"
-		"	end									\n"
-		"	def columns							\n"
-		"		retval=[]							\n"
-		"		each_column {|c| retval.push(c)}	\n"
-		"		retval								\n"
-		"	end									\n"
+    rb_eval_string(
+        "module RUDL class Surface              \n"
+        "   def each_column                     \n"
+        "       (0...w).each {|x|               \n"
+        "           yield(get_column(x))        \n"
+        "       }                               \n"
+        "       self                            \n"
+        "   end                                 \n"
+        "   def each_column!                    \n"
+        "       (0...w).each {|x|                       \n"
+        "           set_column(x, yield(get_column(x))) \n"
+        "       }                                       \n"
+        "       self                                    \n"
+        "   end                                 \n"
+        "   def columns                         \n"
+        "       retval=[]                           \n"
+        "       each_column {|c| retval.push(c)}    \n"
+        "       retval                              \n"
+        "   end                                 \n"
 
-		"	def columns=(cols)					\n"
-		"		(0...w).each {|col|				\n"
-		"			set_column(col, cols[col])	\n"
-		"		}								\n"
-		"		self							\n"
-		"	end									\n"
-		"end end								\n"
-	);
+        "   def columns=(cols)                  \n"
+        "       (0...w).each {|col|             \n"
+        "           set_column(col, cols[col])  \n"
+        "       }                               \n"
+        "       self                            \n"
+        "   end                                 \n"
+        "end end                                \n"
+    );
 }
 
 /*
@@ -1182,131 +1185,131 @@ There is not much errorchecking so beware of crashes.
 =end */
 static VALUE surface_pixels(VALUE self)
 {
-	Uint32 image_size;
-	GET_SURFACE;
+    Uint32 image_size;
+    GET_SURFACE;
 
-	image_size=surface->w*surface->h*surface->format->BytesPerPixel;
+    image_size=surface->w*surface->h*surface->format->BytesPerPixel;
 
-	if(surface->pitch==surface->w){
-		return rb_str_new(surface->pixels, image_size);
-	}else{
-		int y;
-		Uint8* tmp_pixels=malloc(image_size);
-		VALUE retval;
-		Uint16 bytewidth=surface->w*surface->format->BytesPerPixel;
+    if(surface->pitch==surface->w){
+        return rb_str_new(surface->pixels, image_size);
+    }else{
+        int y;
+        Uint8* tmp_pixels=malloc(image_size);
+        VALUE retval;
+        Uint16 bytewidth=surface->w*surface->format->BytesPerPixel;
 
-		for(y=0; y<surface->h; y++){
-			copy_surface_to_line(surface, y, tmp_pixels+y*bytewidth);
-		}
-		retval=rb_str_new(tmp_pixels, image_size);
-		free(tmp_pixels);
-		return retval;
-	}
+        for(y=0; y<surface->h; y++){
+            copy_surface_to_line(surface, y, tmp_pixels+y*bytewidth);
+        }
+        retval=rb_str_new(tmp_pixels, image_size);
+        free(tmp_pixels);
+        return retval;
+    }
 }
 
 static VALUE surface_set_pixels(VALUE self, VALUE pixels)
 {
-	int size;
-	Uint8* pixelpointer;
+    int size;
+    Uint8* pixelpointer;
 
-	GET_SURFACE;
+    GET_SURFACE;
 
-	Check_Type(pixels, T_STRING);
-	size=surface->w*surface->h*surface->format->BytesPerPixel;
-	pixelpointer=RSTRING(pixels)->ptr;
+    Check_Type(pixels, T_STRING);
+    size=surface->w*surface->h*surface->format->BytesPerPixel;
+    pixelpointer=RSTRING(pixels)->ptr;
 
-	RUDL_ASSERT(RSTRING(pixels)->len>=size, "Not enough data in string");
+    RUDL_ASSERT(RSTRING(pixels)->len>=size, "Not enough data in string");
 
-	if(surface->pitch==surface->w){
-		memcpy(surface->pixels, pixelpointer, size);
-	}else{
-		int y;
-		Uint16 bytewidth=surface->w*surface->format->BytesPerPixel;
-		for(y=0; y<surface->h; y++){
-			copy_line_to_surface(surface, y, pixelpointer+y*bytewidth);
-		}
-	}
-	return self;
+    if(surface->pitch==surface->w){
+        memcpy(surface->pixels, pixelpointer, size);
+    }else{
+        int y;
+        Uint16 bytewidth=surface->w*surface->format->BytesPerPixel;
+        for(y=0; y<surface->h; y++){
+            copy_line_to_surface(surface, y, pixelpointer+y*bytewidth);
+        }
+    }
+    return self;
 }
 
 ///////////////////////////////// INIT
 void initVideoSurfaceClasses()
 {
-	classSurface=rb_define_class_under(moduleRUDL, "Surface", rb_cObject);
-	rb_define_singleton_method(classSurface, "new", surface_new, -1);
-	rb_define_singleton_method(classSurface, "load_new", surface_load_new, 1);
-	rb_define_singleton_method(classSurface, "shared_new", surface_shared_new, 1);
-	rb_define_method(rb_cString, "to_surface", string_to_surface, 0);
-	rb_define_method(classSurface, "destroy", surface_destroy, 0);
-	rb_define_method(classSurface, "save_bmp", surface_save_bmp, 1);
+    classSurface=rb_define_class_under(moduleRUDL, "Surface", rb_cObject);
+    rb_define_singleton_method(classSurface, "new", surface_new, -1);
+    rb_define_singleton_method(classSurface, "load_new", surface_load_new, 1);
+    rb_define_singleton_method(classSurface, "shared_new", surface_shared_new, 1);
+    rb_define_method(rb_cString, "to_surface", string_to_surface, 0);
+    rb_define_method(classSurface, "destroy", surface_destroy, 0);
+    rb_define_method(classSurface, "save_bmp", surface_save_bmp, 1);
 
-	rb_define_method(classSurface, "w", surface_w, 0);
-	rb_define_method(classSurface, "h", surface_h, 0);
-	rb_define_method(classSurface, "size", surface_size, 0);
-	rb_define_method(classSurface, "rect", surface_rect, 0);
+    rb_define_method(classSurface, "w", surface_w, 0);
+    rb_define_method(classSurface, "h", surface_h, 0);
+    rb_define_method(classSurface, "size", surface_size, 0);
+    rb_define_method(classSurface, "rect", surface_rect, 0);
 
-	rb_define_method(classSurface, "blit", surface_blit, -1);
+    rb_define_method(classSurface, "blit", surface_blit, -1);
 
-	rb_define_method(classSurface, "convert", surface_convert, 0);
-	rb_define_method(classSurface, "convert_alpha", surface_convert_alpha, 0);
-	rb_define_method(classSurface, "convert!", surface_convert_, 0);
-	rb_define_method(classSurface, "convert_alpha!", surface_convert_alpha_, 0);
+    rb_define_method(classSurface, "convert", surface_convert, 0);
+    rb_define_method(classSurface, "convert_alpha", surface_convert_alpha, 0);
+    rb_define_method(classSurface, "convert!", surface_convert_, 0);
+    rb_define_method(classSurface, "convert_alpha!", surface_convert_alpha_, 0);
 
-//	rb_define_method(classSurface, "contained_images", surface_contained_images, 0);
+//  rb_define_method(classSurface, "contained_images", surface_contained_images, 0);
 
-	rb_define_method(classSurface, "lock", surface_lock, 0);
-	rb_define_method(classSurface, "must_lock", surface_must_lock, 0);
-	rb_define_method(classSurface, "unlock", surface_unlock, 0);
-	rb_define_method(classSurface, "locked?", surface_locked_, 0);
+    rb_define_method(classSurface, "lock", surface_lock, 0);
+    rb_define_method(classSurface, "must_lock", surface_must_lock, 0);
+    rb_define_method(classSurface, "unlock", surface_unlock, 0);
+    rb_define_method(classSurface, "locked?", surface_locked_, 0);
 
-	rb_define_method(classSurface, "alpha", surface_alpha, 0);
-	rb_define_method(classSurface, "set_alpha", surface_set_alpha, -1);
-	rb_define_method(classSurface, "unset_alpha", surface_unset_alpha, 0);
+    rb_define_method(classSurface, "alpha", surface_alpha, 0);
+    rb_define_method(classSurface, "set_alpha", surface_set_alpha, -1);
+    rb_define_method(classSurface, "unset_alpha", surface_unset_alpha, 0);
 
-	rb_define_method(classSurface, "flags", surface_flags, 0);
-	rb_define_method(classSurface, "pitch", surface_pitch, 0);
-	rb_define_method(classSurface, "bitsize", surface_bitsize, 0);
-	rb_define_method(classSurface, "bytesize", surface_bytesize, 0);
-	rb_define_method(classSurface, "shifts", surface_shifts, 0);
-	rb_define_method(classSurface, "losses", surface_losses, 0);
-	rb_define_method(classSurface, "masks", surface_masks, 0);
+    rb_define_method(classSurface, "flags", surface_flags, 0);
+    rb_define_method(classSurface, "pitch", surface_pitch, 0);
+    rb_define_method(classSurface, "bitsize", surface_bitsize, 0);
+    rb_define_method(classSurface, "bytesize", surface_bytesize, 0);
+    rb_define_method(classSurface, "shifts", surface_shifts, 0);
+    rb_define_method(classSurface, "losses", surface_losses, 0);
+    rb_define_method(classSurface, "masks", surface_masks, 0);
 
-	rb_define_method(classSurface, "clip", surface_clip, 0);
-	rb_define_method(classSurface, "clip=", surface_clip_, 1);
-	rb_define_method(classSurface, "unset_clip", surface_unset_clip, 0);
+    rb_define_method(classSurface, "clip", surface_clip, 0);
+    rb_define_method(classSurface, "clip=", surface_clip_, 1);
+    rb_define_method(classSurface, "unset_clip", surface_unset_clip, 0);
 
-	rb_define_method(classSurface, "palette", surface_palette, 0);
-	rb_define_method(classSurface, "set_palette", surface_set_palette, 2);
+    rb_define_method(classSurface, "palette", surface_palette, 0);
+    rb_define_method(classSurface, "set_palette", surface_set_palette, 2);
 
-	rb_define_method(classSurface, "set_colorkey", surface_set_colorkey, -1);
-	rb_define_method(classSurface, "unset_colorkey", surface_unset_colorkey, 0);
-	rb_define_method(classSurface, "colorkey", surface_colorkey, 0);
+    rb_define_method(classSurface, "set_colorkey", surface_set_colorkey, -1);
+    rb_define_method(classSurface, "unset_colorkey", surface_unset_colorkey, 0);
+    rb_define_method(classSurface, "colorkey", surface_colorkey, 0);
 
-	rb_define_method(classSurface, "share", surface_share, 1);
-	rb_define_method(classSurface, "immodest_export", surface_immodest_export, 1);
+    rb_define_method(classSurface, "share", surface_share, 1);
+    rb_define_method(classSurface, "immodest_export", surface_immodest_export, 1);
 
-	rb_define_method(classSurface, "get", surface_get, 1);
-	rb_define_method(classSurface, "[]", surface_array_get, 2);
-	rb_define_method(classSurface, "fill", surface_fill, -1);
+    rb_define_method(classSurface, "get", surface_get, 1);
+    rb_define_method(classSurface, "[]", surface_array_get, 2);
+    rb_define_method(classSurface, "fill", surface_fill, -1);
 
-	rb_define_method(classSurface, "pixels", surface_pixels, 0);
-	rb_define_method(classSurface, "pixels=", surface_set_pixels, 1);
+    rb_define_method(classSurface, "pixels", surface_pixels, 0);
+    rb_define_method(classSurface, "pixels=", surface_set_pixels, 1);
 
-	rb_define_method(classSurface, "get_row", surface_get_row, 1);
-	rb_define_method(classSurface, "set_row", surface_set_row, 2);
-	define_ruby_row_methods();
+    rb_define_method(classSurface, "get_row", surface_get_row, 1);
+    rb_define_method(classSurface, "set_row", surface_set_row, 2);
+    define_ruby_row_methods();
 
-	rb_define_method(classSurface, "get_column", surface_get_column, 1);
-	rb_define_method(classSurface, "set_column", surface_set_column, 2);
-	define_ruby_column_methods();
+    rb_define_method(classSurface, "get_column", surface_get_column, 1);
+    rb_define_method(classSurface, "set_column", surface_set_column, 2);
+    define_ruby_column_methods();
 
-	id_shared_surface_reference=rb_intern("__shared_surface_reference");
+    id_shared_surface_reference=rb_intern("__shared_surface_reference");
 
-	rb_eval_string(
-			"module RUDL class Surface					\n"
-			"	def inspect								\n"
-			"		\"<Surface: #{w}x#{h},#{bitsize}>\"	\n"
-			"	end										\n"
-			"end end									\n"
-	);
+    rb_eval_string(
+            "module RUDL class Surface                  \n"
+            "   def inspect                             \n"
+            "       \"<Surface: #{w}x#{h},#{bitsize}>\" \n"
+            "   end                                     \n"
+            "end end                                    \n"
+    );
 }
