@@ -5,8 +5,9 @@ require 'getoptlong'
 @file some.hierarchy (controls placement in files)
 @class class_name (starts or continues documenting a class, include the whole hierarchy please)
 @module module_name (starts or continues documenting a class, include the whole hierarchy please)
+@inherits hierarchy
 @section section_name (starts or continues documenting a class, include the whole hierarchy please)
-@method method_name(param,param,param)
+@method method_name(param,param,param) > retval
 
 Text before the first organizational tag will be put in index.html
 
@@ -27,7 +28,7 @@ Welcome to RUDL.
 		Here be the main mixer.
 		@section Initializer
 			@method initialize(a, b, c)
-			@method initialize(a, b)
+			@method initialize(a, b) 
 				@param a rather vague parameter it is.
 		@section Instance methods
 			@method set_volume(loudness)
