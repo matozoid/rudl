@@ -86,7 +86,7 @@ extern VALUE rb_range_last(VALUE obj);
 #define DEC_CONSTN(x)	rb_define_const(moduleConstant, #x, UINT2NUM(x));
 
 #define rb_define_singleton_and_instance_method(clas, name, func, args) \
-	rb_define_method(clas, name, func, args);							\
+	rb_define_method(clas, name, func, args);\
 	rb_define_singleton_method(clas, name, func, args);
 
 
