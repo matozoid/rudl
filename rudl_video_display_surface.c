@@ -3,6 +3,11 @@ RUDL - a C library wrapping SDL for use in Ruby.
 Copyright (C) 2001, 2002, 2003  Danny van Bruggen
 
 $Log: rudl_video_display_surface.c,v $
+Revision 1.23  2004/01/25 00:21:34  rennex
+Added DisplaySurface.get
+Made DisplaySurface#destroy also a class method
+Tweaked docs
+
 Revision 1.22  2004/01/21 22:55:10  tsuihark
 Converted to Dokumentat format.
 
@@ -135,14 +140,35 @@ static VALUE displaySurface_new(int argc, VALUE* argv, VALUE self)
 }
 
 /**
-@method DisplaySurface.destroy
+@section Methods
+@method destroy
 Destroys the display, removing the window or returning from fullscreen mode.
-Do not call methods on a destroyed DisplaySurface
+Do not call methods on a destroyed DisplaySurface!
+*/
+/**
+@section Initializers
+@method DisplaySurface.destroy
+See @destroy
 */
 static VALUE displaySurface_destroy(VALUE self)
 {
+    currentDisplaySurface = NULL;   /* just in case */
     quitVideo();
     return Qnil;
+}
+
+/**
+@method DisplaySurface.get => DisplaySurface or nil
+Gets the current DisplaySurface, or nil if there isn't one.
+*/
+
+static VALUE displaySurface_get(VALUE self)
+{
+    if (SDL_GetVideoSurface()) {
+        return currentDisplaySurface;
+    } else {
+        return Qnil;
+    }
 }
 
 /**
@@ -229,10 +255,12 @@ static VALUE displaySurface_mode_ok_(int argc, VALUE* argv, VALUE self)
 }
 
 /**
+@section Methods
 @method info
 See @DisplaySurface.best_mode_info
 */
 /**
+@section Video modes
 @method DisplaySurface.best_mode_info
 This method returns a hash filled with information about the video hardware.
 
@@ -416,6 +444,8 @@ static VALUE displaySurface_active_(VALUE self)
 /**
 @method caption => Array[String, String]
 Returns the title and icontitle of the window.
+*/
+/**
 @method set_caption( title )
 @method set_caption( title, icontitle )
 Sets the title of the window (if the application runs in a window) to @title.
@@ -746,7 +776,10 @@ void initVideoDisplaySurfaceClasses()
     rb_define_singleton_method(classDisplaySurface, "best_mode_info", displaySurface_best_mode_info, 0);
     rb_define_singleton_method(classDisplaySurface, "gl_set_attribute", displaySurface_gl_set_attribute, 2);
     rb_define_singleton_method(classDisplaySurface, "gl_get_attribute", displaySurface_gl_get_attribute, 1);
+    rb_define_singleton_method(classDisplaySurface, "get", displaySurface_get, 0);
+    rb_define_singleton_and_instance_method(classDisplaySurface, "destroy", displaySurface_destroy, 0);
     rb_define_singleton_and_instance_method(classDisplaySurface, "set_icon", displaySurface_set_icon, -1);
+
     rb_define_method(classDisplaySurface, "driver", displaySurface_driver, 0);
     rb_define_method(classDisplaySurface, "info", displaySurface_info, 0);
     rb_define_method(classDisplaySurface, "update", displaySurface_update, -1);
@@ -757,7 +790,6 @@ void initVideoDisplaySurfaceClasses()
     rb_define_method(classDisplaySurface, "set_caption", displaySurface_set_caption, -1);
     rb_define_method(classDisplaySurface, "gamma=", displaySurface_gamma_, 1);
     rb_define_method(classDisplaySurface, "toggle_fullscreen", displaySurface_toggle_fullscreen, 0);
-    rb_define_method(classDisplaySurface, "destroy", displaySurface_destroy, 0);
 
     rb_eval_string(
             "module RUDL class DisplaySurface                   \n"
