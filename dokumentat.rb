@@ -151,7 +151,7 @@ Output is HTML with structural tags only. You should do visual formatting with C
 ARGV=[
 	'--verbose',
 	'--project-name=dokumentat',
-	'--output-dir=docs',
+#	'--output-dir=docs',
 	'dokumentat.rb'
 ] if ARGV.empty?
 
@@ -160,7 +160,6 @@ ARGV=[
 STYLESHEET_FILENAME='dokumentat.css'
 
 $verbose=false
-$extras_dir=nil
 def say(text)
 	puts text if $verbose
 end
@@ -564,7 +563,7 @@ class Dokumentat
 	def write(output_path)
 		say "Writing result to #{output_path}/"
 		File.makedirs(output_path)
-		pp @root
+#		pp @root
 		@root.write(output_path)	end
 end
 
@@ -580,8 +579,11 @@ def main
 		["--verbose",		"-v",	   GetoptLong::NO_ARGUMENT ],
 		["--extras-dir",	"-e",	   GetoptLong::REQUIRED_ARGUMENT]
 	)
+	extras_dir=nil
 	project_name=nil
 	output_dir='docs'
+	
+	output_dir=ENV['DOKUMENTAT'] if ENV['DOKUMENTAT']
 
 	options.each do |opt, arg|
 		case opt
@@ -597,6 +599,8 @@ def main
 				raise "Unknown option: #{opt}"
 		end
 	end
+
+	File.makedirs(output_dir)
 
 	raise "No project name defined" if(!project_name)
 
