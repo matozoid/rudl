@@ -89,8 +89,6 @@ extern VALUE rb_range_last(VALUE obj);
 	rb_define_method(clas, name, func, args);\
 	rb_define_singleton_method(clas, name, func, args);
 
-
-
 #ifdef __cplusplus
 }
 #endif
