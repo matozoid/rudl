@@ -32,6 +32,7 @@ Loads an MPEG stream from file ((<filename>))
 
 static void init_smpeg()
 {
+	DEBUG_S("Starting SMPEG");
 }
 
 typedef struct {

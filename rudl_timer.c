@@ -6,9 +6,8 @@
 void initTimer()
 {
 	if(!SDL_WasInit(SDL_INIT_TIMER)){
-		if(SDL_Init(SDL_INIT_TIMER)==-1){
-			SDL_RAISE;
-		}
+		DEBUG_S("Starting timer subsystem");
+		SDL_VERIFY(SDL_Init(SDL_INIT_TIMER)!=-1);
 	}
 }
 ///////////////////////////////// TIME
@@ -75,6 +74,7 @@ static VALUE eventTimer_new(VALUE obj, VALUE interval, VALUE id)
 	initTimer();
 	
 	timerID=SDL_AddTimer(NUM2INT(interval), timerCallback, (void*)(NUM2INT(id)));
+	SDL_VERIFY(timerID);
 	return Data_Wrap_Struct(classEventTimer, 0, freeEventTimer, timerID);
 }
 
@@ -107,5 +107,4 @@ This is the EventTimer's ((|id|)).
 =end */
 	classTimerEvent=rb_define_class_under(moduleRUDL, "TimerEvent", classEvent);
 	rb_define_attr(classTimerEvent, "id", 1, 1);
-
 }

@@ -5,6 +5,7 @@
 void initCD()
 {
 	if(!SDL_WasInit(SDL_INIT_CDROM)){
+		DEBUG_S("Starting CDROM subsystem");
 		SDL_InitSubSystem(SDL_INIT_CDROM);
 	}
 }
@@ -12,6 +13,7 @@ void initCD()
 void quitCD()
 {
 	if(SDL_WasInit(SDL_INIT_CDROM)){
+		DEBUG_S("Stopping CDROM subsystem");
 		SDL_QuitSubSystem(SDL_INIT_CDROM);
 	}
 }
@@ -21,19 +23,19 @@ static VALUE createCDROMObject(int number)
 {
 	VALUE newObject;
 	SDL_CD* cd=SDL_CDOpen(number);
-	if(cd){
-		newObject=Data_Wrap_Struct(classCDROM, 0, SDL_CDClose, cd);
-		rb_iv_set(newObject, "@id", INT2NUM(number));
-		return newObject;
-	}
-	SDL_RAISE;
-	return Qnil;
+
+	SDL_ASSERT(cd);
+
+	newObject=Data_Wrap_Struct(classCDROM, 0, SDL_CDClose, cd);
+	rb_iv_set(newObject, "@id", INT2NUM(number));
+	return newObject;
 }
 
 SDL_CD* retrieveCDROMPointer(VALUE self)
 {
 	SDL_CD* cd;
 	Data_Get_Struct(self, SDL_CD, cd);
+	SDL_ASSERT(cd);
 	return cd;
 }
 
@@ -91,13 +93,13 @@ These are the you-know-what-they-do methods.
 =end */
 static VALUE cdrom_eject(VALUE self)
 {
-	if(SDL_CDEject(retrieveCDROMPointer(self))==-1) SDL_RAISE;
+	SDL_VERIFY(SDL_CDEject(retrieveCDROMPointer(self))!=-1);
 	return self;
 }
 
 static VALUE cdrom_pause(VALUE self)
 {
-	if(SDL_CDPause(retrieveCDROMPointer(self))==-1) SDL_RAISE;
+	SDL_VERIFY(SDL_CDPause(retrieveCDROMPointer(self))!=-1);
 	return self;
 }
 
@@ -109,31 +111,25 @@ static VALUE cdrom_play(VALUE self, VALUE trackValue)
 	
 	SDL_CDStatus(cdrom); // ?
 
-	if(track < 0 || track >= cdrom->numtracks){
-		SDL_RAISE_S("Invalid track number");
-	}
-	if(cdrom->track[track].type != SDL_AUDIO_TRACK){
-		SDL_RAISE_S("CD track type is not audio");
-	}
+	RUDL_VERIFY(track >= 0 && track < cdrom->numtracks, "Invalid track number");
+	RUDL_VERIFY(cdrom->track[track].type == SDL_AUDIO_TRACK, "CD track type is not audio");
 
 	offset = cdrom->track[track].offset;
 	length = cdrom->track[track].length;
 
-	if(SDL_CDPlay(cdrom, offset, length)==-1){
-		SDL_RAISE;
-	}
+	SDL_VERIFY(SDL_CDPlay(cdrom, offset, length)!=-1);
 	return self;
 }
 
 static VALUE cdrom_resume(VALUE self)
 {
-	if(SDL_CDResume(retrieveCDROMPointer(self))==-1) SDL_RAISE;
+	SDL_VERIFY(SDL_CDResume(retrieveCDROMPointer(self))!=-1);
 	return self;
 }
 
 static VALUE cdrom_stop(VALUE self)
 {
-	if(SDL_CDStop(retrieveCDROMPointer(self))==-1) SDL_RAISE;
+	SDL_VERIFY(SDL_CDStop(retrieveCDROMPointer(self))!=-1);
 	return self;
 }
 
@@ -214,9 +210,7 @@ static VALUE cdrom_audiotrack_(VALUE self, VALUE trackValue)
 
 	SDL_CDStatus(cdrom);
 	
-	if(track < 0 || track >= cdrom->numtracks){
-		SDL_RAISE_S("Invalid track number");
-	}
+	RUDL_VERIFY(track >= 0 && track < cdrom->numtracks, "Invalid track number");
 
 	return INT2BOOL(cdrom->track[track].type == SDL_AUDIO_TRACK);
 }
@@ -225,6 +219,7 @@ static VALUE cdrom_audiotrack_(VALUE self, VALUE trackValue)
 =begin
 --- CDROM#track_length( track_nr )
 Returns the length of the track.
+Returns 0.0 when the track is not an audio track.
 =end */
 static VALUE cdrom_track_length(VALUE self, VALUE trackValue)
 {
@@ -232,9 +227,9 @@ static VALUE cdrom_track_length(VALUE self, VALUE trackValue)
 	int track=NUM2INT(trackValue);
 
 	SDL_CDStatus(cdrom);
-	if(track < 0 || track >= cdrom->numtracks){
-		SDL_RAISE_S("Invalid track number");
-	}
+	
+	RUDL_VERIFY(track >= 0 && track < cdrom->numtracks, "Invalid track number");
+
 	if(cdrom->track[track].type != SDL_AUDIO_TRACK){
 		return DBL2NUM(0.0);
 	}
@@ -253,9 +248,8 @@ static VALUE cdrom_track_start(VALUE self, VALUE trackValue)
 	int track=NUM2INT(trackValue);
 
 	SDL_CDStatus(cdrom);
-	if(track < 0 || track >= cdrom->numtracks){
-		SDL_RAISE_S("Invalid track number");
-	}
+
+	RUDL_VERIFY(track >= 0 && track < cdrom->numtracks, "Invalid track number");
 
 	return DBL2NUM(cdrom->track[track].offset / (double)CD_FPS);
 }

@@ -63,8 +63,6 @@ void initSDL()
 		SDL_InitQuickDraw(&qd);
 #endif
 #endif		
-		//if(SDL_SetTimerThreaded(false)) SDL_RAISE;
-
 		rb_eval_string("Kernel.at_exit {RUDL.at_exit}");
 		sDLInitWasCalled=true;
 	}
@@ -72,6 +70,7 @@ void initSDL()
 
 static VALUE RUDL_at_exit(VALUE obj)
 {
+	DEBUG_S("Reached RUDL_at_exit");
 	quitJoystick();
 #ifdef HAVE_SDL_MIXER_H
 	quitAudio();
@@ -230,6 +229,7 @@ INIT_TIMER, INIT_AUDIO, INIT_VIDEO, INIT_CDROM, INIT_JOYSTICK, INIT_NOPARACHUTE,
 
 DECKLSPECKL void Init_RUDL()
 {
+	DEBUG_S("Initializing RUDL");
 	moduleRUDL=rb_define_module("RUDL");
 
 	rb_define_singleton_method(moduleRUDL, "at_exit", RUDL_at_exit, 0);

@@ -9,7 +9,7 @@
 
 VALUE sDLEvent2RubyEvent(SDL_Event* event)
 {
-	VALUE newEvent=0;
+	VALUE newEvent=Qnil;
 
 	int hx,hy;
 
@@ -23,11 +23,13 @@ VALUE sDLEvent2RubyEvent(SDL_Event* event)
 			newEvent=rb_obj_alloc(classKeyDownEvent);
 			rb_iv_set(newEvent, "@key", UINT2NUM(event->key.keysym.sym));
 			rb_iv_set(newEvent, "@mod", UINT2NUM(event->key.keysym.mod));
+			rb_iv_set(newEvent, "@unicode", UINT2NUM(event->key.keysym.unicode));
 			break;
 		case SDL_KEYUP:
 			newEvent=rb_obj_alloc(classKeyUpEvent);
 			rb_iv_set(newEvent, "@key", UINT2NUM(event->key.keysym.sym));
 			rb_iv_set(newEvent, "@mod", UINT2NUM(event->key.keysym.mod));
+			rb_iv_set(newEvent, "@unicode", UINT2NUM(event->key.keysym.unicode));
 			break;
 		case SDL_QUIT:
 			newEvent=rb_obj_alloc(classQuitEvent);
@@ -112,9 +114,6 @@ VALUE sDLEvent2RubyEvent(SDL_Event* event)
 			}*/
 	}
 
-	if(newEvent==0){
-		return Qnil;
-	}
 	return newEvent;
 }
 
@@ -213,7 +212,8 @@ static VALUE eventqueue_post(VALUE self, VALUE event)
 --- EventQueue.pump
 This method is responsible for getting events from the operating system into the
 SDL eventqueue.
-If your application seems unresponsive, calling this method every now and then might help.
+If your application seems unresponsive, 
+calling this method every now and then might help.
 =end */
 static VALUE eventqueue_pump(VALUE self)
 {
@@ -226,7 +226,7 @@ static VALUE eventqueue_pump(VALUE self)
 --- EventQueue.allowed=( eventtype )
 Not implemented.
 =end */
-static VALUE eventqueue_allowed_(VALUE self, VALUE eventType)
+static VALUE eventqueue_set_allowed(VALUE self, VALUE eventType)
 {
 	rb_notimplement();
 	return Qnil;
@@ -237,7 +237,7 @@ static VALUE eventqueue_allowed_(VALUE self, VALUE eventType)
 --- EventQueue.blocked=( eventtype )
 Not implemented.
 =end */
-static VALUE eventqueue_blocked_(VALUE self, VALUE eventType)
+static VALUE eventqueue_set_blocked(VALUE self, VALUE eventType)
 {
 	rb_notimplement();
 	return Qnil;
@@ -255,7 +255,7 @@ It is best to not always grab the input,
 since it prevents the end user from doing anything else on their system.
 ((|grab|)) is true or false.
 =end */
-static VALUE eventqueue_grab_(VALUE self, VALUE grabOn)
+static VALUE eventqueue_set_grab(VALUE self, VALUE grabOn)
 {
 	if(NUM2BOOL(grabOn)){
 		SDL_WM_GrabInput(SDL_GRAB_ON);
@@ -293,9 +293,9 @@ void initEventsClasses()
 	rb_define_singleton_method(classEventQueue, "poll", eventqueue_poll, 0);
 	rb_define_singleton_method(classEventQueue, "post", eventqueue_post, 1);
 	rb_define_singleton_method(classEventQueue, "pump", eventqueue_pump, 0);
-	rb_define_singleton_method(classEventQueue, "allowed=", eventqueue_allowed_, 1);
-	rb_define_singleton_method(classEventQueue, "blocked=", eventqueue_blocked_, 1);
-	rb_define_singleton_method(classEventQueue, "grab=", eventqueue_grab_, 1);
+	rb_define_singleton_method(classEventQueue, "allowed=", eventqueue_set_allowed, 1);
+	rb_define_singleton_method(classEventQueue, "blocked=", eventqueue_set_blocked, 1);
+	rb_define_singleton_method(classEventQueue, "grab=", eventqueue_set_grab, 1);
 	rb_define_singleton_method(classEventQueue, "grab", eventqueue_grab, 0);
 	rb_define_singleton_method(classEventQueue, "wait", eventqueue_wait, 0);
 /*
@@ -316,6 +316,7 @@ Flushes all events from the queue.
 = Event
 This is the baseclass for all event classes.
 It contains nothing.
+Other events can be found in the documentation section they belong to.
 =end */
 	classEvent=rb_define_class_under(moduleRUDL, "Event", rb_cObject);
 	

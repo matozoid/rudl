@@ -1,6 +1,16 @@
-/*BitBitMask - a pixel perfect collision detection library
- *Copyright (C) 2002 Ulf Ekstrom
+/*
+ *                     bitmask.c 1.0 (prerelease)
+ *                     ------------------------- 
+ *    Simple and efficient bitmask collision detection routines
+ *  Copyright (C) 2002 Ulf Ekstrom except for the bitcount function.
  *
+ *           >  See the header file for more info. < 
+ *  
+ *  Please email bugs and comments to Ulf Ekstrom, ulfek@ifm.liu.se
+ *
+ */
+
+/*
  *This program is free software; you can redistribute it and/or
  *modify it under the terms of the GNU General Public License
  *as published by the Free Software Foundation; either version 2
@@ -15,245 +25,492 @@
  *along with this program; if not, write to the Free Software
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-#include "bitmask.h"
+
 #include <malloc.h>
-#include <assert.h>
-#include <string.h>
+#include "bitmask.h"
 
-#define MAX(a,b) ((a) > (b) ? (a) : (b))
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
-#define POINT_INSIDE(m,x,y) (((x) >= 0) && ((y) >= 0) && ((x) < m->w) && ((y) < m->h))
 
-
-#ifdef DO_STATISTICS
-#include <stdio.h>
-static int nrcreated,nrdestroyed,nroverlaps,nroutside,nrdeepfailed,nrguessed;
-void BitMask_init_statistics()
+bitmask *bitmask_create(int w, int h)
 {
-  nrcreated = 0;
-  nrdestroyed = 0;
-  nroverlaps = 0;
-  nrdeepfailed = 0;
-  nrguessed = 0;
-} 
-void BitMask_print_statistics()
-{
-  printf("BitMask:\n");
-  printf("\tCreated %i, Destroyed %i\n",nrcreated,nrdestroyed);
-  printf("\tDid %i overlap tests, %i%% were bounding box-discarded\n",
-	 nroverlaps,(100*nroutside)/nroverlaps);
-  printf("\tand %i%% did not overlap anyway.\n",(100*nrdeepfailed)/nroverlaps);
-  printf("\tManaged to guess at point of intersection in %i%% of the cases.\n",
-	 (100*nrguessed)/nroverlaps);
-  printf("\twhich leaves %i%% which were discovered the 'hard' way.\n",
-	 (100*(nroverlaps-nroutside-nrdeepfailed-nrguessed))/nroverlaps );
-}
-#endif
-
-BitMask *BitMask_create(int w,int h)
-{
-  BitMask *m = (BitMask *)malloc(sizeof(BitMask));
-#ifdef DO_STATISTICS
-  nrcreated++;
-#endif
-  m->h = h;
-  m->w = w;
-  m->ww = (w / BITMASK_WORD_LENGTH) + 2; /* One extra padding word here */
-  m->bits = (BITMASK_TYPE *)calloc((m->h)*(m->ww),sizeof(BITMASK_TYPE));
-  if (m->bits)
-    return m;
-  else
-    return 0;
-}
-
-void BitMask_destroy(BitMask *m)
-{
-  if (m)
+  bitmask *temp = malloc(sizeof(bitmask));
+  if (! temp) return 0;
+  temp->w = w;
+  temp->h = h;
+  temp->bits = calloc(h*((w - 1)/BITW_LEN + 1),sizeof(BITW));
+  if (! temp->bits) 
     {
-#ifdef DO_STATISTICS
-      nrdestroyed++;
-#endif
-      free(m->bits);
-      free(m);
-    }  
-}
-
-void BitMask_clear(BitMask *m)
-{
-  memset((void*)m->bits,0,((m->h)*(m->ww)*sizeof(BITMASK_TYPE)));
-}
-
-int  BitMask_getbit(const BitMask *m,int x,int y)
-{
-  if (POINT_INSIDE(m,x,y))
-    return _BitMask_getbit(m,x,y);
+      free(temp);
+      return 0;
+    }
   else
-    return 0;
+    return temp;
 }
 
-void BitMask_setbit(BitMask *m,int x,int y,int value)
+void bitmask_free(bitmask *m)
 {
-  /*assert(POINT_INSIDE(m,x,y));*/
-  if (POINT_INSIDE(m,x,y))
+  free(m->bits);
+  free(m);
+}
+
+ /* this requires about 40 % of the time of the old function */
+int bitmask_overlap(const bitmask *a,const bitmask *b,int xoffset, int yoffset)
+{
+  BITW *a_entry,*a_end;
+  BITW *b_entry;
+  BITW *ap,*bp;
+  int shift,rshift,i,astripes,bstripes;
+  
+  if ((xoffset >= a->w) || (yoffset >= a->h) || (yoffset <= - b->h)) 
+      return 0;
+  
+  if (xoffset >= 0) 
     {
-      if (value)
-	_BitMask_setbit(m,x,y);
+      if (yoffset >= 0)
+	{
+	  a_entry = a->bits + a->h*(xoffset/BITW_LEN) + yoffset;
+	  a_end = a_entry + MIN(b->h,a->h - yoffset);
+	  b_entry = b->bits;
+	}
       else
-	_BitMask_clearbit(m,x,y);
-    }
-}
-
-
-int BitMask_overlap(BitMask *A, BitMask *B,int xoffset,int yoffset)
-{
-  int x,y;
-  int axmin,aymin;
-  int axmax,aymax;
-
-#ifdef DO_STATISTICS
-  nroverlaps++;
-#endif
-
-  axmin = MAX(0,xoffset);
-  axmax = MIN(A->w,B->w + xoffset);
-  if (axmax <=  axmin)
-    {
-#ifdef DO_STATISTICS
-      nroutside++;
-#endif
-      return 0;
-    }
-  aymin = MAX(0,yoffset);
-  aymax = MIN(A->h,B->h + yoffset);
-  if (aymax <= aymin) 
-    {
-#ifdef DO_STATISTICS
-      nroutside++;
-#endif
-      return 0;
-    }  
-#ifdef USE_MIDPOINT_GUESS
-  /* Here we test if the BitMasks overlap at the midpoint of the rectangular intersection, 
-     which is quite likely.*/
-  x = (A->w/2 + B->w/2 + xoffset)/2;
-  y = (A->h/2 + B->h/2 + yoffset)/2;
-  if ((x>=axmin)&&(x<axmax)&&(y>=aymin)&&(y<aymax))
-    {
-      if (_BitMask_getbits(A,x,y) & _BitMask_getbits(B,x - xoffset,y - yoffset))
 	{
-#ifdef DO_STATISTICS
-	  nrguessed++;
-#endif
-	  return 1;
+	  a_entry = a->bits + a->h*(xoffset/BITW_LEN);
+	  a_end = a_entry + MIN(b->h + yoffset,a->h);
+	  b_entry = b->bits - yoffset;
 	}
-    } else return 0;
-#endif
-  
-  for (y = aymin;y < aymax;y++)
-    {
-      for (x = axmin;x < axmax;x+=32)
+      shift = xoffset & BITW_MASK;
+      if (shift)
 	{
-	  if (_BitMask_getbits(A,x,y) & _BitMask_getbits(B,x - xoffset,y - yoffset))
+	  rshift = BITW_LEN - shift;
+	  astripes = (a->w - 1)/BITW_LEN - xoffset/BITW_LEN;
+	  bstripes = (b->w - 1)/BITW_LEN + 1;
+	  if (bstripes > astripes) /* zig-zag .. zig*/
 	    {
-	      return 1;
-	    }
-	} 
-    }
-#ifdef DO_STATISTICS
-  nrdeepfailed++; /* This means that we had to examine every single bit,
-		   * obviously a pretty bad thing. 
-		   * Can't think of any smart algorithm if we allow non-contigous BitMasks,
-		   * except to use trees (i.e. lower resolution bitmaps)
-		   */
-#endif
-  return 0;
-}
-
-
-int BitMask_overlap_pos(BitMask *A, BitMask *B,int xoffset,int yoffset,int *xp,int *yp)
-{
-  int x,y;
-  int axmin,aymin;
-  int axmax,aymax;
-
-#ifdef DO_STATISTICS
-  nroverlaps++;
-#endif
-
-  axmin = MAX(0,xoffset);
-  axmax = MIN(A->w,B->w + xoffset);
-  if (axmax <=  axmin)
-    {
-#ifdef DO_STATISTICS
-      nroutside++;
-#endif
-      return 0;
-    }
-  aymin = MAX(0,yoffset);
-  aymax = MIN(A->h,B->h + yoffset);
-  if (aymax <= aymin) 
-    {
-#ifdef DO_STATISTICS
-      nroutside++;
-#endif
-      return 0;
-    }  
-
-#ifdef USE_MIDPOINT_GUESS
-  /* Here we test if the BitMasks overlap halfway between them, 
-     which is quite likely. */
-  x = (A->w/2 + xoffset + B->w/2)/2;
-  y = (A->h/2 + yoffset + B->h/2)/2;
-  if ((x>=axmin)&&(x<axmax)&&(y>=aymin)&&(y<aymax))
-    {
-      if (_BitMask_getbits(A,x,y) & _BitMask_getbits(B,x - xoffset,y - yoffset))
-	{
-#ifdef DO_STATISTICS
-	  nrguessed++;
-#endif
-	  *yp = y;
-	  for (;x<axmax;x++)
-	    {
-	      if ((_BitMask_getbit(A,x,y) != 0) && 
-		  (_BitMask_getbit(B,x - xoffset,y - yoffset) != 0))
+	      for (i=0;i<astripes;i++)
 		{
-		  *xp = x;
-		  return 1;
+		  for (ap = a_entry,bp = b_entry;ap < a_end;) /* Join these two to one loop */
+		      if ((*ap++ >> shift) & *bp++) return 1;
+		  a_entry += a->h;
+		  a_end += a->h;
+		  for (ap = a_entry,bp = b_entry;ap < a_end;)
+		      if ((*ap++ << rshift) & *bp++) return 1;
+		  b_entry += b->h;
 		}
+	      for (ap = a_entry,bp = b_entry;ap < a_end;)
+		  if ((*ap++ >> shift) & *bp++) return 1;
+	      return 0;
 	    }
-	  assert(0);
-	  return 1;
-	}
-    } 
-#endif
-  
-  for (y = aymin;y < aymax;y++)
-    {
-      for (x = axmin;x < axmax;x+=32)
-	{
-	  if (_BitMask_getbits(A,x,y) & _BitMask_getbits(B,x - xoffset,y - yoffset))
+	  else /* zig-zag */
 	    {
-	      *yp = y;
-	      for (;x<axmax;x++)
+	      for (i=0;i<bstripes;i++)
 		{
-		  if ((_BitMask_getbit(A,x,y) != 0) && 
-		      (_BitMask_getbit(B,x - xoffset,y - yoffset) != 0))
+		  for (ap = a_entry,bp = b_entry;ap < a_end;)
+		    if ((*ap++ >> shift) & *bp++) return 1;
+		  a_entry += a->h;
+		  a_end += a->h;
+		  for (ap = a_entry,bp = b_entry;ap < a_end;)
+		      if ((*ap++  << rshift) & *bp++) return 1;
+		  b_entry += b->h;
+		}
+	      return 0;
+	    }
+	}
+      else /* xoffset is a multiple of the stripe width, and the above routines wont work */
+	{
+	  astripes = (MIN(b->w,a->w - xoffset) - 1)/BITW_LEN + 1;
+	  for (i=0;i<astripes;i++)
+	    {
+	      for (ap = a_entry,bp = b_entry;ap < a_end;)
+		if (*ap++ & *bp++) return 1;
+	      a_entry += a->h;
+	      a_end += a->h;
+	      b_entry += b->h;
+	    }
+	  return 0;
+	}
+    }
+  else  
+      return bitmask_overlap(b,a,-xoffset,-yoffset);
+}
+
+/* Will hang if there are no bits set in w! */
+static INLINE int firstsetbit(BITW w)
+{
+  int i = 0;
+  while ((w & 1) == 0) 
+    {
+      i++;
+      w/=2;
+    }
+  return i;
+}
+
+/* x and y are given in the coordinates of mask a, and are untouched if the is no overlap */
+int bitmask_overlap_pos(const bitmask *a,const bitmask *b,int xoffset, int yoffset, int *x, int *y)
+{
+  BITW *a_entry,*a_end;
+  BITW *b_entry;
+  BITW *ap,*bp;
+  int shift,rshift,i,astripes,bstripes;
+  
+  if ((xoffset >= a->w) || (yoffset >= a->h) || (yoffset <= - b->h)) 
+      return 0;
+  
+  if (xoffset >= 0) 
+    {
+      if (yoffset >= 0)
+	{
+	  a_entry = a->bits + a->h*(xoffset/BITW_LEN) + yoffset;
+	  a_end = a_entry + MIN(b->h,a->h - yoffset);
+	  b_entry = b->bits;
+	}
+      else
+	{
+	  a_entry = a->bits + a->h*(xoffset/BITW_LEN);
+	  a_end = a_entry + MIN(b->h + yoffset,a->h);
+	  b_entry = b->bits - yoffset;
+	}
+      shift = xoffset & BITW_MASK;
+      if (shift)
+	{
+	  rshift = BITW_LEN - shift;
+	  astripes = (a->w - 1)/BITW_LEN - xoffset/BITW_LEN;
+	  bstripes = (b->w - 1)/BITW_LEN + 1;
+	  if (bstripes > astripes) /* zig-zag .. zig*/
+	    {
+	      for (i=0;i<astripes;i++)
+		{
+		  for (ap = a_entry,bp = b_entry;ap < a_end;ap++,bp++)
+		      if (*ap & (*bp << shift)) 
+			{
+			  *y = (ap - a->bits) % a->h;
+			  *x = ((ap - a->bits) / a->h)*BITW_LEN + firstsetbit(*ap & (*bp << shift));
+			  return 1;
+			}
+		  a_entry += a->h;
+		  a_end += a->h;
+		  for (ap = a_entry,bp = b_entry;ap < a_end;ap++,bp++)
+		      if (*ap & (*bp >> rshift)) 
+			{
+			  *y = (ap - a->bits) % a->h;
+			  *x = ((ap - a->bits) / a->h)*BITW_LEN + firstsetbit(*ap & (*bp >> rshift));
+			  return 1;
+			}
+		  b_entry += b->h;
+		}
+	      for (ap = a_entry,bp = b_entry;ap < a_end;ap++,bp++)
+		if (*ap & (*bp << shift)) 
+		  {
+		    *y = (ap - a->bits) % a->h;
+		    *x = ((ap - a->bits) / a->h)*BITW_LEN + firstsetbit(*ap & (*bp << shift));
+		    return 1;
+		  }
+	      return 0;
+	    }
+	  else /* zig-zag */
+	    {
+	      for (i=0;i<bstripes;i++)
+		{
+		  for (ap = a_entry,bp = b_entry;ap < a_end;ap++,bp++)
+		      if (*ap & (*bp << shift)) 
+			{
+			  *y = (ap - a->bits) % a->h;
+			  *x = ((ap - a->bits) / a->h)*BITW_LEN + firstsetbit(*ap & (*bp << shift));
+			  return 1;
+			}
+		  a_entry += a->h;
+		  a_end += a->h;
+		  for (ap = a_entry,bp = b_entry;ap < a_end;ap++,bp++)
+		      if (*ap & (*bp >> rshift)) 
+			{
+			  *y = (ap - a->bits) % a->h;
+			  *x = ((ap - a->bits) / a->h)*BITW_LEN + firstsetbit(*ap & (*bp >> rshift));
+			  return 1;
+			}
+		  b_entry += b->h;
+		}
+	      return 0;
+	    }
+	}
+      else /* xoffset is a multiple of the stripe width, and the above routines won't work. */
+	{
+	  astripes = (MIN(b->w,a->w - xoffset) - 1)/BITW_LEN + 1;
+	  for (i=0;i<astripes;i++)
+	    {
+	      for (ap = a_entry,bp = b_entry;ap < a_end;ap++,bp++)
+		{
+		  if (*ap & *bp) 
 		    {
-		      *xp = x;
+		      *y = (ap - a->bits) % a->h;
+		      *x = ((ap - a->bits) / a->h)*BITW_LEN + firstsetbit(*ap & *bp); 
 		      return 1;
 		    }
 		}
-	      assert(0);
-	      return 1;
+	      a_entry += a->h;
+	      a_end += a->h;
+	      b_entry += b->h;
 	    }
-	} 
+	  return 0;
+	}
     }
-#ifdef DO_STATISTICS
-  nrdeepfailed++; /* This means that we had to examine every single bit,
-		   * obviously a pretty bad thing. 
-		   * Can't think of any smart algorithm if we allow non-contigous BitMasks,
-		   * except to use trees (i.e. lower resolution bitmaps)
-		   */
-#endif
-  return 0;
+  else  
+    {
+      if (bitmask_overlap_pos(b,a,-xoffset,-yoffset,x,y))
+	{
+	  *x *=-1;
+	  *y *=-1;
+	  return 1;
+	}
+      else
+	return 0;
+    }
+}
+
+
+
+/* (C) Donald W. Gillies, 1992.  All rights reserved.  You may reuse
+   this bitcount() function anywhere you please as long as you retain
+   this Copyright Notice. */
+static INLINE int bitcount(unsigned long n)
+{
+  register unsigned long tmp;
+  return (tmp = (n) - (((n) >> 1) & 033333333333) - (((n) >> 2) & 011111111111),\
+	  tmp = ((tmp + (tmp >> 3)) & 030707070707),			\
+	  tmp =  (tmp + (tmp >> 6)),					\
+	  tmp = (tmp + (tmp >> 12) + (tmp >> 24)) & 077);
+}
+/* End of Donald W. Gillies bitcount code */
+
+
+int bitmask_overlap_area(const bitmask *a,const bitmask *b,int xoffset, int yoffset) /* Runs at approx 60% of time of older function */
+{
+  BITW *a_entry,*a_end;
+  BITW *b_entry;
+  BITW *ap,*bp;
+  int shift,rshift,i,astripes,bstripes;
+  int count = 0;
+
+  if ((xoffset >= a->w) || (yoffset >= a->h) || (yoffset <= - b->h)) 
+      return 0;
+  
+  if (xoffset >= 0) 
+    {
+      if (yoffset >= 0)
+	{
+	  a_entry = a->bits + a->h*(xoffset/BITW_LEN) + yoffset;
+	  a_end = a_entry + MIN(b->h,a->h - yoffset);
+	  b_entry = b->bits;
+	}
+      else
+	{
+	  a_entry = a->bits + a->h*(xoffset/BITW_LEN);
+	  a_end = a_entry + MIN(b->h + yoffset,a->h);
+	  b_entry = b->bits - yoffset;
+	}
+      shift = xoffset & BITW_MASK;
+      if (shift)
+	{
+	  rshift = BITW_LEN - shift;
+	  astripes = (a->w - 1)/BITW_LEN - xoffset/BITW_LEN;
+	  bstripes = (b->w - 1)/BITW_LEN + 1;
+	  if (bstripes > astripes) /* zig-zag .. zig*/
+	    {
+	      for (i=0;i<astripes;i++)
+		{
+		  for (ap = a_entry,bp = b_entry;ap < a_end;ap++,bp++)
+		    count += bitcount(((*ap >> shift) | (*(ap + a->h) << rshift)) & *bp);
+		  a_entry += a->h;
+		  a_end += a->h;
+		  b_entry += b->h;
+		}
+	      for (ap = a_entry,bp = b_entry;ap < a_end;)
+		count += bitcount((*ap++ >> shift) & *bp++);
+	      return count;
+	    }
+	  else /* zig-zag */
+	    {
+	      for (i=0;i<bstripes;i++)
+		{
+		  for (ap = a_entry,bp = b_entry;ap < a_end;ap++,bp++)
+		    count += bitcount(((*ap >> shift) | (*(ap + a->h) << rshift)) & *bp);
+		  a_entry += a->h;
+		  a_end += a->h;
+		  b_entry += b->h;
+		}
+	      return count;
+	    }
+	}
+      else /* xoffset is a multiple of the stripe width, and the above routines wont work */
+	{
+	  astripes = (MIN(b->w,a->w - xoffset) - 1)/BITW_LEN + 1;
+	  for (i=0;i<astripes;i++)
+	    {
+	      for (ap = a_entry,bp = b_entry;ap < a_end;)
+		count += bitcount(*ap++ & *bp++);
+
+	      a_entry += a->h;
+	      a_end += a->h;
+	      b_entry += b->h;
+	    }
+	  return count;
+	}
+    }
+  else  
+      return bitmask_overlap_area(b,a,-xoffset,-yoffset);
+}
+
+
+/* Draws mask b onto mask a (bitwise OR) */
+void bitmask_draw(bitmask *a,bitmask *b,int xoffset, int yoffset)
+{
+  BITW *a_entry,*a_end;
+  BITW *b_entry;
+  BITW *ap,*bp;
+  bitmask *swap;
+  int shift,rshift,i,astripes,bstripes;
+  
+  if ((xoffset >= a->w) || (yoffset >= a->h) || (yoffset <= - b->h)) 
+      return;
+  
+  if (xoffset >= 0) 
+    {
+      if (yoffset >= 0)
+	{
+	  a_entry = a->bits + a->h*(xoffset/BITW_LEN) + yoffset;
+	  a_end = a_entry + MIN(b->h,a->h - yoffset);
+	  b_entry = b->bits;
+	}
+      else
+	{
+	  a_entry = a->bits + a->h*(xoffset/BITW_LEN);
+	  a_end = a_entry + MIN(b->h + yoffset,a->h);
+	  b_entry = b->bits - yoffset;
+	}
+      shift = xoffset & BITW_MASK;
+      if (shift)
+	{
+	  rshift = BITW_LEN - shift;
+	  astripes = (a->w - 1)/BITW_LEN - xoffset/BITW_LEN;
+	  bstripes = (b->w - 1)/BITW_LEN + 1;
+	  if (bstripes > astripes) /* zig-zag .. zig*/
+	    {
+	      for (i=0;i<astripes;i++)
+		{
+		  for (ap = a_entry,bp = b_entry;ap < a_end;ap++,bp++)
+		    *ap |= (*bp << shift);
+		  a_entry += a->h;
+		  a_end += a->h;
+		  for (ap = a_entry,bp = b_entry;ap < a_end;ap++,bp++)
+		    *ap |= (*bp >> rshift);
+		  b_entry += b->h;
+		}
+	      for (ap = a_entry,bp = b_entry;ap < a_end;ap++,bp++)
+		*ap |= (*bp << shift);
+	      return;
+	    }
+	  else /* zig-zag */
+	    {
+	      for (i=0;i<bstripes;i++)
+		{
+		  for (ap = a_entry,bp = b_entry;ap < a_end;ap++,bp++)
+		    *ap |= (*bp << shift);
+		  a_entry += a->h;
+		  a_end += a->h;
+		  for (ap = a_entry,bp = b_entry;ap < a_end;ap++,bp++)
+		    *ap |= (*bp >> rshift);
+		  b_entry += b->h;
+		}
+	      return;
+	    }
+	}
+      else /* xoffset is a multiple of the stripe width, and the above routines won't work. */
+	{
+	  astripes = (MIN(b->w,a->w - xoffset) - 1)/BITW_LEN + 1;
+	  for (i=0;i<astripes;i++)
+	    {
+	      for (ap = a_entry,bp = b_entry;ap < a_end;ap++,bp++)
+		{
+		  *ap |= *bp;
+		}
+	      a_entry += a->h;
+	      a_end += a->h;
+	      b_entry += b->h;
+	    }
+	  return;
+	}
+    }
+  else  
+    {
+      /* 'Swapping' arguments to be able to almost reuse the code above */
+      swap = a;
+      a = b;
+      b = swap;
+      xoffset *= -1;
+      yoffset *= -1;
+
+      if (yoffset >= 0)
+	{
+	  a_entry = a->bits + a->h*(xoffset/BITW_LEN) + yoffset;
+	  a_end = a_entry + MIN(b->h,a->h - yoffset);
+	  b_entry = b->bits;
+	}
+      else
+	{
+	  a_entry = a->bits + a->h*(xoffset/BITW_LEN);
+	  a_end = a_entry + MIN(b->h + yoffset,a->h);
+	  b_entry = b->bits - yoffset;
+	}
+      shift = xoffset & BITW_MASK;
+      if (shift)
+	{
+	  rshift = BITW_LEN - shift;
+	  astripes = (a->w - 1)/BITW_LEN - xoffset/BITW_LEN;
+	  bstripes = (b->w - 1)/BITW_LEN + 1;
+	  if (bstripes > astripes) /* zig-zag .. zig*/
+	    {
+	      for (i=0;i<astripes;i++)
+		{
+		  for (ap = a_entry,bp = b_entry;ap < a_end;ap++,bp++)
+		    *bp |= (*ap >> shift);
+		  a_entry += a->h;
+		  a_end += a->h;
+		  for (ap = a_entry,bp = b_entry;ap < a_end;ap++,bp++)
+		    *bp |= (*ap <<rshift); 
+		  b_entry += b->h;
+		}
+	      for (ap = a_entry,bp = b_entry;ap < a_end;ap++,bp++)
+		*bp |= (*ap >> shift);
+	      return;
+	    }
+	  else /* zig-zag */
+	    {
+	      for (i=0;i<bstripes;i++)
+		{
+		  for (ap = a_entry,bp = b_entry;ap < a_end;ap++,bp++)
+		    *bp |= (*ap >> shift);
+		  a_entry += a->h;
+		  a_end += a->h;
+		  for (ap = a_entry,bp = b_entry;ap < a_end;ap++,bp++)
+		    *bp |= (*ap << rshift);
+		  b_entry += b->h;
+		}
+	      return;
+	    }
+	}
+      else /* xoffset is a multiple of the stripe width, and the above routines won't work. */
+	{
+	  astripes = (MIN(b->w,a->w - xoffset) - 1)/BITW_LEN + 1;
+	  for (i=0;i<astripes;i++)
+	    {
+	      for (ap = a_entry,bp = b_entry;ap < a_end;ap++,bp++)
+		{
+		  *bp |= *ap;
+		}
+	      a_entry += a->h;
+	      a_end += a->h;
+	      b_entry += b->h;
+	    }
+	  return;
+	}
+    }	
 }

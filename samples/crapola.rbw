@@ -9,7 +9,7 @@ require '../RUDL'
 include RUDL
 include Constant
 
-$display=DisplaySurface.new([320, 200], HWSURFACE|DOUBLEBUF)#|FULLSCREEN)
+$display=DisplaySurface.new([320, 200], HWSURFACE|DOUBLEBUF|FULLSCREEN)
 
 $MaxBadThings=50
 
@@ -440,21 +440,17 @@ def play
 	end
 end
 
-def makescrolltextimage
+def gameover
 	scrolltext='                                        '+
-	'Welcome to CRAPOLA, a crappy game to demonstrate RUDL, the accellerated multimedia '+
+	'(This scroller is not synchronized in any way, sorry!) '+
+	'Welcome to CRAPOLA, a crappy game to demonstrate RUDL, the accellerated multimedia '
 	'extension to Ruby. The cursor keys move your ship left and right. Left CTRL shoots '+
-	' and ALT-ENTER toggles fullscreen. The libraries used in RUDL are SDL ofcourse, '+
-	'SDL_gfxPrimitives '+
-	'(here only used for the text, but it does lots more, as you can see in the docs) and '+
-	'SDL_rotozoom for the rotating rocks (I really ought to do some centering on those '+
-	'things, they wobble around like they\'re drunk, and let\'s not forget they\'re eating '+
-	'memory and CPU!)... Jeff Minter RU13Z... This game took a few hours to program... '+
+	' and ALT-ENTER toggles fullscreen. Jeff Minter RU13Z... This game took a few hours to program... '+
 	'Don\'t look at the frame-skipping code, I\'m still figuring out what the best way to '+
 	'do that is... ¡Laamella Gad! - the wave of the past... Greetz in no order fly to '+
 	'the Dynamic Duo  -  Hotline  -  911  -  the Yak Society  -  Papillon ... Ah whatever, '+
 	'those groups are long dead.  Greetings to Toshiro Kuwabara (thanks for rdtool), '+
-	'Yoshiyuki Kusano (I gave up on OpenGL for now...) Andrew Hunt, David Thomas, '+
+	'Yoshiyuki Kusano, Andrew Hunt, David Thomas, '+
 	't h e - e l f  from NFA for the music which was ripped from some vague Amiga demo\'s, '+
 	'Karl Bartel (for SFont), Andreas Schiffler (next bugreport will come in when I find '+
 	'some time <:) ) Yukihiro "Matz" Matsumoto for Ruby, Sam Lantinga for SDL, Gerard, '+
@@ -464,17 +460,11 @@ def makescrolltextimage
 	'Bernadette, Roelof, Marc, '+
 	'Maurice, Martijn, Carline, the girl next door, Peggy, Manon and the mice running '+
 	'through this house. Wrap is coming up. In producing RUDL, I used 30 Valkenburgs Wit, '+
-	'a P166/64MB running Win98, a 486/80 20MB running Linux (it\'s froukepc!), MSVC (for '+
-	'editing), CygWin (for compiling: it\'s a piece of sh*t, but nothing else works), '+
+	'a P166/64MB and a P1000/128MB running Win98, a 486/80 20MB and a P166/16 running Linux '+
+	'(it\'s two generations of froukepc!), MSVC (for editing), '+
 	'a Wacom tablet for drawing graphics (yeah, I could just as well have drawn them '+
 	'with a mouse), boejon, tons of mail, mostly useless discussions on IRC, uh-oh, '+
 	'wrap time!'
-	scrolltext='heeeej'
-	img=Surface.new([8*scrolltext.length, 8])
-	img.print([0,0],scrolltext, [255, 100, 200])
-end
-
-def gameover
 	Music.new('media/crapola_fire.mod').play(-1) if $sound_on
 	font=SFont.new(Surface.load_new('media/24p_copperplate_blue.png'))
 	logo=Surface.new(font.size('Crapola'))
@@ -483,7 +473,6 @@ def gameover
 	logo_y=(200-logo.h)/2
 	scrollpos=0
 	counter=0
-	scrollimg=makescrolltextimage
 	start=false
 	while !start
 		while event=EventQueue.poll
@@ -498,7 +487,7 @@ def gameover
 							start=true
 						when K_RETURN
 							if event.mod & KMOD_ALT>0
-								$display=DisplaySurface.new([320, 200], HWSURFACE|DOUBLEBUF|($display.flags^FULLSCREEN))
+								$display.toggle_fullscreen
 								prepare_images
 							end
 					end
@@ -507,10 +496,10 @@ def gameover
 		$display.fill([0, 0, 0])
 		$display.blit(logo, [logo_x, logo_y+Math.sin(counter/90.0)*80])
 		$display.print([(320-8*9)/2, (200-8)/2], 'GAME OVER', 0xFFFFFFFF)
-		$display.blit(scrollimg, [-scrollpos, 190])
+		$display.print([-(scrollpos.modulo(8)), 190], scrolltext[scrollpos/8..scrollpos/8+41], [255, 100, 200])
 		scrollpos=scrollpos+1
 		counter=counter+1
-		scrollpos=0 if scrollpos>scrollimg.w
+		scrollpos=0 if scrollpos>scrolltext.length*8
 		$display.flip
 	end
 end

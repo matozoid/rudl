@@ -28,9 +28,7 @@ void initAudio()
 		initSDL();
 
 		if(!SDL_WasInit(SDL_INIT_AUDIO)){
-			if(SDL_InitSubSystem(SDL_INIT_AUDIO)){
-				SDL_RAISE;
-			}
+			SDL_VERIFY(!SDL_InitSubSystem(SDL_INIT_AUDIO));
 		}
 
 		if(Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 1024) == -1){
@@ -50,19 +48,20 @@ void quitAudio()
 	if(SDL_WasInit(SDL_INIT_AUDIO)){
 		Mix_CloseAudio();
 		SDL_QuitSubSystem(SDL_INIT_AUDIO);
+		DEBUG_S("Stopping audio subsystem");
 	}
 }
 
 /////////////// CHANNEL
 
-VALUE createChannelObject(int number)
+__inline__ VALUE createChannelObject(int number)
 {
 	VALUE newChannel=rb_obj_alloc(classChannel);
 	rb_iv_set(newChannel, "@number", INT2NUM(number));
 	return newChannel;
 }
 
-int retrieveChannelNumber(VALUE channel)
+__inline__ int retrieveChannelNumber(VALUE channel)
 {
 	VALUE tmp;
 	tmp=rb_iv_get(channel, "@number");
@@ -71,6 +70,7 @@ int retrieveChannelNumber(VALUE channel)
 /*
 =begin
 <<< docs/head
+This page describes the various classes that access SDL_mixer.
 = Channel
 A Channel is an interface object to one of the mixer's channels.
 It can be used for manipulating sound on a particular channel.
@@ -173,6 +173,7 @@ Mix_Chunk* retrieveMixChunk(VALUE self)
 {
 	Mix_Chunk* chunk;
 	Data_Get_Struct(self, Mix_Chunk, chunk);
+	RUDL_ASSERT(chunk, "Retrieved NULL chunk");
 	return chunk;
 }
 
@@ -194,10 +195,11 @@ static VALUE sound_new(VALUE self, VALUE filename)
 	initAudio();
 
 	chunk=Mix_LoadWAV(STR2CSTR(filename));
-	
-	if(!chunk) SDL_RAISE;
-	
+	SDL_VERIFY(chunk);
+
 	newObject=Data_Wrap_Struct(classSound, 0, SDL_FreeWAV, chunk);
+	RUDL_VERIFY(newObject, "Sound::new misbehaved");
+
 	rb_obj_call_init(newObject, 0, NULL);
 	return newObject;
 }
@@ -316,12 +318,12 @@ static VALUE mixer_init(int argc, VALUE* argv, VALUE self)
 	initSDL();
 
 	if(!SDL_WasInit(SDL_INIT_AUDIO)){
-		if(SDL_InitSubSystem(SDL_INIT_AUDIO)){
-			SDL_RAISE;
-		}
+		DEBUG_S("Starting audio subsystem");
+		SDL_VERIFY(!SDL_InitSubSystem(SDL_INIT_AUDIO));
 	}
 
 	if(Mix_OpenAudio(frequency, size, stereo, 1024) == -1){
+		DEBUG_S("Stopping audio subsystem");
 		SDL_QuitSubSystem(SDL_INIT_AUDIO);
 		SDL_RAISE;
 	}
@@ -383,9 +385,9 @@ static VALUE mixer_find_oldest_channel(VALUE self)
 /*
 =begin
 --- Mixer.busy?
-Returns the number of current active channels. This is not the
-total channels, but the number of channels that are currently
-playing sound.
+Returns the number of current active channels.
+This is not the total channels, 
+but the number of channels that are currently playing sound.
 =end */
 static VALUE mixer_get_busy(VALUE self)
 {
@@ -415,9 +417,7 @@ static VALUE mixer_set_num_channels(VALUE self, VALUE channelsValue)
 	
 	initAudio();
 	
-	if(channels>MAX_CHANNELS){
-		SDL_RAISE_S("256 channels ought to be enough for anyone");
-	}
+	RUDL_VERIFY(channels<=MAX_CHANNELS, "256 channels ought to be enough for anyone");
 	
 	Mix_AllocateChannels(channels);
 
@@ -489,7 +489,9 @@ Mix_Music* retrieveMusicPointer(VALUE self)
 
 void freemusic(Mix_Music* m)
 {
-	Mix_FreeMusic(m); // This is called multiple times, but it seems to work :)
+	if(m){
+		Mix_FreeMusic(m); // This is called multiple times, but it seems to work :)
+	}
 }
 
 /*
@@ -561,7 +563,7 @@ static VALUE music_play(int argc, VALUE* argv, VALUE self)
 
 	playing_music=self; /* to avoid gc problem */
 
-	if(Mix_PlayMusic(retrieveMusicPointer(self), loops)==-1) SDL_RAISE;
+	SDL_VERIFY(!(Mix_PlayMusic(retrieveMusicPointer(self), loops)==-1));
 	return self;
 }
 /*
@@ -619,9 +621,16 @@ static VALUE music_get_post_end_event(VALUE self)
 	return INT2BOOL(endmusic_event);
 }
 
-static VALUE music_dealloc(VALUE self)
+/*
+=begin
+--- Music.destroy
+Frees the music from memory,
+thereby rendering the music instance useless.
+=end */
+static VALUE music_destroy(VALUE self)
 {
 	freemusic(retrieveMusicPointer(self));
+	DATA_PTR(self)=NULL;
 	return self;
 }
 #endif
@@ -676,13 +685,22 @@ void initAudioClasses()
 	rb_define_method(classMusic, "restart", music_restart, 0);
 	rb_define_method(classMusic, "pause", music_pause, 0);
 	rb_define_method(classMusic, "unpause", music_unpause, 0);
-	rb_define_method(classMusic, "dealloc", music_dealloc, 0);
+	rb_define_method(classMusic, "destroy", music_destroy, 0);
+	rb_alias(classMusic, rb_intern("dealloc"), rb_intern("destroy"));
 /*
 =begin
 = EndOfMusicEvent
 This event is posted when the current music has ended.
 =end */
 	classEndOfMusicEvent=rb_define_class_under(moduleRUDL, "EndOfMusicEvent", rb_cObject);
+
+/*
+=begin
+= Constants
+These are for setting the sample format:
+AUDIO_U8, AUDIO_S8, AUDIO_U16LSB, AUDIO_S16LSB, AUDIO_U16MSB, AUDIO_S16MSB, 
+AUDIO_U16, AUDIO_S16, AUDIO_U16SYS, AUDIO_S16SYS
+=end */
 
 	DEC_CONSTN(AUDIO_U8);
 	DEC_CONSTN(AUDIO_S8);

@@ -7,24 +7,19 @@ ID id_rect, id_atx, id_aty, id_atw, id_ath;
 void initVideo()
 {
 	if(!SDL_WasInit(SDL_INIT_VIDEO)){
-		if(SDL_WasInit(SDL_INIT_AUDIO)){
-			SDL_RAISE_S("Always start video before audio");
-		}
+		RUDL_ASSERT(!SDL_WasInit(SDL_INIT_AUDIO), "Always use video classes before starting with audio");
+		RUDL_ASSERT(!SDL_WasInit(SDL_INIT_TIMER), "Always use video classes before using the timer");
 
-		if(SDL_WasInit(SDL_INIT_TIMER)){
-			SDL_RAISE_S("Always start video before using timer");
-		}
-		
-		if(SDL_InitSubSystem(SDL_INIT_VIDEO)){
-			SDL_RAISE;
-		}
-		//SDL_EnableUNICODE(1);
+		DEBUG_S("Starting video subsystem");
+		SDL_VERIFY(!SDL_InitSubSystem(SDL_INIT_VIDEO));
+		SDL_EnableUNICODE(1);
 	}
 }
 
 void quitVideo()
 {
 	if(SDL_WasInit(SDL_INIT_VIDEO)){
+		DEBUG_S("Stopping video subsystem");
 		SDL_QuitSubSystem(SDL_INIT_VIDEO);
 	}
 }
@@ -100,7 +95,7 @@ __inline__ VALUE COLOR2VALUE(Uint32 color, SDL_Surface* surface)
 {
 	Uint8 r,g,b,a;
 
-	// Is this construction usefull? Should I always user GetRGBA?
+	// Is this construction usefull? Should I always use GetRGBA?
 	if(surface->flags&SDL_SRCALPHA){
 		SDL_GetRGBA(color, surface->format, &r, &g, &b, &a);
 		return rb_ary_new3(4, UINT2NUM(r), UINT2NUM(g), UINT2NUM(b), UINT2NUM(a));

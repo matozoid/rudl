@@ -68,7 +68,7 @@ static VALUE mouse_rel(VALUE self)
 Moves the mouse cursor to the specified position.
 This will generate a MouseMotionEvent on the input queue.
 =end */
-static VALUE mouse_pos_(VALUE self, VALUE pos)
+static VALUE mouse_set_pos(VALUE self, VALUE pos)
 {
 	Sint16 x,y;
 	initVideo();
@@ -88,7 +88,7 @@ Since the mouse is hidden it won't matter that it's not moving,
 but it will keep the mouse from the edges of the screen so the relative mouse 
 position will always be true.
 =end */
-static VALUE mouse_visible_(VALUE self, VALUE yes)
+static VALUE mouse_set_visible(VALUE self, VALUE yes)
 {
 	initVideo();
 	return INT2BOOL(SDL_ShowCursor(NUM2BOOL(yes)));
@@ -166,8 +166,8 @@ void initMouseClasses()
 	rb_define_singleton_method(classMouse, "pressed?", mouse_pressed_, 0);
 	rb_define_singleton_method(classMouse, "rel", mouse_rel, 0);
 	rb_define_singleton_method(classMouse, "pos", mouse_pos, 0);
-	rb_define_singleton_method(classMouse, "pos=", mouse_pos_, 1);
-	rb_define_singleton_method(classMouse, "visible=", mouse_visible_, 1);
+	rb_define_singleton_method(classMouse, "pos=", mouse_set_pos, 1);
+	rb_define_singleton_method(classMouse, "visible=", mouse_set_visible, 1);
 /*
 =begin
 = MouseMotionEvent

@@ -421,12 +421,177 @@ static VALUE displaySurface_gamma_(VALUE self, VALUE color)
 =begin
 --- DisplaySurface#toggle_fullscreen
 Toggles between fullscreen and windowed mode.
-Only works on a few platforms.
-This will someday be replaced by a method that will work on all platforms.
+The code is experimental,
+please report problems if found.
 =end */
+/*
+ * (This code may be considered public domain, and under no licensing
+ *  restrictions. --rcg.)
+ */
+
+/**
+ * Attempt to flip the video surface to fullscreen or windowed mode.
+ *  Attempts to maintain the surface's state, but makes no guarantee
+ *  that pointers (i.e., the surface's pixels field) will be the same
+ *  after this call.
+ *
+ * Caveats: Your surface pointers will be changing; if you have any other
+ *           copies laying about, they are invalidated.
+ *
+ *          Do NOT call this from an SDL event filter on Windows. You can
+ *           call it based on the return values from SDL_PollEvent, etc, just
+ *           not during the function you passed to SDL_SetEventFilter().
+ *
+ *          Thread safe? Likely not.
+ *
+ *          This has been tested briefly under Linux/X11 and Win/DirectX. YMMV.
+ *
+ *          Palette setting is possibly/probably broken. Please fix.
+ *
+ *   @param surface pointer to surface ptr to toggle. May be different
+ *                  pointer on return. MAY BE NULL ON RETURN IF FAILURE!
+ *   @param flags   pointer to flags to set on surface. The value pointed
+ *                  to will be XOR'd with SDL_FULLSCREEN before use. Actual
+ *                  flags set will be filled into pointer. Contents are
+ *                  undefined on failure. Can be NULL, in which case the
+ *                  surface's current flags are used.
+ *  @return non-zero on success, zero on failure.
+ */
+static int attempt_fullscreen_toggle(SDL_Surface **surface, Uint32 *flags)
+{
+    long framesize = 0;
+    void *pixels = NULL;
+    SDL_Rect clip;
+    Uint32 tmpflags = 0;
+    int w = 0;
+    int h = 0;
+    int bpp = 0;
+    int grabmouse = (SDL_WM_GrabInput(SDL_GRAB_QUERY) == SDL_GRAB_ON);
+    int showmouse = SDL_ShowCursor(-1);
+
+#ifdef BROKEN
+    SDL_Color *palette = NULL;
+    int ncolors = 0;
+#endif
+
+    DEBUG_S("attempting to toggle fullscreen flag...");
+
+    if ( (!surface) || (!(*surface)) )  /* don't try if there's no surface. */
+    {
+        DEBUG_S("Null surface (?!). Not toggling fullscreen flag.");
+        return(0);
+    } /* if */
+
+    if (SDL_WM_ToggleFullScreen(*surface))
+    {
+        DEBUG_S("SDL_WM_ToggleFullScreen() seems to work on this system.");
+        if (flags)
+            *flags ^= SDL_FULLSCREEN;
+        return(1);
+    } /* if */
+
+    if ( !(SDL_GetVideoInfo()->wm_available) )
+    {
+        DEBUG_S("No window manager. Not toggling fullscreen flag.");
+        return(0);
+    } /* if */
+
+    DEBUG_S("toggling fullscreen flag The Hard Way...");
+    tmpflags = (*surface)->flags;
+    w = (*surface)->w;
+    h = (*surface)->h;
+    bpp = (*surface)->format->BitsPerPixel;
+
+    if (flags == NULL)  /* use the surface's flags. */
+        flags = &tmpflags;
+
+    SDL_GetClipRect(*surface, &clip);
+
+        /* save the contents of the screen. */
+    if ( (!(tmpflags & SDL_OPENGL)) && (!(tmpflags & SDL_OPENGLBLIT)) )
+    {
+        framesize = (w * h) * ((*surface)->format->BytesPerPixel);
+        pixels = malloc(framesize);
+        if (pixels == NULL)
+            return(0);
+        memcpy(pixels, (*surface)->pixels, framesize);
+    } /* if */
+
+#ifdef BROKEN
+    if ((*surface)->format->palette != NULL)
+    {
+        ncolors = (*surface)->format->palette->ncolors;
+        palette = malloc(ncolors * sizeof (SDL_Color));
+        if (palette == NULL)
+        {
+            free(pixels);
+            return(0);
+        } /* if */
+        memcpy(palette, (*surface)->format->palette->colors,
+               ncolors * sizeof (SDL_Color));
+    } /* if */
+#endif
+
+    if (grabmouse)
+        SDL_WM_GrabInput(SDL_GRAB_OFF);
+
+    SDL_ShowCursor(1);
+
+    *surface = SDL_SetVideoMode(w, h, bpp, (*flags) ^ SDL_FULLSCREEN);
+
+    if (*surface != NULL)
+        *flags ^= SDL_FULLSCREEN;
+
+    else  /* yikes! Try to put it back as it was... */
+    {
+        *surface = SDL_SetVideoMode(w, h, bpp, tmpflags);
+        if (*surface == NULL)  /* completely screwed. */
+        {
+            if (pixels != NULL)
+                free(pixels);
+#ifdef BROKEN
+            if (palette != NULL)
+                free(palette);
+#endif
+			return(0);
+        } /* if */
+    } /* if */
+
+    /* Unfortunately, you lose your OpenGL image until the next frame... */
+
+    if (pixels != NULL)
+    {
+        memcpy((*surface)->pixels, pixels, framesize);
+        free(pixels);
+    } /* if */
+
+#ifdef BROKEN
+    if (palette != NULL)
+    {
+            /* !!! FIXME : No idea if that flags param is right. */
+        SDL_SetPalette(*surface, SDL_LOGPAL, palette, 0, ncolors);
+        free(palette);
+    } /* if */
+#endif
+
+    SDL_SetClipRect(*surface, &clip);
+
+    if (grabmouse)
+        SDL_WM_GrabInput(SDL_GRAB_ON);
+
+    SDL_ShowCursor(showmouse);
+
+    return(1);
+} /* attempt_fullscreen_toggle */
+
 static VALUE displaySurface_toggle_fullscreen(VALUE self)
 {
-	return INT2BOOL(SDL_WM_ToggleFullScreen(retrieveSurfacePointer(self))!=0);
+	VALUE result;
+	GET_SURFACE;
+	result=INT2BOOL(attempt_fullscreen_toggle(&surface, NULL)!=0);
+	DATA_PTR(self)=surface;
+	return result;
+	//return INT2BOOL(SDL_WM_ToggleFullScreen(retrieveSurfacePointer(self))!=0);
 }
 
 static VALUE displaySurface_gl_get_attribute(VALUE self, VALUE attribute, VALUE value)

@@ -10,9 +10,8 @@ void initJoystick()
 	}
 
 	if(!SDL_WasInit(SDL_INIT_JOYSTICK)){
-		if(SDL_Init(SDL_INIT_JOYSTICK)==-1){
-			SDL_RAISE;
-		}
+		DEBUG_S("Initializing joystick subsystem");
+		SDL_VERIFY(SDL_Init(SDL_INIT_JOYSTICK)!=-1);
 	}
 }
 

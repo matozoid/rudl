@@ -117,6 +117,8 @@ This event is posted when a key is released.
 The keycode for the released key.
 --- KeyUpEvent#mod
 The modifier keys state.
+--- KeyUpEvent#unicode
+The Unicode version of the key.
 =end */
 	classKeyUpEvent=rb_define_class_under(moduleRUDL, "KeyUpEvent", classEvent);
 	rb_define_attr(classKeyUpEvent, "key", 1, 1);

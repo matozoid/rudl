@@ -7,16 +7,6 @@
 #define RUDLVERSION_PATCH 0
 #define DEBUG_RUDL
 
-// Find out what "inline" looks like:
-//#ifndef INLINE
-//# ifdef __GNUC__
-#define INLINE __inline__
-//# else
-//#  define INLINE __inline
-//# endif
-//#endif
-//
-
 #include "ruby.h"
 #include "rubyio.h"
 
@@ -33,9 +23,17 @@ extern "C" {
 #ifdef DEBUG_RUDL
 	#define DEBUG_I(____i) {char koe[500];sprintf(koe, "puts '(%i)'", ____i); rb_eval_string(koe);}
 	#define DEBUG_S(____s) {char koe[500];sprintf(koe, "puts '(%s)'", ____s); rb_eval_string(koe);}
+	#define RUDL_ASSERT(____x, ____msg) {if(!(____x)){SDL_RAISE_S(____msg);}}
+	#define RUDL_VERIFY(____x, ____msg) {if(!(____x)){SDL_RAISE_S(____msg);}}
+	#define SDL_ASSERT(____x) {if(!(____x)){SDL_RAISE;}}
+	#define SDL_VERIFY(____x) {if(!(____x)){SDL_RAISE;}}
 #else
 	#define DEBUG_I(____i) {}
 	#define DEBUG_S(____s) {}
+	#define RUDL_ASSERT(____x, ____msg) {}
+	#define RUDL_VERIFY(____x, ____msg) {if(!(____x)){SDL_RAISE_S(____msg);}}
+	#define SDL_ASSERT(____x) {}
+	#define SDL_VERIFY(____x) {if(!(____x)){SDL_RAISE;}}
 #endif
 
 #ifdef WIN32
