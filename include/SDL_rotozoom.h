@@ -10,17 +10,18 @@
 #ifndef _SDL_rotozoom_h
 #define _SDL_rotozoom_h
 
+#include <math.h>
+
 /* Set up for C function definitions, even when using C++ */
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <math.h>
 #ifndef M_PI
 #define M_PI	3.141592654
 #endif
-#include "SDL.h"
 
+#include <SDL.h>
 
 /* ---- Defines */
 
@@ -53,8 +54,8 @@ extern "C" {
 #define DLLINTERFACE
 #endif
 
-/* 
- 
+/*
+
  rotozoomSurface()
 
  Rotates and zoomes a 32bit or 8bit 'src' surface to newly created 'dst' surface.
@@ -72,8 +73,8 @@ extern "C" {
     DLLINTERFACE void rotozoomSurfaceSize(int width, int height, double angle, double zoom, int *dstwidth,
 					  int *dstheight);
 
-/* 
- 
+/*
+
  zoomSurface()
 
  Zoomes a 32bit or 8bit 'src' surface to newly created 'dst' surface.

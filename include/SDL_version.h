@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997, 1998, 1999, 2000, 2001  Sam Lantinga
+    Copyright (C) 1997, 1998, 1999, 2000, 2001, 2002  Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,12 +17,12 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
     Sam Lantinga
-    slouken@devolution.com
+    slouken@libsdl.org
 */
 
 #ifdef SAVE_RCSID
 static char rcsid =
- "@(#) $Id: SDL_version.h,v 1.2 2003/09/21 11:52:07 tsuihark Exp $";
+ "@(#) $Id: SDL_version.h,v 1.3 2003/09/22 22:28:50 rennex Exp $";
 #endif
 
 /* This header defines the current SDL version */
@@ -42,7 +42,7 @@ extern "C" {
 */
 #define SDL_MAJOR_VERSION	1
 #define SDL_MINOR_VERSION	2
-#define SDL_PATCHLEVEL		3
+#define SDL_PATCHLEVEL		6
 
 typedef struct {
 	Uint8 major;
@@ -79,7 +79,7 @@ typedef struct {
    it should NOT be used to fill a version structure, instead you should
    use the SDL_Version() macro.
  */
-extern DECLSPEC const SDL_version * SDL_Linked_Version(void);
+extern DECLSPEC const SDL_version * SDLCALL SDL_Linked_Version(void);
 
 /* Ends C function definitions when using C++ */
 #ifdef __cplusplus

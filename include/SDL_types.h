@@ -1,6 +1,6 @@
 /*
     SDL - Simple DirectMedia Layer
-    Copyright (C) 1997, 1998, 1999, 2000, 2001  Sam Lantinga
+    Copyright (C) 1997, 1998, 1999, 2000, 2001, 2002  Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,12 +17,12 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
     Sam Lantinga
-    slouken@devolution.com
+    slouken@libsdl.org
 */
 
 #ifdef SAVE_RCSID
 static char rcsid =
- "@(#) $Id: SDL_types.h,v 1.2 2003/09/21 11:52:07 tsuihark Exp $";
+ "@(#) $Id: SDL_types.h,v 1.3 2003/09/22 22:28:50 rennex Exp $";
 #endif
 
 /* General data types used by the SDL library */
@@ -47,7 +47,7 @@ typedef signed int	Sint32;
 
 /* Figure out how to support 64-bit datatypes */
 #if !defined(__STRICT_ANSI__)
-#if defined(__GNUC__) || defined(__MWERKS__) || defined(__SUNPRO_C)
+#if defined(__GNUC__) || defined(__MWERKS__) || defined(__SUNPRO_C) || defined(__DECC)
 #define SDL_HAS_64BIT_TYPE	long long
 #elif defined(_MSC_VER) /* VC++ */
 #define SDL_HAS_64BIT_TYPE	__int64
@@ -61,7 +61,9 @@ typedef signed int	Sint32;
 
 /* The 64-bit datatype isn't supported on all platforms */
 #ifdef SDL_HAS_64BIT_TYPE
+#ifndef H_MMBASIC
 typedef unsigned SDL_HAS_64BIT_TYPE Uint64;
+#endif
 typedef SDL_HAS_64BIT_TYPE Sint64;
 #else
 /* This is really just a hack to prevent the compiler from complaining */
@@ -83,6 +85,22 @@ SDL_COMPILE_TIME_ASSERT(uint32, sizeof(Uint32) == 4);
 SDL_COMPILE_TIME_ASSERT(sint32, sizeof(Sint32) == 4);
 SDL_COMPILE_TIME_ASSERT(uint64, sizeof(Uint64) == 8);
 SDL_COMPILE_TIME_ASSERT(sint64, sizeof(Sint64) == 8);
+
+/* Check to make sure enums are the size of ints, for structure packing.
+   For both Watcom C/C++ and Borland C/C++ the compiler option that makes
+   enums having the size of an int must be enabled.
+   This is "-b" for Borland C/C++ and "-ei" for Watcom C/C++ (v11).
+*/
+/* Enable enums always int in CodeWarrior (for MPW use "-enum int") */
+#ifdef __MWERKS__
+#pragma enumsalwaysint on
+#endif
+
+typedef enum {
+	DUMMY_ENUM_VALUE
+} SDL_DUMMY_ENUM;
+
+SDL_COMPILE_TIME_ASSERT(enum, sizeof(SDL_DUMMY_ENUM) == sizeof(int));
 
 #undef SDL_COMPILE_TIME_ASSERT
 

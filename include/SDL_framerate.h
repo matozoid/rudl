@@ -2,9 +2,9 @@
 /*
 
  SDL_framerate: framerate manager
- 
+
  LGPL (c) A. Schiffler
- 
+
  */
 
 #ifndef _SDL_framerate_h
@@ -17,7 +17,7 @@ extern "C" {
 
 /* --- */
 
-#include "SDL.h"
+#include <SDL.h>
 
 /* --------- Definitions */
 

@@ -1,10 +1,10 @@
 
-/* 
+/*
 
  SDL_gfxPrimitives: graphics primitives for SDL
 
  LGPL (c) A. Schiffler
- 
+
 */
 
 #ifndef _SDL_gfxPrimitives_h
@@ -159,6 +159,7 @@ extern "C" {
 				       Sint16 * vy, int n, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 
 /* Bezier */
+/* s = number of steps */
 
     DLLINTERFACE int bezierColor(SDL_Surface * dst, Sint16 * vx, Sint16 * vy, int n, int s, Uint32 color);
     DLLINTERFACE int bezierRGBA(SDL_Surface * dst, Sint16 * vx, Sint16 * vy,
