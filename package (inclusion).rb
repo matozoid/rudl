@@ -1,8 +1,6 @@
 # package.rb
 # ----------
-# This version selects files by exclusion!
-
-# todo: don't exclude anything from samples/ ?
+# This version selects files by inclusion!
 
 # by Rennex on 24 Sep 2003
 
@@ -39,43 +37,38 @@ def main
 end
 
 
-# create either the source or setup archive
-def zipit(what)
-
-    # files to always exclude
-    ignoretypes = [ /\.(obj|def|exp|pdb|lib)$/i, /^makefile$/i, /^mkmf.log$/i,
-                    /^package.*\.rb$/i, /^#$destdir\//i ]
-
-    # list everything
-    files = Dir["**/*"]
-
-    # exclude directory names and dirs named "CVS" (courtesy of WinCVS)
+# recursively list the contents of the dir, ignoring the
+# dir names and dirs named "CVS" (silly WinCVS..?)
+def lsdir(name)
+    if name
+        name += "/" unless name =~ /\/$/
+        name += "**/*"
+    else
+        name = "**/*"
+    end
+    files = Dir[name]
     files.reject! {|f|
         File.stat(f).directory? or f =~ %r{(^|/)CVS(/|$)}i
     }
+    return files
+end
 
-    # helper method to exclude the files that we never want to include
-    def files.reject_list!(ary)
-        self.reject! {|f|
-            # got to use this trick because "return true" exits the whole method
-            found = ary.each do |re|
-                break "exclude" if f =~ re
-            end
-            found == "exclude"
-        }
-    end
 
-    # exclude the defaults
-    files.reject_list!(ignoretypes)
+# create either the source or setup archive
+def zipit(what)
 
     # which archive are we creating?
     case what
         when "source"
-            files.reject_list! [ /^dll\//i, /^lib\//i, /\.dll$/i, /^RUDL.so$/i ]
+            files = lsdir("docs") + lsdir("include") +
+                    lsdir("samples") + lsdir("utility") +
+                    Dir["*.{c,h,txt,rb}"] << "configure" << "make.bat"
+            files.delete("package.rb")
 
         when "setup"
-            files.reject_list! [ /^include\//i, /^lib\//i, /\.(c|h)$/i,
-                                 /^configure$/i, /^make.bat$/i, /^extconf.rb$/i ]
+            files = lsdir("dll") + lsdir("docs") +
+                    lsdir("samples") + lsdir("utility") +
+                    Dir["*.txt"] << "RUDL.so" << "install-on-windows.rb"
 
         else
             raise "Oh God please no!"
