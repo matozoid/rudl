@@ -435,7 +435,7 @@ class FileEntry < Entry
 
 	# The href to link to this entry.
 	def link
-		to_filename+'#'+link_target
+		to_filename+'#'
 	end
 	
 	# The href used to define this entry.
@@ -462,10 +462,18 @@ class FileEntry < Entry
 		@parent.children.sort.each do |child|
 			if(child.is_a? FileEntry)&&(!child.is_index_file?)
 				items+=Output::format_TOC_top_entry(child.link, child.name)
-				items+=Output::format_TOC_list(child.toc_entries)
+				items+=child.toc_entries
 			end
 		end
 		items
+	end
+
+	def toc_entries
+		entries=''
+		children.each do |child|
+			entries+=Output::format_TOC_list(child.toc_entries)
+		end
+		entries
 	end
 end
 
