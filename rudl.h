@@ -23,7 +23,7 @@ extern "C" {
 #define true (1)
 
 // Definitions  of several error catching macro's.
-// DEBUG_I and DEBUG_S print an integer or string to stdout.
+// DEBUG_I and DEBUG_S print an integer or string to stdout, but only in a debug build.
 // ASSERT and VERIFY raise an exception when their argument is false,
 // but ASSERTs only happen in a debug build.
 // RUDL_* raise our own error message, 
@@ -77,11 +77,8 @@ extern VALUE moduleConstant;
 
 extern VALUE classPit;
 
-
 extern VALUE id_new;
-
 extern VALUE id_clone;
-
 
 extern VALUE rb_range_first(VALUE obj); // Why no predefined range-access functions?
 extern VALUE rb_range_last(VALUE obj);
@@ -93,25 +90,15 @@ extern VALUE rb_range_last(VALUE obj);
 #define FLT2NUM(x)	rb_float_new(x)
 #define CSTR2STR(x)	rb_str_new2(x)
 #define NUM2Sint32(x)	((Sint32)NUM2INT(x))
-
 #define NUM2Uint32(x)	((Uint32)NUM2UINT(x))
-
 #define NUM2Sint16(x)	((Sint16)NUM2INT(x))
-
 #define NUM2Uint16(x)	((Uint16)NUM2UINT(x))
-
 #define NUM2Sint8(x)	((Sint8)NUM2INT(x))
-
 #define NUM2Uint8(x)	((Uint8)NUM2UINT(x))
-
 #define NUM2FLT(x)	((float)NUM2DBL(x))
 
-
-
 #define RUDL_MIN(a, b) ((a)<(b)?(a):(b))
-
 #define RUDL_MAX(a, b) ((a)>(b)?(a):(b))
-
 
 #define DEC_CONST(x)	rb_define_const(moduleConstant, #x, UINT2NUM(SDL_##x));
 #define DEC_CONSTK(x)	rb_define_const(moduleConstant, #x, UINT2NUM(SDL##x));

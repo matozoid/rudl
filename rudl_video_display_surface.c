@@ -3,6 +3,9 @@ RUDL - a C library wrapping SDL for use in Ruby.
 Copyright (C) 2001, 2002, 2003  Danny van Bruggen 
 
 $Log: rudl_video_display_surface.c,v $
+Revision 1.14  2003/10/26 15:29:32  tsuihark
+Did stuff
+
 Revision 1.13  2003/10/05 16:59:53  tsuihark
 Fixed a lot of documentation
 
@@ -474,8 +477,11 @@ static VALUE displaySurface_gamma_(VALUE self, VALUE color)
 =begin
 --- DisplaySurface#toggle_fullscreen
 Toggles between fullscreen and windowed mode.
-The code is experimental,
+The code is experimental and is known to crash in some cases,
 please report problems if found.
+It might be better to not use this at all and use DisplaySurface.destroy to dispose
+of the current DisplaySurface and create a new one with DisplaySurface.new with the
+FULLSCREEN flag toggled.
 =end */
 /*
  * (This code may be considered public domain, and under no licensing

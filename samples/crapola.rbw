@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'RUDL'
+require '../utility/contained_images.rb'
 
 # Namespaces are boring, let's get rid of them.
 include RUDL
@@ -22,18 +23,16 @@ $MaxBadThings=15
 
 #    only one line.
 # This might be easier to see if you look at crapola.bmp.
-$images=Surface.load_new('media/crapola.bmp').contained_images
+$images=Surface.load_new('media/crapola.bmp')
+$images=$images.contained_images
 
 $score=0
 
 
 $sound_on=true
 if RUDL.versions.include? 'SDL_mixer'
-
 	begin
-
 		Mixer.init(44100, 16, 2)
-		# This gives warnings since Ruby 1.8, no idea why:
 		$sound={
 			"crash"		=> Sound.new('media/crapola_crash.wav'),
 			"boom"		=> Sound.new('media/crapola_boom.wav'),
@@ -49,9 +48,7 @@ if RUDL.versions.include? 'SDL_mixer'
 
 	end
 else
-
 	$sound_on=false
-
 end
 
 # Give the monitor some time to switch modes.
@@ -279,7 +276,8 @@ end
 class Bomb < Sprite
 	def initialize(posrect)
 		super([0,0], $images[4])
-		@rect=posrect.clone
+		@rect.x=posrect.x
+		@rect.y=posrect.y
 	end
 
 	def update
@@ -370,7 +368,7 @@ def play
 
 	while lives>0
 
-		while event=EventQueue.poll
+		EventQueue.get.each do |event|
 			case event
 				when QuitEvent
 					exit
@@ -475,6 +473,7 @@ def gameover
  with a mouse,) boejon, tons of mail, mostly useless discussions on IRC, uh-oh,
  wrap time!
 ENDSCROLL
+	scrolltext.gsub!(/\n/, '')
 	Music.new('media/crapola_fire.mod').play(-1) if $sound_on
 
 	font=BitmapFont.new(Surface.load_new('media/24p_copperplate_blue.png'))

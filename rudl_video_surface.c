@@ -3,6 +3,9 @@ RUDL - a C library wrapping SDL for use in Ruby.
 Copyright (C) 2001, 2002, 2003  Danny van Bruggen
 
 $Log: rudl_video_surface.c,v $
+Revision 1.24  2003/10/26 15:29:32  tsuihark
+Did stuff
+
 Revision 1.23  2003/10/19 11:26:13  tsuihark
 Added VideoExposeEvent and removed an odd bug in rudl_video_surface.c
 
@@ -864,125 +867,8 @@ static VALUE surface_clip(VALUE self)
 /*
 =begin
 --- Surface#contained_images
-Returns an array of surfaces that are found by parsing this surface in a certain way.
-An example is in the samples directory, in crapola.rbw.
-This is not part of SDL, it is RUDL-specific.
+This has been moved to a Ruby file called utility/contained_images.rb
 =end */
-static VALUE surface_contained_images(VALUE self)
-{
-	Sint16 x=0;
-	Sint16 y=0;
-	Sint16 w=1;
-	Sint16 h=1;
-	Sint16 nextRowY=0;
-	bool rowDone=false;
-	bool linesDone=false;
-	bool nextXFound=false;
-	bool done;
-	SDL_Surface* surface=retrieveSurfacePointer(self);
-	SDL_Surface* tmp;
-	SDL_Rect srcrect, dstrect;
-	Uint32 cornerColor=internal_get(surface, 0, 0);
-	VALUE images=rb_ary_new();
-	VALUE imageLine=rb_ary_new();
-
-	while(!(rowDone&&linesDone)){
-		w=1;
-		h=1;
-
-		rowDone=false;
-
-		if(internal_get(surface, x, y)!=cornerColor){
-			SDL_RAISE_S("Upper left pixel not white: aborting");
-		}
-
-		// Find width
-		while(internal_get(surface, (Sint16)(x+w), y)!=cornerColor){
-			w++;
-			if(x+w>=surface->w){
-				SDL_RAISE_S("No terminating white pixel: aborting");
-			}
-		}
-
-		// Find height
-		while(internal_get(surface, x, (Sint16)(y+h))!=cornerColor){
-			h++;
-			if(y+h>=surface->h){
-				SDL_RAISE_S("No terminating white pixel: aborting");
-			}
-		}
-
-		// Found image
-		//_log("Found an image\n");
-		w--;
-		h--;
-
-		tmp=SDL_CreateRGBSurface(
-				surface->flags, w, h, surface->format->BitsPerPixel,
-				surface->format->Rmask, surface->format->Gmask,
-				surface->format->Bmask, surface->format->Amask);
-		srcrect.x=x+1;
-		srcrect.y=y+1;
-		srcrect.w=w;
-		srcrect.h=h;
-		dstrect.x=0;
-		dstrect.y=0;
-
-		if(SDL_BlitSurface(surface, &srcrect, tmp, &dstrect)!=0) SDL_RAISE;
-
-		rb_ary_push(imageLine, createSurfaceObject(tmp));
-
-		// Find next line
-		if(x==0){
-			//_log("Already looking for next line\n");
-			nextRowY=y+h+2;
-			done=false;
-			while(!done){
-				if(nextRowY>=surface->h){
-					done=true;
-					linesDone=true;
-					//_log("It's the last line\n");
-				}else{
-					if(internal_get(surface, 0, nextRowY)==cornerColor){
-						done=true;
-					}else{
-						nextRowY++;
-					}
-				}
-			}
-		}
-
-		// Setup for next image
-		x+=w+2;
-
-		// Find next X
-		nextXFound=false;
-		while(!nextXFound){
-			if(x>=surface->w){
-				//_log("Line done\n");
-				x=0;
-				y=nextRowY;
-				rowDone=true;
-				nextXFound=true;
-				rb_ary_push(images, imageLine);
-				imageLine=rb_ary_new();
-			}else{
-				if(internal_get(surface, x, y)==cornerColor){
-					nextXFound=true;
-				}else{
-					x++;
-				}
-			}
-		}
-	}
-	if(RARRAY(images)->len==0){
-		return Qnil;
-	}
-	if(RARRAY(images)->len==1){
-		return rb_ary_entry(images, 0);
-	}
-	return images;
-}
 
 /*
 =begin
@@ -1366,7 +1252,7 @@ void initVideoSurfaceClasses()
 	rb_define_method(classSurface, "convert!", surface_convert_, 0);
 	rb_define_method(classSurface, "convert_alpha!", surface_convert_alpha_, 0);
 
-	rb_define_method(classSurface, "contained_images", surface_contained_images, 0);
+//	rb_define_method(classSurface, "contained_images", surface_contained_images, 0);
 
 	rb_define_method(classSurface, "lock", surface_lock, 0);
 	rb_define_method(classSurface, "must_lock", surface_must_lock, 0);
