@@ -1,47 +1,74 @@
+<html>
+<head>
 <TITLE>How to...</TITLE>
 <link rel='stylesheet' type='text/css' href='rudl.css'>
+</head>
+
+<body>
 
 <H1>How to use RUDL</H1>
+
 <H2>Accessing RUDL</H2>
+
 <P>First steps: all of it is in a library called RUDL, so do a
+
 <pre>require "RUDL"</pre>
+
 <p>before you start using any of it. Also make sure to type "RUDL" in upper case,
 otherwise it won't work.
-<p>
-Eveything is namespaced by using a module.
+
+<p>Eveything is namespaced by using a module.
 What that means is that there are two ways of accessing the things in RUDL.
-First, you can refer to any object in RUDL by sticking<P>RUDL::<P>in front of it,
-like RUDL::Surface or RUDL::EventQueue.
+First, you can refer to any object in RUDL by sticking
+
+<PRE>RUDL::</PRE>
+
+<p>in front of it, like RUDL::Surface or RUDL::EventQueue.
 This is visually ugly.
 The next solution is conceptually ugly.
 You can also include RUDL, mixing it's namespace into the current namespace.
-<P>include RUDL<P> will do that.
-This might clash with other libraries who define the same names to be something else.
+
+<pre>include RUDL</pre>
+
+<P> will do that. This might clash with other libraries who define the same
+names to be something else.
+
 <H2>What is the idea?</H2>
+
 <P>When you want to make a 2D program, create a DisplaySurface.
 This is used for drawing on.
 Load some images from disk into Surfaces with load_new.
 Go into a loop, and do "game logic", "blit (paste) the surfaces to the displaysurface"
 followed by "displaysurface.flip" to show them.
-<P>If you feel like donating a better tutorial, go ahead :)
-Use the samples!
+
+<P>We're working on a good tutorial for RUDL, but for now,
+try the samples and read their code, and browse the
+<a href="RUDL/index.html">library reference</a>.
 
 <H2>Datatypes</H2>
 
 <P>The following datatypes are commonly used by RUDL:
 
-<P>When a coordinate, size or such is needed, RUDL works with array's of two numbers like [10, 42].
+<P>When a coordinate, size or such is needed, RUDL works with arrays of two numbers like [10, 42].
 
-<P>When a rectangle is needed one uses an array of four numbers,
-representing x, y from the top left corner of the screen, and w, h for width and height:
+<P>When a rectangle is needed, use an array of four numbers,
+representing x, y from the top left corner of the screen, and width and height:
 [x, y, width, height].
-Ruby's Array class is extended with a lot of methods to enable things like[5, 10, 30, 30].y (which will be 10)
+Ruby's Array class is extended with a lot of methods to enable things like:
+<pre>
+rectangle = [5, 10, 30, 30]
+puts rectangle.y
+</pre>
+<p>(which will print 10)
 
 <p>No checks are done on array length when a method receives a coordinate or rectangle,
 this enables you to pass a rectangle to a method that wants a coordinate.
-Only the first two elements will be used(pass [3, 4, 6, 7] and the coordinate will be [3, 4])
+Only the first two elements will be used (pass [3, 4, 6, 7] and the coordinate will be [3, 4])
 
 <P>When a color is needed, always use an array of [red, green, blue],
 a [red, green, blue, alpha] array or a hexadecimal 32 bit number: 0xFF8040EE.
 
 <P>A palette is an array containing [r, g, b] arrays.
+
+</body>
+</html>
