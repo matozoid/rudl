@@ -244,8 +244,29 @@ HEADER
 		"<h3>#{section_name}</h3>\n"
 	end
 
-	def Output.format_method(name, parameter_list)
-		"<h4>#{name}#{parameter_list}</h4>\n"
+	def Output.format_method(name, parameter_lists)
+		output="<h4>"
+		parameter_lists.each do |list|
+			output+="#{name}#{list}<br>\n"
+		end
+		output+="</h4>\n"
+		output
+	end
+	
+	def Output.format_TOC_header
+		'<h1>Index</h1>'
+	end
+
+	def Output.format_TOC_list(entries)
+		"<ul>\n#{entries}\n</ul>\n"
+	end
+	
+	def Output.format_TOC_top_entry(name, link)
+		"<li><h3><a href='#{link}'>#{name}</a></h3></li>\n"
+	end
+
+	def Output.format_TOC_entry(name, link)
+		"<li><a href='#{link}'>#{name}</a></li>\n"
 	end
 
 	def Output.format_text(text)
@@ -307,12 +328,17 @@ An entry holds all entries below it in @children.
 class Entry
 	attr_reader :children
 	attr_reader :name
+	attr_accessor :parent
 
 	# The first time an entry with this name has been found:
 	def initialize(name)
 		@name=name
 		@children=[]
 		@text=nil
+	end
+	
+	def escaped_name
+		name.dup.downcase.tr ' ,\\/', '____'
 	end
 
 	# If an entry (like MethodEntry) can contain more than one line (for parameter lists),
@@ -326,6 +352,10 @@ class Entry
 
 	def ==(other)
 		@name==other.name
+	end
+	
+	def link
+		""
 	end
 
 	def add_text(text)
@@ -346,6 +376,14 @@ class Entry
 			child.write(output_directory)
 		end
 	end
+	
+	def toc_entries
+		entries=Output::format_TOC_entry(name, link)
+		children.each do |child|
+			entries+=Output::format_TOC_list(child.toc_entries)
+		end
+		entries
+	end
 end
 
 class RootEntry < Entry
@@ -362,17 +400,48 @@ class ProjectEntry < Entry
 end
 
 class FileEntry < Entry
+	def is_index_file?
+		@name.downcase=="index"	end
+	
+	def to_filename
+		"#{escaped_name}.html"
+	end
+	
+	def link
+		to_filename
+	end
+	
 	def write(output_directory)
-		File.open(output_directory+'/'+@name.downcase+'.html', 'w') do |file|
+		File.open(output_directory+'/'+to_filename, 'w') do |file|
 			file.write(Output::html_header(@name))
+			if is_index_file?
+				file.write Output::format_TOC_header
+				file.write Output::format_TOC_list(top_toc_entries)
+			end
+			file.write(Output::format_text(@text))
 			children.sort.each do |child|
 				child.write(file)
 			end
 			file.write(Output::html_footer)
 		end	end
+
+	def top_toc_entries
+		items=""
+		@parent.children.sort.each do |child|
+			if(child.is_a? FileEntry)&&(!child.is_index_file?)
+				items+=Output::format_TOC_top_entry(child.name, child.link)
+				items+=Output::format_TOC_list(child.toc_entries)
+			end
+		end
+		items
+	end
 end
 
 class ClassEntry < Entry
+	def link
+		@parent.link+"#"+escaped_name
+	end
+
 	def write(file)
 		file.write(Output::format_class(@name))
 		file.write(Output::format_text(@text))
@@ -380,9 +449,14 @@ class ClassEntry < Entry
 			child.write(file)
 		end
 	end
+	
 end
 
 class ModuleEntry < Entry
+	def link
+		@parent.link+"#"+escaped_name
+	end
+	
 	def write(file)
 		file.write(Output::format_module(@name))
 		file.write(Output::format_text(@text))
@@ -393,6 +467,10 @@ class ModuleEntry < Entry
 end
 
 class SectionEntry < Entry
+	def link
+		@parent.link+"#"+escaped_name
+	end
+
 	def write(file)
 		file.write(Output::format_section(@name))
 		file.write(Output::format_text(@text))
@@ -403,6 +481,10 @@ class SectionEntry < Entry
 end
 
 class MethodEntry < Entry
+	def link
+		@parent.link+"#"+escaped_name
+	end
+
 	def initialize(name)
 		@parameterlists=[]
 		super(reenter(name))
@@ -421,9 +503,7 @@ class MethodEntry < Entry
 	end
 
 	def write(file)
-		@parameterlists.sort.each do |list|
-			file.write(Output::format_method(@name, list))
-		end
+		file.write(Output::format_method(@name, @parameterlists))
 		file.write(Output::format_text(@text))
 		children.sort.each do |child|
 			child.write(file)
@@ -449,6 +529,7 @@ class Path
 			entry=search_entry
 			last_in_path.children.push entry
 		end
+		entry.parent=last_in_path
 		@path.push(entry)	end
 
 	def goto_file_level
