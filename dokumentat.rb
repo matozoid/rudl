@@ -123,7 +123,7 @@ Not implemented yet.
 =end
 
 =begin
-@section H.1 Linking to difficult places
+@section H. Linking to difficult places
 *Describe what to do with links to things with spaces in them, maybe add a wildcard system?*
 =end
 
