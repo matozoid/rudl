@@ -96,11 +96,22 @@ event_mapper.attach(KeyDownEvent) { |key, mod, unicode|
 	puts "#{(key&0xff).chr} (#{mods}) unicode: #{unicode}" 
 }
 
+# This happens when a mouse button is pressed.
+event_mapper.attach(MouseButtonDownEvent) { |pos,button|
+        puts "pos "+pos.inspect+" button "+button.inspect
+}
+
+
 # This happens when you resize the window. You need to pass "RESIZABLE" to
 # DisplaySurface.new to make the window resizable at all.
 event_mapper.attach(ResizeEvent) { |new_size|
 	puts "Window now #{new_size.join('x')}"
+	# Reallocate the display surface at the new size
+	$d=DisplaySurface.new new_size, RESIZABLE
 }
 
 # Keep on distributing events forever. The QuitEvent block will exit the program.
-loop do event_mapper.distribute end
+loop do 
+	event_mapper.distribute 
+	Timer.delay(10)
+end
