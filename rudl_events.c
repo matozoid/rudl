@@ -139,9 +139,11 @@ VALUE sDLEvent2RubyEvent(SDL_Event* event)
 }
 
 /**
-@file eventqueue
+@file Input
 @class EventQueue
-This class is the interface to the eventsystem in SDL.
+This class is the interface to the event system in SDL.
+Don't be put off by the amount of non-implemented methods,
+
 Don't be put off by the amount of non-implemented methods, their absence doesn't bother
 me and I don't plan on implementing them before someone comes up with a good reason for
 their existence.
@@ -150,6 +152,8 @@ their existence.
 @section Class and instance Methods
 @method get -> [ Event, ... ]
 Returns all events in the queue and removes them from the queue.
+*/
+/**
 @method get( eventmask ) -> [ Event, ... ]
 Not implemented.
 */
@@ -179,6 +183,8 @@ static VALUE eventqueue_get(int argc, VALUE* argv, VALUE self)
 @method peek -> Event or nil
 Returns the next event without removing it from the queue,
 or nil when no events are available.
+*/
+/**
 @method peek( eventmask )
 Not implemented.
 */
@@ -250,6 +256,7 @@ static VALUE eventqueue_set_allowed(VALUE self, VALUE eventType)
 
 /**
 @method blocked=( eventtype ) -> nil
+Not implemented.
 */
 static VALUE eventqueue_set_blocked(VALUE self, VALUE eventType)
 {

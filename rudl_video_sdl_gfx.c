@@ -3,6 +3,9 @@ RUDL - a C library wrapping SDL for use in Ruby.
 Copyright (C) 2001, 2002, 2003  Danny van Bruggen
 
 $Log: rudl_video_sdl_gfx.c,v $
+Revision 1.15  2004/10/23 19:54:22  rennex
+Fixed docs
+
 Revision 1.14  2004/08/04 23:03:46  tsuihark
 Updated all documentation to Dokumentat format.
 
@@ -30,7 +33,7 @@ Added CVS headers
 ///////////////////////////////// SDL_GFX: ROTOZOOM
 #ifdef HAVE_SDL_ROTOZOOM_H
 /**
-@file Video
+@file Surface
 @class Surface
 @section Drawing
 Many of the methods here are from <a href='http://de.ferzkopp.net/'>SDL_gfx</a>.
@@ -146,8 +149,8 @@ static VALUE surface_rectangle(VALUE self, VALUE rectObject, VALUE color)
     return self;
 }
 
-/** 
-@method filled_rectangle( rect, color ) => self 
+/**
+@method filled_rectangle( rect, color ) => self
 Filled_rectangle is a lot like @fill.
 Fill comes from SDL, filled_rectangle from SDL_gfx,
 choose whichever you like best.
@@ -180,7 +183,7 @@ static VALUE surface_antialiased_line(VALUE self, VALUE coord1, VALUE coord2, VA
     return self;
 }
 
-/** 
+/**
 @section Drawing: Circles
 @method circle( coord, radius, color )  -> self
 */
@@ -247,7 +250,7 @@ static VALUE surface_filled_ellipse(VALUE self, VALUE coord, VALUE rx, VALUE ry,
     return self;
 }
 
-/** 
+/**
 @section Drawing: Polygons
 The polygon methods take an array of [x,y], like [[10,10],[40,60],[16,66]].
 */

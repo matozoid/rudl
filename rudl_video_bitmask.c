@@ -21,7 +21,7 @@ bitmask *SCAM_mask_from_image_SDL(SDL_Surface *surface, Uint32 colorkey)
 				}
 			}
 		}
-		
+
 		SDL_UnlockSurface(surface);
 	}
 
@@ -29,7 +29,7 @@ bitmask *SCAM_mask_from_image_SDL(SDL_Surface *surface, Uint32 colorkey)
 }
 
 /**
-@file Video
+@file Misc
 @class CollisionMap
 This code is "bitmask" from <a href='http://www.ifm.liu.se/~ulfek/projects/2d_Collision_Detection.html'>Ulf Ekstrom</a>
 
@@ -77,7 +77,7 @@ static VALUE collision_map_new(VALUE self, VALUE par1)
 		whole_surface.y=0;
 		whole_surface.w=surface->w;
 		whole_surface.h=surface->h;
-		
+
 		map=SCAM_mask_from_image_SDL(surface, colorkey);
 	}
 
@@ -93,7 +93,7 @@ static VALUE collision_map_new(VALUE self, VALUE par1)
 @method collides_with( own_coord, other_map, other_coord ) -> [hit_x, hit_y] or nil
 This returns the first found overlapping (colliding) pixel for two collision maps,
 or nil if no collision occurred.
-The coordinates specify where the two maps are, 
+The coordinates specify where the two maps are,
 which will probably mean that the two surfaces are blitted to the screen at those coordinates.
 
 <p>If using the @collision_map attribute, you would get for one surface at [10,10] and

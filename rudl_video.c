@@ -133,40 +133,48 @@ void initVideoClasses()
     initVideoBitmaskClasses();
 
 /**
-@file video
-@class SurfacesLostException
-This gruesome thing is thrown by Surface#blit when Windows manages to destroy all your
+@file DisplaySurface
+@class DisplaySurface
+@section SurfacesLostException
+
+This gruesome thing is thrown by @Surface#blit when Windows manages to destroy all your
 surfaces.
 This might happen when switching to another application, for example.
 The only thing to rescue your application is by waiting for blit to stop throwing exceptions,
 then reloading all your surfaces.
+
 */
 
     classSurfacesLostException=rb_define_class_under(moduleRUDL, "SurfacesLostException", rb_cObject);
 /**
-@class ResizeEvent
-@method size -> [w, h]
-This is  the new size of the window.
+
+@section Windowing system input event classes
+<dl>
+
+<dt> ResizeEvent
+<dd> Contains @size, which is a [w, h] array indicating the new size of the window.
 */
     classResizeEvent=rb_define_class_under(moduleRUDL, "ResizeEvent", classEvent);
     rb_define_attr(classResizeEvent, "size", 1, 1);
 /**
-@class ActiveEvent
-@method gain
-@method state
+<dt> ActiveEvent
+<dd> Contains @gain and @state.
 */
     classActiveEvent=rb_define_class_under(moduleRUDL, "ActiveEvent", classEvent);
     rb_define_attr(classActiveEvent, "gain", 1, 1);
     rb_define_attr(classActiveEvent, "state", 1, 1);
 /**
-@class QuitEvent
-This event signals that the user or the program itself has requested to be terminated.
+<dt> QuitEvent
+<dd> This event signals that the user or the program itself has requested to be terminated.
+It is triggered when the close button of the window is pressed.
 */
     classQuitEvent=rb_define_class_under(moduleRUDL, "QuitEvent", classEvent);
 /**
-@class VideoExposeEvent
-A VideoExposeEvent event is triggered when the screen has been modified outside of the application,
+<dt> VideoExposeEvent
+<dd> Triggered when the screen has been modified outside of the application,
 usually by the window manager and needs to be redrawn.
+
+</dl>
 */
     classVideoExposeEvent=rb_define_class_under(moduleRUDL, "VideoExposeEvent", classEvent);
 /*

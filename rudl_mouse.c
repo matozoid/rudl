@@ -4,7 +4,7 @@
 #include "rudl_events.h"
 
 /**
-@file mouse
+@file Input
 @class Mouse
 The mouse class methods can also be used as instance methods once you
 instantiate the class. However, there is no need to do that, it's just
@@ -84,7 +84,7 @@ This will return the previous visible state of the mouse cursor.
 Note that when the cursor is hidden and the application has grabbed the input.
 SDL will force the mouse to stay in the center of the screen.
 Since the mouse is hidden it won't matter that it's not moving,
-but it will keep the mouse from the edges of the screen so the relative mouse 
+but it will keep the mouse from the edges of the screen so the relative mouse
 position will always be true.
 */
 static VALUE mouse_set_visible(VALUE self, VALUE yes)
@@ -95,7 +95,7 @@ static VALUE mouse_set_visible(VALUE self, VALUE yes)
 
 /**
 @method set_cursor( hotspot, xormasks, andmasks ) -> self
-When the mouse cursor is visible, it will be displayed as a black and white bitmap 
+When the mouse cursor is visible, it will be displayed as a black and white bitmap
 using the given bitmask arrays.
 Hotspot is an array containing the cursor hotspot position.
 xormasks is an array of arrays of bytes containing the cursor xor data masks.
@@ -146,7 +146,7 @@ static VALUE mouse_set_cursor(VALUE self, VALUE hotspot, VALUE xormasks, VALUE a
 	if(!cursor) SDL_RAISE;
 
 	lastcursor = SDL_GetCursor();
-	SDL_SetCursor(cursor);	
+	SDL_SetCursor(cursor);
 	SDL_FreeCursor(lastcursor);
 
 	return self;
@@ -164,18 +164,16 @@ void initMouseClasses()
 	rb_define_singleton_and_instance_method(classMouse, "pos=", mouse_set_pos, 1);
 	rb_define_singleton_and_instance_method(classMouse, "visible=", mouse_set_visible, 1);
 /**
-@class MouseMotionEvent
-@method pos
-An array [x, y] telling the position of the mouse.
-*/
-/**
-@method rel
-An array [dx, dy] telling how much the mouse moved.
-*/
-/**
-@method button
-An array of booleans, representing the states of the mousebuttons.
-Currently, three buttons are supported.
+@section Mouse input event classes
+<dl>
+
+<dt> MouseMotionEvent
+<dd>
+Contains @pos (an array [x, y] telling the position of the mouse),
+@rel (an array [dx, dy] telling how much the mouse moved),
+and @button (an array of booleans, representing the states of the
+mousebuttons). Currently, three buttons are supported.
+
 */
 	classMouseMotionEvent=rb_define_class_under(moduleRUDL, "MouseMotionEvent", classEvent);
 	rb_define_attr(classMouseMotionEvent, "pos", 1, 1);
@@ -183,26 +181,20 @@ Currently, three buttons are supported.
 	rb_define_attr(classMouseMotionEvent, "button", 1, 1);
 
 /**
-@class MouseButtonUpEvent
-@method pos
-An array [x, y] telling the position of the mouse.
-*/
-/**
-@method button
-The number of the button that was released.
+<dt> MouseButtonUpEvent
+<dd>
+Contains @pos (an array [x, y] telling the position of the mouse) and
+@button (the number of the button that was released).
 */
 	classMouseButtonUpEvent=rb_define_class_under(moduleRUDL, "MouseButtonUpEvent", classEvent);
 	rb_define_attr(classMouseButtonUpEvent, "pos", 1, 1);
 	rb_define_attr(classMouseButtonUpEvent, "button", 1, 1);
 
 /**
-@class MouseButtonDownEvent
-@method pos
-An array [x, y] telling the position of the mouse.
-*/
-/**
-@method button
-The number of the button that was pressed.
+<dt> MouseButtonDownEvent
+<dd>
+Contains @pos (an array [x, y] telling the position of the mouse) and
+@button (the number of the button that was pressed).
 */
 	classMouseButtonDownEvent=rb_define_class_under(moduleRUDL, "MouseButtonDownEvent", classEvent);
 	rb_define_attr(classMouseButtonDownEvent, "pos", 1, 1);

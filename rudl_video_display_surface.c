@@ -3,6 +3,9 @@ RUDL - a C library wrapping SDL for use in Ruby.
 Copyright (C) 2001, 2002, 2003  Danny van Bruggen
 
 $Log: rudl_video_display_surface.c,v $
+Revision 1.25  2004/10/23 19:54:22  rennex
+Fixed docs
+
 Revision 1.24  2004/08/04 23:03:46  tsuihark
 Updated all documentation to Dokumentat format.
 
@@ -52,11 +55,11 @@ Fixed a lot of documentation
 
 ///////////////////////////////// DISPLAYSURFACE
 /**
-@file Video
-@class DisplaySurface < Surface
+@file DisplaySurface
+@class DisplaySurface
 The DisplaySurface is the surface that represents the window or the full screen that you
 will be drawing and blitting on.
-Since it is inherited from Surface, it can be used just like an ordinary surface.
+Since it is inherited from @Surface, it can be used just like an ordinary surface.
 You will need to create a DisplaySurface to show anything on your screen.
 */
 /**

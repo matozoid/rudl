@@ -156,7 +156,7 @@ Returns a hash of library names with their versions that are supported by @RUDL.
 This list was determined when @RUDL was compiled for a certain system,
 and might change when other libraries have been installed or removed
 and @RUDL is recompiled.
-Versions are @RUDL@Version objects.
+Versions are @RUDL::Version objects.
 This includes "RUDL" itself.
 */
 

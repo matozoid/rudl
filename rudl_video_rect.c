@@ -1,8 +1,11 @@
-/* 
-RUDL - a C library wrapping SDL for use in Ruby. 
-Copyright (C) 2001, 2002, 2003  Danny van Bruggen 
+/*
+RUDL - a C library wrapping SDL for use in Ruby.
+Copyright (C) 2001, 2002, 2003  Danny van Bruggen
 
 $Log: rudl_video_rect.c,v $
+Revision 1.13  2004/10/23 19:54:22  rennex
+Fixed docs
+
 Revision 1.12  2004/08/04 23:03:46  tsuihark
 Updated all documentation to Dokumentat format.
 
@@ -38,9 +41,9 @@ __inline__ static bool intersect(SDL_Rect *a, SDL_Rect *b)
 	return true;
 }
 
-#define GET_X() double x=array_get_x(self) 
-#define GET_Y() double y=array_get_y(self) 
-#define GET_W() double w=array_get_w(self) 
+#define GET_X() double x=array_get_x(self)
+#define GET_Y() double y=array_get_y(self)
+#define GET_W() double w=array_get_w(self)
 #define GET_H() double h=array_get_h(self)
 #define SET_X(x) array_set_x(self, (x))
 #define SET_Y(x) array_set_y(self, (x))
@@ -121,7 +124,7 @@ __inline__ static void normalize(VALUE self)
 }
 
 /**
-@file Video
+@file Misc
 @class Rect
 Rect has been discarded.
 Its methods have moved to the standard Ruby @Array.
@@ -129,7 +132,7 @@ All these methods are now written in C.
 */
 /**
 @class Array
-The standard Ruby array class has been extended to provide 
+The standard Ruby array class has been extended to provide
 methods for using it as a rectangle.
 Arrays like these have entries 0, 1, 2 and 3 set to floating point values for
 x, y, width and height.
@@ -222,7 +225,7 @@ static VALUE rb_array_union_list(VALUE self, VALUE other_rects)
 	double bottom;
 	double l,r,t,b;
 	VALUE rect;
-	
+
 	if(RARRAY(other_rects)->len==0){
 		return Qnil;
 	}
@@ -403,7 +406,7 @@ static VALUE rb_array_union_bang(VALUE self, VALUE other_rect)
 
 		double new_x=RUDL_MIN(x, other_x);
 		double new_y=RUDL_MIN(y, other_y);
-		
+
 		SET_X( new_x );
 		SET_Y( new_y );
 		SET_W( RUDL_MAX(x+w, other_x+other_w)-new_x );
@@ -428,12 +431,12 @@ static VALUE rb_array_contains(VALUE self, VALUE thing)
 	GET_W();
 	GET_H();
 	double x2,y2,w2,h2;
-	
+
 	Check_Type(thing, T_ARRAY);
-	
+
 	x2=array_get_x(thing);
 	y2=array_get_y(thing);
-	
+
 	if(RARRAY(thing)->len>3){ // It's a rectangle
 		w2=array_get_w(thing);
 		h2=array_get_h(thing);
@@ -460,9 +463,9 @@ static VALUE rb_array_same_size(VALUE self, VALUE rect)
 	if(self==rect){
 		return Qtrue;
 	}
-	
+
 	Check_Type(rect, T_ARRAY);
-	
+
 	return(x==array_get_x(rect) && y==array_get_y(rect) && w==array_get_w(rect) && h==array_get_h(rect));
 }
 
@@ -477,9 +480,9 @@ static VALUE rb_array_copy_from(VALUE self, VALUE rect)
 	if(self==rect){
 		return Qtrue;
 	}
-	
+
 	Check_Type(rect, T_ARRAY);
-	
+
 	SET_X(array_get_x(rect));
 	SET_Y(array_get_y(rect));
 	SET_W(array_get_w(rect));
@@ -561,7 +564,7 @@ static VALUE rb_array_clip_bang(VALUE self, VALUE rect)
 		w = (b.x+b.w) - x;
 	else
 		goto nointersect;
-	
+
 	/* Top */
 	if((a.y >= b.y) && (a.y < (b.y+b.h)))
 		y = a.y;
@@ -598,7 +601,7 @@ static VALUE rb_array_clip(VALUE self, VALUE rect)
 @method clamp( rect ) -> [x, y, w, h]
 @method clamp!( rect ) -> nil
 Returns a new rectangle that is moved to be completely inside the base rectangle.
-If the given rectangle is too large for the base rectangle in an axis, 
+If the given rectangle is too large for the base rectangle in an axis,
 it will be centered on that axis.
 */
 static VALUE rb_array_clamp_bang(VALUE self, VALUE rect)
@@ -650,7 +653,7 @@ static VALUE rb_array_overlaps(VALUE self, VALUE otherRect)
 /*
 @class Pit
 @method cross_lines( a, b, c, d ) -> lots
-Returns the coordinate where lines @a to @b and @c to @d cross, 
+Returns the coordinate where lines @a to @b and @c to @d cross,
 an array of [x,y,x2,y2] if they are parallel and overlapping,
 an array of [x,y] if they are parallel and touch at only one point,
 or false if they don't cross.
@@ -690,8 +693,8 @@ static VALUE rb_pit_cross_lines(VALUE self, VALUE pa, VALUE pb, VALUE pc, VALUE 
 	double xk, yk, a, b, c, d;
 
 	double tmp;
-	
-	if(pax!=pbx && pcx!=pdx){	// check eerst even of geen van de lijnen vertikaal is 
+
+	if(pax!=pbx && pcx!=pdx){	// check eerst even of geen van de lijnen vertikaal is
 		// De lijnpunten sorteren op x-coordinaat.
 		if(pax>pbx){
 			tmp=pax; pax=pbx; pbx=tmp;
@@ -705,7 +708,7 @@ static VALUE rb_pit_cross_lines(VALUE self, VALUE pa, VALUE pb, VALUE pc, VALUE 
 		b=pay-a*pax;				// het snijpunt van de eerste lijn met x=0
 
 		c=(pdy-pcy)/(pdx-pcx);		// de helling van de tweede lijn
-		d=pcy-c*pcx;				// het snijpunt van de tweede lijn met x=0 
+		d=pcy-c*pcx;				// het snijpunt van de tweede lijn met x=0
 
 		if(a==c){	// Are they parallel?
 			if(b==d){		// Are they the same line?
@@ -735,14 +738,14 @@ static VALUE rb_pit_cross_lines(VALUE self, VALUE pa, VALUE pb, VALUE pc, VALUE 
 				}
 			}
 		}
-		
-		xk=(d-b)/(a-c);				// bereken de x-coordinaat van het snijpunt 
-		yk=a*xk+b;					// en de y-coordinaat 
+
+		xk=(d-b)/(a-c);				// bereken de x-coordinaat van het snijpunt
+		yk=a*xk+b;					// en de y-coordinaat
 
 		// de lijnen snijden als de x-coordinaat van het snijpunt tussen
 		// de begin- en eind-x-coordinaten van de lijnen ligt.
 		return rb_pit_cross_lines_retval(xk<=pbx && xk>=pax && xk<=pdx && xk>=pcx, false, xk, yk, 0, 0);
-	
+
 	}else{ // wat als een van de lijnen vertikaal is?
 		// De lijnpunten sorteren op y-coordinaat.
 		if(pay>pby){
@@ -762,8 +765,8 @@ static VALUE rb_pit_cross_lines(VALUE self, VALUE pa, VALUE pb, VALUE pc, VALUE 
 					return rb_pit_cross_lines_retval(false, false, 0,0,0,0);
 				}
 				c=(pdy-pcy)/(pdx-pcx);	// de helling van de tweede lijn berkenen
-				d=pcy-c*pcx;			// het snijpunt van de tweede lijn met x=0 berekenen 
-				yk=c*pax+d;				// de y-coord van het snijpunt is dan 
+				d=pcy-c*pcx;			// het snijpunt van de tweede lijn met x=0 berekenen
+				yk=c*pax+d;				// de y-coord van het snijpunt is dan
 				return rb_pit_cross_lines_retval(yk>=pay && yk<=pby, false, pax, yk, 0, 0);
 			}
 		}else{ // Alleen de tweede lijn loopt verticaal
@@ -771,8 +774,8 @@ static VALUE rb_pit_cross_lines(VALUE self, VALUE pa, VALUE pb, VALUE pc, VALUE 
 				return rb_pit_cross_lines_retval(false, false, 0,0,0,0);
 			}
 			c=(pby-pay)/(pbx-pax);	// de helling van de eerste lijn berkenen
-			d=pay-c*pax;			// het snijpunt van de tweede lijn met x=0 berekenen 
-			yk=c*pcx+d;				// de y-coord van het snijpunt is dan 
+			d=pay-c*pax;			// het snijpunt van de tweede lijn met x=0 berekenen
+			yk=c*pcx+d;				// de y-coord van het snijpunt is dan
 			return rb_pit_cross_lines_retval(yk>=pcy && yk<=pdy, false, pcx, yk, 0, 0);
 		}
 	}
@@ -819,14 +822,14 @@ void initVideoRectClasses()
 	rb_define_method(rb_cArray, "contains?", rb_array_contains, 1);
 	rb_define_method(rb_cArray, "same_size?", rb_array_same_size, 1);
 	rb_define_method(rb_cArray, "overlaps?", rb_array_overlaps, 1);
-	
+
 	rb_define_method(rb_cArray, "set_coordinates", rb_array_set_coordinates, 4);
 	rb_define_method(rb_cArray, "copy_from", rb_array_copy_from, 1);
 
 	rb_define_method(rb_cArray, "find_overlapping_rect", rb_array_find_overlapping_rect, 1);
 	rb_define_method(rb_cArray, "find_overlapping_rects", rb_array_find_overlapping_rects, 1);
 
-	
+
 	rb_define_method(rb_cArray, "clip", rb_array_clip, 1);
 	rb_define_method(rb_cArray, "clip!", rb_array_clip_bang, 1);
 
@@ -836,6 +839,6 @@ void initVideoRectClasses()
 	rb_define_singleton_method(classPit, "cross_lines", rb_pit_cross_lines, 4);
 
 	// Backward compatability: (crap)
-	
+
 	rb_define_class_under(moduleRUDL, "Rect", rb_cArray);
 }

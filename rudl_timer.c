@@ -13,7 +13,7 @@ void initTimer()
 }
 ///////////////////////////////// TIME
 /**
-@file timer
+@file Timer
 @class Timer
 @section Class Methods
 @method delay( milliseconds ) -> nil
@@ -24,7 +24,7 @@ Expect a resolution of 10 to 20 milliseconds at worst.
 static VALUE timer_delay(VALUE obj, VALUE delay)
 {
 	initTimer();
-	
+
 	SDL_Delay(NUM2INT(delay));
 	return Qnil;
 }
@@ -49,7 +49,7 @@ void freeEventTimer(SDL_TimerID freeMe)
 Uint32 timerCallback(Uint32 interval, void *param)
 {
 	SDL_Event user_event;
-	
+
 	user_event.type=RUDL_TIMEREVENT;
 	user_event.user.code=(int)param;
 	user_event.user.data1=NULL;
@@ -74,7 +74,7 @@ static VALUE eventTimer_new(VALUE obj, VALUE interval, VALUE id)
 	SDL_TimerID timerID;
 
 	initTimer();
-	
+
 	timerID=SDL_AddTimer(NUM2INT(interval), timerCallback, (void*)(NUM2INT(id)));
 
 	SDL_VERIFY(timerID);

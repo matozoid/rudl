@@ -3,6 +3,9 @@ RUDL - a C library wrapping SDL for use in Ruby.
 Copyright (C) 2001, 2002, 2003  Danny van Bruggen
 
 $Log: rudl_video_surface.c,v $
+Revision 1.38  2004/10/23 19:54:22  rennex
+Fixed docs
+
 Revision 1.37  2004/08/21 23:25:31  tsuihark
 Fixed little documentation typo
 
@@ -69,8 +72,8 @@ Moved SDL_LockSurface after the coordinate check in internal_(nonlocking_)get
 
 ///////////////////////////////// SURFACE
 /**
-@file Video
-@class RUDL::Surface
+@file Surface
+@class Surface
 A @Surface is a two dimensional array of pixels with some information about those pixels.
 This might not seem like much, but it is just about the most important class in RUDL.
 */
@@ -126,30 +129,30 @@ static VALUE surface_set_palette(VALUE self, VALUE firstValue, VALUE colors);
 @method new( size, flags, surface ) => Surface
 @method new( size, flags, depth ) => Surface
 @method new( size, flags, depth, masks ) => Surface
-All these methods create a new @Surface@ with @size = [w, h].
+All these methods create a new @Surface with @size = [w, h].
 If only @size is supplied, the rest of the arguments will be set to reasonable values.
 If a surface is supplied, it is used to copy the values from that aren't given.
 
 @flags is, according to SDL's documentation:
 <ul>
 <li>SWSURFACE:
-	SDL will create the surface in system memory. 
-	This improves the performance of pixel level access, 
+	SDL will create the surface in system memory.
+	This improves the performance of pixel level access,
 	however you may not be able to take advantage of some types of hardware blitting.
-<li>HWSURFACE: 
-	SDL will attempt to create the surface in video memory. 
+<li>HWSURFACE:
+	SDL will attempt to create the surface in video memory.
 	This will allow SDL to take advantage of Video->Video blits (which are often accelerated).
-<li>SRCCOLORKEY: 
-	This flag turns on colourkeying for blits from this surface. 
-	If HWSURFACE is also specified and colourkeyed blits are hardware-accelerated, 
-	then SDL will attempt to place the surface in video memory. 
-	Use @Surface@set_colorkey to set or clear this flag after surface creation.
-<li>SRCALPHA: 
-	This flag turns on alpha-blending for blits from this surface. 
-	If HWSURFACE is also specified and alpha-blending blits are hardware-accelerated, 
-	then the surface will be placed in video memory if possible. 
-	Use @Surface@set_alpha to set or clear this flag after surface creation. 
-	For a 32 bitdepth surface, an alpha mask will automatically be added, 
+<li>SRCCOLORKEY:
+	This flag turns on colourkeying for blits from this surface.
+	If HWSURFACE is also specified and colourkeyed blits are hardware-accelerated,
+	then SDL will attempt to place the surface in video memory.
+	Use @Surface#set_colorkey to set or clear this flag after surface creation.
+<li>SRCALPHA:
+	This flag turns on alpha-blending for blits from this surface.
+	If HWSURFACE is also specified and alpha-blending blits are hardware-accelerated,
+	then the surface will be placed in video memory if possible.
+	Use @Surface#set_alpha to set or clear this flag after surface creation.
+	For a 32 bitdepth surface, an alpha mask will automatically be added,
 	in other cases, you will have to specify a mask.
 </ul>
 
@@ -257,8 +260,8 @@ VALUE surface_new(int argc, VALUE* argv, VALUE self)
 
 /**
 @method load_new( filename ) => Surface
-This creates a (({Surface})) with an image in it,
-loaded from disk from ((|filename|)) by using load_new.
+This creates a @Surface with an image in it,
+loaded from disk from @filename by using load_new.
 The file should be in a supported file format.
 If the SDL_image library was found during RUDL's installation,
 it will load the following formats:
@@ -318,10 +321,10 @@ void dont_free(void*_)
 This method is two things:
 
 <ol>
-<li>a way to share the same bunch of data (width, height, bpp, pixeldata) between two Surface objects. 
+<li>a way to share the same bunch of data (width, height, bpp, pixeldata) between two Surface objects.
 	Please don't use it this way if there isn't a very good reason for it.
-<li>a way to import foreign objects that wrap an SDL_Surface*. 
-	If that doesn't mean anything to you, please ignore this point. 
+<li>a way to import foreign objects that wrap an SDL_Surface*.
+	If that doesn't mean anything to you, please ignore this point.
 	It takes the pointer from the foreign object and creates a new Surface that wraps it.
 </ol>
 
@@ -359,8 +362,8 @@ static VALUE surface_share(VALUE self, VALUE other)
 /**
 @method immodest_export( other_surface ) => self
 Like Surface.share, but this works the other way around.
-It will destroy the ((|other_surface|)), then make it share the data in itself
-and setting a reference on ((|other_surface|)) back to ((|self|)).
+It will destroy the @other_surface then make it share the data in itself
+and setting a reference on @other_surface back to @self.
 It's called immodest because it interferes with another object, bluntly
 assuming it contains a SDL_Surface pointer and changing it to something
 else...
@@ -397,12 +400,12 @@ static VALUE surface_destroy(VALUE self)
 /**
 @method blit( source, coordinate ) => Array
 @method blit( source, coordinate, sourceRect ) => Array
-This method blits (copies, pastes, draws) @source onto the @Surface it is called on.
-@coordinate is the position [x, y] where @source will end up in the destination @Surface.
+This method blits (copies, pastes, draws) @source onto the surface it is called on.
+@coordinate is the position [x, y] where @source will end up in the destination surface.
 @sourcerect is the area in the @source bitmap that you want blitted.
 Not supplying it will blit the whole @source.
 
-Returns the rectangle array ([x,y,w,h]) in (({Surface})) that was changed.
+Returns the rectangle array ([x,y,w,h]) in the surface that was changed.
 */
 static VALUE surface_blit(int argc, VALUE* argv, VALUE self)
 {
@@ -511,7 +514,7 @@ Keep a @Surface locked for as short a time as possible.
 */
 /**
 @method lock => self
-@Lock locks the surface.
+Locks the surface.
 */
 static VALUE surface_lock(VALUE self)
 {
@@ -521,7 +524,7 @@ static VALUE surface_lock(VALUE self)
 
 /**
 @method must_lock => boolean
-@must_lock returns true when a surface needs locking for pixel access.
+Returns true when a surface needs locking for pixel access.
 */
 static VALUE surface_must_lock(VALUE self)
 {
@@ -530,7 +533,7 @@ static VALUE surface_must_lock(VALUE self)
 
 /**
 @method unlock => self
-unlock unlocks a surface that was locked with @lock and returns self.
+Unlocks a surface that was locked with @lock and returns self.
 */
 static VALUE surface_unlock(VALUE self)
 {
@@ -540,7 +543,7 @@ static VALUE surface_unlock(VALUE self)
 
 /**
 @method locked? => boolean
-@locked? returns true when the surface is locked.
+Returns true when the surface is locked.
 */
 static VALUE surface_locked_(VALUE self)
 {
@@ -618,7 +621,7 @@ to the destination surface.)
 @method set_colorkey( color, flags ) => self
 The only flag for @flags is <code>RLEACCEL</code> which will encode the bitmap in a more efficient way for blitting,
 by skipping the transparent pixels.
-set_colorkey(nil) removes the color key, same as ((|unset_colorkey|)).
+set_colorkey(nil) removes the color key, same as @unset_colorkey .
 */
 static VALUE surface_set_colorkey(int argc, VALUE* argv, VALUE self)
 {
@@ -731,7 +734,7 @@ static VALUE surface_flags(VALUE self)
 Returns the bitloss for each color plane.
 The loss is the number of bits removed for each colorplane from a full 8 bits of
 resolution. A value of 8 usually indicates that colorplane is not used
-(like the alpha plane) 
+(like the alpha plane)
 */
 static VALUE surface_losses(VALUE self)
 {
@@ -933,8 +936,8 @@ static VALUE surface_clip(VALUE self)
 @method get( x, y )
 @method get( coordinate )
 These methods read single pixels on a surface.
-@get or @[] get the color of a pixel. 
-The coordinate can be given as an [x,y] array or two separate numbers. 
+@get or @[] get the color of a pixel.
+The coordinate can be given as an [x,y] array or two separate numbers.
 @get is an alias for @[].
 These methods require the surface to be locked if necessary.
 @[]= and @[] are the only methods in RUDL that take separate x and y coordinates.

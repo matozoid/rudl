@@ -3,7 +3,7 @@
 #include "rudl_video.h"
 
 typedef struct {
-	SDL_Surface *Surface;	
+	SDL_Surface *Surface;
 	int CharPos[512];
 	int h;
 } SFont_FontInfo;
@@ -12,7 +12,7 @@ void PutString(SDL_Surface *Surface, SFont_FontInfo *Font, Sint16 x, Sint16 y, c
 {
     Sint16 ofs;
     Sint16 i=0;
-    SDL_Rect srcrect,dstrect; 
+    SDL_Rect srcrect,dstrect;
 
     while (text[i]!='\0') {
         if (text[i]==' ') {
@@ -27,7 +27,7 @@ void PutString(SDL_Surface *Surface, SFont_FontInfo *Font, Sint16 x, Sint16 y, c
 			dstrect.x = (Sint16)(x-(float)(Font->CharPos[ofs]-Font->CharPos[ofs-1])/2);
 			dstrect.y = y;
 
-			SDL_BlitSurface( Font->Surface, &srcrect, Surface, &dstrect); 
+			SDL_BlitSurface( Font->Surface, &srcrect, Surface, &dstrect);
 
 			x+=Font->CharPos[ofs+1]-Font->CharPos[ofs];
 			i++;
@@ -43,7 +43,7 @@ static SFont_FontInfo* retrieveFontInfoPointer(VALUE font)
 }
 
 /**
-@file font
+@file Fonts
 @class BitmapFont
 BitmapFont is made with the SFont library and prints text with bitmaps.
 It is maintained by Karl Bartel on <a href='http://www.linux-games.com/'>Linux Games</a>
@@ -64,7 +64,7 @@ to explain here.
 Use the following string as text (ASCII 33-127 with escape sequences and
 spaces between the letters):
 
-<code>! \" # $ % & ' ( ) * + , - . / 0 1 2 3 4 5 6 7 8 9 : ; < = > ? @ A B C D E F G H I J K L M N O P Q R S T U V W X Y Z [ \\ ] ^ _ ` a b c d e f g h i j k l m n o p q r s t u v w x y z { | } ~</code>
+<code>! \" # $ % & ' ( ) * + , - . / 0 1 2 3 4 5 6 7 8 9 : ; < = > ? @@ A B C D E F G H I J K L M N O P Q R S T U V W X Y Z [ \\ ] ^ _ ` a b c d e f g h i j k l m n o p q r s t u v w x y z { | } ~</code>
 */
 /**
 @section Class Methods
@@ -86,7 +86,7 @@ static VALUE sfont_new(VALUE self, VALUE surface)
 	if (SDL_MUSTLOCK(font->Surface)) SDL_LockSurface(font->Surface);
 
 	while ( x < font->Surface->w ) {
-		if(internal_nonlocking_get(font->Surface,x,0)==SDL_MapRGB(font->Surface->format,255,0,255)) { 
+		if(internal_nonlocking_get(font->Surface,x,0)==SDL_MapRGB(font->Surface->format,255,0,255)) {
 			font->CharPos[i++]=x;
 			while (( x < font->Surface->w-1) && (internal_nonlocking_get(font->Surface,x,0)==SDL_MapRGB(font->Surface->format,255,0,255)))
 				x++;

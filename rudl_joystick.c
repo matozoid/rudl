@@ -24,7 +24,7 @@ void quitJoystick()
 	}
 }
 /**
-@file joystick
+@file Input
 @class Joystick
 @section Class methods
 @method new( id )
@@ -35,7 +35,7 @@ This will also start events for this joystick.
 static VALUE joystick_new(VALUE self, VALUE id)
 {
 	SDL_Joystick* joystick;
-	
+
 	initJoystick();
 
 	joystick=SDL_JoystickOpen(NUM2INT(id));
@@ -188,32 +188,38 @@ void initJoystickClasses()
 	);
 
 /**
-@class JoyAxisEvent
+@section Joystick input event classes
+<dl>
+
+<dt>JoyAxisEvent
+<dd>
 Contains @id which is the joysticknumber,
 @value which is the movement, ranging from -1 to 1 and
 @axis which is the axis index.
-*/
-/**
-@class JoyBallEvent
+
+<dt> JoyBallEvent
+<dd>
 Contains @id which is the joysticknumber,
 @ball which is a trackball index and
 @rel which is a movement array of [dx, dy].
-*/
-/**
-@class JoyHatEvent
+
+<dt> JoyHatEvent
+<dd>
 Contains @id which is the joysticknumber,
 @hat which is the hatnumber and
 a movement array of [dx, dy] called @value where dx and dy can be -1, 0 or 1.
-*/
-/**
-@class JoyButtonUpEvent
+
+<dt> JoyButtonUpEvent
+<dd>
 Contains @id which is the joysticknumber and
 @button which is the button index.
-*/
-/**
-@class JoyButtonDownEvent
+
+<dt> JoyButtonDownEvent
+<dd>
 Contains @id which is the joysticknumber and
 @button which is the button index.
+
+</dl>
 */
 	classJoyAxisEvent=rb_define_class_under(moduleRUDL, "JoyAxisEvent", classEvent);
 	rb_define_attr(classJoyAxisEvent, "id", 1, 1);
@@ -233,7 +239,7 @@ Contains @id which is the joysticknumber and
 	classJoyButtonDownEvent=rb_define_class_under(moduleRUDL, "JoyButtonDownEvent", classEvent);
 	rb_define_attr(classJoyButtonDownEvent, "id", 1, 1);
 	rb_define_attr(classJoyButtonDownEvent, "button", 1, 1);
-	
+
 	/*DEC_CONST(HAT_CENTERED);
 	DEC_CONST(HAT_UP);
 	DEC_CONST(HAT_RIGHTUP);

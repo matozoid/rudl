@@ -12,18 +12,18 @@
 #include "smpeg/smpeg.h"
 
 /**
-@file movie
+@file Misc
 @class Movie
 The Movie object represents an opened MPEG file.
-You control playback similar to a Sound object.
+You control playback similar to a @Sound object.
 
-Movie objects have a target display Surface.
-The movie is rendered to this Surface in a background thread.
-If the Surface is the display surface,
+Movie objects have a target @Surface.
+The movie is rendered to this surface in a background thread.
+If the surface is the @DisplaySurface,
 and the system supports it,
-the movie will render into a Hardware YUV overlay plane.
-If you don't set a display Surface,
-it will default to the display Surface.
+the movie will render into a hardware YUV overlay plane.
+If you don't set a target surface,
+it will default to the DisplaySurface.
 
 Movies are played back in background threads,
 so there is very little management needed on the user end.
@@ -147,7 +147,7 @@ static VALUE smpeg_load(VALUE self,VALUE filename)
 
   char error_msg[2048];
 
-    
+
 
   mpeg = SMPEG_new(STR2CSTR(filename),NULL,SDL_WasInit(SDL_INIT_AUDIO));
 
@@ -163,7 +163,7 @@ static VALUE smpeg_load(VALUE self,VALUE filename)
 
   }
 
-  
+
 
   return Data_Wrap_Struct(classMovie,0,SMPEG_delete,mpeg);
 
@@ -179,7 +179,7 @@ static VALUE smpeg_getInfo(VALUE self,VALUE infoObj)
 
   SMPEG_Info info;
 
-  
+
 
   if( !rb_obj_is_kind_of(infoObj,classMovie) )
 
@@ -193,7 +193,7 @@ static VALUE smpeg_getInfo(VALUE self,VALUE infoObj)
 
   setInfoToSMPEGInfo(infoObj,info);
 
-  
+
 
   return self;
 
@@ -273,7 +273,7 @@ static VALUE smpeg_setDisplay(VALUE self,VALUE dst)
 
     rb_raise(rb_eArgError,"type mismatchi(expect Surface)");
 
-  
+
 
   Data_Get_Struct(self,SMPEG,mpeg);
 
@@ -491,7 +491,7 @@ static VALUE smpeg_setFilter(VALUE self,VALUE filter)
 
 	Data_Get_Struct(self,SMPEG,mpeg);
 
-	
+
 
 	RUDL_ASSERT(NUM2INT(filter)>=0, "No such filter");
 
@@ -607,7 +607,7 @@ void initMovieClasses()
 
 	rb_define_const(classMovie,"DEBLOCKING_FILTER",INT2FIX(DEBLOCKING_FILTER));
 
-  
+
 
 }
 

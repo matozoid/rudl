@@ -7,7 +7,7 @@ Copyright (C) 2003-2004  Danny van Bruggen and Renne Nissinen
 
 
 /**
-@file font
+@file Fonts
 @class TrueTypeFont
 
 Using TrueTypeFonts is easy. You open a TTF file with @new specifying
