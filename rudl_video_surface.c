@@ -3,6 +3,9 @@ RUDL - a C library wrapping SDL for use in Ruby.
 Copyright (C) 2001, 2002, 2003  Danny van Bruggen
 
 $Log: rudl_video_surface.c,v $
+Revision 1.28  2003/12/09 15:09:01  rennex
+Added Scale2x support for 24-bit surfaces
+
 Revision 1.27  2003/12/09 14:22:17  rennex
 Added Scale2x support for 8-bit and 16-bit surfaces. Made set_colorkey(nil) and set_alpha(nil) work. Made Surface.new copy the palette if a 8-bit surface was given.
 
@@ -1284,6 +1287,8 @@ Returns the resulting surface.
 #undef SCALE2XROWFUNC
 #undef SCALE2XFUNC
 
+#include "scale2x_24bit.h"
+
 static VALUE surface_scale2x(int argc, VALUE* argv, VALUE self)
 {
     VALUE dest;
@@ -1295,7 +1300,6 @@ static VALUE surface_scale2x(int argc, VALUE* argv, VALUE self)
     rb_scan_args(argc, argv, "01", &dest);
 
     RUDL_VERIFY(w>=2 && h>=2, "Source surface not large enough");
-    RUDL_VERIFY(bpp != 3, "Bitmap cannot be 24bit for now");
 
     /* were we given a destination surface? */
     if (argc == 1) {
@@ -1322,6 +1326,10 @@ static VALUE surface_scale2x(int argc, VALUE* argv, VALUE self)
 
         case 2:
             scale2x_16bit(srcsurface, destsurface);
+            break;
+
+        case 3:
+            scale2x_24bit(srcsurface, destsurface);
             break;
 
         case 4:
