@@ -66,14 +66,29 @@ You can use more than one <b>@@file</b> statement in one source file, and you ca
 statement in multiple source files (to get the documentation from multiple files to show up in one
 output file.)
 
-<b>@@module</b> and <b>@@class</b> tell Dokumentat for which module we will encounter documentation.
+Example:
 
-TODO: specify format
+@@file Video stuff
+
+<b>@@module</b> and <b>@@class</b> tell Dokumentat for which module we will encounter documentation.
+Specify modules and classes completely, they do not nest.
+
+Example: @@module RUDL, @@class RUDL::Audio
 
 <b>@@method</b> says that documentation for a method is coming up.
+Methods are pooled by name.
+This means that if multiple methods with the same name are encountered
+in a class, section or wherever, they are treated as the same thing, but
+with a different parameter list.
+Documentation is pooled together for all methods of the same name.
 
-TODO: specify format
+Example:
 
+@@method do_stuff(somevar, bla) -> Stuff
+
+@@method help(someone)
+
+@@method help(someone, reason) (this one will be pooled with help(someone) )
 
 <b>@@section</b> is a way to subdivide one of the previous classifications.
 You can have sections with groups of methods, or chapters like the documentation you are
@@ -86,8 +101,73 @@ Everything that is contained will be sorted when Dokumentat starts writing the o
 
 =begin
 @section 6. The documentation itself.
-
+The documentation starts after the classification lines,
+identified by the first line that doesn't start with @@.
+You can type anything you like here and it will be transfered literally to the
+resulting HTML documents,
+with the exception of words starting with @@.
+Any word starting with @@ is seen as a reference.
 =end
+
+=begin
+@section 7. Linking
+Not implemented yet.
+=end
+
+=begin
+@section 8. Parameters
+<b>--project-name</b> specifies the name of your project.
+This documentation was generated with project name "dokumentat"
+It is used for the directory name.
+
+<b>--output-dir</b> specifies the root for all Dokumentat documentation,
+for all projects that use it.
+This keeps all documentation nicely in one place.
+
+<b>--verbose</b> makes Dokumentat noisy.
+
+<b>--extras-dir</b> specifies the directory that contains additional files that can not
+be generated, like images.
+The contents will be copied over to the project output dir.
+=end
+
+def stylesheet
+<<SHEET
+body {
+    margin-left: 6% !important;
+    margin-right: 4% !important;
+}
+
+body, h1, h2, h3, h4, h5, h6, p {
+    font-family: "Arial", "Helvetica", "sans-serif";
+}
+
+h1{
+    text-align: center;
+    border-top: solid thick;
+    margin-top: 2em;
+}
+
+code {
+    font-weight: bold;
+}
+
+h2 {
+    margin-top: 3em;
+    border-top: solid thin;
+}
+
+dl {
+    margin-top: 2em;
+    border-top: solid thin;
+    border-top-style: dotted;
+}
+
+ul, ol>li {
+    margin-bottom: 0.5em;
+}
+SHEET
+end
 
 def html_header(title)
 <<HEADER
