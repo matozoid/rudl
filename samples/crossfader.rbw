@@ -28,47 +28,45 @@ This results in the same linear fade, with half the amount of blitting!
 Note that due to only 24-bit color accuracy, you might see color gradients
 "crawl" during the fade, but only in some cases and if you look closely.
 
-<code>
-<pre>
+</pre>
+</code>
+=end
 require "RUDL"
 include RUDL
 include Constant
 
-open a window
+#open a window
 win = DisplaySurface.new [400,300]
 win.set_caption "Crossfader - click in the window!"
 
-load the pictures
+#load the pictures
 pic1 = Surface.load_new("media/lake.jpg")
 pic2 = Surface.load_new("media/sky.jpg")
 
-time to wait between blits (in milliseconds, for Timer.delay)
+#time to wait between blits (in milliseconds, for Timer.delay)
 delay = 20
 
-steps = number of steps, 1000 = time for the fade (1 second)
+#steps = number of steps, 1000 = time for the fade (1 second)
 steps = 1000/delay
 
-n = current step (countdown to 0)
+#n = current step (countdown to 0)
 n = steps
-</pre>
-</code>
-=end
 
 loop do
-    handle pending events
+    #handle pending events
     EventQueue.get.each do |ev|
         case ev
-            window closed
+            #window closed
             when QuitEvent
                 exit
 
-            mouse click
+            #mouse click
             when MouseButtonDownEvent
                 # we're not in the middle of a fade, are we?
                 if n == 0
-                    ok, start a new fade
+                    #ok, start a new fade
                     n = steps
-                    swap the pictures
+                    #swap the pictures
                     pic1, pic2 = pic2, pic1
                 end
         end
