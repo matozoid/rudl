@@ -22,6 +22,7 @@ void quitJoystick()
 }
 /*
 =begin
+<<< docs/head
 = Joystick
 == Class Methods
 --- Joystick.new( id )

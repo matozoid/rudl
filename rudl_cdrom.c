@@ -39,6 +39,7 @@ SDL_CD* retrieveCDROMPointer(VALUE self)
 
 /*
 =begin
+<<< docs/head
 = CDROM
 A class for playing audio CD's.
 == Class Methods

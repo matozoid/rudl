@@ -3,10 +3,10 @@
 require '../RUDL'; include RUDL; include Constant
 
 # Eek! Globals!
-$sound_on=RUDL.used_libraries.include? 'SDL_mixer'
+$sound_on=RUDL.versions.include? 'SDL_mixer'
 $display=DisplaySurface.new([320,200], FULLSCREEN|DOUBLEBUF)
 Mixer.num_channels=1 if $sound_on # True to the original, only a single voice <:)
-$bop=Sound.new('pong_bop.wav') if $sound_on
+$bop=Sound.new('media/pong_bop.wav') if $sound_on
 
 Timer.delay(500) # Time for the monitor to switch modes
 
@@ -181,8 +181,8 @@ class Pong
 		@bat=Surface.new([8,$BatSize]).fill(Foreground)
 		@ball=Surface.new([8,8]).fill(Foreground)
 
-		@blerpblerp=Sound.new('pong_blerpblerp.wav') if $sound_on
-		@bip=Sound.new('pong_bip.wav') if $sound_on
+		@blerpblerp=Sound.new('media/pong_blerpblerp.wav') if $sound_on
+		@bip=Sound.new('media/pong_bip.wav') if $sound_on
 
 		restart
 	end

@@ -10,7 +10,7 @@ prefix='.'
 
 prefix=ARGV[0] if ARGV.length>0
 
-sourcefiles=Dir['../rudl*.c']
+sourcefiles=Dir['../rudl*.c'].sort
 
 sourcefiles.each {|source|
 	basename=File.basename(source, '.c')

@@ -5,7 +5,7 @@ require '../RUDL'; include RUDL; include Constant
 display=DisplaySurface.new([320,240], 0, 32)
 
 # originalhond is in a weird format, so...
-originalhond=Surface.load_new('hond.bmp')
+originalhond=Surface.load_new('media/hond.bmp')
 
 # ... I create this empty surface with an alpha channel (that's 0xFF000000)...
 hond=Surface.new(originalhond.size, 0, 32, [0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000])

@@ -3,7 +3,7 @@
 require 'RUDL'; include RUDL
 
 display=DisplaySurface.new([640,480])
-ball=Surface.load_new('bounce.bmp')
+ball=Surface.load_new('media/bounce.bmp')
 lastrect=rect=[0,0,0,0]
 
 while true

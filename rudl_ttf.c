@@ -48,6 +48,7 @@ void VALUE2SDL_COLOR(VALUE colorObject, SDL_Color* color)
 #ifdef HAVE_SDL_TTF_H
 /*
 =begin
+<<< docs/head
 = TrueTypeFont
 == Class Methods
 --- TrueTypeFont.new( filename, size )

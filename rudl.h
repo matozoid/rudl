@@ -1,6 +1,6 @@
 /* RUDL - a C library wrapping SDL for use in Ruby. Copyright (C) 2001  Danny van Bruggen */
-#ifndef _RUBY_SDL_H
-#define _RUBY_SDL_H
+#ifndef _RUDL_H
+#define _RUDL_H
 
 #define RUDLVERSION_MAJOR 0
 #define RUDLVERSION_MINOR 6
@@ -35,7 +35,6 @@ extern "C" {
 #endif
 
 #ifdef __cplusplus
-	//#define VALUEFUNC(f) ((VALUE (*)(...))f)
 	#define VALUEFUNC(f) ((VALUE (*)(void))f)
 	#define VOIDFUNC(f) ((void (*)(...))f)
 #else

@@ -25,21 +25,21 @@ $MaxBadThings=50
 # This might be easier to see if you look at crapola.bmp.
 # Changed! I've changed the image, there's only one line now, and thus it returns
 # a one-dimensional array.
-$images=Surface.load_new('crapola.bmp').contained_images
+$images=Surface.load_new('media/crapola.bmp').contained_images
 
 $score=0
 
 $sound_on=true
 
-if RUDL.used_libraries.include? 'SDL_mixer'
+if RUDL.versions.include? 'SDL_mixer'
 	begin
 		Mixer.init(44100, 16, 2)
 		$sound={
-			"crash"		=> Sound.new('crapola_crash.wav'),
-			"boom"		=> Sound.new('crapola_boom.wav'),
-			"new ship"	=> Sound.new('crapola_new_ship.wav'),
-			"ship boom"	=> Sound.new('crapola_ship_boom.wav'),
-			"shoot"		=> Sound.new('crapola_shoot.wav')
+			"crash"		=> Sound.new('media/crapola_crash.wav'),
+			"boom"		=> Sound.new('media/crapola_boom.wav'),
+			"new ship"	=> Sound.new('media/crapola_new_ship.wav'),
+			"ship boom"	=> Sound.new('media/crapola_ship_boom.wav'),
+			"shoot"		=> Sound.new('media/crapola_shoot.wav')
 		}
 		$sound.each do |sound|
 			sound[1].volume=0.2 # The music is just one channel, these sounds are much louder
@@ -351,7 +351,7 @@ class Ship < Sprite
 end
 
 def play
-	Music.new('crapola_ha_ha_thump.mod').play(-1) if $sound_on
+	Music.new('media/crapola_ha_ha_thump.mod').play(-1) if $sound_on
 	Sprite.reset  # Empty spritelists
 	ship=Ship.new
 
@@ -477,8 +477,8 @@ def makescrolltextimage
 end
 
 def gameover
-	Music.new('crapola_fire.mod').play(-1) if $sound_on
-	font=SFont.new(Surface.load_new('24p_copperplate_blue.png'))
+	Music.new('media/crapola_fire.mod').play(-1) if $sound_on
+	font=SFont.new(Surface.load_new('media/24p_copperplate_blue.png'))
 	logo=Surface.new(font.size('Crapola'))
 	font.puts(logo, [0,0], 'Crapola')
 	logo_x=(320-logo.w)/2

@@ -4,7 +4,7 @@ require '../RUDL'; include RUDL; include Constant
 
 display=DisplaySurface.new([640,480])
 
-font=SFont.new(Surface.load_new('24P_Copperplate_Blue.png'))
+font=SFont.new(Surface.load_new('media/24P_Copperplate_Blue.png'))
 
 font.puts(display, [10,10], 'This is SFont#puts in action')
 display.flip

@@ -5,7 +5,7 @@
 #include "rudl_events.h"
 #include "rudl_joystick.h"
 #include "rudl_keyboard.h"
-#include "rudl_mappy.h"
+//#include "rudl_mappy.h"
 #include "rudl_mouse.h"
 #include "rudl_sfont.h"
 #include "rudl_timer.h"
@@ -13,9 +13,6 @@
 #include "rudl_video.h"
 
 // For getting versions:
-#ifdef HAVE_SGE_H
-	#include "sge.h"
-#endif
 #ifdef HAVE_SDL_MIXER_H
 	#include "SDL_mixer.h"
 	#ifndef MIX_MAJOR_VERSION
@@ -59,7 +56,7 @@ void initSDL()
 {
 	if(!sDLInitWasCalled){
 #ifdef MS_WIN32
-		SDL_RegisterApp("SDL window", 0, GetModuleHandle(NULL));
+		SDL_RegisterApp("RUDL window", 0, GetModuleHandle(NULL));
 #endif
 #if defined(macintosh)
 #if !TARGET_API_MAC_CARBON
@@ -133,6 +130,8 @@ static VALUE RUDL_versions(VALUE self)
 	char versions[8192]; // Ugh
 	sprintf(versions, "{"
 		"'RUDL'=>RUDL::Version.new(%i,%i,%i),\n"
+		"'SDL'=>RUDL::Version.new(%i,%i,%i),\n"
+		"'BitMask'=>RUDL::Version.new,\n"
 #ifdef HAVE_SDL_IMAGE_H
 		"'SDL_image'=>RUDL::Version.new,\n"
 #endif
@@ -142,23 +141,17 @@ static VALUE RUDL_versions(VALUE self)
 #ifdef HAVE_SDL_TTF_H
 		"'SDL_ttf'=>RUDL::Version.new,\n"
 #endif
-#ifdef HAVE_SGE_H
-		"'SGE'=>RUDL::Version.new(%i),\n"
-#endif
 #ifdef HAVE_SDL_GFXPRIMITIVES_H
 		"'SDL_gfxPrimitives'=>RUDL::Version.new(%i, %i),\n"
 #endif
 #ifdef HAVE_SDL_FRAMERATE_H
-		"'SDL_framerate'=>RUDL::Version.new,\n"
+// not used	"'SDL_framerate'=>RUDL::Version.new,\n"
 #endif
 #ifdef HAVE_SDL_IMAGEFILTER_H
-		"'SDL_imagefilter'=>RUDL::Version.new,\n"
+//		"'SDL_imagefilter'=>RUDL::Version.new,\n"
 #endif
 #ifdef HAVE_SDL_ROTOZOOM_H
 		"'SDL_rotozoom'=>RUDL::Version.new,\n"
-#endif
-#ifdef HAVE_SDL_H
-		"'SDL'=>RUDL::Version.new(%i,%i,%i),\n"
 #endif
 #ifdef HAVE_SMPEG_SMPEG_H
 		"'smpeg'=>RUDL::Version.new(%i, %i, %i),\n"
@@ -166,6 +159,8 @@ static VALUE RUDL_versions(VALUE self)
 	"}"
 
 	,RUDLVERSION_MAJOR, RUDLVERSION_MINOR, RUDLVERSION_PATCH
+	,SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_PATCHLEVEL
+	// no version info (BitMask)
 #ifdef HAVE_SDL_IMAGE_H
 	// no version info
 #endif
@@ -174,9 +169,6 @@ static VALUE RUDL_versions(VALUE self)
 #endif
 #ifdef HAVE_SDL_TTF_H
 	// no version info
-#endif
-#ifdef HAVE_SGE_H
-	,SGE_VER // This gets interpreted as octal! No idea how to fix this...
 #endif
 #ifdef HAVE_SDL_GFXPRIMITIVES_H
 	,SDL_GFXPRIMITIVES_MAJOR, SDL_GFXPRIMITIVES_MINOR
@@ -190,9 +182,6 @@ static VALUE RUDL_versions(VALUE self)
 #ifdef HAVE_SDL_ROTOZOOM_H
 	// no version info
 #endif
-#ifdef HAVE_SDL_H
-	,SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_PATCHLEVEL
-#endif
 #ifdef HAVE_SMPEG_SMPEG_H
 	,SMPEG_MAJOR_VERSION, SMPEG_MINOR_VERSION, SMPEG_PATCHLEVEL
 #endif
@@ -205,6 +194,7 @@ static VALUE RUDL_versions(VALUE self)
 
 /*
 =begin
+<<< docs/head
 = RUDL
 Module (({RUDL})) contains all RUDL classes as inner classes.
 It has some class methods of its own too.

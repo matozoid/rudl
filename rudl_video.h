@@ -22,7 +22,14 @@ VALUE classResizeEvent;
 VALUE classActiveEvent;
 VALUE classQuitEvent;
 
+extern ID id_rect, id_atx, id_aty, id_atw, id_ath;
+
 extern void initVideoClasses();
+extern void initVideoDisplaySurfaceClasses();
+extern void initVideoSurfaceClasses();
+extern void initVideoRectClasses();
+extern void initVideoSDLGFXClasses();
+extern void initVideoSGEClasses();
 extern void initVideo();
 
 extern VALUE createSurfaceObject(SDL_Surface* surface);

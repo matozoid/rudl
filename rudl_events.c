@@ -120,6 +120,7 @@ VALUE sDLEvent2RubyEvent(SDL_Event* event)
 
 /*
 =begin
+<<< docs/head
 = EventQueue
 This class is the interface to the eventsystem in SDL.
 Don't be put off by the amount of non-implemented methods, their absence doesn't bother

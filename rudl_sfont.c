@@ -12,6 +12,7 @@ static SFont_FontInfo* retrieveFontInfoPointer(VALUE font)
 
 /*
 =begin
+<<< docs/head
 = SFont
 An SFont is a font made of bitmaps.
 It is maintained by Karl Bartel on ((<URL:http://www.linux-games.com/sfont/>)).
@@ -51,7 +52,7 @@ static VALUE sfont_puts(VALUE self, VALUE surface, VALUE coord, VALUE text)
 /*
 =begin
 == Instance Methods
---- SFont#pust_centered( surface, y, text )
+--- SFont#puts_centered( surface, y, text )
 Puts ((|text|)) on ((|surface|)) at y-coordinate ((|y|)) in the horizontal center of the screen.
 =end */
 static VALUE sfont_puts_centered(VALUE self, VALUE surface, VALUE y, VALUE text)

@@ -5,6 +5,7 @@
 
 /*
 =begin
+<<< docs/head
 = Key
 The Key class gives access to the keyboard without events.
 

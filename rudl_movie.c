@@ -6,6 +6,7 @@
 
 /*
 =begin
+<<< docs/head
 = Movie
 The Movie object represents an opened MPEG file.
 You control playback similar to a Sound object.

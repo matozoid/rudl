@@ -39,9 +39,6 @@ have_header('smpeg/smpeg.h') if have_library('smpeg')
 puts ' - pthreads, multithreading library (not used in RUDL, but has to be linked if SDL uses it)'
 have_library('pthread')
 
-puts ' - Collision detection: SGE from http://freshmeat.net/projects/sge'
-puts 'This is incorporated into RUDL, no library needed'
-
 puts ' - Drawing: SDL_gfx from http://www.ferzkopp.net/'
 have_header('SDL_gfxPrimitives.h') and
 	have_header('SDL_framerate.h') and

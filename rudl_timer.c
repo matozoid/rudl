@@ -5,10 +5,6 @@
 
 void initTimer()
 {
-	if(!SDL_WasInit(SDL_INIT_VIDEO)){
-		initVideo();
-	}
-
 	if(!SDL_WasInit(SDL_INIT_TIMER)){
 		if(SDL_Init(SDL_INIT_TIMER)==-1){
 			SDL_RAISE;
@@ -18,12 +14,12 @@ void initTimer()
 ///////////////////////////////// TIME
 /*
 =begin
+<<< docs/head
 = Timer
 == Class Methods
 --- Timer.delay( milliseconds )
 Will do nothing for ((|milliseconds|)) milliseconds.
-== Instance Methods
---- Timer#ticks
+--- Timer.ticks
 Returns the time in milliseconds since RUDL was required.
 =end */
 static VALUE timer_delay(VALUE obj, VALUE delay)

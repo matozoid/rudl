@@ -5,6 +5,7 @@
 
 /*
 =begin
+<<< docs/head
 = Mouse
 == Class Methods
 --- Mouse.focused?

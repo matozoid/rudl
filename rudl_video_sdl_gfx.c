@@ -14,10 +14,11 @@
 #ifdef HAVE_SDL_ROTOZOOM_H
 /*
 =begin
-== SDL_gfx functions
+<<< docs/head
+= SDL_gfx functions
 SDL_gfx was written by Andreas Schiffler.
 See ((<URL:http://de.ferzkopp.net/>))
-=== SDL_gfx: SDL_rotozoom
+== SDL_gfx: SDL_rotozoom
 --- Surface#rotozoom( angle, zoom, smooth )
 Returns a new surface that is rotated ((|angle|)) degrees and zoomed
 ((|zoom|)) times (fractions are OK).
@@ -52,7 +53,9 @@ static VALUE surface_zoom(VALUE self, VALUE zoom_x, VALUE zoom_y, VALUE smooth)
 #ifdef HAVE_SDL_GFXPRIMITIVES_H
 /*
 =begin
-=== SDL_gfx: SDL_gfxPrimitives
+== SDL_gfx: SDL_gfxPrimitives
+For these methods, "antialiased" means that drawing is done with many shades of the
+requested color to simulate 
 --- Surface#plot( coordinate, color )
 --- Surface#[ x, y ]= color
 These methods access single pixels on a surface.
@@ -266,7 +269,7 @@ static VALUE surface_polygon(VALUE self, VALUE coordlist, VALUE color)
 
 /*
 =begin
--- Surface#filled_polygon( coord_list, color )
+--- Surface#filled_polygon( coord_list, color )
 =end */
 static VALUE surface_filled_polygon(VALUE self, VALUE coordlist, VALUE color)
 {
@@ -290,7 +293,7 @@ static VALUE surface_filled_polygon(VALUE self, VALUE coordlist, VALUE color)
 /*
 =begin
 --- Surface#antialiased_polygon( coord_list, color)
-The polygon methods take an array of [x,y], like [[10,10],[40,60]].
+The polygon methods take an array of [x,y], like [[10,10],[40,60],[16,66]].
 =end */
 static VALUE surface_antialiased_polygon(VALUE self, VALUE coordlist, VALUE color)
 {
@@ -314,7 +317,7 @@ static VALUE surface_antialiased_polygon(VALUE self, VALUE coordlist, VALUE colo
 /*
 =begin
 --- Surface#print( coord, text, color )
-Puts ((|text|)) on the surface in a monospaced standard old ASCII font.
+Puts ((|text|)) on the surface in a monospaced 8x8 standard old ASCII font.
 =end */
 static VALUE surface_print(VALUE self, VALUE coord, VALUE text, VALUE color)
 {
@@ -328,7 +331,7 @@ static VALUE surface_print(VALUE self, VALUE coord, VALUE text, VALUE color)
 /*
 
 Unsupported for now (don't know how they work yet)
-=== SDL_gfx: SDL_imageFilter
+== SDL_gfx: SDL_imageFilter
 --- Surface#filterMMXdetect
 --- Surface#filterEnableMMX( true_or_false )
 --- Surface#filterAdd: D = saturation255(S1 + S2)

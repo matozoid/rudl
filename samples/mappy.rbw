@@ -5,7 +5,7 @@ puts 'This is not supposed to work'
 require '../RUDL'; include RUDL; include Constant
 display=DisplaySurface.new([320, 240])
 
-map=Mappy.new('test.fmp').reset_animations
+map=Mappy.new('media/test.fmp').reset_animations
 
 x=0
 y=0

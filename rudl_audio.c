@@ -70,6 +70,7 @@ int retrieveChannelNumber(VALUE channel)
 }
 /*
 =begin
+<<< docs/head
 = Channel
 A Channel is an interface object to one of the mixer's channels.
 It can be used for manipulating sound on a particular channel.
