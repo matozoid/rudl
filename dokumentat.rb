@@ -2,6 +2,11 @@ require 'getoptlong'
 require 'ftools'
 require 'pp'
 
+# TODO:
+# Support @, . and # as link hierarchy seperators
+# Remove . and , from end of @link.
+# Handle classes that inherit correctly
+
 =begin
 @file Dokumentat
 @section 1. Dokumentat
@@ -247,7 +252,7 @@ SHEET
 	end
 
 	def Output.format_invalid_link(text)
-		"<a>#{text}</a>"
+		"<a href='javascript:void()'>#{text}</a>"
 	end
 
 	def Output.format_class(target, class_name)
@@ -370,7 +375,11 @@ class Entry
 
 	def escaped_name
 		# Should become a lot safer.
-		name.downcase.tr ': ,\\/', '_____'
+		if @name
+			@name.downcase.tr ': ,\\/', '_____'
+		else
+			""
+		end
 	end
 
 	# If an entry (like MethodEntry) can contain more than one line (for parameter lists),
@@ -379,7 +388,7 @@ class Entry
 	end
 
 	def <=>(other)
-		@name<=>other.name
+		escaped_name<=>other.escaped_name
 	end
 
 	def link
@@ -532,6 +541,10 @@ class MethodEntry < Entry
 		name.sub(/([(?!=\s]).*/, "")
 	end
 
+	def toc_entries
+		'' # Don't mention methods in the TOC, it's busy enough as it is.
+	end
+
 	def write(file)
 		file.write(Output::format_methods(link_target, @fullnames))
 		file.write(Output::format_text(@text))
@@ -653,19 +666,19 @@ class Dokumentat
 						case type.downcase
 							when 'file'
 								path.goto_file_level
-								path.goto(name, FileEntry.new(name))
+								path.goto(name, FileEntry.new(name)) if(name)
 							when 'section'
 								path.goto_section_level
-								path.goto(name, SectionEntry.new(name))
+								path.goto(name, SectionEntry.new(name)) if(name)
 							when 'method'
 								path.goto_method_level
-								path.goto(name, MethodEntry.new(name))
+								path.goto(name, MethodEntry.new(name)) if(name)
 							when 'class'
 								path.goto_class_level
-								path.goto(name, ClassEntry.new(name))
+								path.goto(name, ClassEntry.new(name)) if(name)
 							when 'module'
 								path.goto_class_level
-								path.goto(name, ModuleEntry.new(name))
+								path.goto(name, ModuleEntry.new(name)) if(name)
 							else
 								# If a line starts with an unknown classification, it could be the start of the text block.
 								section_mode=false
