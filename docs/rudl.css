@@ -1,5 +1,5 @@
 body {
-    margin-left: 6% !important;
+    margin-left: 8% !important;
     margin-right: 4% !important;
 }
 
@@ -28,12 +28,17 @@ h2 {
     border-top: solid thin;
 }
 
+h1, h2 {
+    margin-left: -3%;
+}
+
 dl {
+    margin-left: -2%;
     margin-top: 2em;
     border-top: solid thin;
     border-top-style: dotted;
 }
 
-ul, ol>li {
+ul, ol li {
     margin-bottom: 0.5em;
 }
