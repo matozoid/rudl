@@ -158,8 +158,7 @@ Output is HTML with structural tags only. You should do visual formatting with C
 ARGV=[
 	'--verbose',
 	'--project-name=RUDL',
-	'D:/Rubyspul/rudl/rudl_ttf.c',
-	'D:/Rubyspul/rudl/rudl.c'
+	'D:/Rubyspul/rudl/rudl_*.c'
 	#'dokumentat.rb'
 ] if ARGV.empty?
 
@@ -170,6 +169,10 @@ STYLESHEET_FILENAME='dokumentat.css'
 $verbose=false
 def say(text)
 	puts text if $verbose
+end
+
+def error(text)
+	puts text
 end
 
 =begin
@@ -680,7 +683,11 @@ class Dokumentat
 		say "Writing result to #{output_path}/"
 		File.makedirs(output_path)
 #	   pp @root
-		@root.write(output_path)	end
+		if @root
+			@root.write(output_path)
+		else
+			error("Didn't produce anything at all")
+		end	end
 end
 
 =begin
@@ -731,7 +738,7 @@ def main
 	ARGV.each do |path|
 		dokumentat.process_dir(path)
 	end
-
+	
 	dokumentat.write(output_dir)
 end
 
