@@ -22,7 +22,7 @@
 
 #ifdef SAVE_RCSID
 static char rcsid =
- "@(#) $Id: SDL_cdrom.h,v 1.1 2003/09/20 21:43:33 tsuihark Exp $";
+ "@(#) $Id: SDL_cdrom.h,v 1.2 2003/09/21 11:52:07 tsuihark Exp $";
 #endif
 
 /* This is the CD-audio control API for Simple DirectMedia Layer */
