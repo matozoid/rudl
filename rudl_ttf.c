@@ -1,4 +1,23 @@
-/* RUDL - a C library wrapping SDL for use in Ruby. Copyright (C) 2001  Danny van Bruggen */
+/*
+RUDL - a C library wrapping SDL for use in Ruby.
+Copyright (C) 2001-2003  Danny van Bruggen
+Copyright (C) 2003-2004  Danny van Bruggen and Renne Nissinen
+
+*/
+
+
+/**
+@file TrueTypeFont
+@class RUDL::TrueTypeFont
+
+Using TrueTypeFonts is easy. You open a TTF file with @TrueTypeFont.new specifying
+its filename and size. You render text with it by calling @render, and you get a new
+surface containing the image. If you use antialiasing and no background color, the
+returned surface will have per-pixel alpha values, to retain the antialiasing after blitting
+to a target surface.
+*/
+
+
 #include "rudl_ttf.h"
 
 #ifdef HAVE_SDL_TTF_H
@@ -60,9 +79,8 @@ void VALUE2SDL_COLOR(VALUE colorObject, SDL_Color* color)
 }
 
 #ifdef HAVE_SDL_TTF_H
+
 /**
-@file TrueTypeFont
-@class RUDL::TrueTypeFont
 @section Class Methods
 @method new( filename, size )
 Creates a new TrueTypeFont object.
@@ -87,12 +105,12 @@ TTF_Font* retrieveTTFPointer(VALUE obj)
 
 /**
 @section Instance Methods
-@method render( text, antialias, fore_RGBA ) -> aSurface
-@method render( text, antialias, fore_RGBA, back_RGBA ) -> aSurface
+@method render( text, antialias, foreground ) -> aSurface
+@method render( text, antialias, foreground, background ) -> aSurface
 Render the given @text onto a new image surface.
 If @antialias is true, the edges of the font will be smoothed for a much cleaner look.
 
-The foreground and background colors are both RGBA, the alpha component is ignored if given.
+The @foreground and @background colors are both RGBA, but the alpha component is ignored if given.
 If the background color is omitted, the text will have a transparent background.
 */
 static VALUE truetypefont_render(int argc, VALUE* argv, VALUE self)
