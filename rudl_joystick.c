@@ -23,16 +23,15 @@ void quitJoystick()
 		SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
 	}
 }
-/*
-=begin
-<<< docs/head
-= Joystick
-== Class Methods
---- Joystick.new( id )
+/**
+@file joystick
+@class Joystick
+@section Class methods
+@method new( id )
 Creates a new joystick object.
-((|id|)) is a number smaller than ((<Joystick.count>)).
+@id is a number smaller than @count.
 This will also start events for this joystick.
-=end */
+*/
 static VALUE joystick_new(VALUE self, VALUE id)
 {
 	SDL_Joystick* joystick;
@@ -55,83 +54,75 @@ SDL_Joystick* retrieveJoystickPointer(VALUE self)
 	return joystick;
 }
 
-/*
-=begin
---- Joystick.count
+/**
+@method count
 Returns the amount of joysticks attached to the computer.
-=end */
+*/
 static VALUE joystick_count(VALUE self)
 {
 	initJoystick();
 	return INT2NUM(SDL_NumJoysticks());
 }
 
-/*
-=begin
-== Instance Methods
---- Joystick#id
-Returns the id of the joystick as it was passed to ((<Joystick.new>)).
-=end */
+/**
+@section Instance methods
+@method id
+Returns the id of the joystick as it was passed to @new.
+*/
 static VALUE joystick_id(VALUE self)
 {
 	return INT2NUM(SDL_JoystickIndex(retrieveJoystickPointer(self)));
 }
 
-/*
-=begin
---- Joystick#axes
+/**
+@method axes
 Returns the amount of axes the joystick has.
-=end */
+*/
 static VALUE joystick_axes(VALUE self)
 {
 	return INT2NUM(SDL_JoystickNumAxes(retrieveJoystickPointer(self)));
 }
 
-/*
-=begin
---- Joystick#balls
+/**
+@method balls
 Returns the amount of trackballs the joystick has.
-=end */
+*/
 static VALUE joystick_balls(VALUE self)
 {
 	return INT2NUM(SDL_JoystickNumBalls(retrieveJoystickPointer(self)));
 }
 
-/*
-=begin
---- Joystick#hats
+/**
+@method hats
 Returns the amount of hats the joystick has.
-=end */
+*/
 static VALUE joystick_hats(VALUE self)
 {
 	return INT2NUM(SDL_JoystickNumHats(retrieveJoystickPointer(self)));
 }
 
-/*
-=begin
---- Joystick#buttons
+/**
+@method buttons
 Returns the amount of buttons the joystick has.
-=end */
+*/
 static VALUE joystick_buttons(VALUE self)
 {
 	return INT2NUM(SDL_JoystickNumButtons(retrieveJoystickPointer(self)));
 }
 
-/*
-=begin
---- Joystick#axis( nr )
-Returns the state of axis ((|nr|)), which is between -1 to 1.
-=end */
+/**
+@method axis( nr )
+Returns the state of axis @nr, which is between -1 to 1.
+*/
 static VALUE joystick_axis(VALUE self, VALUE nr)
 {
 	return DBL2NUM(SDL_JoystickGetAxis(retrieveJoystickPointer(self), NUM2INT(nr))/32768.0);
 }
 
-/*
-=begin
---- Joystick#ball( nr )
-Returns the state of ball ((|nr|)), which is an array of [dx, dy] where dx and dy are between -1 to 1.
-=end */
+/**
+@method ball( nr )
+Returns the state of ball @nr, which is an array of [dx, dy] where dx and dy are between -1 to 1.
+*/
 static VALUE joystick_ball(VALUE self, VALUE nr)
 {
 	int dx, dy;
@@ -139,11 +130,10 @@ static VALUE joystick_ball(VALUE self, VALUE nr)
 	return rb_ary_new3(2, DBL2NUM(dx/32768.0), DBL2NUM(dy/32768.0));
 }
 
-/*
-=begin
---- Joystick#hat( nr )
-Returns the state of hat ((|nr|)), which is an array of [dx, dy] where dx and dy can be -1, 0 or 1.
-=end */
+/**
+@method hat( nr )
+Returns the state of hat @nr, which is an array of [dx, dy] where dx and dy can be -1, 0 or 1.
+*/
 static VALUE joystick_hat(VALUE self, VALUE nr)
 {
 	int hx=0;
@@ -157,11 +147,10 @@ static VALUE joystick_hat(VALUE self, VALUE nr)
 
 	return rb_ary_new3(2, INT2NUM(hx), INT2NUM(hy));
 }
-/*
-=begin
---- Joystick#button( nr )
-Returns the boolean state of button ((|nr|)).
-=end */
+/**
+@method button( nr )
+Returns the boolean state of button @nr.
+*/
 static VALUE joystick_button(VALUE self, VALUE nr)
 {
 	return INT2BOOL(SDL_JoystickGetButton(retrieveJoystickPointer(self), NUM2INT(nr)));
@@ -198,28 +187,34 @@ void initJoystickClasses()
 		"end end								\n"
 	);
 
-/*
-=begin
-= Events
-== JoyAxisEvent
-Contains ((|id|)) which is the joysticknumber,
-((|value|)) which is the movement, ranging from -1 to 1 and
-((|axis|)) which is the axis index.
-== JoyBallEvent
-Contains ((|id|)) which is the joysticknumber,
-((|ball|)) which is a trackball index and
-((|rel|)) which is a movement array of [dx, dy].
-== JoyHatEvent
-Contains ((|id|)) which is the joysticknumber,
-((|hat|)) which is the hatnumber and
-a movement array of [dx, dy] called ((|value|)) where dx and dy can be -1, 0 or 1.
-== JoyButtonUpEvent
-Contains ((|id|)) which is the joysticknumber and
-((|button|)) which is the button index.
-== JoyButtonDownEvent
-Contains ((|id|)) which is the joysticknumber and
-((|button|)) which is the button index.
-=end */
+/**
+@class JoyAxisEvent
+Contains @id which is the joysticknumber,
+@value which is the movement, ranging from -1 to 1 and
+@axis which is the axis index.
+*/
+/**
+@class JoyBallEvent
+Contains @id which is the joysticknumber,
+@ball which is a trackball index and
+@rel which is a movement array of [dx, dy].
+*/
+/**
+@class JoyHatEvent
+Contains @id which is the joysticknumber,
+@hat which is the hatnumber and
+a movement array of [dx, dy] called @value where dx and dy can be -1, 0 or 1.
+*/
+/**
+@class JoyButtonUpEvent
+Contains @id which is the joysticknumber and
+@button which is the button index.
+*/
+/**
+@class JoyButtonDownEvent
+Contains @id which is the joysticknumber and
+@button which is the button index.
+*/
 	classJoyAxisEvent=rb_define_class_under(moduleRUDL, "JoyAxisEvent", classEvent);
 	rb_define_attr(classJoyAxisEvent, "id", 1, 1);
 	rb_define_attr(classJoyAxisEvent, "value", 1, 1);

@@ -3,6 +3,9 @@ RUDL - a C library wrapping SDL for use in Ruby.
 Copyright (C) 2001, 2002, 2003  Danny van Bruggen
 
 $Log: rudl_video_surface.c,v $
+Revision 1.36  2004/08/04 23:03:47  tsuihark
+Updated all documentation to Dokumentat format.
+
 Revision 1.35  2004/01/21 22:02:14  tsuihark
 Converted to Dokumentat format.
 
@@ -155,11 +158,12 @@ For example: [0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF] describes a 32 bit
 with red in the highest values and an alpha channel. If it is not specified, the following
 defaults are used:
 
-<pre>RRGGGBB (8bpp)
-RRRR GGGGBBBB (12bpp)
-RRRRRGG GGGBBBBB (15bpp)
-RRRRRGGG GGGBBBBB (16bpp)
-RRRRRRRR GGGGGGGG BBBBBBBB (24 bpp)
+<pre>
+........ ........ ........ .RRGGGBB (8bpp)
+........ ........ ....RRRR GGGGBBBB (12bpp)
+........ ........ .RRRRRGG GGGBBBBB (15bpp)
+........ ........ RRRRRGGG GGGBBBBB (16bpp)
+........ RRRRRRRR GGGGGGGG BBBBBBBB (24 bpp)
 ........ RRRRRRRR GGGGGGGG BBBBBBBB (32 bpp)
 RRRRRRRR GGGGGGGG BBBBBBBB AAAAAAAA (32 bpp, SRCALPHA set)
 </pre>

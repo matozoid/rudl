@@ -132,64 +132,54 @@ void initVideoClasses()
     initVideoSDLGFXClasses();
     initVideoBitmaskClasses();
 
-/*
-=begin
-<<< docs/head
-= Video
-General stuff used by the rest of the video classes.
-== Exceptions
-=== SurfacesLostException
+/**
+@file video
+@class SurfacesLostException
 This gruesome thing is thrown by Surface#blit when Windows manages to destroy all your
 surfaces.
 This might happen when switching to another application, for example.
 The only thing to rescue your application is by waiting for blit to stop throwing exceptions,
 then reloading all your surfaces.
-=end */
+*/
 
     classSurfacesLostException=rb_define_class_under(moduleRUDL, "SurfacesLostException", rb_cObject);
-/*
-=begin
-== Events
-=== ResizeEvent
---- ResizeEvent#size
-This is [w, h] the new size of the window.
-=end */
+/**
+@class ResizeEvent
+@method size -> [w, h]
+This is  the new size of the window.
+*/
     classResizeEvent=rb_define_class_under(moduleRUDL, "ResizeEvent", classEvent);
     rb_define_attr(classResizeEvent, "size", 1, 1);
-/*
-=begin
-=== ActiveEvent
---- ActiveEvent#gain
---- ActiveEvent#state
-=end */
+/**
+@class ActiveEvent
+@method gain
+@method state
+*/
     classActiveEvent=rb_define_class_under(moduleRUDL, "ActiveEvent", classEvent);
     rb_define_attr(classActiveEvent, "gain", 1, 1);
     rb_define_attr(classActiveEvent, "state", 1, 1);
-/*
-=begin
-=== QuitEvent
+/**
+@class QuitEvent
 This event signals that the user or the program itself has requested to be terminated.
-=end */
+*/
     classQuitEvent=rb_define_class_under(moduleRUDL, "QuitEvent", classEvent);
-/*
-=begin
-=== VideoExposeEvent
+/**
+@class VideoExposeEvent
 A VideoExposeEvent event is triggered when the screen has been modified outside of the application,
 usually by the window manager and needs to be redrawn.
-=end */
+*/
     classVideoExposeEvent=rb_define_class_under(moduleRUDL, "VideoExposeEvent", classEvent);
 /*
-=begin
-== Constants
-=== SDL constants:
+@module Constants
+@section SDL constants
 SWSURFACE, HWSURFACE, RESIZABLE, ASYNCBLIT, OPENGL, ANYFORMAT, HWPALETTE, DOUBLEBUF,
 FULLSCREEN, HWACCEL, SRCCOLORKEY, RLEACCELOK, RLEACCEL, SRCALPHA, PREALLOC, NOFRAME
 
-=== OpenGL constants:
+@section OpenGL constants
 GL_RED_SIZE, GL_GREEN_SIZE, GL_BLUE_SIZE, GL_ALPHA_SIZE, GL_BUFFER_SIZE,
 GL_DOUBLEBUFFER, GL_DEPTH_SIZE, GL_STENCIL_SIZE, GL_ACCUM_RED_SIZE, GL_ACCUM_GREEN_SIZE,
 GL_ACCUM_BLUE_SIZE, GL_ACCUM_ALPHA_SIZE
-=end */
+*/
 
     DEC_CONST(SWSURFACE);
     DEC_CONST(HWSURFACE);

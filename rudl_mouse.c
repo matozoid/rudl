@@ -3,30 +3,28 @@
 #include "rudl_video.h"
 #include "rudl_events.h"
 
-/*
-=begin
-<<< docs/head
-= Mouse
+/**
+@file mouse
+@class Mouse
 The mouse class methods can also be used as instance methods once you
 instantiate the class. However, there is no need to do that, it's just
 for convenience.
-== Class and instance Methods
---- Mouse.focused?
---- Mouse#focused?
+*/
+/**
+@section Class and instance Methods
+@method focused? -> boolean
 Returns true when the application is receiving the mouse input focus.
-=end */
+*/
 static VALUE mouse_focused_(VALUE self)
 {
 	initVideo();
 	return INT2BOOL((SDL_GetAppState()&SDL_APPMOUSEFOCUS) != 0);
 }
-/*
-=begin
---- Mouse.pos
---- Mouse#pos
+/**
+@method pos -> [x, y]
 Returns the current position of the mouse cursor.
 This is the absolute mouse position inside your game window.
-=end */
+*/
 static VALUE mouse_pos(VALUE self)
 {
 	int x, y;
@@ -36,12 +34,10 @@ static VALUE mouse_pos(VALUE self)
 	SDL_GetMouseState(&x, &y);
 	return rb_ary_new3(2, INT2NUM(x), INT2NUM(y));
 }
-/*
-=begin
---- Mouse.pressed?
---- Mouse#pressed?
+/**
+@method pressed? -> [boolean, boolean, boolean]
 This will return an array containing the pressed state of each mouse button.
-=end */
+*/
 static VALUE mouse_pressed_(VALUE self)
 {
 	Uint32 state = SDL_GetMouseState(NULL, NULL);
@@ -51,15 +47,13 @@ static VALUE mouse_pressed_(VALUE self)
 		INT2BOOL((state&SDL_BUTTON(2)) != 0),
 		INT2BOOL((state&SDL_BUTTON(3)) != 0));
 }
-/*
-=begin
---- Mouse.rel
---- Mouse#rel
-Returns the total distance the mouse has moved since your last call to ((<Mouse.rel>)).
-On the first call to get_rel the movement will always be 0,0.
+/**
+@method rel -> [dx, dy]
+Returns the total distance the mouse has moved since your last call to @rel.
+On the first call to @rel the movement will always be 0,0.
 When the mouse is at the edges of the screen, the relative movement will be stopped.
-See ((<Mouse.visible>)) for a way to resolve this.
-=end */
+See @visible for a way to resolve this.
+*/
 static VALUE mouse_rel(VALUE self)
 {
 	int x, y;
@@ -69,13 +63,11 @@ static VALUE mouse_rel(VALUE self)
 	SDL_GetRelativeMouseState(&x, &y);
 	return rb_ary_new3(2, INT2NUM(x), INT2NUM(y));
 }
-/*
-=begin
---- Mouse.pos=( pos )
---- Mouse#pos=( pos )
+/**
+@method pos=( pos ) -> self
 Moves the mouse cursor to the specified position.
-This will generate a MouseMotionEvent on the input queue.
-=end */
+This will generate a @MouseMotionEvent on the input queue.
+*/
 static VALUE mouse_set_pos(VALUE self, VALUE pos)
 {
 	Sint16 x,y;
@@ -84,10 +76,8 @@ static VALUE mouse_set_pos(VALUE self, VALUE pos)
 	SDL_WarpMouse(x, y);
 	return self;
 }
-/*
-=begin
---- Mouse.visible=( onOrOff )
---- Mouse#visible=( onOrOff )
+/**
+@method visible=( onOrOff ) -> boolean
 Shows or hides the mouse cursor.
 This will return the previous visible state of the mouse cursor.
 
@@ -96,17 +86,15 @@ SDL will force the mouse to stay in the center of the screen.
 Since the mouse is hidden it won't matter that it's not moving,
 but it will keep the mouse from the edges of the screen so the relative mouse 
 position will always be true.
-=end */
+*/
 static VALUE mouse_set_visible(VALUE self, VALUE yes)
 {
 	initVideo();
 	return INT2BOOL(SDL_ShowCursor(NUM2BOOL(yes)));
 }
 
-/*
-=begin
---- Mouse.set_cursor( hotspot, xormasks, andmasks )
---- Mouse#get_cursor( hotspot, xormasks, andmasks )
+/**
+@method set_cursor( hotspot, xormasks, andmasks ) -> self
 When the mouse cursor is visible, it will be displayed as a black and white bitmap 
 using the given bitmask arrays.
 Hotspot is an array containing the cursor hotspot position.
@@ -114,7 +102,7 @@ xormasks is an array of arrays of bytes containing the cursor xor data masks.
 Lastly is andmasks, an array of arrays of bytes containting the cursor bitmask data.
 
 The example "mousecursor.rb" explains this much better.
-=end */
+*/
 static VALUE mouse_set_cursor(VALUE self, VALUE hotspot, VALUE xormasks, VALUE andmasks)
 {
 	int sx, sy;
@@ -175,43 +163,47 @@ void initMouseClasses()
 	rb_define_singleton_and_instance_method(classMouse, "pos", mouse_pos, 0);
 	rb_define_singleton_and_instance_method(classMouse, "pos=", mouse_set_pos, 1);
 	rb_define_singleton_and_instance_method(classMouse, "visible=", mouse_set_visible, 1);
-/*
-=begin
-= Events
-== MouseMotionEvent
---- MouseMotionEvent.pos
+/**
+@class MouseMotionEvent
+@method pos
 An array [x, y] telling the position of the mouse.
---- MouseMotionEvent.rel
+*/
+/**
+@method rel
 An array [dx, dy] telling how much the mouse moved.
---- MouseMotionEvent.button
+*/
+/**
+@method button
 An array of booleans, representing the states of the mousebuttons.
 Currently, three buttons are supported.
-=end */
+*/
 	classMouseMotionEvent=rb_define_class_under(moduleRUDL, "MouseMotionEvent", classEvent);
 	rb_define_attr(classMouseMotionEvent, "pos", 1, 1);
 	rb_define_attr(classMouseMotionEvent, "rel", 1, 1);
 	rb_define_attr(classMouseMotionEvent, "button", 1, 1);
 
-/*
-=begin
-== MouseButtonUpEvent
---- MouseButtonUpEvent.pos
+/**
+@class MouseButtonUpEvent
+@method pos
 An array [x, y] telling the position of the mouse.
---- MouseButtonUpEvent.button
+*/
+/**
+@method button
 The number of the button that was released.
-=end */
+*/
 	classMouseButtonUpEvent=rb_define_class_under(moduleRUDL, "MouseButtonUpEvent", classEvent);
 	rb_define_attr(classMouseButtonUpEvent, "pos", 1, 1);
 	rb_define_attr(classMouseButtonUpEvent, "button", 1, 1);
 
-/*
-=begin
-== MouseButtonDownEvent
---- MouseButtonDownEvent.pos
+/**
+@class MouseButtonDownEvent
+@method pos
 An array [x, y] telling the position of the mouse.
---- MouseButtonDownEvent.button
+*/
+/**
+@method button
 The number of the button that was pressed.
-=end */
+*/
 	classMouseButtonDownEvent=rb_define_class_under(moduleRUDL, "MouseButtonDownEvent", classEvent);
 	rb_define_attr(classMouseButtonDownEvent, "pos", 1, 1);
 	rb_define_attr(classMouseButtonDownEvent, "button", 1, 1);

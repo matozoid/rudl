@@ -87,7 +87,7 @@ On this page, there are various classes for sound output.
 The system consists of a mixer that will mix several sounds,
 and one piece of music.
 
-The @RUDL::Sound class represents a particular sound sample. It can
+The @Sound class represents a particular sound sample. It can
 be played on any Channel of the Mixer.
 
 The Mixer has a certain amount of Channels.
@@ -100,7 +100,7 @@ Since it's only one channel, only one song can play at a time.
 This is a wrapper around <a href='http://www.libsdl.org/projects/SDL_mixer/'>SDL_mixer</a>.
 */
 /**
-@class RUDL::Channel
+@class Channel
 A Channel is an interface object to one of the mixer's channels.
 It can be used for manipulating sound on a particular channel.
 */
@@ -287,7 +287,7 @@ Mix_Chunk* retrieveMixChunk(VALUE self)
 }
 
 /**
-@class RUDL::Sound
+@class Sound
 Sound is a single sample.
 It is loaded from a WAV file.
 */
@@ -484,11 +484,13 @@ static VALUE string_to_sound(VALUE self)
 @method volume
 @method volume=( loudness )
 These are volume methods.
+*/
+/**
 @fade_out fades all instances of this sound that are playing to silence in @milliseconds milliseconds.
 @volume returns the current volume.
 @volume= sets the volume to loudness.
 Volumes range from 0.0 to 1.0.
-=end */
+*/
 static VALUE sound_fade_out(VALUE self, VALUE time)
 {
     Mix_FadeOutGroup((int)retrieveMixChunk(self), NUM2UINT(time));
@@ -507,7 +509,7 @@ static VALUE sound_set_volume(VALUE self, VALUE volume)
 }
 
 /**
-@method play( loops, maxtime ) => RUDL::Channel or nil
+@method play( loops, maxtime ) => Channel or nil
 Starts playing a song on an available channel.
 If no channels are available, it will not play and return @nil.
 @Loops controls how many extra times the sound will play, a negative loop will play
@@ -580,7 +582,7 @@ See @Mixer.format
 
 /////////////// MIXER
 /**
-@class RUDL::Mixer
+@class Mixer
 Mixer is the main sound class.
 All methods are available as class and instance methods.
 */
@@ -956,7 +958,7 @@ static VALUE music_restart(VALUE self)
 @method post_end_event=( on_or_off ) => self
 Returns, or sets whether an @EndOfMusicEvent will be posted when the current music stops playing.
 @on_or_off is true or false.
-=end */
+*/
 static VALUE music_set_post_end_event(VALUE self, VALUE onOff)
 {
     endmusic_event=NUM2BOOL(onOff);

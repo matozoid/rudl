@@ -3,6 +3,9 @@ RUDL - a C library wrapping SDL for use in Ruby.
 Copyright (C) 2001, 2002, 2003  Danny van Bruggen
 
 $Log: rudl_video_sdl_gfx.c,v $
+Revision 1.14  2004/08/04 23:03:46  tsuihark
+Updated all documentation to Dokumentat format.
+
 Revision 1.13  2004/01/21 22:55:10  tsuihark
 Converted to Dokumentat format.
 
@@ -28,7 +31,7 @@ Added CVS headers
 #ifdef HAVE_SDL_ROTOZOOM_H
 /**
 @file Video
-@class RUDL::Surface
+@class Surface
 @section Drawing
 Many of the methods here are from <a href='http://de.ferzkopp.net/'>SDL_gfx</a>.
 They were written by Andreas Schiffler.
@@ -72,10 +75,10 @@ For these methods, "antialiased" means that drawing is done with many shades of 
 requested color to simulate
 */
 /**
-@method plot( x, y, color )
-@method plot( coordinate, color )
-@method [ x, y ]= color
-@method [ coordinate ]= color
+@method plot( x, y, color ) -> self
+@method plot( coordinate, color ) -> self
+@method [ x, y ]= color -> self
+@method [ coordinate ]= color -> self
 These methods access single pixels on a surface.
 @plot or @[]= set the color of a pixel. The coordinate can be given as an [x,y] array or two
 separate numbers. @plot is an alias for @[]=.
@@ -167,7 +170,7 @@ static VALUE surface_line(VALUE self, VALUE coord1, VALUE coord2, VALUE color)
     return self;
 }
 
-/** @method antialiased_line( coord1, coord2, color ) */
+/** @method antialiased_line( coord1, coord2, color )  -> self*/
 static VALUE surface_antialiased_line(VALUE self, VALUE coord1, VALUE coord2, VALUE color)
 {
     Sint16 x1,y1,x2,y2;
@@ -179,7 +182,7 @@ static VALUE surface_antialiased_line(VALUE self, VALUE coord1, VALUE coord2, VA
 
 /** 
 @section Drawing: Circles
-@method circle( coord, radius, color ) 
+@method circle( coord, radius, color )  -> self
 */
 static VALUE surface_circle(VALUE self, VALUE coord, VALUE r, VALUE color)
 {
@@ -189,7 +192,7 @@ static VALUE surface_circle(VALUE self, VALUE coord, VALUE r, VALUE color)
     return self;
 }
 
-/** @method filled_circle( coord, radius, color ) */
+/** @method filled_circle( coord, radius, color )  -> self*/
 static VALUE surface_filled_circle(VALUE self, VALUE coord, VALUE r, VALUE color)
 {
     Sint16 x,y;
@@ -198,7 +201,7 @@ static VALUE surface_filled_circle(VALUE self, VALUE coord, VALUE r, VALUE color
     return self;
 }
 
-/** @method antialiased_circle( coord, radius, color ) */
+/** @method antialiased_circle( coord, radius, color )  -> self*/
 static VALUE surface_antialiased_circle(VALUE self, VALUE coord, VALUE r, VALUE color)
 {
     Sint16 x,y;
@@ -207,7 +210,7 @@ static VALUE surface_antialiased_circle(VALUE self, VALUE coord, VALUE r, VALUE 
     return self;
 }
 
-/** @method filled_pie( coord, radius, start, end, color ) */
+/** @method filled_pie( coord, radius, start, end, color )  -> self*/
 static VALUE surface_filled_pie(VALUE self, VALUE coord, VALUE r, VALUE start, VALUE end, VALUE color)
 {
     Sint16 x,y;
@@ -217,7 +220,7 @@ static VALUE surface_filled_pie(VALUE self, VALUE coord, VALUE r, VALUE start, V
 }
 
 
-/** @method ellipse( coord, radius_x, radius_y, color ) */
+/** @method ellipse( coord, radius_x, radius_y, color )  -> self*/
 static VALUE surface_ellipse(VALUE self, VALUE coord, VALUE rx, VALUE ry, VALUE color)
 {
     Sint16 x,y;
@@ -226,7 +229,7 @@ static VALUE surface_ellipse(VALUE self, VALUE coord, VALUE rx, VALUE ry, VALUE 
     return self;
 }
 
-/** @method antialiased_ellipse( coord, radius_x, radius_y, color ) */
+/** @method antialiased_ellipse( coord, radius_x, radius_y, color )  -> self*/
 static VALUE surface_antialiased_ellipse(VALUE self, VALUE coord, VALUE rx, VALUE ry, VALUE color)
 {
     Sint16 x,y;
@@ -235,7 +238,7 @@ static VALUE surface_antialiased_ellipse(VALUE self, VALUE coord, VALUE rx, VALU
     return self;
 }
 
-/** @method filled_ellipse( coord, radius_x, radius_y, color ) */
+/** @method filled_ellipse( coord, radius_x, radius_y, color )  -> self*/
 static VALUE surface_filled_ellipse(VALUE self, VALUE coord, VALUE rx, VALUE ry, VALUE color)
 {
     Sint16 x,y;
@@ -249,7 +252,7 @@ static VALUE surface_filled_ellipse(VALUE self, VALUE coord, VALUE rx, VALUE ry,
 The polygon methods take an array of [x,y], like [[10,10],[40,60],[16,66]].
 */
 /**
-@method polygon( coord_list, color ) 
+@method polygon( coord_list, color )  -> self
 */
 static VALUE surface_polygon(VALUE self, VALUE coordlist, VALUE color)
 {
@@ -271,7 +274,7 @@ static VALUE surface_polygon(VALUE self, VALUE coordlist, VALUE color)
     return self;
 }
 
-/** @method filled_polygon( coord_list, color ) */
+/** @method filled_polygon( coord_list, color ) -> self */
 static VALUE surface_filled_polygon(VALUE self, VALUE coordlist, VALUE color)
 {
     int numpoints=RARRAY(coordlist)->len;
@@ -292,7 +295,7 @@ static VALUE surface_filled_polygon(VALUE self, VALUE coordlist, VALUE color)
     return self;
 }
 
-/** @method antialiased_polygon( coord_list, color)
+/** @method antialiased_polygon( coord_list, color) -> self
 */
 static VALUE surface_antialiased_polygon(VALUE self, VALUE coordlist, VALUE color)
 {
@@ -316,7 +319,7 @@ static VALUE surface_antialiased_polygon(VALUE self, VALUE coordlist, VALUE colo
 
 /**
 @section Drawing
-@method print( coord, text, color )
+@method print( coord, text, color ) -> self
 Puts @text on the surface in a monospaced 8x8 standard old ASCII font.
 */
 static VALUE surface_print(VALUE self, VALUE coord, VALUE text, VALUE color)

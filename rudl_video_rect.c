@@ -3,6 +3,9 @@ RUDL - a C library wrapping SDL for use in Ruby.
 Copyright (C) 2001, 2002, 2003  Danny van Bruggen 
 
 $Log: rudl_video_rect.c,v $
+Revision 1.12  2004/08/04 23:03:46  tsuihark
+Updated all documentation to Dokumentat format.
+
 Revision 1.11  2004/01/06 18:01:39  tsuihark
 Removed a few warnings
 
@@ -117,14 +120,15 @@ __inline__ static void normalize(VALUE self)
 	}
 }
 
-/*
-=begin
-<<< docs/head
-= Rect
+/**
+@file Video
+@class Rect
 Rect has been discarded.
-Its methods have moved to the standard Array.
+Its methods have moved to the standard Ruby @Array.
 All these methods are now written in C.
-= Array
+*/
+/**
+@class Array
 The standard Ruby array class has been extended to provide 
 methods for using it as a rectangle.
 Arrays like these have entries 0, 1, 2 and 3 set to floating point values for
@@ -133,8 +137,10 @@ x, y, width and height.
 [10,15,20,25] would be a 20x25 rectangle at position 10,15.
 
 So far these methods are mostly untested.
-== Class Methods
-=end */
+*/
+/**
+@section Class Methods
+*/
 
 struct ExtRect{
 	SDL_Rect crect;
@@ -142,16 +148,15 @@ struct ExtRect{
 	VALUE sprite;
 };
 
-/*
-=begin
---- Array.collide_lists( l1, l2 )
-This method looks through list ((|l1|)),
-checking collisions with every object in list ((|l2|)).
+/**
+@method collide_lists( l1, l2 )
+This method looks through list @l1,
+checking collisions with every object in list @l2.
 It does this by calling "rect" on all objects, expecting an array of [x,y,w,h] back,
 defining the area this object is in.
 It yields (object_from_l1, object_from_l2) for every collision it detects.
 A more advanced collision detection method can be found in CollisionMap.
-=end */
+*/
 
 static VALUE rb_array_collide_lists(VALUE self, VALUE list1Value, VALUE list2Value)
 {
@@ -203,12 +208,11 @@ static VALUE rb_array_collide_lists(VALUE self, VALUE list1Value, VALUE list2Val
 	return self;
 }
 
-/*
-=begin
---- Array.union_list( array_of_rects )
+/**
+@method union_list( array_of_rects )
 Returns a new array representing a rectangle covering all rectangles
-in ((|array_of_rects|)).
-=end */
+in @array_of_rects.
+*/
 static VALUE rb_array_union_list(VALUE self, VALUE other_rects)
 {
 	int i;
@@ -245,19 +249,18 @@ static VALUE rb_array_union_list(VALUE self, VALUE other_rects)
 }
 
 /* accessors */
-/*
-=begin
---- Array#x
---- Array#x=( x )
---- Array#y
---- Array#y=( y )
---- Array#w
---- Array#w=( w )
---- Array#h
---- Array#h=( h )
+/**
+@method x
+@method x=( x )
+@method y
+@method y=( y )
+@method w
+@method w=( w )
+@method h
+@method h=( h )
 These can be set and read at will.
-((|w|)) and ((|h|)) have ((|width|)) and ((|height|)) as aliases.
-=end */
+@w and @h have @width and @height as aliases.
+*/
 static VALUE rb_array_get_x(VALUE self) {return array_get_x_value(self);}
 static VALUE rb_array_get_y(VALUE self) {return array_get_y_value(self);}
 static VALUE rb_array_get_w(VALUE self) {return array_get_w_value(self);}
@@ -268,22 +271,21 @@ static VALUE rb_array_set_y(VALUE self, VALUE new_y) {array_set_y_value(self, ne
 static VALUE rb_array_set_w(VALUE self, VALUE new_w) {array_set_w_value(self, new_w); return self;}
 static VALUE rb_array_set_h(VALUE self, VALUE new_h) {array_set_h_value(self, new_h); return self;}
 
-/*
-=begin
-== Instance methods
---- Array#left
---- Array#left=( left )
---- Array#right
---- Array#right=( right )
---- Array#top
---- Array#top=( top )
---- Array#bottom
---- Array#bottom=( bottom )
+/**
+@section Instance methods
+@method left
+@method left=( left )
+@method right
+@method right=( right )
+@method top
+@method top=( top )
+@method bottom
+@method bottom=( bottom )
 These can be set and read at will.
 Differences with x, y, w and h are:
-* ((|right|)) and ((|bottom|)) are screen coordinates.
-	((|right|)) is ((|x|))+((|w|)) and ((|bottom|)) is ((|y|))+((|h|)).
-=end */
+* @right and @bottom are screen coordinates.
+	@right is @x + @w and @bottom is @y + @h .
+*/
 static VALUE rb_array_set_right(VALUE self, VALUE new_right)
 {
 	SET_X(NUM2DBL(new_right)-array_get_w(self));
@@ -307,13 +309,12 @@ static VALUE rb_array_get_bottom(VALUE self)
 }
 
 /* functions */
-/*
-=begin
---- Array#normalize
---- Array#normalize!
+/**
+@method normalize -> self
+@method normalize! -> [x, y, w, h]
 If w and h aren't positive,
 this will change them to positive and keep the rectangle covering the same space.
-=end */
+*/
 
 static VALUE rb_array_normalize_bang(VALUE self)
 {
@@ -328,12 +329,11 @@ static VALUE rb_array_normalize(VALUE self)
 	return retval;
 }
 
-/*
-=begin
---- Array#move( delta )
---- Array#move!( delta )
+/**
+@method move( delta )
+@method move!( delta )
 Returns a new rectangle which is the base rectangle moved by the given amount.
-=end */
+*/
 
 static VALUE rb_array_move_bang(VALUE self, VALUE delta)
 {
@@ -347,15 +347,14 @@ static VALUE rb_array_move(VALUE self, VALUE delta)
 	return rb_array_move_bang(clone_array(self), delta);
 }
 
-/*
-=begin
---- Array#inflate( sizes )
---- Array#inflate!( sizes )
+/**
+@method inflate( sizes ) -> [x, y, w, h]
+@method inflate!( sizes ) -> self
 Returns a rectangle which has the sizes changed by the given amounts.
-((|sizes|)) is an array of [dx, dy].
+@sizes is an array of [dx, dy].
 The rectangle shrinks and expands around the rectangle's center.
 Negative values will shrink the rectangle.
-=end */
+*/
 
 static VALUE rb_array_inflate_bang(VALUE self, VALUE size)
 {
@@ -380,14 +379,13 @@ static VALUE rb_array_inflate(VALUE self, VALUE size)
 	return rb_array_inflate_bang(clone_array(self), size);
 }
 
-/*
-=begin
---- Array#union( rect )
---- Array#union!( rect )
+/**
+@method union( rect ) -> [x, y, w, h]
+@method union!( rect ) -> self
 Returns a new rectangle that completely covers the given rectangle(s).
 There may be an area inside the new rectangle that is not covered by the inputs.
 Rectangles are pre-normalized.
-=end */
+*/
 static VALUE rb_array_union_bang(VALUE self, VALUE other_rect)
 {
 	normalize(self);
@@ -419,11 +417,10 @@ static VALUE rb_array_union(VALUE self, VALUE other_rect)
 	return rb_array_union_bang(clone_array(self), other_rect);
 }
 
-/*
-=begin
---- Array#contains?( thing )
+/**
+@method contains?( thing ) -> boolean
 Returns whether thing ([x, y, w, h] or [x, y]) fits completely within the rectangle.
-=end */
+*/
 static VALUE rb_array_contains(VALUE self, VALUE thing)
 {
 	GET_X();
@@ -449,11 +446,10 @@ static VALUE rb_array_contains(VALUE self, VALUE thing)
 
 	return Qfalse;
 }
-/*
-=begin
---- Array#same_size?( rect )
-Returns whether ((|rect|)) is the same area as ((|self|)).
-=end */
+/**
+@method same_size?( rect )
+Returns whether @rect is the same area as @self.
+*/
 static VALUE rb_array_same_size(VALUE self, VALUE rect)
 {
 	GET_X();
@@ -470,13 +466,12 @@ static VALUE rb_array_same_size(VALUE self, VALUE rect)
 	return(x==array_get_x(rect) && y==array_get_y(rect) && w==array_get_w(rect) && h==array_get_h(rect));
 }
 
-/*
-=begin
---- Array#copy_from( rect )
-Sets ((|self|)) to the same position and size as ((|rect|)).
+/**
+@method copy_from( rect ) -> self
+Sets @self to the same position and size as @rect.
 This is meant for optimizations.
-Returns ((|self|)).
-=end */
+Returns @self.
+*/
 static VALUE rb_array_copy_from(VALUE self, VALUE rect)
 {
 	if(self==rect){
@@ -492,13 +487,11 @@ static VALUE rb_array_copy_from(VALUE self, VALUE rect)
 
 	return self;
 }
-/*
-=begin
---- Array#set_coordinates( x, y, w, h )
+/**
+@method set_coordinates( x, y, w, h ) -> self
 Sets all properties at once.
 This is meant for optimizations.
-Returns ((|self|)).
-=end */
+*/
 static VALUE rb_array_set_coordinates(VALUE self, VALUE x, VALUE y, VALUE w, VALUE h)
 {
 	array_set_x_value(self, x);
@@ -509,12 +502,11 @@ static VALUE rb_array_set_coordinates(VALUE self, VALUE x, VALUE y, VALUE w, VAL
 	return self;
 }
 /*
-=begin
---- Array#find_overlapping_rect( rects )
-Returns the first rectangle in the ((|rects|)) array to overlap the base rectangle.
+@method find_overlapping_rect( rects ) -> [x, y, w, h] or false
+Returns the first rectangle in the @rects array to overlap the base rectangle.
 Once an overlap is found, this will stop checking the remaining array.
 If no overlap is found, it will return false.
-=end */
+*/
 static VALUE rb_array_find_overlapping_rect(VALUE self, VALUE rects)
 {
 	int i;
@@ -526,12 +518,11 @@ static VALUE rb_array_find_overlapping_rect(VALUE self, VALUE rects)
 	}
 	return Qfalse;
 }
-/*
-=begin
---- Array#find_overlapping_rects( rects )
+/**
+@method find_overlapping_rects( rects ) -> [ [x, y, w, h], ... ]
 Returns an array with the rectangles in the list to overlaps the base rectangle.
 If no overlaps is found, it will return [].
-=end */
+*/
 static VALUE rb_array_find_overlapping_rects(VALUE self, VALUE rects)
 {
 	int i;
@@ -545,12 +536,11 @@ static VALUE rb_array_find_overlapping_rects(VALUE self, VALUE rects)
 	return retval;
 }
 /*
-=begin
---- Array#clip( rect )
---- Array#clip!( rect )
+@method clip( rect ) -> [x, y, w, h]
+@method clip!( rect ) -> self
 Returns a new rectangle that is the given rectangle cropped to the inside of the base rectangle.
 If the two rectangles do not overlaps to begin with, you will get a rectangle with 0 size.
-=end */
+*/
 static VALUE rb_array_clip_bang(VALUE self, VALUE rect)
 {
 	SDL_Rect a, b;
@@ -604,14 +594,13 @@ static VALUE rb_array_clip(VALUE self, VALUE rect)
 {
 	return rb_array_clip_bang(clone_array(self), rect);
 }
-/*
-=begin
---- Array#clamp( rect )
---- Array#clamp!( rect )
+/**
+@method clamp( rect ) -> [x, y, w, h]
+@method clamp!( rect ) -> nil
 Returns a new rectangle that is moved to be completely inside the base rectangle.
 If the given rectangle is too large for the base rectangle in an axis, 
 it will be centered on that axis.
-=end */
+*/
 static VALUE rb_array_clamp_bang(VALUE self, VALUE rect)
 {
 	SDL_Rect a, b;
@@ -646,11 +635,10 @@ static VALUE rb_array_clamp(VALUE self, VALUE rect)
 {
 	return rb_array_clamp_bang(clone_array(self), rect);
 }
-/*
-=begin
---- Array#overlaps?( rect )
+/**
+@method overlaps?( rect ) -> boolean
 Returns true if any area of the two rectangles overlapss.
-=end */
+*/
 static VALUE rb_array_overlaps(VALUE self, VALUE otherRect)
 {
 	SDL_Rect a, b;
@@ -660,17 +648,17 @@ static VALUE rb_array_overlaps(VALUE self, VALUE otherRect)
 }
 
 /*
-=begin
---- Pit.cross_lines( a, b, c, d )
-Returns the coordinate where lines ((|a|)) to ((|b|)) and ((|c|)) to ((|d|)) cross, 
+@class Pit
+@method cross_lines( a, b, c, d ) -> lots
+Returns the coordinate where lines @a to @b and @c to @d cross, 
 an array of [x,y,x2,y2] if they are parallel and overlapping,
 an array of [x,y] if they are parallel and touch at only one point,
 or false if they don't cross.
-((|a|)), ((|b|)), ((|c|)) and ((|d|)) are coordinates as always: [x,y]
+@a, @b, @c and @d are coordinates as always: [x,y]
 
-The results may have small precision errors,
+<p>The results may have small precision errors,
 so don't use it to compare directly with other numbers.
-=end */
+*/
 
 static VALUE rb_pit_cross_lines_retval(int cross, int parallel, double x, double y, double x2, double y2)
 {

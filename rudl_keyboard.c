@@ -3,10 +3,9 @@
 #include "rudl_video.h"
 #include "rudl_events.h"
 
-/*
-=begin
-<<< docs/head
-= Key
+/**
+@file keyboard
+@class Key
 The Key class gives access to the keyboard without events.
 
 You can either call the class methods: "Key.something" directly, 
@@ -16,36 +15,33 @@ class methods under the hood, so it's exactly the same)
 
 EventQueue.pump will update the state of Key,
 so if no keys seem to be pressed, call pump.
-== Class and instance Methods
---- Key.focused?
---- Key#focused?
+*/
+/**
+@section Class and instance Methods
+@method focused? -> boolean
 Returns true when the application has the keyboard input focus.
-=end */
+*/
 static VALUE key_getFocused(VALUE self)
 {
 	initVideo();
 	return INT2BOOL((SDL_GetAppState()&SDL_APPINPUTFOCUS)!=0);
 }
 
-/*
-=begin
---- Key.modifiers
---- Key#modifiers
+/**
+@method modifiers -> Number
 Returns the current modifier keys state.
-=end */
+*/
 static VALUE key_getModifiers(VALUE self)
 {
 	initVideo();
 	return UINT2NUM(SDL_GetModState());
 }
 
-/*
-=begin
---- Key.pressed?
---- Key#pressed?
+/**
+@method pressed? -> { K_b => true, ... }
 Returns a hash containing all keys that are set, set to true.
 So, if K_b is pressed, the hash will contain a key,value pair of K_b => true.
-=end */
+*/
 static VALUE key_getPressed(VALUE self)
 {
 	int num_keys;
@@ -69,24 +65,20 @@ static VALUE key_getPressed(VALUE self)
 	return keys;
 }
 
-/*
-=begin
---- Key.name( key )
---- Key#name( key )
-Returns a string describing constant ((|key|))
-=end */
+/**
+@method name( key ) -> String
+Returns a string describing constant @key.
+*/
 static VALUE key_name(VALUE self, VALUE key)
 {
 	initVideo();
 	return rb_str_new2(SDL_GetKeyName(NUM2UINT(key)));
 }
 
-/*
-=begin
---- Key.modifiers=( modifiers )
---- Key#modifiers=( modifiers )
+/**
+@method modifiers=( modifiers ) -> self
 Sets the keyboard modifier state.
-=end */
+*/
 static VALUE key_setModifiers(VALUE self, VALUE mods)
 {
 	initVideo();
@@ -94,14 +86,12 @@ static VALUE key_setModifiers(VALUE self, VALUE mods)
 	return self;
 }
 
-/*
-=begin
---- Key.set_repeat( delay, interval )
---- Key#set_repeat( delay, interval )
-Sets the keyboard to wait for ((|delay|)) milliseconds before starting repeat with 
-((|interval|)) delay between repeats.
+/**
+@method set_repeat( delay, interval ) -> self
+Sets the keyboard to wait for @delay milliseconds before starting repeat with 
+@interval delay between repeats.
 Set both to zero to disable repeat.
-=end */
+*/
 static VALUE key_set_repeat(VALUE self, VALUE delay, VALUE interval)
 {
 	initVideo();
@@ -119,42 +109,38 @@ void initKeyClasses()
 	rb_define_singleton_and_instance_method(classKey, "modifiers=", key_setModifiers, 1);
 	rb_define_singleton_and_instance_method(classKey, "set_repeat", key_set_repeat, 2);
 
-/*
-=begin
-= Events
-== KeyUpEvent
+/**
+@class KeyUpEvent
 This event is posted when a key is released.
---- KeyUpEvent#key
+@method key
 The keycode for the released key.
---- KeyUpEvent#mod
+@method mod
 The modifier keys state.
---- KeyUpEvent#unicode
+@method unicode
 The Unicode version of the key.
-=end */
+*/
 	classKeyUpEvent=rb_define_class_under(moduleRUDL, "KeyUpEvent", classEvent);
 	rb_define_attr(classKeyUpEvent, "key", 1, 1);
 	rb_define_attr(classKeyUpEvent, "mod", 1, 1);
 	rb_define_attr(classKeyUpEvent, "unicode", 1, 1);
 
-/*
-=begin
-== KeyDownEvent
+/**
+@class KeyDownEvent
 This event is posted when a key is pressed and when it gets repeated (see Key#set_repeat).
---- KeyDownEvent#key
+@method key
 The keycode for the pressed key.
---- KeyDownEvent#mod
+@method mod
 The modifier keys state.
---- KeyDownEvent#unicode
+@method unicode
 The Unicode version of the key.
-=end */
+*/
 	classKeyDownEvent=rb_define_class_under(moduleRUDL, "KeyDownEvent", classEvent);
 	rb_define_attr(classKeyDownEvent, "key", 1, 1);
 	rb_define_attr(classKeyDownEvent, "mod", 1, 1);
 	rb_define_attr(classKeyDownEvent, "unicode", 1, 1);
 
-/*
-=begin
-= Constants
+/**
+@module Constants
 Keycodes in one handy big mess:
 
 K_UNKNOWN, K_FIRST, K_BACKSPACE, K_TAB, K_CLEAR, K_RETURN, K_PAUSE, K_ESCAPE, K_SPACE, K_EXCLAIM, K_QUOTEDBL, 
@@ -170,7 +156,7 @@ K_RSHIFT, K_LSHIFT, K_RCTRL, K_LCTRL, K_RALT, K_LALT, K_RMETA, K_LMETA, K_LSUPER
 K_HELP, K_PRINT, K_SYSREQ, K_BREAK, K_MENU, K_POWER, K_EURO, K_LAST, KMOD_NONE, KMOD_LSHIFT, KMOD_RSHIFT, 
 KMOD_LCTRL, KMOD_RCTRL, KMOD_LALT, KMOD_RALT, KMOD_LMETA, KMOD_RMETA, KMOD_NUM, KMOD_CAPS, KMOD_MODE, 
 KMOD_CTRL, KMOD_SHIFT, KMOD_ALT, KMOD_META
-=end */
+*/
 	DEC_CONSTK(K_UNKNOWN);
 	DEC_CONSTK(K_FIRST);
 	DEC_CONSTK(K_BACKSPACE);

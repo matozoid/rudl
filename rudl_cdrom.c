@@ -43,17 +43,18 @@ SDL_CD* retrieveCDROMPointer(VALUE self)
 	return cd;
 }
 
-/*
-=begin
-<<< docs/head
-= CDROM
+/**
+@file CDROM
+@class CDROM
+@section Class methods
 A class for playing audio CD's.
-== Class Methods
---- CDROM.new( number )
-Creates a new CDROM access object for unit ((|number|)).
+*/
+/**
+@method new( number )
+Creates a new CDROM access object for unit @number.
 There can only be one CDROM object per unit.
 Numbering starts at 0.
-=end */
+*/
 
 static VALUE cdrom_new(VALUE self, VALUE number)
 {
@@ -61,12 +62,10 @@ static VALUE cdrom_new(VALUE self, VALUE number)
 	return createCDROMObject(NUM2INT(number));
 }
 
-/*
-=begin
---- CDROM.destroy
-Uninitializes the CDROM subsystem,
-which is normally not necessary.
-=end */
+/**
+@method destroy
+Uninitializes the CDROM subsystem, which is normally not necessary.
+*/
 static VALUE cdrom_destroy(VALUE self, VALUE number)
 {
 	quitCD();
@@ -74,30 +73,28 @@ static VALUE cdrom_destroy(VALUE self, VALUE number)
 }
 
 
-/*
-=begin
---- CDROM.count
+/**
+@method count
 Returns the number of CDROMs installed.
-=end */
+*/
 static VALUE cdrom_count(VALUE self)
 {
 	initCD();
 	return INT2NUM(SDL_CDNumDrives());
 }
 
-/*
-=begin
-== Instance methods
---- CDROM#eject
---- CDROM#pause
---- CDROM#play( track_nr )
---- CDROM#resume
---- CDROM#stop
---- CDROM#paused?
---- CDROM#empty?
---- CDROM#busy?
+/**
+@section The you-know-what-they-do methods
+@method eject
+@method pause
+@method play( track_nr )
+@method resume
+@method stop
+@method paused?
+@method empty?
+@method busy?
 These are the you-know-what-they-do methods.
-=end */
+*/
 static VALUE cdrom_eject(VALUE self)
 {
 	SDL_VERIFY(SDL_CDEject(retrieveCDROMPointer(self))!=-1);
@@ -155,10 +152,10 @@ static VALUE cdrom_busy_(VALUE self)
 	return INT2BOOL(SDL_CDStatus(retrieveCDROMPointer(self))==CD_PLAYING);
 }
 
-/*
-=begin
---- CDROM#current
-=end */
+/**
+@section others
+@method current
+*/
 static VALUE cdrom_current(VALUE self)
 {
 	SDL_CD* cdrom=retrieveCDROMPointer(self);
@@ -172,21 +169,19 @@ static VALUE cdrom_current(VALUE self)
 	return rb_ary_new3(2, INT2NUM(track), DBL2NUM(seconds));
 }
 
-/*
-=begin
---- CDROM#number
-Returns the unit number that was specified in ((<CDROM.new>)).
-=end */
+/**
+@method number
+Returns the unit number that was specified in @new.
+*/
 static VALUE cdrom_number(VALUE self)
 {
 	return rb_iv_get(self, "@id");
 }
 
-/*
-=begin
---- CDROM#name
+/**
+@method name
 Returns a string describing the CDROM.
-=end */
+*/
 static VALUE cdrom_name(VALUE self)
 {
 
@@ -194,11 +189,10 @@ static VALUE cdrom_name(VALUE self)
 	return rb_str_new2(SDL_CDName(NUM2INT(tmp)));
 }
 
-/*
-=begin
---- CDROM#num_tracks
+/**
+@method num_tracks
 Returns the number of tracks on the CD.
-=end */
+*/
 static VALUE cdrom_num_tracks(VALUE self)
 {
 	SDL_CD* cdrom=retrieveCDROMPointer(self);
@@ -206,11 +200,10 @@ static VALUE cdrom_num_tracks(VALUE self)
 	return INT2NUM(cdrom->numtracks);
 }
 
-/*
-=begin
---- CDROM#audiotrack?( track_nr )
+/**
+@method audiotrack?( track_nr )
 Returns whether the specified track is an audiotrack.
-=end */
+*/
 static VALUE cdrom_audiotrack_(VALUE self, VALUE trackValue)
 {
 	SDL_CD* cdrom=retrieveCDROMPointer(self);
@@ -223,13 +216,12 @@ static VALUE cdrom_audiotrack_(VALUE self, VALUE trackValue)
 	return INT2BOOL(cdrom->track[track].type == SDL_AUDIO_TRACK);
 }
 
-/*
-=begin
---- CDROM#track_length( track_nr )
+/**
+@method track_length( track_nr )
 Returns the length of the track.
 
 Returns 0.0 when the track is not an audio track.
-=end */
+*/
 static VALUE cdrom_track_length(VALUE self, VALUE trackValue)
 {
 	SDL_CD* cdrom=retrieveCDROMPointer(self);
@@ -246,11 +238,10 @@ static VALUE cdrom_track_length(VALUE self, VALUE trackValue)
 	return DBL2NUM(cdrom->track[track].length / (double)CD_FPS);
 }
 
-/*
-=begin
---- CDROM#track_start( track_nr )
+/**
+@method track_start( track_nr )
 Returns the starting time of the track.
-=end */
+*/
 static VALUE cdrom_track_start(VALUE self, VALUE trackValue)
 {
 	SDL_CD* cdrom=retrieveCDROMPointer(self);

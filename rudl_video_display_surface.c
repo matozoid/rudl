@@ -3,6 +3,9 @@ RUDL - a C library wrapping SDL for use in Ruby.
 Copyright (C) 2001, 2002, 2003  Danny van Bruggen
 
 $Log: rudl_video_display_surface.c,v $
+Revision 1.24  2004/08/04 23:03:46  tsuihark
+Updated all documentation to Dokumentat format.
+
 Revision 1.23  2004/01/25 00:21:34  rennex
 Added DisplaySurface.get
 Made DisplaySurface#destroy also a class method
@@ -50,7 +53,7 @@ Fixed a lot of documentation
 ///////////////////////////////// DISPLAYSURFACE
 /**
 @file Video
-@class RUDL::DisplaySurface < RUDL::Surface
+@class DisplaySurface < Surface
 The DisplaySurface is the surface that represents the window or the full screen that you
 will be drawing and blitting on.
 Since it is inherited from Surface, it can be used just like an ordinary surface.
@@ -58,9 +61,9 @@ You will need to create a DisplaySurface to show anything on your screen.
 */
 /**
 @section Initializers
-@method DisplaySurface.new( size ) => DisplaySurface
-@method DisplaySurface.new( size, flags ) => DisplaySurface
-@method DisplaySurface.new( size, flags, depth ) => DisplaySurface
+@method new( size ) => DisplaySurface
+@method new( size, flags ) => DisplaySurface
+@method new( size, flags, depth ) => DisplaySurface
 <ul>
 <li>@size is the requested size for the new display in [w,h] format.
 <li>@flags is a combination of the following:
@@ -71,7 +74,7 @@ You will need to create a DisplaySurface to show anything on your screen.
 		This will usually slow down blitting on single CPU machines, but may provide a speed increase on SMP systems."
 	<li><code>RESIZABLE</code>, to make a resizable display (see events to find the event that it sends),
 	<li><code>HWPALETTE</code>, to grab the system palette,
-	<li><code>DOUBLEBUF</code>, to enable double buffered hardware pageflipping. Use ((|flip|)) with this.
+	<li><code>DOUBLEBUF</code>, to enable double buffered hardware pageflipping. Use @flip with this.
 	<li><code>FULLSCREEN</code>, attempts to grab all of the screen,
 	<li><code>NOFRAME</code>, leaves the frame off the window.
 	<li><code>OPENGL</code>, to create an OpenGL window.
@@ -141,14 +144,9 @@ static VALUE displaySurface_new(int argc, VALUE* argv, VALUE self)
 
 /**
 @section Methods
-@method destroy
+@method destroy -> nil
 Destroys the display, removing the window or returning from fullscreen mode.
 Do not call methods on a destroyed DisplaySurface!
-*/
-/**
-@section Initializers
-@method DisplaySurface.destroy
-See @destroy
 */
 static VALUE displaySurface_destroy(VALUE self)
 {
@@ -173,9 +171,9 @@ static VALUE displaySurface_get(VALUE self)
 
 /**
 @section Video modes
-@method DisplaySurface.modes => Array[w,h] or nil
-@method DisplaySurface.modes( bitdepth ) => Array[w,h] or nil
-@method DisplaySurface.modes( bitdepth, flags ) => Array[w,h] or nil
+@method DisplaySurface.modes => [w,h] or nil
+@method DisplaySurface.modes( bitdepth ) => [w,h] or nil
+@method DisplaySurface.modes( bitdepth, flags ) => [w,h] or nil
 Lists available modes for a certain @bitdepth and optionally only those modes that
 can do @flags.
 Flags are like those in @DisplaySurface.new.
@@ -226,7 +224,7 @@ static VALUE displaySurface_modes(int argc, VALUE* argv, VALUE self)
 
 /**
 @method DisplaySurface.mode_ok? => boolean
-Like DisplaySurface.new, but doesn't set the mode, only returns true if the mode can be set,
+Like @new, but doesn't set the mode, only returns true if the mode can be set,
 and false if it can't.
 */
 static VALUE displaySurface_mode_ok_(int argc, VALUE* argv, VALUE self)
@@ -257,11 +255,11 @@ static VALUE displaySurface_mode_ok_(int argc, VALUE* argv, VALUE self)
 /**
 @section Methods
 @method info
-See @DisplaySurface.best_mode_info
+See @best_mode_info
 */
 /**
 @section Video modes
-@method DisplaySurface.best_mode_info
+@method best_mode_info
 This method returns a hash filled with information about the video hardware.
 
 These entries are true or false:
@@ -433,7 +431,7 @@ static VALUE displaySurface_flip(VALUE self)
 
 /**
 @section Windowing system
-@method active?
+@method active? -> boolean
 Returns true if the application is active (i.e. not minimized).
 */
 static VALUE displaySurface_active_(VALUE self)
@@ -442,12 +440,12 @@ static VALUE displaySurface_active_(VALUE self)
 }
 
 /**
-@method caption => Array[String, String]
+@method caption => [String, String]
 Returns the title and icontitle of the window.
 */
 /**
-@method set_caption( title )
-@method set_caption( title, icontitle )
+@method set_caption( title ) -> self
+@method set_caption( title, icontitle ) -> self
 Sets the title of the window (if the application runs in a window) to @title.
 Supplying @icontitle sets the title of the icon that shows when the application is iconified to @icontitle,
 or @title if @icontitle is not supplied.
@@ -485,8 +483,8 @@ static VALUE displaySurface_caption(VALUE self)
 }
 
 /**
-@method set_icon( icon_surface )
-@method set_icon( icon_surface, mask_string )
+@method set_icon( icon_surface ) -> nil
+@method set_icon( icon_surface, mask_string ) -> nil
 Sets the icon for the display window.
 
 The SDL docs say this must be called before calling DisplaySurface.new, but
@@ -562,8 +560,8 @@ static VALUE displaySurface_iconify(VALUE self)
 
 /**
 @section Methods
-@method gamma=( [r,g,b] )
-@method gamma=( intensity )
+@method gamma=( [r,g,b] ) -> boolean
+@method gamma=( intensity ) -> boolean
 Sets the gamma value for the display when this is supported.
 @intensity is a shortcut for values where r=g=b.
 */

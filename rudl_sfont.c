@@ -42,39 +42,37 @@ static SFont_FontInfo* retrieveFontInfoPointer(VALUE font)
 	return fontPtr;
 }
 
-/*
-=begin
-<<< docs/head
-
-= BitmapFont
+/**
+@file font
+@class BitmapFont
 BitmapFont is made with the SFont library and prints text with bitmaps.
-It is maintained by Karl Bartel on ((<URL:http://www.linux-games.com/>)).
+It is maintained by Karl Bartel on <a href='http://www.linux-games.com/'>Linux Games</a>
 
-Here is Karl's README:
+<p>Here is Karl's README:
 
-FileFormat:
+<p>FileFormat:
 
-The font file can be any type image file. The characters start with
+<p>The font file can be any type image file. The characters start with
 ASCII symbol #33. They are seperated by pink(255,0,255) lines at the top
 of the image. The space between these lines is the width of the caracter.
 Just take a look at the image, and you'll be able to understand what I tried
 to explain here.
 
-Example for the font file format is in this picture: ((<URL:sfont.gif>))
+<p>Example for the font file format is in this picture: <img src='sfont.gif'>
 
-The easiest way to create a new font is to use the GIMP's Logo function.
+<p>The easiest way to create a new font is to use the GIMP's Logo function.
 Use the following string as text (ASCII 33-127 with escape sequences and
 spaces between the letters):
 
-! \" # $ % & ' ( ) * + , - . / 0 1 2 3 4 5 6 7 8 9 : ; < = > ? @ A B C D E F G H I J K L M N O P Q R S T U V W X Y Z [ \\ ] ^ _ ` a b c d e f g h i j k l m n o p q r s t u v w x y z { | } ~
-
-== Class Methods
---- BitmapFont.new( surface )
-Creates a new SFont from the drawn characters in ((|surface|)).
+<code>! \" # $ % & ' ( ) * + , - . / 0 1 2 3 4 5 6 7 8 9 : ; < = > ? @ A B C D E F G H I J K L M N O P Q R S T U V W X Y Z [ \\ ] ^ _ ` a b c d e f g h i j k l m n o p q r s t u v w x y z { | } ~</code>
+*/
+/**
+@section Class Methods
+@method new( surface ) -> BitmapFont
+Creates a new BitmapFont from the drawn characters in @surface.
 To load a font directly from disc,
-use Surface.load_new('fontfilename') as the argument to SFont.new.
-=end */
-
+use <code>Surface.load_new('fontfilename')</code> as the argument to @new.
+*/
 static VALUE sfont_new(VALUE self, VALUE surface)
 {
 	VALUE newFont;
@@ -106,12 +104,11 @@ static VALUE sfont_new(VALUE self, VALUE surface)
 	return newFont;
 }
 
-/*
-=begin
-== Instance Methods
---- BitmapFont#print( surface, coordinate, text )
-Puts ((|text|)) on ((|surface|)) at ((|coordinate|)) which is an array of [x, y].
-=end */
+/**
+@section Instance Methods
+@method print( surface, coordinate, text ) -> self
+Puts @text on @surface at @coordinate which is an array of [x, y].
+*/
 static VALUE sfont_print(VALUE self, VALUE surface, VALUE coord, VALUE text)
 {
 	Sint16 x,y;
@@ -120,27 +117,26 @@ static VALUE sfont_print(VALUE self, VALUE surface, VALUE coord, VALUE text)
 	return self;
 }
 
-/*
-=begin
---- BitmapFont#print_centered( surface, y, text )
-Puts ((|text|)) on ((|surface|)) at y-coordinate ((|y|)) in the horizontal center of the screen.
-=end */
+/**
+@method print_centered( surface, y, text ) -> self
+Puts @text on @surface at y-coordinate @y in the horizontal center of the screen.
+*/
 static void add_sfont_print_centered()
 {
 	rb_eval_string(
 		"module RUDL class SFont						\n"
 		"	def print_centered(surface, y, text)				\n"
 		"		print(surface,[(surface.w-size(text)[0])/2,y],text)	\n"
+        "       self                                                \n"
 		"	end								\n"
 		"end end								\n"
 	);
 }
 
-/*
-=begin
---- BitmapFont#size( text )
-Returns the size [width, heigth] in pixels that ((|text|)) will take when written.
-=end */
+/**
+@method size( text ) -> [width, heigth]
+Returns the size in pixels that @text will take when written.
+*/
 static VALUE sfont_size(VALUE self, VALUE ruby_text)
 {
 	SFont_FontInfo* font=retrieveFontInfoPointer(self);

@@ -7,10 +7,10 @@ Copyright (C) 2003-2004  Danny van Bruggen and Renne Nissinen
 
 
 /**
-@file TrueTypeFont
-@class RUDL::TrueTypeFont
+@file font
+@class TrueTypeFont
 
-Using TrueTypeFonts is easy. You open a TTF file with @TrueTypeFont.new specifying
+Using TrueTypeFonts is easy. You open a TTF file with @new specifying
 its filename and size. You render text with it by calling @render, and you get a new
 surface containing the image. If you use antialiasing and no background color, the
 returned surface will have per-pixel alpha values, to retain the antialiasing after blitting
@@ -82,7 +82,7 @@ void VALUE2SDL_COLOR(VALUE colorObject, SDL_Color* color)
 
 /**
 @section Class Methods
-@method new( filename, size )
+@method new( filename, size ) -> TrueTypeFont
 Creates a new TrueTypeFont object.
 @filename is the filename of a TTF file.
 @size is the desired height of the font in pixels.
@@ -105,8 +105,8 @@ TTF_Font* retrieveTTFPointer(VALUE obj)
 
 /**
 @section Instance Methods
-@method render( text, antialias, foreground ) -> aSurface
-@method render( text, antialias, foreground, background ) -> aSurface
+@method render( text, antialias, foreground ) -> Surface
+@method render( text, antialias, foreground, background ) -> Surface
 Render the given @text onto a new image surface.
 If @antialias is true, the edges of the font will be smoothed for a much cleaner look.
 
@@ -155,7 +155,7 @@ static VALUE truetypefont_render(int argc, VALUE* argv, VALUE self)
 }
 
 /**
-@method ascent
+@method ascent -> Number
 Returns the ascent for the font.
 The ascent is the number of pixels from the font baseline to the top of the font.
 */
@@ -165,8 +165,8 @@ static VALUE truetypefont_ascent(VALUE self)
 }
 
 /**
-@method bold?
-@method bold=( onOrOff )
+@method bold? -> boolean
+@method bold=( onOrOff ) -> self
 Controls the bold attribute for the font.
 Making the font bold does not work as well as you would expect.
 */
@@ -192,8 +192,8 @@ static VALUE truetypefont_bold__(VALUE self, VALUE onOrOff)
 }
 
 /**
-@method italic?
-@method italic=( onOrOff )
+@method italic? -> boolean
+@method italic=( onOrOff ) -> self
 Controls the italics attribute of the font.
 */
 static VALUE truetypefont_italic_(VALUE self)
@@ -218,7 +218,7 @@ static VALUE truetypefont_italic__(VALUE self, VALUE onOrOff)
 }
 
 /**
-@method descent
+@method descent -> Number
 Returns the descent for the font.
 The descent is the number of pixels from the font baseline to the bottom of the font.
 */
@@ -228,7 +228,7 @@ static VALUE truetypefont_descent(VALUE self)
 }
 
 /**
-@method h
+@method h -> Number
 Returns the average size of each glyph in the font.
 */
 static VALUE truetypefont_h(VALUE self)
@@ -237,7 +237,7 @@ static VALUE truetypefont_h(VALUE self)
 }
 
 /**
-@method linesize
+@method linesize -> Number
 Returns the linesize for the font.
 Each font comes with its own recommendation for the number of spacing pixels between
 each line of the font.
@@ -248,8 +248,8 @@ static VALUE truetypefont_linesize(VALUE self)
 }
 
 /**
-@method underline?
-@method underline=( onOrOff )
+@method underline? -> boolean
+@method underline=( onOrOff ) -> self
 Controls the underline attribute of the font.
 */
 static VALUE truetypefont_underline_(VALUE self)
@@ -274,7 +274,7 @@ static VALUE truetypefont_underline__(VALUE self, VALUE onOrOff)
 }
 
 /**
-@method size( text ) -> [w,h]
+@method size( text ) -> [w, h]
 Returns the size in pixels that this text would need.
 */
 static VALUE truetypefont_size(VALUE self, VALUE text)

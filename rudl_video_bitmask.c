@@ -28,36 +28,36 @@ bitmask *SCAM_mask_from_image_SDL(SDL_Surface *surface, Uint32 colorkey)
 	return b;
 }
 
-/*
-=begin
-<<< docs/head
-= CollisionMap
-This code is "bitmask" from ((<URL:http://www.ifm.liu.se/~ulfek/projects/2d_Collision_Detection.html>))
+/**
+@file Video
+@class CollisionMap
+This code is "bitmask" from <a href='http://www.ifm.liu.se/~ulfek/projects/2d_Collision_Detection.html'>Ulf Ekstrom</a>
 
-This class contains a map of all the visible pixels in a surface.
+<p>This class contains a map of all the visible pixels in a surface.
 (That's the ones that don't have the color key's color)
 With it, you can detect whether any pixels in a surface and another
 surface overlap when they are at two specific positions.
-
-== Class Methods
---- CollisionMap#new( surface )
---- CollisionMap#new( size )
+*/
+/**
+@section Class Methods
+@method new( surface ) -> CollisionMap
+@method new( size ) -> CollisionMap
 Creates a new collision map.
 
-Supplying a Surface will create the map with the information from surface.
+<p>Supplying a Surface will create the map with the information from surface.
 The map will not be automatically updated when the surface contents
-change, so a new (({CollisionMap})) will have to be made each time.
+change, so a new @CollisionMap will have to be made each time.
 The Surface's colorkey will be used to identify "uncollidable" area's.
 
-Supplying a size array: [w, h] will create an empty bitmask of that size.
+<p>Supplying a size array: [w, h] will create an empty bitmask of that size.
 
-Surface has an attribute, ((|collision_map|)), that you can use to attach
-a (({CollisionMap})) to.
+<p>Surface has an attribute, @collision_map, that you can use to attach
+a CollisionMap to.
 RUDL doesn't use that attribute for itself.
 The syntax would be:
 
-some_surface.collision_map=CollisionMap.new( some_surface )
-=end */
+<code>some_surface.collision_map=CollisionMap.new( some_surface )</code>
+*/
 static VALUE collision_map_new(VALUE self, VALUE par1)
 {
 	bitmask* map;
@@ -89,18 +89,17 @@ static VALUE collision_map_new(VALUE self, VALUE par1)
 	}
 }
 
-/*
-=begin
---- CollisionMap#collides_with( own_coord, other_map, other_coord )
+/**
+@method collides_with( own_coord, other_map, other_coord ) -> [hit_x, hit_y] or nil
 This returns the first found overlapping (colliding) pixel for two collision maps,
 or nil if no collision occurred.
 The coordinates specify where the two maps are, 
 which will probably mean that the two surfaces are blitted to the screen at those coordinates.
 
-If using the Surface#collision_map attribute, you would get for one surface at [10,10] and
+<p>If using the @collision_map attribute, you would get for one surface at [10,10] and
 another at [20,20]:
-onesurface.collision_map( [10,10], other_surface.collision_map, [20,20] )
-=end */
+<code>onesurface.collision_map( [10,10], other_surface.collision_map, [20,20] )</code>
+*/
 static VALUE collision_map_collides_with(VALUE self, VALUE coord1, VALUE other_map, VALUE coord2)
 {
 	Sint16 x1,y1,x2,y2;
@@ -120,12 +119,11 @@ static VALUE collision_map_collides_with(VALUE self, VALUE coord1, VALUE other_m
 	}
 }
 
-/*
-=begin
---- CollisionMap#destroy
+/**
+@method destroy -> nil
 Removes the map from memory.
 This instance of CollisionMap will be useless from this call on.
-=end */
+*/
 static VALUE collision_map_destroy(VALUE self)
 {
 	bitmask* map;
@@ -135,15 +133,14 @@ static VALUE collision_map_destroy(VALUE self)
 	return Qnil;
 }
 
-/*
-=begin
---- CollisionMap#set( coord )
---- CollisionMap#unset( coord )
+/**
+@method set( coord ) -> self
+@method unset( coord ) -> self
 This fills and erases one point in the collision map,
 in case you want to have collision with parts of a surface that
 weren't color keyed, or you want parts of the surface to appear
 "untouchable"
-=end */
+*/
 static VALUE collision_map_set(VALUE self, VALUE coord)
 {
 	bitmask* map;
@@ -164,10 +161,9 @@ static VALUE collision_map_unset(VALUE self, VALUE coord)
 	return self;
 }
 
-/*
-=begin
---- CollisionMap#[ x, y ]
---- CollisionMap#[ x, y ]= collidebit
+/**
+@method [ x, y ] -> Number
+@method [ x, y ]= collidebit -> self
 The array operator accesses single points in the collision map,
 in case you want to have collision with parts of a surface that
 weren't color keyed, or you want parts of the surface to appear
@@ -176,7 +172,7 @@ weren't color keyed, or you want parts of the surface to appear
 If collidebit is set to 0, no collision will be detected for that point.
 If it is set to anything else, it will be set to 1 and collisions will
 be checked at that point.
-=end */
+*/
 static VALUE collision_map_array_set(VALUE self, VALUE x, VALUE y, VALUE bit)
 {
 	bitmask* map;
@@ -196,11 +192,10 @@ static VALUE collision_map_array_get(VALUE self, VALUE x, VALUE y)
 	return INT2NUM(bitmask_getbit(map, NUM2Sint16(x), NUM2Sint16(y)));
 }
 
-/*
-=begin
---- CollisionMap#size
-Returns an array of [width, height] of the collision map.
-=end */
+/**
+@method size -> [w, h]
+Returns the size of the collision map.
+*/
 static VALUE collision_map_size(VALUE self)
 {
 	bitmask* map;

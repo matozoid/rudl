@@ -12,18 +12,15 @@ void initTimer()
 	}
 }
 ///////////////////////////////// TIME
-/*
-=begin
-<<< docs/head
-= Timer
-== Class Methods
---- Timer.delay( milliseconds )
-Will do nothing for ((|milliseconds|)) milliseconds.
+/**
+@file timer
+@class Timer
+@section Class Methods
+@method delay( milliseconds ) -> nil
+Will do nothing for @milliseconds milliseconds.
 It is not guaranteed to be exact and has different resolution on different platforms.
 Expect a resolution of 10 to 20 milliseconds at worst.
---- Timer.ticks
-Returns the time in milliseconds since RUDL was required.
-=end */
+*/
 static VALUE timer_delay(VALUE obj, VALUE delay)
 {
 	initTimer();
@@ -32,6 +29,10 @@ static VALUE timer_delay(VALUE obj, VALUE delay)
 	return Qnil;
 }
 
+/**
+@method ticks -> Number
+Returns the time in milliseconds since RUDL was required.
+*/
 static VALUE timer_getTicks(VALUE obj)
 {
 	initTimer();
@@ -58,18 +59,16 @@ Uint32 timerCallback(Uint32 interval, void *param)
 	return interval;
 }
 
-/*
-=begin
-= EventTimer
-A class that controls delivering (({TimerEvent}))s on a regular basis.
-== Class Methods
---- EventTimer.new( interval, id )
-Will create a EventTimer object that controls sending (({TimerEvent}))s every ((|interval|))
-milliseconds, having their id-field set to ((|id|)) - which is a number.
-== Instance Methods
---- EventTimer#stop
-Will stop this EventTimer from posting more (({TimerEvent}))s.
-=end */
+/**
+@class EventTimer
+A class that controls delivering @TimerEvent s on a regular basis.
+*/
+/**
+@section Class Methods
+@method new( interval, id ) -> EventTimer
+Will create a EventTimer object that controls sending @TimerEvent s every @interval
+milliseconds, having their id-field set to @id - which is a number.
+*/
 static VALUE eventTimer_new(VALUE obj, VALUE interval, VALUE id)
 {
 	SDL_TimerID timerID;
@@ -82,6 +81,11 @@ static VALUE eventTimer_new(VALUE obj, VALUE interval, VALUE id)
 	return Data_Wrap_Struct(classEventTimer, 0, freeEventTimer, timerID);
 }
 
+/**
+@section Instance Methods
+@method stop -> boolean
+Will stop this EventTimer from posting more @TimerEvent s.
+*/
 static VALUE eventTimer_stop(VALUE obj)
 {
 	SDL_TimerID timerID;
@@ -102,14 +106,14 @@ void initTimerClasses()
 	classEventTimer=rb_define_class_under(moduleRUDL, "EventTimer", rb_cObject);
 	rb_define_singleton_method(classEventTimer, "new", eventTimer_new, 2);
 	rb_define_method(classEventTimer, "stop", eventTimer_stop, 0);
-/*
-=begin
-= Events
-== TimerEvent
-This event is posted regularly by an EventTimer object.
---- TimerEvent#id
-This is the EventTimer's ((|id|)).
-=end */
+/**
+@class TimerEvent
+This event is posted regularly by an @EventTimer object.
+*/
+/**
+@method id -> Number
+This is the EventTimer's @id.
+*/
 	classTimerEvent=rb_define_class_under(moduleRUDL, "TimerEvent", classEvent);
 	rb_define_attr(classTimerEvent, "id", 1, 1);
 }

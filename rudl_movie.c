@@ -11,11 +11,9 @@
 #include "rudl_audio.h"
 #include "smpeg/smpeg.h"
 
-/*
-=begin
-<<< docs/head
-
-= Movie
+/**
+@file movie
+@class Movie
 The Movie object represents an opened MPEG file.
 You control playback similar to a Sound object.
 
@@ -29,13 +27,15 @@ it will default to the display Surface.
 
 Movies are played back in background threads,
 so there is very little management needed on the user end.
-Just load the Movie, set the destination, and play()
+Just load the Movie, set the destination, and @play
 
-
-== Class Methods
---- Movie.new( filename )
-Loads an MPEG stream from file ((<filename>))
-=end */
+<b>This is not usable yet</b>
+*/
+/**
+@section Class Methods
+@method new( filename )
+Loads an MPEG stream from file @filename
+*/
 
 static void init_smpeg()
 {
