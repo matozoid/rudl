@@ -3,6 +3,7 @@
   PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
+<head>
 <link rel=stylesheet type='text/css' href='rudl.css'>
 <title>rudl_keyboard</title>
 </head>
@@ -23,15 +24,16 @@
 <br><a href='rudl_keyboard.html#label-11'><code>Key#modifiers=( <var>modifiers</var> )</code></a>
 <br><a href='rudl_keyboard.html#label-12'><code>Key.set_repeat( <var>delay</var>, <var>interval</var> )</code></a>
 <br><a href='rudl_keyboard.html#label-13'><code>Key#set_repeat( <var>delay</var>, <var>interval</var> )</code></a>
-<br><a href='rudl_keyboard.html#label-14'>KeyUpEvent</a>
-<br><a href='rudl_keyboard.html#label-15'><code>KeyUpEvent#key</code></a>
-<br><a href='rudl_keyboard.html#label-16'><code>KeyUpEvent#mod</code></a>
-<br><a href='rudl_keyboard.html#label-17'><code>KeyUpEvent#unicode</code></a>
-<br><a href='rudl_keyboard.html#label-18'>KeyDownEvent</a>
-<br><a href='rudl_keyboard.html#label-19'><code>KeyDownEvent#key</code></a>
-<br><a href='rudl_keyboard.html#label-20'><code>KeyDownEvent#mod</code></a>
-<br><a href='rudl_keyboard.html#label-21'><code>KeyDownEvent#unicode</code></a>
-<br><a href='rudl_keyboard.html#label-22'>Constants</a>
+<br><a href='rudl_keyboard.html#label-14'>Events</a>
+<br><a href='rudl_keyboard.html#label-15'>KeyUpEvent</a>
+<br><a href='rudl_keyboard.html#label-16'><code>KeyUpEvent#key</code></a>
+<br><a href='rudl_keyboard.html#label-17'><code>KeyUpEvent#mod</code></a>
+<br><a href='rudl_keyboard.html#label-18'><code>KeyUpEvent#unicode</code></a>
+<br><a href='rudl_keyboard.html#label-19'>KeyDownEvent</a>
+<br><a href='rudl_keyboard.html#label-20'><code>KeyDownEvent#key</code></a>
+<br><a href='rudl_keyboard.html#label-21'><code>KeyDownEvent#mod</code></a>
+<br><a href='rudl_keyboard.html#label-22'><code>KeyDownEvent#unicode</code></a>
+<br><a href='rudl_keyboard.html#label-23'>Constants</a>
 
 
 <h1><a name="label-0" id="label-0">Key</a></h1><!-- RDLabel: "Key" -->
@@ -76,35 +78,36 @@ So, if K_b is pressed, the hash will contain a key,value pair of K_b =&gt; true.
 <p>Sets the keyboard to wait for <var>delay</var> milliseconds before starting repeat with 
 <var>interval</var> delay between repeats.
 Set both to zero to disable repeat.</p>
-<h1><a name="label-14" id="label-14">KeyUpEvent</a></h1><!-- RDLabel: "KeyUpEvent" -->
+<h1><a name="label-14" id="label-14">Events</a></h1><!-- RDLabel: "Events" -->
+<h2><a name="label-15" id="label-15">KeyUpEvent</a></h2><!-- RDLabel: "KeyUpEvent" -->
 <p>This event is posted when a key is released.</p>
 <dl>
-<dt><a name="label-15" id="label-15"><code>KeyUpEvent#key</code></a></dt><!-- RDLabel: "KeyUpEvent#key" -->
+<dt><a name="label-16" id="label-16"><code>KeyUpEvent#key</code></a></dt><!-- RDLabel: "KeyUpEvent#key" -->
 </dl>
 <p>The keycode for the released key.</p>
 <dl>
-<dt><a name="label-16" id="label-16"><code>KeyUpEvent#mod</code></a></dt><!-- RDLabel: "KeyUpEvent#mod" -->
+<dt><a name="label-17" id="label-17"><code>KeyUpEvent#mod</code></a></dt><!-- RDLabel: "KeyUpEvent#mod" -->
 </dl>
 <p>The modifier keys state.</p>
 <dl>
-<dt><a name="label-17" id="label-17"><code>KeyUpEvent#unicode</code></a></dt><!-- RDLabel: "KeyUpEvent#unicode" -->
+<dt><a name="label-18" id="label-18"><code>KeyUpEvent#unicode</code></a></dt><!-- RDLabel: "KeyUpEvent#unicode" -->
 </dl>
 <p>The Unicode version of the key.</p>
-<h1><a name="label-18" id="label-18">KeyDownEvent</a></h1><!-- RDLabel: "KeyDownEvent" -->
+<h2><a name="label-19" id="label-19">KeyDownEvent</a></h2><!-- RDLabel: "KeyDownEvent" -->
 <p>This event is posted when a key is pressed and when it gets repeated (see Key#set_repeat).</p>
 <dl>
-<dt><a name="label-19" id="label-19"><code>KeyDownEvent#key</code></a></dt><!-- RDLabel: "KeyDownEvent#key" -->
+<dt><a name="label-20" id="label-20"><code>KeyDownEvent#key</code></a></dt><!-- RDLabel: "KeyDownEvent#key" -->
 </dl>
 <p>The keycode for the pressed key.</p>
 <dl>
-<dt><a name="label-20" id="label-20"><code>KeyDownEvent#mod</code></a></dt><!-- RDLabel: "KeyDownEvent#mod" -->
+<dt><a name="label-21" id="label-21"><code>KeyDownEvent#mod</code></a></dt><!-- RDLabel: "KeyDownEvent#mod" -->
 </dl>
 <p>The modifier keys state.</p>
 <dl>
-<dt><a name="label-21" id="label-21"><code>KeyDownEvent#unicode</code></a></dt><!-- RDLabel: "KeyDownEvent#unicode" -->
+<dt><a name="label-22" id="label-22"><code>KeyDownEvent#unicode</code></a></dt><!-- RDLabel: "KeyDownEvent#unicode" -->
 </dl>
 <p>The Unicode version of the key.</p>
-<h1><a name="label-22" id="label-22">Constants</a></h1><!-- RDLabel: "Constants" -->
+<h1><a name="label-23" id="label-23">Constants</a></h1><!-- RDLabel: "Constants" -->
 <p>Keycodes in one handy big mess:</p>
 <p>K_UNKNOWN, K_FIRST, K_BACKSPACE, K_TAB, K_CLEAR, K_RETURN, K_PAUSE, K_ESCAPE, K_SPACE, K_EXCLAIM, K_QUOTEDBL, 
 K_HASH, K_DOLLAR, K_AMPERSAND, K_QUOTE, K_LEFTPAREN, K_RIGHTPAREN, K_ASTERISK, K_PLUS, K_COMMA, 

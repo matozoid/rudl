@@ -200,22 +200,23 @@ void initJoystickClasses()
 
 /*
 =begin
-= JoyAxisEvent
+= Events
+== JoyAxisEvent
 Contains ((|id|)) which is the joysticknumber,
 ((|value|)) which is the movement, ranging from -1 to 1 and
 ((|axis|)) which is the axis index.
-= JoyBallEvent
+== JoyBallEvent
 Contains ((|id|)) which is the joysticknumber,
 ((|ball|)) which is a trackball index and
 ((|rel|)) which is a movement array of [dx, dy].
-= JoyHatEvent
+== JoyHatEvent
 Contains ((|id|)) which is the joysticknumber,
 ((|hat|)) which is the hatnumber and
 a movement array of [dx, dy] called ((|value|)) where dx and dy can be -1, 0 or 1.
-= JoyButtonUpEvent
+== JoyButtonUpEvent
 Contains ((|id|)) which is the joysticknumber and
 ((|button|)) which is the button index.
-= JoyButtonDownEvent
+== JoyButtonDownEvent
 Contains ((|id|)) which is the joysticknumber and
 ((|button|)) which is the button index.
 =end */

@@ -322,13 +322,9 @@ void initEventsClasses()
 /*
 
 =begin
-
 --- EventQueue.flush
-
 --- EventQueue#flush
-
 Flushes all events from the queue.
-
 =end */
 
 	rb_eval_string(
@@ -343,7 +339,8 @@ Flushes all events from the queue.
 
 /*
 =begin
-= Event
+= Events
+== Event
 This is the baseclass for all event classes.
 It contains nothing.
 

@@ -3,6 +3,7 @@
   PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
+<head>
 <link rel=stylesheet type='text/css' href='rudl.css'>
 <title>rudl_joystick</title>
 </head>
@@ -23,11 +24,12 @@
 <br><a href='rudl_joystick.html#label-11'><code>Joystick#ball( <var>nr</var> )</code></a>
 <br><a href='rudl_joystick.html#label-12'><code>Joystick#hat( <var>nr</var> )</code></a>
 <br><a href='rudl_joystick.html#label-13'><code>Joystick#button( <var>nr</var> )</code></a>
-<br><a href='rudl_joystick.html#label-14'>JoyAxisEvent</a>
-<br><a href='rudl_joystick.html#label-15'>JoyBallEvent</a>
-<br><a href='rudl_joystick.html#label-16'>JoyHatEvent</a>
-<br><a href='rudl_joystick.html#label-17'>JoyButtonUpEvent</a>
-<br><a href='rudl_joystick.html#label-18'>JoyButtonDownEvent</a>
+<br><a href='rudl_joystick.html#label-14'>Events</a>
+<br><a href='rudl_joystick.html#label-15'>JoyAxisEvent</a>
+<br><a href='rudl_joystick.html#label-16'>JoyBallEvent</a>
+<br><a href='rudl_joystick.html#label-17'>JoyHatEvent</a>
+<br><a href='rudl_joystick.html#label-18'>JoyButtonUpEvent</a>
+<br><a href='rudl_joystick.html#label-19'>JoyButtonDownEvent</a>
 
 
 <h1><a name="label-0" id="label-0">Joystick</a></h1><!-- RDLabel: "Joystick" -->
@@ -79,22 +81,23 @@ This will also start events for this joystick.</p>
 <dt><a name="label-13" id="label-13"><code>Joystick#button( <var>nr</var> )</code></a></dt><!-- RDLabel: "Joystick#button" -->
 </dl>
 <p>Returns the boolean state of button <var>nr</var>.</p>
-<h1><a name="label-14" id="label-14">JoyAxisEvent</a></h1><!-- RDLabel: "JoyAxisEvent" -->
+<h1><a name="label-14" id="label-14">Events</a></h1><!-- RDLabel: "Events" -->
+<h2><a name="label-15" id="label-15">JoyAxisEvent</a></h2><!-- RDLabel: "JoyAxisEvent" -->
 <p>Contains <var>id</var> which is the joysticknumber,
 <var>value</var> which is the movement, ranging from -1 to 1 and
 <var>axis</var> which is the axis index.</p>
-<h1><a name="label-15" id="label-15">JoyBallEvent</a></h1><!-- RDLabel: "JoyBallEvent" -->
+<h2><a name="label-16" id="label-16">JoyBallEvent</a></h2><!-- RDLabel: "JoyBallEvent" -->
 <p>Contains <var>id</var> which is the joysticknumber,
 <var>ball</var> which is a trackball index and
 <var>rel</var> which is a movement array of [dx, dy].</p>
-<h1><a name="label-16" id="label-16">JoyHatEvent</a></h1><!-- RDLabel: "JoyHatEvent" -->
+<h2><a name="label-17" id="label-17">JoyHatEvent</a></h2><!-- RDLabel: "JoyHatEvent" -->
 <p>Contains <var>id</var> which is the joysticknumber,
 <var>hat</var> which is the hatnumber and
 a movement array of [dx, dy] called <var>value</var> where dx and dy can be -1, 0 or 1.</p>
-<h1><a name="label-17" id="label-17">JoyButtonUpEvent</a></h1><!-- RDLabel: "JoyButtonUpEvent" -->
+<h2><a name="label-18" id="label-18">JoyButtonUpEvent</a></h2><!-- RDLabel: "JoyButtonUpEvent" -->
 <p>Contains <var>id</var> which is the joysticknumber and
 <var>button</var> which is the button index.</p>
-<h1><a name="label-18" id="label-18">JoyButtonDownEvent</a></h1><!-- RDLabel: "JoyButtonDownEvent" -->
+<h2><a name="label-19" id="label-19">JoyButtonDownEvent</a></h2><!-- RDLabel: "JoyButtonDownEvent" -->
 <p>Contains <var>id</var> which is the joysticknumber and
 <var>button</var> which is the button index.</p>
 

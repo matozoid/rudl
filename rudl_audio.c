@@ -1125,7 +1125,7 @@ void initAudioClasses()
 /*
 =begin
 = Events
---- EndOfMusicEvent
+== EndOfMusicEvent
 This event is posted when the current music has ended.
 =end */
 	classEndOfMusicEvent=rb_define_class_under(moduleRUDL, "EndOfMusicEvent", rb_cObject);

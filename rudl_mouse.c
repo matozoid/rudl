@@ -177,7 +177,8 @@ void initMouseClasses()
 	rb_define_singleton_and_instance_method(classMouse, "visible=", mouse_set_visible, 1);
 /*
 =begin
-= MouseMotionEvent
+= Events
+== MouseMotionEvent
 --- MouseMotionEvent.pos
 An array [x, y] telling the position of the mouse.
 --- MouseMotionEvent.rel
@@ -193,7 +194,7 @@ Currently, three buttons are supported.
 
 /*
 =begin
-= MouseButtonUpEvent
+== MouseButtonUpEvent
 --- MouseButtonUpEvent.pos
 An array [x, y] telling the position of the mouse.
 --- MouseButtonUpEvent.button
@@ -205,7 +206,7 @@ The number of the button that was released.
 
 /*
 =begin
-= MouseButtonDownEvent
+== MouseButtonDownEvent
 --- MouseButtonDownEvent.pos
 An array [x, y] telling the position of the mouse.
 --- MouseButtonDownEvent.button

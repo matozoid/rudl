@@ -3,6 +3,7 @@
   PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
+<head>
 <link rel=stylesheet type='text/css' href='rudl.css'>
 <title>rudl_mouse</title>
 </head>
@@ -25,16 +26,17 @@
 <br><a href='rudl_mouse.html#label-13'><code>Mouse#visible=( <var>onOrOff</var> )</code></a>
 <br><a href='rudl_mouse.html#label-14'><code>Mouse.set_cursor( <var>hotspot</var>, <var>xormasks</var>, <var>andmasks</var> )</code></a>
 <br><a href='rudl_mouse.html#label-15'><code>Mouse#get_cursor( <var>hotspot</var>, <var>xormasks</var>, <var>andmasks</var> )</code></a>
-<br><a href='rudl_mouse.html#label-16'>MouseMotionEvent</a>
-<br><a href='rudl_mouse.html#label-17'><code>MouseMotionEvent.pos</code></a>
-<br><a href='rudl_mouse.html#label-18'><code>MouseMotionEvent.rel</code></a>
-<br><a href='rudl_mouse.html#label-19'><code>MouseMotionEvent.button</code></a>
-<br><a href='rudl_mouse.html#label-20'>MouseButtonUpEvent</a>
-<br><a href='rudl_mouse.html#label-21'><code>MouseButtonUpEvent.pos</code></a>
-<br><a href='rudl_mouse.html#label-22'><code>MouseButtonUpEvent.button</code></a>
-<br><a href='rudl_mouse.html#label-23'>MouseButtonDownEvent</a>
-<br><a href='rudl_mouse.html#label-24'><code>MouseButtonDownEvent.pos</code></a>
-<br><a href='rudl_mouse.html#label-25'><code>MouseButtonDownEvent.button</code></a>
+<br><a href='rudl_mouse.html#label-16'>Events</a>
+<br><a href='rudl_mouse.html#label-17'>MouseMotionEvent</a>
+<br><a href='rudl_mouse.html#label-18'><code>MouseMotionEvent.pos</code></a>
+<br><a href='rudl_mouse.html#label-19'><code>MouseMotionEvent.rel</code></a>
+<br><a href='rudl_mouse.html#label-20'><code>MouseMotionEvent.button</code></a>
+<br><a href='rudl_mouse.html#label-21'>MouseButtonUpEvent</a>
+<br><a href='rudl_mouse.html#label-22'><code>MouseButtonUpEvent.pos</code></a>
+<br><a href='rudl_mouse.html#label-23'><code>MouseButtonUpEvent.button</code></a>
+<br><a href='rudl_mouse.html#label-24'>MouseButtonDownEvent</a>
+<br><a href='rudl_mouse.html#label-25'><code>MouseButtonDownEvent.pos</code></a>
+<br><a href='rudl_mouse.html#label-26'><code>MouseButtonDownEvent.button</code></a>
 
 
 <h1><a name="label-0" id="label-0">Mouse</a></h1><!-- RDLabel: "Mouse" -->
@@ -93,36 +95,37 @@ Hotspot is an array containing the cursor hotspot position.
 xormasks is an array of arrays of bytes containing the cursor xor data masks.
 Lastly is andmasks, an array of arrays of bytes containting the cursor bitmask data.</p>
 <p>The example "mousecursor.rb" explains this much better.</p>
-<h1><a name="label-16" id="label-16">MouseMotionEvent</a></h1><!-- RDLabel: "MouseMotionEvent" -->
+<h1><a name="label-16" id="label-16">Events</a></h1><!-- RDLabel: "Events" -->
+<h2><a name="label-17" id="label-17">MouseMotionEvent</a></h2><!-- RDLabel: "MouseMotionEvent" -->
 <dl>
-<dt><a name="label-17" id="label-17"><code>MouseMotionEvent.pos</code></a></dt><!-- RDLabel: "MouseMotionEvent.pos" -->
+<dt><a name="label-18" id="label-18"><code>MouseMotionEvent.pos</code></a></dt><!-- RDLabel: "MouseMotionEvent.pos" -->
 </dl>
 <p>An array [x, y] telling the position of the mouse.</p>
 <dl>
-<dt><a name="label-18" id="label-18"><code>MouseMotionEvent.rel</code></a></dt><!-- RDLabel: "MouseMotionEvent.rel" -->
+<dt><a name="label-19" id="label-19"><code>MouseMotionEvent.rel</code></a></dt><!-- RDLabel: "MouseMotionEvent.rel" -->
 </dl>
 <p>An array [dx, dy] telling how much the mouse moved.</p>
 <dl>
-<dt><a name="label-19" id="label-19"><code>MouseMotionEvent.button</code></a></dt><!-- RDLabel: "MouseMotionEvent.button" -->
+<dt><a name="label-20" id="label-20"><code>MouseMotionEvent.button</code></a></dt><!-- RDLabel: "MouseMotionEvent.button" -->
 </dl>
 <p>An array of booleans, representing the states of the mousebuttons.
 Currently, three buttons are supported.</p>
-<h1><a name="label-20" id="label-20">MouseButtonUpEvent</a></h1><!-- RDLabel: "MouseButtonUpEvent" -->
+<h2><a name="label-21" id="label-21">MouseButtonUpEvent</a></h2><!-- RDLabel: "MouseButtonUpEvent" -->
 <dl>
-<dt><a name="label-21" id="label-21"><code>MouseButtonUpEvent.pos</code></a></dt><!-- RDLabel: "MouseButtonUpEvent.pos" -->
+<dt><a name="label-22" id="label-22"><code>MouseButtonUpEvent.pos</code></a></dt><!-- RDLabel: "MouseButtonUpEvent.pos" -->
 </dl>
 <p>An array [x, y] telling the position of the mouse.</p>
 <dl>
-<dt><a name="label-22" id="label-22"><code>MouseButtonUpEvent.button</code></a></dt><!-- RDLabel: "MouseButtonUpEvent.button" -->
+<dt><a name="label-23" id="label-23"><code>MouseButtonUpEvent.button</code></a></dt><!-- RDLabel: "MouseButtonUpEvent.button" -->
 </dl>
 <p>The number of the button that was released.</p>
-<h1><a name="label-23" id="label-23">MouseButtonDownEvent</a></h1><!-- RDLabel: "MouseButtonDownEvent" -->
+<h2><a name="label-24" id="label-24">MouseButtonDownEvent</a></h2><!-- RDLabel: "MouseButtonDownEvent" -->
 <dl>
-<dt><a name="label-24" id="label-24"><code>MouseButtonDownEvent.pos</code></a></dt><!-- RDLabel: "MouseButtonDownEvent.pos" -->
+<dt><a name="label-25" id="label-25"><code>MouseButtonDownEvent.pos</code></a></dt><!-- RDLabel: "MouseButtonDownEvent.pos" -->
 </dl>
 <p>An array [x, y] telling the position of the mouse.</p>
 <dl>
-<dt><a name="label-25" id="label-25"><code>MouseButtonDownEvent.button</code></a></dt><!-- RDLabel: "MouseButtonDownEvent.button" -->
+<dt><a name="label-26" id="label-26"><code>MouseButtonDownEvent.button</code></a></dt><!-- RDLabel: "MouseButtonDownEvent.button" -->
 </dl>
 <p>The number of the button that was pressed.</p>
 

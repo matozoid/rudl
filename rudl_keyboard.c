@@ -121,7 +121,8 @@ void initKeyClasses()
 
 /*
 =begin
-= KeyUpEvent
+= Events
+== KeyUpEvent
 This event is posted when a key is released.
 --- KeyUpEvent#key
 The keycode for the released key.
@@ -137,7 +138,7 @@ The Unicode version of the key.
 
 /*
 =begin
-= KeyDownEvent
+== KeyDownEvent
 This event is posted when a key is pressed and when it gets repeated (see Key#set_repeat).
 --- KeyDownEvent#key
 The keycode for the pressed key.

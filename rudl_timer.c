@@ -104,7 +104,8 @@ void initTimerClasses()
 	rb_define_method(classEventTimer, "stop", eventTimer_stop, 0);
 /*
 =begin
-= TimerEvent
+= Events
+== TimerEvent
 This event is posted regularly by an EventTimer object.
 --- TimerEvent#id
 This is the EventTimer's ((|id|)).
