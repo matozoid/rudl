@@ -158,7 +158,8 @@ static VALUE eventqueue_get(int argc, VALUE* argv, VALUE self)
 /*
 =begin
 --- EventQueue.peek
-Lets you look at the next event without removing it.
+Returns the next event without removing it from the queue,
+or false when no events are available.
 --- EventQueue.peek( eventmask )
 Not implemented.
 =end */
@@ -175,7 +176,11 @@ static VALUE eventqueue_peek(int argc, VALUE* argv, VALUE self)
 	
 	SDL_PumpEvents();
 
-	return INT2BOOL(SDL_PeepEvents(&event, 1, SDL_PEEKEVENT, mask)==1);
+	if(SDL_PeepEvents(&event, 1, SDL_PEEKEVENT, mask)==1){
+		return sDLEvent2RubyEvent(&event);
+	}else{
+		return Qfalse;
+	}
 }
 
 /*
@@ -293,6 +298,18 @@ void initEventsClasses()
 	rb_define_singleton_method(classEventQueue, "grab=", eventqueue_grab_, 1);
 	rb_define_singleton_method(classEventQueue, "grab", eventqueue_grab, 0);
 	rb_define_singleton_method(classEventQueue, "wait", eventqueue_wait, 0);
+/*
+=begin
+--- EventQueue.flush
+Flushes all events from the queue.
+=end */
+	rb_eval_string(
+		"module RUDL module EventQueue				\n"
+		"	def EventQueue.flush					\n"
+		"		true while EventQueue.poll			\n"
+		"	end										\n"
+		"end end									\n");
+
 
 /*
 =begin

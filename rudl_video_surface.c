@@ -159,7 +159,7 @@ static VALUE surface_new(int argc, VALUE* argv, VALUE self)
 This creates a (({Surface})) with an image in it, loaded from ((|filename|)).
 If the SDL_image library was found during RUDL's installation, it will load many formats, like
 BMP, PNM, XPM, PCX, GIF, JPEG, PNG and TGA.
-If the SDL_image library was not found, only BMP loading is supported.
+If the SDL_image library was not found, only simple BMP loading is supported.
 =end */
 static VALUE surface_load_new(VALUE self, VALUE filename)
 {
@@ -235,17 +235,67 @@ static VALUE surface_blit(int argc, VALUE* argv, VALUE self)
 =begin
 --- Surface#convert
 --- Surface#convert_alpha
-Converts this surface to the current display's format, making it faster to blit.
+Creates a new version of the surface in the current display's format, 
+making it faster to blit.
+Returns the converted surface.
 The alpha version optimizes for fast alpha blitting.
+--- Surface#convert!
+--- Surface#convert_alpha!
+Like convert and convert_alpha, but these change the surface itself and
+return self.
 =end */
 static VALUE surface_convert(VALUE self)
 {
-	return createSurfaceObject(SDL_DisplayFormat(retrieveSurfacePointer(self)));
+	GET_SURFACE;
+	surface=SDL_DisplayFormat(surface);
+	if(surface){
+		return createSurfaceObject(surface);
+	}else{
+		SDL_RAISE;
+		return Qnil;
+	}
 }
 
 static VALUE surface_convert_alpha(VALUE self)
 {
-	return createSurfaceObject(SDL_DisplayFormatAlpha(retrieveSurfacePointer(self)));
+	GET_SURFACE;
+	surface=SDL_DisplayFormatAlpha(surface);
+	if(surface){
+		return createSurfaceObject(surface);
+	}else{
+		SDL_RAISE;
+		return Qnil;
+	}
+}
+
+static VALUE surface_convert_(VALUE self)
+{
+	SDL_Surface* new_surface;
+	GET_SURFACE;
+	new_surface=SDL_DisplayFormat(surface);
+	if(new_surface){
+		SDL_FreeSurface(surface);
+		DATA_PTR(self)=new_surface;
+		return self;
+	}else{
+		SDL_RAISE;
+		return Qnil;
+	}
+}
+
+static VALUE surface_convert_alpha_(VALUE self)
+{
+	SDL_Surface* new_surface;
+	GET_SURFACE;
+	new_surface=SDL_DisplayFormatAlpha(surface);
+	if(new_surface){
+		SDL_FreeSurface(surface);
+		DATA_PTR(self)=new_surface;
+		return self;
+	}else{
+		SDL_RAISE;
+		return Qnil;
+	}
 }
 
 /*
@@ -546,12 +596,17 @@ static VALUE surface_set_palette(VALUE self, VALUE firstValue, VALUE colors)
 	SDL_Palette* pal = surface->format->palette;
 
 	int first=NUM2INT(firstValue);
-	int amount=RARRAY(colors)->len;
+	int amount;
 	int i;
-
 	SDL_Color newPal[256];
-
 	VALUE color;
+
+	if(!rb_obj_is_kind_of(colors, rb_cArray)){
+		SDL_RAISE_S("Need array of colors");
+		return Qnil;
+	}
+	amount=RARRAY(colors)->len;
+
 
 	if(!pal) return Qfalse;
 
@@ -913,6 +968,8 @@ void initVideoSurfaceClasses()
 	rb_define_method(classSurface, "blit", surface_blit, -1);
 	rb_define_method(classSurface, "convert", surface_convert, 0);
 	rb_define_method(classSurface, "convert_alpha", surface_convert_alpha, 0);
+	rb_define_method(classSurface, "convert!", surface_convert_, 0);
+	rb_define_method(classSurface, "convert_alpha!", surface_convert_alpha_, 0);
 
 	rb_define_method(classSurface, "contained_images", surface_contained_images, 0);
 	

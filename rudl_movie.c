@@ -1,4 +1,5 @@
 /* RUDL - a C library wrapping SDL for use in Ruby. Copyright (C) 2001  Danny van Bruggen */
+#ifdef HAVE_SMPEG_SMPEG_H
 #include "rudl_movie.h"
 #include "rudl_video.h"
 #include "rudl_audio.h"
@@ -81,3 +82,4 @@ void initMovieClasses()
 	rb_define_singleton_method(classMovie, "new", movie_new, 1);
 	rb_define_method(classMovie, "play", movie_play, 0);
 }
+#endif

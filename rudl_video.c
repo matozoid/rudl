@@ -113,14 +113,10 @@ void CRECT2RECT(SDL_Rect* source, VALUE destination)
 void PARAMETER2COORD(VALUE parameter, Sint16* x, Sint16* y)
 {
 	if(rb_obj_is_kind_of(parameter, rb_cArray)){
-		if(RARRAY(parameter)->len==2){
-			*x=NUM2Sint16(rb_ary_entry(parameter, 0));
-			*y=NUM2Sint16(rb_ary_entry(parameter, 1));
-		}else{
-			rb_raise(rb_eTypeError, "Need coordinate array with 2 elements");
-		}
+		*x=NUM2Sint16(rb_ary_entry(parameter, 0));
+		*y=NUM2Sint16(rb_ary_entry(parameter, 1));
 	}else{
-		rb_raise(rb_eTypeError, "Expected coordinate array with 2 elements");
+		rb_raise(rb_eTypeError, "Expected coordinate array with at least 2 elements");
 	}
 }
 
@@ -130,14 +126,10 @@ void PARAMETER2CRECT(VALUE arg1, SDL_Rect* rect)
 		RECT2CRECT(arg1, rect);
 	}else{
 		if(rb_obj_is_kind_of(arg1, rb_cArray)){
-			if(RARRAY(arg1)->len==4){
-				rect->x=NUM2Sint16(rb_ary_entry(arg1, 0));
-				rect->y=NUM2Sint16(rb_ary_entry(arg1, 1));
-				rect->w=NUM2Uint16(rb_ary_entry(arg1, 2));
-				rect->h=NUM2Uint16(rb_ary_entry(arg1, 3));
-			}else{
-				rb_raise(rb_eTypeError, "Need rectangle array with 4 elements");
-			}
+			rect->x=NUM2Sint16(rb_ary_entry(arg1, 0));
+			rect->y=NUM2Sint16(rb_ary_entry(arg1, 1));
+			rect->w=NUM2Uint16(rb_ary_entry(arg1, 2));
+			rect->h=NUM2Uint16(rb_ary_entry(arg1, 3));
 		}else{
 			rb_raise(rb_eTypeError, "Wanted RUDL::Rect or array");
 		}
