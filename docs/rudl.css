@@ -61,3 +61,7 @@ dl {
 ul, ol li {
     margin-bottom: 0.5em;
 }
+
+ol li ul li {
+    margin-bottom: 0em;
+}
