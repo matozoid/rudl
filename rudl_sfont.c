@@ -35,8 +35,6 @@ void PutString(SDL_Surface *Surface, SFont_FontInfo *Font, Sint16 x, Sint16 y, c
     }
 }
 
-
-
 static SFont_FontInfo* retrieveFontInfoPointer(VALUE font)
 {
 	SFont_FontInfo* fontPtr;
@@ -47,6 +45,7 @@ static SFont_FontInfo* retrieveFontInfoPointer(VALUE font)
 /*
 =begin
 <<< docs/head
+
 = BitmapFont
 BitmapFont is made with the SFont library and prints text with bitmaps.
 It is maintained by Karl Bartel on ((<URL:http://www.linux-games.com/sfont/>)).
@@ -65,6 +64,7 @@ static VALUE sfont_new(VALUE self, VALUE surface)
 
 	SFont_FontInfo* font=(SFont_FontInfo*)malloc(sizeof(SFont_FontInfo));
 	font->Surface=retrieveSurfacePointer(surface);
+
 	SDL_VERIFY(font->Surface!=NULL);
 
 	if (SDL_MUSTLOCK(font->Surface)) SDL_LockSurface(font->Surface);
@@ -129,7 +129,6 @@ static VALUE sfont_size(VALUE self, VALUE ruby_text)
 {
 	SFont_FontInfo* font=retrieveFontInfoPointer(self);
 	char* text=STR2CSTR(ruby_text);
-
 	int ofs=0;
 	int i=0,x=0;
 
@@ -146,6 +145,8 @@ static VALUE sfont_size(VALUE self, VALUE ruby_text)
 	return rb_ary_new3(2, INT2NUM(x), INT2NUM(font->h));
 }
 
+
+
 void initSFontClasses()
 {
 	classSFont=rb_define_class_under(moduleRUDL, "SFont", rb_cObject);
@@ -156,6 +157,7 @@ void initSFontClasses()
 	add_sfont_print_centered();
 
 	// Backward compatability:
+
 	rb_alias(classSFont, rb_intern("puts"), rb_intern("print"));
 	rb_alias(classSFont, rb_intern("puts_centered"), rb_intern("print_centered"));
 
@@ -167,4 +169,5 @@ void initSFontClasses()
 			"	end											\n"
 			"end end										\n"
 	);
+
 }

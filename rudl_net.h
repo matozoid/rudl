@@ -9,4 +9,6 @@ extern VALUE classSocketSet;
 
 extern void initNetClasses();
 extern void startNet();
+
 extern void quitNet();
+

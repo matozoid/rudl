@@ -38,6 +38,7 @@ SDL_CD* retrieveCDROMPointer(VALUE self)
 {
 	SDL_CD* cd;
 	Data_Get_Struct(self, SDL_CD, cd);
+
 	SDL_ASSERT(cd);
 	return cd;
 }
@@ -53,6 +54,7 @@ Creates a new CDROM access object for unit ((|number|)).
 There can only be one CDROM object per unit.
 Unit 0 is the default unit.
 =end */
+
 static VALUE cdrom_new(VALUE self, VALUE number)
 {
 	initCD();
@@ -70,6 +72,7 @@ static VALUE cdrom_destroy(VALUE self, VALUE number)
 	quitCD();
 	return self;
 }
+
 
 /*
 =begin
@@ -185,6 +188,7 @@ Returns a string describing the CDROM.
 =end */
 static VALUE cdrom_name(VALUE self)
 {
+
 	VALUE tmp=rb_iv_get(self, "@id");
 	return rb_str_new2(SDL_CDName(NUM2INT(tmp)));
 }
@@ -222,6 +226,7 @@ static VALUE cdrom_audiotrack_(VALUE self, VALUE trackValue)
 =begin
 --- CDROM#track_length( track_nr )
 Returns the length of the track.
+
 Returns 0.0 when the track is not an audio track.
 =end */
 static VALUE cdrom_track_length(VALUE self, VALUE trackValue)
@@ -254,15 +259,19 @@ static VALUE cdrom_track_start(VALUE self, VALUE trackValue)
 
 	RUDL_VERIFY(track >= 0 && track < cdrom->numtracks, "Invalid track number");
 
+
 	return DBL2NUM(cdrom->track[track].offset / (double)CD_FPS);
 }
 
 //////////////////
 void initCDClasses()
 {
+
 	classCDROM=rb_define_class_under(moduleRUDL, "CDROM", rb_cObject);
 	rb_define_singleton_method(classCDROM, "new", cdrom_new, 1);
+
 	rb_define_singleton_method(classCDROM, "destroy", cdrom_destroy, 0);
+
 	rb_define_singleton_method(classCDROM, "count", cdrom_count, 0);
 	rb_define_method(classCDROM, "eject", cdrom_eject, 0);
 	rb_define_method(classCDROM, "busy?", cdrom_busy_, 0);

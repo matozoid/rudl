@@ -1,6 +1,7 @@
 /* RUDL - a C library wrapping SDL for use in Ruby. Copyright (C) 2001  Danny van Bruggen */
 #include "rudl_net.h"
 /*
+
 VALUE classNet;
 VALUE classTCPSocket;
 VALUE classUDPSocket;

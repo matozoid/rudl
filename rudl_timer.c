@@ -6,6 +6,7 @@
 void initTimer()
 {
 	if(!SDL_WasInit(SDL_INIT_TIMER)){
+
 		DEBUG_S("Starting timer subsystem");
 		SDL_VERIFY(SDL_Init(SDL_INIT_TIMER)!=-1);
 	}
@@ -76,6 +77,7 @@ static VALUE eventTimer_new(VALUE obj, VALUE interval, VALUE id)
 	initTimer();
 	
 	timerID=SDL_AddTimer(NUM2INT(interval), timerCallback, (void*)(NUM2INT(id)));
+
 	SDL_VERIFY(timerID);
 	return Data_Wrap_Struct(classEventTimer, 0, freeEventTimer, timerID);
 }
