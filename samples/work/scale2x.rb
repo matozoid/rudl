@@ -9,10 +9,16 @@ else
     picname = "mslug2-1.png"
 end
 
-# it's probably 24-bit, which isn't supported yet. Let's turn it to 32-bit.
 origpic = Surface.load_new(picname)
-pic = Surface.new [origpic.w,origpic.h], SWSURFACE, 32
-pic.blit origpic, [0,0]
+puts "#{origpic.bitsize}-bit surface: #{picname} #{origpic.w}x#{origpic.h}"
+
+# if it's 24-bit, which isn't supported yet, then turn it to 32-bit.
+if origpic.bytesize == 3
+    pic = Surface.new [origpic.w,origpic.h], SWSURFACE, 32
+    pic.blit origpic, [0,0]
+else
+    pic = origpic
+end
 
 # open window
 win = DisplaySurface.new [50 + 10*pic.w, 20 + 4*pic.h]
