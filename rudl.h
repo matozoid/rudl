@@ -5,7 +5,7 @@
 //
 #define RUDLVERSION_MAJOR 0
 #define RUDLVERSION_MINOR 7
-#define RUDLVERSION_PATCH 0
+#define RUDLVERSION_PATCH 1
 
 //
 #include "ruby.h"
