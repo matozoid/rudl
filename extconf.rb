@@ -1,5 +1,10 @@
-# Revision:	$Revision: 1.14 $
-# Date:	$Date: 2003/09/25 22:54:25 $
+# $Revision: 1.15 $
+# $Date: 2003/09/26 20:52:29 $
+# $Author: tsuihark $
+# $Log: extconf.rb,v $
+# Revision 1.15  2003/09/26 20:52:29  tsuihark
+# testing keywords
+#
 puts '* Setting up for compilation'
 
 require 'mkmf'
