@@ -4,6 +4,7 @@ newest
  - fixed a couple bugs that caused problems on Linux
  - added DisplaySurface#set_icon
  - added VideoExposeEvent which occurs when the window is uncovered
+ - added CHANGES.txt
 
 
 0.7.1
