@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 require '../RUDL'; include RUDL; include Constant
+
 display=DisplaySurface.new [400, 400]
 
 bitmap1=Surface.new [20,20]

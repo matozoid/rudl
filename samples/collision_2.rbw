@@ -114,11 +114,11 @@ while true
 
         #-- CHECK EVENTS
         event = EventQueue.poll
-        break if event.type==KeyDownEvent or event.type==QuitEvent
+        break if event.class==KeyDownEvent or event.class==QuitEvent
 end
 
 #-- PRINT FPS
 tstart = Timer.ticks - tstart
 screen.print( [10,10], "#{ (loops*1000.0)/tstart } FPS (target: 100)", [255,255,0] )
 screen.flip
-true until EventQueue.poll.type == KeyUpEvent
+true until EventQueue.poll.class == KeyUpEvent

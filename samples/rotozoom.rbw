@@ -19,6 +19,7 @@ dest=[0,0]
 
 while true
 	# The last "true" is for antialiasing. Try setting it to false.
+
 	rotatedhond=hond.rotozoom(Math.sin(i/100.0)*100+100, (Math.cos(i/67.0)+1)*0.9, false)
 	dest[0]=(320-rotatedhond.w)/2+Math.sin(i/30.0)*20
 	dest[1]=(240-rotatedhond.h)/2+Math.cos(i/44.0)*15
@@ -28,6 +29,7 @@ while true
 	display.rectangle([dest[0], dest[1], rotatedhond.w, rotatedhond.h], 0xFFFFFFFF)
 	display.flip
 	rotatedhond.destroy
-	exit if EventQueue.poll.type==KeyDownEvent
+
+	exit if EventQueue.poll.class==KeyDownEvent
 	i=i+1
 end

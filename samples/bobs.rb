@@ -52,7 +52,7 @@ def main
    
 		# Have we received an event to quit the program?
 		EventQueue.get.each do |event|
-			if [QuitEvent, KeyDownEvent, MouseButtonDownEvent].include? event.type
+			if [QuitEvent, KeyDownEvent, MouseButtonDownEvent].include? event.class
 				exit
 			end
 		end

@@ -196,7 +196,7 @@ class Pong
 
 	def new_ball
 		@ball_pos=[($display.w-8)/2, ($display.h-8)/2]
-		@ball_dir=[rand(2)*5-2, rand(5)-2]
+		@ball_dir=[rand(1)*3-1, rand(5)-2]
 		@bip.play if $sound_on
 	end
 
@@ -230,14 +230,15 @@ class Pong
 			# It is used to scale movements. It needs some fix that will keep
 			# the framerates a little more steady.
 
-			passed=(Timer.ticks-@moment)/10
-			if passed>10 then passed=10 end # to avoid gigantic leaps forward in time
-			if passed==2 then passed=1 end # Avoids a bit of jerkiness
-			@moment=Timer.ticks
-
+			passed=(Timer.ticks-@moment)/(1000.0/150.0)
+			if passed>=1
+				if passed>10 then passed=10 end # to avoid gigantic leaps forward in time
+				@moment=Timer.ticks
+			end
+	
 			# The movement loop
 
-			passed.times do
+			passed.truncate.times do
 				@players.each do |player|
 					player.react(@ball_pos)
 					player.collide(@ball_pos, @ball_dir)
@@ -264,16 +265,18 @@ class Pong
 			
 			# The blitting is really, really, really simplistic
 
-			$display.fill(Background)
-
-			@players.each do |player|
-				$display.blit(@bat, player.to_a)
-				$display.blit($numbers[player.score], player.score_pos)
+			if passed>=1
+				$display.fill(Background)
+	
+				@players.each do |player|
+					$display.blit(@bat, player.to_a)
+					$display.blit($numbers[player.score], player.score_pos)
+				end
+	
+				$display.blit(@ball, @ball_pos)
+	
+				$display.flip
 			end
-
-			$display.blit(@ball, @ball_pos)
-
-			$display.flip
 		end
 	end
 end

@@ -32,6 +32,7 @@ $sound_on=true
 if RUDL.versions.include? 'SDL_mixer'
 	begin
 		Mixer.init(44100, 16, 2)
+		# This gives warnings since Ruby 1.8, no idea why:
 		$sound={
 			"crash"		=> Sound.new('media/crapola_crash.wav'),
 			"boom"		=> Sound.new('media/crapola_boom.wav'),

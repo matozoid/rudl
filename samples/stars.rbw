@@ -7,7 +7,6 @@
 # the basics of creating a window, simple pixel plotting, and input
 # event management"""
 
-
 require 'RUDL'
 include RUDL
 include Constant
@@ -19,7 +18,7 @@ $wincenter = [320, 240]
 class Star
 	def initialize
 		dir = rand(100000)
-		velmult = rand(0)*.6+.4
+		velmult = rand(0)*0.6+0.4
 		@dx=Math.sin(dir) * velmult
 		@dy=Math.cos(dir) * velmult
 		@x=$wincenter[0]
@@ -80,17 +79,25 @@ display.set_caption 'RUDL Stars Example'
 done = false
 while !done do
 	display.fill([0,0,0])
+
 	stars.move
 	stars.draw(display)
+
 	display.antialiased_circle(Mouse.pos, 5, [255,0,0])
+
 	display.flip
 
 	while event=EventQueue.poll
+
 		case event
 			when QuitEvent,KeyDownEvent
 				done = true
+
 			when MouseButtonDownEvent
 				$wincenter = event.pos
+
 		end
+
 	end
 end
+

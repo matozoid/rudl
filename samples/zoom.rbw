@@ -28,6 +28,6 @@ while true
 	display.rectangle([dest[0], dest[1], rotatedhond.w, rotatedhond.h], 0xFFFFFFFF)
 	display.flip
 	rotatedhond.destroy
-	exit if EventQueue.poll.type==KeyDownEvent
+	exit if EventQueue.poll.class==KeyDownEvent
 	i=i+1
 end
