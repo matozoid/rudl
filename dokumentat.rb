@@ -154,11 +154,12 @@ Output is HTML with structural tags only. You should do visual formatting with C
 
 ############################# START OF CODE
 
+# Just for testing.
 ARGV=[
 	'--verbose',
 	'--project-name=dokumentat',
 #   '--output-dir=docs',
-	'D:\Rubyspul\rudl\rudl_ttf.c',
+#	'D:/Rubyspul/rudl/*',
 	'dokumentat.rb'
 ] if ARGV.empty?
 
@@ -249,22 +250,22 @@ HEADER
 		"<a>#{text}</a>"
 	end
 
-	def Output.format_class(class_name)
-		"<h1>#{class_name}</h1>\n"
+	def Output.format_class(target, class_name)
+		"<h1><a name='#{target}'>#{class_name}</a></h1>\n"
 	end
 
-	def Output.format_module(module_name)
-		"<h1>#{module_name}</h1>\n"
+	def Output.format_module(target, module_name)
+		"<h1><a name='#{target}'>#{module_name}</a></h1>\n"
 	end
 
-	def Output.format_section(section_name)
-		"<h2>#{section_name}</h2>\n"
+	def Output.format_section(target, section_name)
+		"<h2><a name='#{target}'>#{section_name}</a></h2>\n"
 	end
 
-	def Output.format_method(names_list)
+	def Output.format_method(target, names_list)
 		output = "<h4>" + names_list.shift
 		names_list.each do |name|
-			output += "<br>\n#{name}"
+			output += "<br>\n<a href='#{target}'>#{name}</a>"
 		end
 		output += "</h4>\n"
 		output
@@ -365,7 +366,7 @@ class Entry
 
 	def escaped_name
 		# Should become a lot safer.
-		name.downcase.tr ' ,\\/', '____'
+		name.downcase.tr ': ,\\/', '_____'
 	end
 
 	# If an entry (like MethodEntry) can contain more than one line (for parameter lists),
@@ -378,7 +379,11 @@ class Entry
 	end
 
 	def link
-		""
+		@parent.link+"_AND_"+escaped_name
+	end
+
+	def link_target
+		@parent.link_target+"_AND_"+escaped_name
 	end
 
 	def add_text(text)
@@ -431,8 +436,14 @@ class FileEntry < Entry
 		"#{escaped_name}.html"
 	end
 
+	# The href to link to this entry.
 	def link
-		to_filename
+		to_filename+'#'+link_target
+	end
+	
+	# The href used to define this entry.
+	def link_target
+		''
 	end
 
 	def write(output_directory)
@@ -462,12 +473,9 @@ class FileEntry < Entry
 end
 
 class ClassEntry < Entry
-	def link
-		@parent.link+"#"+escaped_name
-	end
 
 	def write(file)
-		file.write(Output::format_class(@name))
+		file.write(Output::format_class(link_target, @name))
 		file.write(Output::format_text(@text))
 		children.sort.each do |child|
 			child.write(file)
@@ -477,12 +485,9 @@ class ClassEntry < Entry
 end
 
 class ModuleEntry < Entry
-	def link
-		@parent.link+"#"+escaped_name
-	end
 
 	def write(file)
-		file.write(Output::format_module(@name))
+		file.write(Output::format_module(link_target, @name))
 		file.write(Output::format_text(@text))
 		children.sort.each do |child|
 			child.write(file)
@@ -491,12 +496,9 @@ class ModuleEntry < Entry
 end
 
 class SectionEntry < Entry
-	def link
-		@parent.link+"#"+escaped_name
-	end
 
 	def write(file)
-		file.write(Output::format_section(@name))
+		file.write(Output::format_section(link_target, @name))
 		file.write(Output::format_text(@text))
 		children.sort.each do |child|
 			child.write(file)
@@ -505,9 +507,6 @@ class SectionEntry < Entry
 end
 
 class MethodEntry < Entry
-	def link
-		@parent.link+"#"+escaped_name
-	end
 
 	def initialize(name)
 		@fullnames = []
@@ -522,7 +521,7 @@ class MethodEntry < Entry
 	end
 
 	def write(file)
-		file.write(Output::format_method(@fullnames))
+		file.write(Output::format_method(link_target, @fullnames))
 		file.write(Output::format_text(@text))
 		children.sort.each do |child|
 			child.write(file)
@@ -601,12 +600,17 @@ class Dokumentat
 
 	def process_dir(source_path)
 		source_path.tr! "\\", "/" # Hmmm, odd that Dir doesn't do backslashes
+		puts "Searching path #{source_path}"
 		files=Dir[source_path]
 		files.each do |file_name|
-			path=Path.new(@root)
-			path.goto('', @project)
-			path.goto('', @index_file)
-			process_file(file_name, path)
+			if File.stat(file_name).directory?
+				process_dir("#{file_name}/*")
+			else
+				path=Path.new(@root)
+				path.goto('', @project)
+				path.goto('', @index_file)
+				process_file(file_name, path)
+			end
 		end
 	end
 
@@ -620,7 +624,7 @@ class Dokumentat
 				when /\.c.*$/
 					commentmatcher=@matchers[:c]
 				else
-					say "Unknown extension"
+					say "Unknown extension for file #{file_name}"
 					return
 			end
 
@@ -659,6 +663,9 @@ class Dokumentat
 				end
 			end
 		end
+	rescue SystemCallError => e
+		puts "Couldn't process #{file_name} #{e}"
+		
 	end
 
 	def write(output_path)
