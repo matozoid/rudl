@@ -3,7 +3,8 @@ require '../RUDL'
 include RUDL
 
 display=DisplaySurface.new([100,100])
-if Joystick.count==0 then
+
+if Joystick.count==0
 	puts 'No joysticks, no point'
 	exit
 end

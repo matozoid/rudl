@@ -1,9 +1,12 @@
 /* RUDL - a C library wrapping SDL for use in Ruby. Copyright (C) 2001  Danny van Bruggen */
 #include "rudl_events.h"
 #include "rudl_video.h"
-#include "SDL_image.h"
 #include "SDL_rotozoom.h"
 #include "SDL_gfxPrimitives.h"
+
+#ifdef HAVE_SDL_IMAGE_H
+#include "SDL_image.h"
+#endif
 
 extern void add_ruby_to_rect();
 
@@ -1047,6 +1050,7 @@ Not implemented
 static VALUE surface_subsurface(VALUE self)
 {
 	rb_notimplement();
+	return Qnil;
 }
 
 /*
@@ -1324,6 +1328,7 @@ Not implemented because I'm not sure what use the pygame-version is.
 static VALUE displaySurface_info(VALUE self)
 {
 	rb_notimplement();
+	return Qnil;
 }
 
 /*
@@ -1403,7 +1408,7 @@ static VALUE displaySurface_set_caption(int argc, VALUE* argv, VALUE self)
 {
 	VALUE titleObject, iconTitleObject;
 	char* title;
-	char* iconTitle="Ruby/SDL application";
+	char* iconTitle="RUDL application";
 
 	rb_scan_args(argc, argv, "11", &titleObject, &iconTitleObject);
 	

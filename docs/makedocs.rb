@@ -16,9 +16,13 @@ sourcefiles.each {|source|
 	basename=File.basename(source, '.c')
 	destination="#{prefix}/#{basename}.html"
 	puts basename
-	#`rd2 #{source} > #{destination}`
+	`rd2 #{source} > #{destination}`
 }
 
-File.copy 'index.html', prefix
-File.copy 'howto.html', prefix
+if prefix!='.'
+	File.safe_unlink "#{prefix}/index.html", false
+	File.safe_unlink "#{prefix}/howto.html", false
+	File.copy 'index.html', prefix
+	File.copy 'howto.html', prefix
+end
 

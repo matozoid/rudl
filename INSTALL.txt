@@ -1,4 +1,4 @@
-As with all (most?) Ruby extension libraries:
+As with all (most?) Ruby C extension libraries:
 
 ruby extconf.rb
 

@@ -24,6 +24,8 @@ and uncomment the DEBUG-flag.
 
 <H4>Windows</H4>
 
+<P>Don't trust this chapter, this is changing rapidly.
+
 <H5>Source</H5>
 Install CygWin first, then install Ruby
 (<A HREF="http://www.rubycentral.com/">this version</A>)
@@ -32,7 +34,7 @@ Put the RUDL source in your cygwin home directory,
 and continue like in Linux.
 
 <H5>Binary</H5>
-<P>Starting with 0.5, there will be binary versions.
+<P>Starting with 0.6, there will be binary versions.
 All that will have to be done is run a small script and it should be installed.
 Offcourse, you'll need to get the following libraries:
 
@@ -69,11 +71,6 @@ You can also include RUDL, mixing it's namespace into the current namespace.
 <P>include RUDL
 <P>will do that.
 This might clash with other libraries who define the same names to be something else.
-<P>There is also a Constant namespace inside the RUDL namespace.
-It might be bearable to leave it there, refering to it as RUDL::Constant:: or
-Constant:: when RUDL is included.
-Constant can also be included, polluting your current namespace with around 200
-constants.
 
 <H4>Datatypes</H4>
 

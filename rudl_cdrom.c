@@ -27,6 +27,7 @@ static VALUE createCDROMObject(int number)
 		return newObject;
 	}
 	SDL_RAISE;
+	return Qnil;
 }
 
 SDL_CD* retrieveCDROMPointer(VALUE self)

@@ -12,6 +12,12 @@
 #include "rudl_ttf.h"
 #include "rudl_video.h"
 
+// For getting versions:
+#ifdef HAVE_SDL_MIXER_H
+#include "sdl_mixer.h"
+#endif
+//
+
 bool sDLInitWasCalled=false;
 
 ID id_begin; // For ranges
@@ -108,15 +114,15 @@ VALUE RUDL_is_init(VALUE obj, VALUE flags)
 
 VALUE RUDL_used_libraries(VALUE self)
 {
-	VALUE retval=rb_ary_new();
+	VALUE retval=rb_hash_new();
 #ifdef HAVE_SDL_IMAGE_H
-	rb_ary_push(retval, CSTR2STR("SDL_image"));
+	rb_hash_aset(retval, CSTR2STR("SDL_image"), DBL2NUM(0.0));
 #endif
 #ifdef HAVE_SDL_MIXER_H
-	rb_ary_push(retval, CSTR2STR("SDL_mixer"));
+	rb_hash_aset(retval, CSTR2STR("SDL_mixer"), DBL2NUM(MIX_MAJOR_VERSION+(MIX_MINOR_VERSION/10.)));
 #endif
 #ifdef HAVE_SDL_TTF_H
-	rb_ary_push(retval, CSTR2STR("SDL_ttf"));
+	rb_hash_aset(retval, CSTR2STR("SDL_ttf"), DBL2NUM(0.0));
 #endif
 	return retval;
 }
@@ -132,7 +138,7 @@ It has some class methods of its own too.
 --- RUDL.version
     Returns a Float containing RUDL's version number.
 --- RUDL.used_libraries
-    Returns an array of librarynames that are supported by RUDL.
+    Returns hash of librarynames with their versionnumbers that are supported by RUDL.
     This list was determined when RUDL was compiled for a certain system,
     and might change when other libraries have been installed or removed
     and RUDL is recompiled.
@@ -180,6 +186,6 @@ void Init_RUDL()
 	initTimerClasses();
 	initVideoClasses();
 	initSFontClasses();
-	initMappyClasses();
+	//initMappyClasses();
 	initSDL();
 }

@@ -139,7 +139,7 @@ static VALUE channel_pause(VALUE self)
 static VALUE channel_play(int argc, VALUE* argv, VALUE self)
 {
 	int loops = 0, maxtime = -1, channelnum;
-	VALUE sound, loopsValue, maxtimeValue;
+	VALUE sound=Qnil, loopsValue, maxtimeValue;
 	Mix_Chunk* chunk=retrieveMixChunk(sound);
 
 	switch(rb_scan_args(argc, argv, "12", &sound, &loopsValue, &maxtimeValue)){

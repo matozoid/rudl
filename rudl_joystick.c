@@ -40,6 +40,7 @@ static VALUE joystick_new(VALUE self, VALUE id)
 		return Data_Wrap_Struct(classJoystick, 0, 0, joystick);
 	}
 	SDL_RAISE;
+	return Qnil;
 }
 
 SDL_Joystick* retrieveJoystickPointer(VALUE self)
@@ -58,7 +59,7 @@ Returns the amount of joysticks attached to the computer.
 static VALUE joystick_count(VALUE self)
 {
 	initJoystick();
-	return NUM2INT(SDL_NumJoysticks());
+	return INT2NUM(SDL_NumJoysticks());
 }
 
 /*

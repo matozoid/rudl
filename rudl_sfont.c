@@ -14,7 +14,7 @@ static SFont_FontInfo* retrieveFontInfoPointer(VALUE font)
 =begin
 = SFont
 An SFont is a font made of bitmaps.
-It is maintained by Karl Bartel on ((<http://www.linux-games.com/sfont/>)).
+It is maintained by Karl Bartel on ((<URL:http://www.linux-games.com/sfont/>)).
 On his site, you can find fonts and some help.
 == Class Methods
 --- SFont.new( surface )
@@ -37,10 +37,10 @@ static VALUE sfont_new(VALUE self, VALUE surface)
 /*
 =begin
 == Instance Methods
---- SFont#print( surface, coordinate, text )
+--- SFont#puts( surface, coordinate, text )
 Puts ((|text|)) on ((|surface|)) at ((|coordinate|)) which is an array of [x, y].
 =end */
-static VALUE sfont_print(VALUE self, VALUE surface, VALUE coord, VALUE text)
+static VALUE sfont_puts(VALUE self, VALUE surface, VALUE coord, VALUE text)
 {
 	Sint16 x,y;
 	PARAMETER2COORD(coord, &x, &y);
@@ -51,10 +51,10 @@ static VALUE sfont_print(VALUE self, VALUE surface, VALUE coord, VALUE text)
 /*
 =begin
 == Instance Methods
---- SFont#print_centered( surface, y, text )
+--- SFont#pust_centered( surface, y, text )
 Puts ((|text|)) on ((|surface|)) at y-coordinate ((|y|)) in the horizontal center of the screen.
 =end */
-static VALUE sfont_print_centered(VALUE self, VALUE surface, VALUE y, VALUE text)
+static VALUE sfont_puts_centered(VALUE self, VALUE surface, VALUE y, VALUE text)
 {
 	XCenteredString2(retrieveSurfacePointer(surface), retrieveFontInfoPointer(self), NUM2INT(y), STR2CSTR(text));
 	return self;
@@ -89,8 +89,8 @@ void initSFontClasses()
 {
 	classSFont=rb_define_class_under(moduleRUDL, "SFont", rb_cObject);
 	rb_define_singleton_method(classSFont, "new", sfont_new, 1);
-	rb_define_method(classSFont, "print", sfont_print, 3);
-	rb_define_method(classSFont, "print_centered", sfont_print_centered, 3);
+	rb_define_method(classSFont, "puts", sfont_puts, 3);
+	rb_define_method(classSFont, "puts_centered", sfont_puts_centered, 3);
 	rb_define_method(classSFont, "size", sfont_size, 1);
 	//rb_define_method(classSFont, "gets", sfont_gets, 3); Too bad, it uses UNICODE
 }

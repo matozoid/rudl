@@ -199,6 +199,7 @@ Not implemented.
 static VALUE eventqueue_post(VALUE self, VALUE event)
 {
 	rb_notimplement();
+	return Qnil;
 }
 
 /*
@@ -222,6 +223,7 @@ Not implemented.
 static VALUE eventqueue_allowed_(VALUE self, VALUE eventType)
 {
 	rb_notimplement();
+	return Qnil;
 }
 
 /*
@@ -232,6 +234,7 @@ Not implemented.
 static VALUE eventqueue_blocked_(VALUE self, VALUE eventType)
 {
 	rb_notimplement();
+	return Qnil;
 }
 
 /*

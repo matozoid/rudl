@@ -2,7 +2,7 @@
 #ifndef _RUBY_SDL_H
 #define _RUBY_SDL_H
 
-#define RUDLVERSION 0.51
+#define RUDLVERSION 0.6
 #define DEBUG_RUDL
 
 #include "ruby.h"
