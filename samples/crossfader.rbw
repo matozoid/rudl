@@ -1,0 +1,72 @@
+
+# Crossfading example for RUDL (5 Jan 2004)
+# Code and photos copyright © 2004 Renne Nissinen <rennex@iki.fi>
+
+# Simple way to crossfade:
+# - blit pic2 to the window
+# - pic1.set_alpha the current transparency (1%, 2%, 3%, 4%, 5% ...)
+# - blit pic1 to the window
+# - repeat
+
+# That way we have to do two blits every time.
+
+# This example shows a faster way to crossfade:
+# - pic1.set_alpha a new value (1/100, 1/99, 1/98, 1/97, 1/96 ...)
+# - blit pic1 to the window
+# - repeat
+
+# This results in the same linear fade, with half the amount of blitting!
+# (accuracy can vary a little, but it's unnoticeable)
+
+
+require "RUDL"
+include RUDL
+include Constant
+
+# open a window
+win = DisplaySurface.new [400,300]
+win.set_caption "Crossfader - click in the window!"
+
+# load the pictures
+pic1 = Surface.load_new("media/lake.jpg")
+pic2 = Surface.load_new("media/sky.jpg")
+
+# time to wait between blits (in milliseconds, for Timer.delay)
+delay = 20
+
+# steps = number of steps, 1000 = time for the fade (1 second)
+steps = 1000/delay
+
+# n = current step (countdown to 0)
+n = steps
+
+loop do
+    # handle pending events
+    EventQueue.get.each do |ev|
+        case ev
+            # window closed
+            when QuitEvent
+                exit
+
+            # mouse click
+            when MouseButtonDownEvent
+                # we're not in the middle of a fade, are we?
+                if n == 0
+                    # ok, start a new fade
+                    n = steps
+                    # swap the pictures
+                    pic1, pic2 = pic2, pic1
+                end
+        end
+    end
+
+    # are we fading currently?
+    if n > 0
+        pic1.set_alpha(255/n)    # straight line (multiply by f(n)=[0..1] for curve)
+        win.blit(pic1, [0,0])
+        win.update
+        n -= 1
+    end
+
+    Timer.delay(delay)
+end
