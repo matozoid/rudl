@@ -161,7 +161,7 @@ Output is HTML with structural tags only. You should do visual formatting with C
 
 # Just for testing.
 ARGV=[
-	'--verbose',
+#	'--verbose',
 	'--project-name=RUDL',
 	'D:/Rubyspul/rudl/rudl_*.c'
 	#'dokumentat.rb'
