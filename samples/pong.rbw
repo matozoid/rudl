@@ -3,9 +3,10 @@
 require '../RUDL'; include RUDL; include Constant
 
 # Eek! Globals!
+$sound_on=RUDL.used_libraries.include? 'SDL_mixer'
 $display=DisplaySurface.new([320,200], FULLSCREEN|DOUBLEBUF)
-Mixer.num_channels=1 # True to the original, only a single voice <:)
-$bop=Sound.new('pong_bop.wav')
+Mixer.num_channels=1 if $sound_on # True to the original, only a single voice <:)
+$bop=Sound.new('pong_bop.wav') if $sound_on
 
 Timer.delay(500) # Time for the monitor to switch modes
 
@@ -139,7 +140,7 @@ class Player
 			elsif ball_pos[1]>=$BatSize+@y-8
 				ball_dir[1]+=1
 			end
-			$bop.play
+			$bop.play if $sound_on
 		end
 	end
 end
@@ -180,8 +181,8 @@ class Pong
 		@bat=Surface.new([8,$BatSize]).fill(Foreground)
 		@ball=Surface.new([8,8]).fill(Foreground)
 
-		@blerpblerp=Sound.new('pong_blerpblerp.wav')
-		@bip=Sound.new('pong_bip.wav')
+		@blerpblerp=Sound.new('pong_blerpblerp.wav') if $sound_on
+		@bip=Sound.new('pong_bip.wav') if $sound_on
 
 		restart
 	end
@@ -196,7 +197,7 @@ class Pong
 	def new_ball
 		@ball_pos=[($display.w-8)/2, ($display.h-8)/2]
 		@ball_dir=[rand(2)*5-2, rand(5)-2]
-		@bip.play
+		@bip.play if $sound_on
 	end
 
 	def score(player)
@@ -250,12 +251,12 @@ class Pong
 				if @ball_pos[1]>$display.h-8
 					@ball_pos[1]=$display.h-8
 					@ball_dir[1]=-(@ball_dir[1].abs)
-					$bop.play
+					$bop.play if $sound_on
 				elsif
 					@ball_pos[1]<0
 					@ball_pos[1]=0
 					@ball_dir[1]=@ball_dir[1].abs
-					$bop.play
+					$bop.play if $sound_on
 				end
 
 				score(1) if @ball_pos[0]<-8

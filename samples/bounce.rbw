@@ -1,6 +1,6 @@
 #! /usr/bin/env ruby
 
-require '../RUDL'; include RUDL
+require 'RUDL'; include RUDL
 
 display=DisplaySurface.new([640,480])
 ball=Surface.load_new('bounce.bmp')

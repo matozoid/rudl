@@ -31,19 +31,23 @@ $score=0
 
 $sound_on=true
 
-begin
-	Mixer.init(44100, 16, 2)
-	$sound={
-		"crash"		=> Sound.new('crapola_crash.wav'),
-		"boom"		=> Sound.new('crapola_boom.wav'),
-		"new ship"	=> Sound.new('crapola_new_ship.wav'),
-		"ship boom"	=> Sound.new('crapola_ship_boom.wav'),
-		"shoot"		=> Sound.new('crapola_shoot.wav')
-	}
-	$sound.each do |sound|
-		sound[1].volume=0.2 # The music is just one channel, these sounds are much louder
+if RUDL.used_libraries.include? 'SDL_mixer'
+	begin
+		Mixer.init(44100, 16, 2)
+		$sound={
+			"crash"		=> Sound.new('crapola_crash.wav'),
+			"boom"		=> Sound.new('crapola_boom.wav'),
+			"new ship"	=> Sound.new('crapola_new_ship.wav'),
+			"ship boom"	=> Sound.new('crapola_ship_boom.wav'),
+			"shoot"		=> Sound.new('crapola_shoot.wav')
+		}
+		$sound.each do |sound|
+			sound[1].volume=0.2 # The music is just one channel, these sounds are much louder
+		end
+	rescue
+		$sound_on=false
 	end
-rescue
+else
 	$sound_on=false
 end
 
@@ -476,7 +480,7 @@ def gameover
 	Music.new('crapola_fire.mod').play(-1) if $sound_on
 	font=SFont.new(Surface.load_new('24p_copperplate_blue.png'))
 	logo=Surface.new(font.size('Crapola'))
-	font.print(logo, [0,0], 'Crapola')
+	font.puts(logo, [0,0], 'Crapola')
 	logo_x=(320-logo.w)/2
 	logo_y=(200-logo.h)/2
 	scrollpos=0

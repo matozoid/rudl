@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+puts 'This is not supposed to work'
+
 require '../RUDL'; include RUDL; include Constant
 display=DisplaySurface.new([320, 240])
 
