@@ -197,13 +197,13 @@ h2 {
 	border-top: solid thin;
 }
 
-dl {
+h4 {
 	margin-top: 2em;
 	border-top: solid thin;
 	border-top-style: dotted;
 }
 
-ul, ol>li {
+ul, ol li {
 	margin-bottom: 0.5em;
 }
 SHEET
@@ -224,27 +224,27 @@ HEADER
 	def Output.html_footer
 		"\n</body>\n</html>\n"
 	end
-	
+
 	def Output.format_link(target, text)
 		"<a href='#{target}'>#{text}</a>"
 	end
-	
+
 	def Output.format_invalid_link(text)
 		"<b>#{text}</b>"
 	end
-	
+
 	def Output.format_class(class_name)
 		"<h2>#{class_name}</h2>\n"
 	end
-	
+
 	def Output.format_module(module_name)
 		"<h2>#{module_name}</h2>\n"
 	end
-	
+
 	def Output.format_section(section_name)
 		"<h3>#{section_name}</h3>\n"
 	end
-	
+
 	def Output.format_method(name, parameter_list)
 		"<h4>#{name}#{parameter_list}</h4>\n"
 	end
@@ -254,10 +254,10 @@ HEADER
 			out_text=text.dup
 			# Not really optimal, but I can't figure out the regexp for "No @, no \w, rest is ok, even start of line" followed by "@[^@]"
 			out_text.gsub! /@@/, '_AT_SIGN_'
-			
+
 			# Crosslinks should be implemented here!
 			out_text.gsub! /\B@([^@ \t\n]\S*)/, Output::format_invalid_link('\1')
-			
+
 			out_text.gsub! /_AT_SIGN_/, '@'
 			"#{out_text}</p>\n\n"
 		end
@@ -279,7 +279,7 @@ class Array
 			idx+=1
 		end
 	end
-	
+
 	def contains_class?(cls)
 		each do |o|
 			if o.is_a? cls
@@ -600,11 +600,11 @@ def main
 
 	raise "No project name defined" if(!project_name)
 
-	if !File.exist?("#{output_dir}/#{STYLESHEET_FILENAME}")
+	#if !File.exist?("#{output_dir}/#{STYLESHEET_FILENAME}")
 		File.open("#{output_dir}/#{STYLESHEET_FILENAME}", "w") do |file|
 			file.write(Output::stylesheet)
 		end
-	end
+	#end
 
 	dokumentat=Dokumentat.new(project_name)
 
