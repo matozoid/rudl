@@ -1,8 +1,11 @@
-/* 
-RUDL - a C library wrapping SDL for use in Ruby. 
-Copyright (C) 2001, 2002, 2003  Danny van Bruggen 
+/*
+RUDL - a C library wrapping SDL for use in Ruby.
+Copyright (C) 2001, 2002, 2003  Danny van Bruggen
 
 $Log: rudl_video_surface.c,v $
+Revision 1.20  2003/09/29 12:38:12  rennex
+Added missing SDL_UnlockSurface in internal_(nonlocking_)get when coordinate is out of range.
+
 Revision 1.19  2003/09/26 23:23:43  tsuihark
 Fixed documentation issue
 
@@ -989,6 +992,7 @@ __inline__ Uint32 internal_get(SDL_Surface* surface, Sint16 x, Sint16 y)
 	pixels = (Uint8*)surface->pixels;
 
 	if(x < 0 || x >= surface->w || y < 0 || y >= surface->h){
+		SDL_UnlockSurface(surface);
 		return 0;
 	}
 
@@ -1029,6 +1033,7 @@ __inline__ Uint32 internal_nonlocking_get(SDL_Surface* surface, Sint16 x, Sint16
 	pixels = (Uint8*)surface->pixels;
 
 	if(x < 0 || x >= surface->w || y < 0 || y >= surface->h){
+		SDL_UnlockSurface(surface);
 		return 0;
 	}
 
