@@ -3,6 +3,10 @@ RUDL - a C library wrapping SDL for use in Ruby.
 Copyright (C) 2001, 2002, 2003  Danny van Bruggen
 
 $Log: rudl_video_surface.c,v $
+Revision 1.32  2003/12/29 20:46:36  rennex
+Added mirror_y for now.
+Changed previous ALLOC_N to ALLOCA_N.
+
 Revision 1.31  2003/12/29 20:15:04  tsuihark
 Changed malloc to ALLOC_N to prevent memory leaks
 
@@ -1128,7 +1132,7 @@ static VALUE surface_get_column(VALUE self, VALUE x)
     h=surface->h;
     pixelsize=surface->format->BytesPerPixel;
 
-    column=ALLOC_N(char, h*pixelsize);
+    column=ALLOCA_N(Uint8, h*pixelsize);
     src=((Uint8*)surface->pixels)+(NUM2INT(x))*pixelsize;
     dest=column;
     for(y=0; y<h; y++){
@@ -1224,7 +1228,7 @@ static VALUE surface_pixels(VALUE self)
         return rb_str_new(surface->pixels, image_size);
     }else{
         int y;
-        Uint8* tmp_pixels=ALLOC_N(char, image_size);
+        Uint8* tmp_pixels=ALLOCA_N(Uint8, image_size);
         VALUE retval;
         Uint16 bytewidth=surface->w*surface->format->BytesPerPixel;
 
@@ -1232,7 +1236,6 @@ static VALUE surface_pixels(VALUE self)
             copy_surface_to_line(surface, y, tmp_pixels+y*bytewidth);
         }
         retval=rb_str_new(tmp_pixels, image_size);
-        free(tmp_pixels);
         return retval;
     }
 }
@@ -1320,6 +1323,49 @@ static VALUE surface_scale2x(int argc, VALUE* argv, VALUE self)
     return dest;
 }
 
+/*
+=begin
+--- Surface#mirror_x
+--- Surface#mirror_y
+--- Surface#scale2x( dest_surface, coordinate )
+Creates a new surface to hold the result, or reuses ((|dest_surface|)),
+=end
+*/
+static VALUE surface_mirror_y(VALUE self)
+{
+    SDL_Surface* src = retrieveSurfacePointer(self);
+    SDL_Surface* dest;
+    VALUE destsurf;
+    int bpp = src->format->BytesPerPixel;
+    int w = src->w, h = src->h;
+    int y, srcpitch, destpitch;
+    Uint8 *srcline, *destline;
+
+    /* create a new surface for the result */
+    VALUE newargv[] = {rb_ary_new3(2, INT2FIX(w), INT2FIX(h)), self};
+    destsurf = surface_new(2, newargv, classSurface);
+    dest = retrieveSurfacePointer(destsurf);
+
+    SDL_LockSurface(src);
+    SDL_LockSurface(dest);
+
+    /* just in case the surfaces' pitches can be different?? */
+    srcpitch = src->pitch;
+    destpitch = dest->pitch;
+    srcline = src->pixels;
+    destline = ((Uint8*) dest->pixels) + (h-1)*destpitch;
+    for (y = 0; y < h; y++) {
+        memcpy(destline, srcline, w*bpp);
+        srcline += srcpitch;
+        destline -= destpitch;
+    }
+
+    SDL_UnlockSurface(src);
+    SDL_UnlockSurface(dest);
+
+    return destsurf;
+}
+
 
 ///////////////////////////////// INIT
 void initVideoSurfaceClasses()
@@ -1393,6 +1439,7 @@ void initVideoSurfaceClasses()
     define_ruby_column_methods();
 
     rb_define_method(classSurface, "scale2x", surface_scale2x, -1);
+    rb_define_method(classSurface, "mirror_y", surface_mirror_y, 0);
 
     id_shared_surface_reference=rb_intern("__shared_surface_reference");
 
