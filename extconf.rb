@@ -36,6 +36,7 @@ dir_config('sdl')
 dir_config('gfx')
 dir_config('sge')
 dir_config('smpeg')
+dir_config('net')
 
 mswin32=/mswin32/ =~ RUBY_PLATFORM
 cygwin=/cygwin/ =~ RUBY_PLATFORM
@@ -76,6 +77,9 @@ have_header('SDL_image.h') if have_library('SDL_image','IMG_Load')
 puts ' - Truetype fonts: SDL_ttf from http://www.libsdl.org/projects/SDL_ttf/'
 have_header('SDL_ttf.h') if have_library('freetype','FT_Init_FreeType') and have_library('SDL_ttf','TTF_Init')
 
+puts ' - Flexible networking: SDL_net from http://www.libsdl.org/projects/SDL_net'
+#have_header('SDL_net.h') if have_library('SDL_net', 'SDLNet_Init')
+
 if debug_version
 	puts ' - Memory checking: Fortify from http://www.geocities.com/SiliconValley/Horizon/8596/'
 	puts '    (Make sure fortify.c is in this directory before running extconf.rb)'
@@ -84,9 +88,7 @@ end
 
 puts '* Checking for required files'
 puts ' - SDL from http://www.libsdl.org/download-1.2.html'
-if have_library('SDL', 'SDL_Quit') and 
-		have_header('SDL.h')
-
+if have_library('SDL', 'SDL_Quit') and have_header('SDL.h')
 	create_makefile('RUDL')
 	puts '* Done! You may now run make.'
 else
