@@ -23,6 +23,8 @@ VALUE classActiveEvent;
 VALUE classVideoExposeEvent;
 VALUE classQuitEvent;
 
+VALUE currentDisplaySurface, currDSnumargs, currDSflags, currDSdepth;
+
 extern ID id_rect, id_atx, id_aty, id_atw, id_ath;
 
 extern void initVideoClasses();
