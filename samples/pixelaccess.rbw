@@ -11,7 +11,7 @@ while true
         when MouseMotionEvent
             win.plot(event.pos, [255,255,255])
             # you can also plot a white pixel with win[x,y] = [255,255,255]
-            # ( ruby tip, expand array to arguments: win[*event.pos] = [255,255,255] )
+            # or win[event.pos] = [255,255,255]
             win.update
 
         when MouseButtonDownEvent

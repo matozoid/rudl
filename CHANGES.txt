@@ -1,6 +1,8 @@
 
 newest
 ------
+ - Surface#[] and []= now accept an [x,y] array as well as separate x,y coordinates.
+   They are now the same methods as Surface#get and Surface#plot, respectively.
  - added Surface#scale2x
  - Surface#set_colorkey(nil) now does the same as unset_colorkey, and
    set_alpha(nil) does the same as unset_alpha.
