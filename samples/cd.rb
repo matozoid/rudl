@@ -1,12 +1,9 @@
 require 'RUDL'
 
-# Let's try an example without including RUDL and Constant
-
 puts "This example will demonstrate the CDROM class.\n"
 puts "CDROM is only meant to play audio tracks."
 puts "We will ask CDROM for the amount of CD players and their names.\n"
 
-# H
 cd_count=RUDL::CDROM.count
 puts "There are #{cd_count} CD players available"
 
