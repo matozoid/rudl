@@ -1,0 +1,89 @@
+<TITLE>How to...</TITLE>
+<BODY BGCOLOR=WHITE>
+
+<H2>Ways to do stuff</H2>
+
+<H3>Install RUDL</H3>
+
+<H4>Install SDL</H4>
+
+<P>Nothing special for now.
+Just install it.
+
+<H4>Linux</H4>
+
+<P>Like other extensions:
+<P>ruby extconf.rb
+<P>should create a makefile, or complain.
+If it complains, and you wished it would say a little more, you can edit extconf.rb
+and uncomment the DEBUG-flag.
+<P>make
+<P>And now, as root:
+<P>make install
+<P>Have a nice day!
+
+<H4>Windows</H4>
+
+<H5>Source</H5>
+Install CygWin first, then install Ruby
+(<A HREF="http://www.rubycentral.com/">this version</A>)
+in the same directory.
+Put the RUDL source in your cygwin home directory,
+and continue like in Linux.
+
+<H5>Binary</H5>
+<P>Starting with 0.5, there will be binary versions.
+All that will have to be done is run a small script and it should be installed.
+Offcourse, you'll need to get the following libraries:
+
+<H4>Required libraries</H4>
+
+<P><A HREF="http://www.libsdl.org">SDL 1.2</A> ofcourse.
+
+<H4>Optional libraries</H4>
+
+<P><A HREF="http://www.libsdl.org/projects/SDL_image/index.html">SDL_image</A>, which brings
+along dependencies on <A HREF="http://www.ijg.org/">libjpeg</A>,
+<A HREF="http://www.libpng.org/pub/png/libpng.html">libpng</A>, 
+and <A HREF="http://www.info-zip.org/pub/infozip/zlib">zlib</A>.
+<P><A HREF="http://www.libsdl.org/projects/SDL_mixer/index.html">SDL_mixer</A>
+<P><A HREF="http://www.libsdl.org/projects/SDL_ttf/index.html">SDL_ttf</A>, which depends on
+libttf.
+Does anybody have a precompiled libSDL_ttf for Windows?
+
+<H3>Use RUDL</H3>
+
+<H4>Accessing RUDL</H4>
+
+<P>First steps: all of it is in a library called RUDL, so do a
+<P>require 'RUDL'
+<P>before you start using any of it.
+Eveything is namespaced by using a module.
+What that means is that there are two ways of accessing the things in RUDL.
+First, you can refer to any object in RUDL by sticking
+<P>RUDL::
+<P>in front of it, like RUDL::Surface or RUDL::EventQueue.
+This is visually ugly.
+The next solution is conceptually ugly.
+You can also include RUDL, mixing it's namespace into the current namespace.
+<P>include RUDL
+<P>will do that.
+This might clash with other libraries who define the same names to be something else.
+<P>There is also a Constant namespace inside the RUDL namespace.
+It might be bearable to leave it there, refering to it as RUDL::Constant:: or
+Constant:: when RUDL is included.
+Constant can also be included, polluting your current namespace with around 200
+constants.
+
+<H4>Datatypes</H4>
+
+<P>The following datatypes are commonly used by RUDL:
+<P>When a coordinate, size or such is needed, RUDL works with array's of two numbers like
+[10,42].
+<P>When a rectangle is needed: either an array of four numbers, representing x,y from the 
+top left corner, and w,h for width and height: [x,y,w,h], or a Rect object, which has x, y,
+w and h members. Return values are of the array type.
+<P>When a color is needed, always use an array of [r, g, b] or [r, g, b, a].
+Return values are like this too, I don't know if sometimes returning three, sometimes
+returning four values is wanted...?
+<P>A palette is an array containing [r, g, b] arrays.
