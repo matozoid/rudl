@@ -20,7 +20,7 @@ void quitVideo()
 {
 	rb_eval_string(
 		"ObjectSpace.each_object(RUDL::Surface) {|x|	\n"
-		"	x.destroy if(x.type==RUDL::Surface)			\n"
+		"	x.destroy if(x.class==RUDL::Surface)		\n"
 		"}												\n");
 	if(SDL_WasInit(SDL_INIT_VIDEO)){
 		DEBUG_S("Stopping video subsystem");
