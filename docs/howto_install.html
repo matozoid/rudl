@@ -51,8 +51,11 @@ You can put the RUDL.so in the directory where you unpacked the RUDL setup and r
 <p>Compiling from source could be useful for creating a smaller RUDL library that depends on less libraries.
 
 <p>Source is now compiled with the Microsoft Visual C 6 command line tools.
-They need to be set up with the "vcvars32" batchfile in VC's bin directory,
-you need to add RUDL's lib and include to the LIB and INCLUDE in the batch file.
+They can be set up with the "vcvars32" batchfile in VC's bin directory, 
+which sets up Visual Studio's environment variables.
+You need to add RUDL's lib and include to the LIB and INCLUDE in the batch file.
+Alternatively, you can modify the environment variables from the Windows GUI or another batchfile,
+as long as the result looks like the following:
 
 <p><b>Windows environment variables example</b></p>
 
@@ -68,7 +71,7 @@ and the include and lib dirs beneath the RUDL dir <code>C:\rudl\</code>
 
 <p>Proceed with the build instructions below. If you don't want to download
 the latest SDL libraries, you can use the provided includes and libs, and the DLLs from
-the RUDL setup archive, and start from "ruby extconf.rb".
+the RUDL setup archive, and start from &quot;ruby extconf.rb&quot;.
 
 <p>If you download the libraries yourself, you should
 probably copy the binaries and includes into the corresponding RUDL directories.
@@ -91,21 +94,22 @@ probably copy the binaries and includes into the corresponding RUDL directories.
             <li><a href="http://www.libsdl.org/projects/SDL_image/">SDL_image</a>
             <li><a href="http://www.libsdl.org/projects/SDL_mixer/">SDL_mixer</a>
             <li><a href="http://www.libsdl.org/projects/SDL_ttf/">SDL_ttf</a>
-            <li>(SDL_net)
-            <li>(smpeg)
-            <li>(freetype)
+            <li><a href='http://www.libsdl.org/projects/SDL_net'>SDL_net</a>
+            <li><a href='http://www.icculus.org/smpeg/'>smpeg</a>
+            <li><a href='http://www.freetype.org/'>freetype</a> (If Freetype 2 doesn't work, try 1)
         </ul>
         (You may need to download or compile the user binaries as well, if they're not included in the devel package.)
+
         <p>Note that RUDL doesn't <I>need</I> everything, only the core SDL library.
         <p>The libraries must be installed where the compiler can find them. Sometimes the rpm's have
         created symlinks from e.g. /usr/lib/libSDL.so to a nonexisting version, so you may need to fix them manually.
-    <li><b>ruby extconf.rb</b> in the RUDL root dir will look for the above-mentioned libraries
+    <li><code>ruby extconf.rb</code> in the RUDL root dir will look for the above-mentioned libraries
     and create a makefile with the libraries it finds.
     <p>If it can't find some library that you have installed, you can try editing extconf.rb
     and uncommenting the $DEBUG flag. Make sure that the library binaries and includes are in the right locations.
-    <li><b>make</b>
+    <li><code>make</code>
     <li>And now, as root:
-    <b>make install</b>
+    <code>make install</code>
 </ol>
 That's it. You can now try the samples.
 </body>
