@@ -3,6 +3,11 @@ RUDL - a C library wrapping SDL for use in Ruby.
 Copyright (C) 2001, 2002, 2003  Danny van Bruggen
 
 $Log: rudl_video_surface.c,v $
+Revision 1.33  2003/12/30 01:02:41  rennex
+Added mirror_x.
+Fixed segfault when calling set_palette(0, nil).
+Added (set_)palette prototypes before Surface.new
+
 Revision 1.32  2003/12/29 20:46:36  rennex
 Added mirror_y for now.
 Changed previous ALLOC_N to ALLOCA_N.
@@ -96,6 +101,9 @@ __inline__ void setMasksFromBPP(Uint32 bpp, bool alphaWanted, Uint32* Rmask, Uin
     }
 }
 
+/* declare the functions here, so we can use them in Surface.new */
+static VALUE surface_palette(VALUE self);
+static VALUE surface_set_palette(VALUE self, VALUE firstValue, VALUE colors);
 
 // METHODS:
 
@@ -793,22 +801,22 @@ static VALUE surface_set_palette(VALUE self, VALUE firstValue, VALUE colors)
 
     VALUE tmp;
 
-    RUDL_ASSERT(rb_obj_is_kind_of(colors, rb_cArray), "Need array of colors");
+    RUDL_VERIFY(rb_obj_is_kind_of(colors, rb_cArray), "Need array of colors");
 
     amount=RARRAY(colors)->len;
 
-    if(!pal) return Qfalse;
+    if (!pal) return Qfalse;
 
-    if(first+amount>256) amount=256-first;
+    if (first+amount>256) amount=256-first;
 
-    for(i=0; i<amount; i++){
+    for (i=0; i<amount; i++) {
         color=rb_ary_entry(colors, i);
         tmp=rb_ary_entry(color, 0);     newPal[i].r=NUM2Uint8(tmp);
         tmp=rb_ary_entry(color, 1);     newPal[i].g=NUM2Uint8(tmp);
         tmp=rb_ary_entry(color, 2);     newPal[i].b=NUM2Uint8(tmp);
     }
 
-    if(SDL_SetColors(surface, newPal, first, amount)==0) SDL_RAISE;
+    if (SDL_SetColors(surface, newPal, first, amount)==0) SDL_RAISE;
 
     return self;
 }
@@ -1049,26 +1057,33 @@ These methods manipulate rows of pixels.
 passing each of them to the supplied codeblock.
 For more info, see (({Surface}))#((|pixels|)).
 =end */
-static VALUE surface_get_row(VALUE self, VALUE y)
+static VALUE surface_get_row(VALUE self, VALUE yval)
 {
+    int y = NUM2INT(yval);
+    VALUE ret;
     GET_SURFACE;
 
-    RUDL_ASSERT(NUM2INT(y)<surface->h, "y>surface.h");
-    RUDL_ASSERT(NUM2INT(y)>=0, "y<0");
+    RUDL_VERIFY(y >= 0 && y < surface->h, "coordinate out of bounds");
 
-    return rb_str_new(get_line_pointer(surface, NUM2INT(y)), surface->w*surface->format->BytesPerPixel);
+    SDL_LockSurface(surface);
+    ret = rb_str_new(get_line_pointer(surface, y), surface->w*surface->format->BytesPerPixel);
+    SDL_UnlockSurface(surface);
+
+    return ret;
 }
 
-static VALUE surface_set_row(VALUE self, VALUE y, VALUE pixels)
+static VALUE surface_set_row(VALUE self, VALUE yval, VALUE pixels)
 {
+    int y = NUM2INT(yval);
     GET_SURFACE;
 
-    RUDL_ASSERT(NUM2INT(y)<surface->h, "y>surface.h");
-    RUDL_ASSERT(NUM2INT(y)>=0, "y<0");
+    RUDL_VERIFY(y >= 0 && y < surface->h, "coordinate out of bounds");
 
     RUDL_ASSERT(RSTRING(pixels)->len >= surface->w*surface->format->BytesPerPixel, "Not enough data for a complete row");
 
-    copy_line_to_surface(surface, NUM2INT(y), RSTRING(pixels)->ptr);
+    SDL_LockSurface(surface);
+    copy_line_to_surface(surface, y, RSTRING(pixels)->ptr);
+    SDL_UnlockSurface(surface);
     return self;
 }
 
@@ -1117,55 +1132,61 @@ These methods manipulate columns of pixels.
 passing each of them to the supplied codeblock.
 For more info, see (({Surface}))#((|pixels|)).
 =end */
-static VALUE surface_get_column(VALUE self, VALUE x)
+static VALUE surface_get_column(VALUE self, VALUE xval)
 {
-    int y;
-    int pixelsize;
-    int h;
-    Uint8* src, *dest, *column;
+    int x = NUM2INT(xval), y, h, pixelsize, pitch;
+    Uint8 *src, *dest, *column;
 
     GET_SURFACE;
 
-    RUDL_ASSERT(NUM2INT(x)<surface->w, "x>surface.w");
-    RUDL_ASSERT(NUM2INT(x)>=0, "x<0");
+    RUDL_VERIFY(x >= 0 && x < surface->w, "coordinate out of bounds");
 
-    h=surface->h;
-    pixelsize=surface->format->BytesPerPixel;
+    h = surface->h;
+    pixelsize = surface->format->BytesPerPixel;
+    pitch = surface->pitch;
+    column = ALLOCA_N(Uint8, h*pixelsize);
 
-    column=ALLOCA_N(Uint8, h*pixelsize);
-    src=((Uint8*)surface->pixels)+(NUM2INT(x))*pixelsize;
-    dest=column;
-    for(y=0; y<h; y++){
+    SDL_LockSurface(surface);
+
+    src = ((Uint8*) surface->pixels) + x*pixelsize;
+    dest = column;
+
+    for (y=0; y<h; y++) {
         memcpy(dest, src, pixelsize);
-        dest+=pixelsize;
-        src+=surface->pitch;
+        dest += pixelsize;
+        src += pitch;
     }
+
+    SDL_UnlockSurface(surface);
 
     return rb_str_new(column, h*pixelsize);
 }
 
-static VALUE surface_set_column(VALUE self, VALUE x, VALUE pixels)
+static VALUE surface_set_column(VALUE self, VALUE xval, VALUE pixels)
 {
-    int y;
-    int pixelsize;
-    int h;
-    Uint8* src, *dest;
+    int x = NUM2INT(xval), y, h, pixelsize, pitch;
+    Uint8 *src, *dest;
 
     GET_SURFACE;
 
-    RUDL_ASSERT(NUM2INT(x)<surface->w, "x>surface.w");
-    RUDL_ASSERT(NUM2INT(x)>=0, "x<0");
+    RUDL_VERIFY(x >= 0 && x < surface->w, "coordinate out of bounds");
 
-    h=surface->h;
-    pixelsize=surface->format->BytesPerPixel;
+    h = surface->h;
+    pixelsize = surface->format->BytesPerPixel;
+    pitch = surface->pitch;
 
-    dest=((Uint8*)surface->pixels)+(NUM2INT(x))*pixelsize;
-    src=RSTRING(pixels)->ptr;
-    for(y=0; y<h; y++){
+    SDL_LockSurface(surface);
+
+    dest = ((Uint8*) surface->pixels) + x*pixelsize;
+    src = RSTRING(pixels)->ptr;
+
+    for (y=0; y<h; y++) {
         memcpy(dest, src, pixelsize);
-        dest+=surface->pitch;
-        src+=pixelsize;
+        dest += pitch;
+        src += pixelsize;
     }
+
+    SDL_UnlockSurface(surface);
 
     return self;
 }
@@ -1327,8 +1348,8 @@ static VALUE surface_scale2x(int argc, VALUE* argv, VALUE self)
 =begin
 --- Surface#mirror_x
 --- Surface#mirror_y
---- Surface#scale2x( dest_surface, coordinate )
-Creates a new surface to hold the result, or reuses ((|dest_surface|)),
+Mirrors the surface, returning a new surface. ((|mirror_x|)) swaps the left side to the right,
+and ((|mirror_y|)) swaps the top side to the bottom.
 =end
 */
 static VALUE surface_mirror_y(VALUE self)
@@ -1352,12 +1373,55 @@ static VALUE surface_mirror_y(VALUE self)
     /* just in case the surfaces' pitches can be different?? */
     srcpitch = src->pitch;
     destpitch = dest->pitch;
+
     srcline = src->pixels;
     destline = ((Uint8*) dest->pixels) + (h-1)*destpitch;
     for (y = 0; y < h; y++) {
         memcpy(destline, srcline, w*bpp);
         srcline += srcpitch;
         destline -= destpitch;
+    }
+
+    SDL_UnlockSurface(src);
+    SDL_UnlockSurface(dest);
+
+    return destsurf;
+}
+
+static VALUE surface_mirror_x(VALUE self)
+{
+    SDL_Surface* src = retrieveSurfacePointer(self);
+    SDL_Surface* dest;
+    VALUE destsurf;
+    int bpp = src->format->BytesPerPixel;
+    int w = src->w, h = src->h;
+    int x, y, b, srcextra, destpitch2;
+    Uint8 *srcline, *destline, *d;
+
+    /* create a new surface for the result */
+    VALUE newargv[] = {rb_ary_new3(2, INT2FIX(w), INT2FIX(h)), self};
+    destsurf = surface_new(2, newargv, classSurface);
+    dest = retrieveSurfacePointer(destsurf);
+
+    SDL_LockSurface(src);
+    SDL_LockSurface(dest);
+
+    /* just in case the source surface's pitch != w*bpp */
+    srcextra = src->pitch - w*bpp;
+    destpitch2 = 2*dest->pitch;
+
+    srcline = src->pixels;
+    destline = ((Uint8*) dest->pixels) + (w-1)*bpp;
+    for (y = 0; y < h; y++) {
+        for (x = 0; x < w; x++) {
+            for (b = 0; b < bpp; b++) {
+                destline[b] = srcline[b];
+            }
+            srcline += bpp;
+            destline -= bpp;
+        }
+        srcline += srcextra;
+        destline += destpitch2;
     }
 
     SDL_UnlockSurface(src);
@@ -1440,6 +1504,7 @@ void initVideoSurfaceClasses()
 
     rb_define_method(classSurface, "scale2x", surface_scale2x, -1);
     rb_define_method(classSurface, "mirror_y", surface_mirror_y, 0);
+    rb_define_method(classSurface, "mirror_x", surface_mirror_x, 0);
 
     id_shared_surface_reference=rb_intern("__shared_surface_reference");
 
