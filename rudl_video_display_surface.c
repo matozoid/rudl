@@ -31,6 +31,7 @@ Return value: the new DisplaySurface object
   * DOUBLEBUF, to enable double buffered hardware pageflipping. Use ((|flip|)) with this.
   * FULLSCREEN, attempts to grab all of the screen,
   * NOFRAME, in RUDL 0.3 and up, leaves the frame off the window.
+  * OPENGL, to create an OpenGL window.
 * ((|depth|)) selects the bits per pixel value (8 is 256 colors, 16 is thousands of colors, 
   24 and 32 are millions of colors). If it is not supplied, a good one will be selected for you.
 =end */
@@ -362,6 +363,16 @@ static VALUE displaySurface_toggle_fullscreen(VALUE self)
 {
 	return INT2BOOL(SDL_WM_ToggleFullScreen(retrieveSurfacePointer(self))!=0);
 }
+
+static VALUE displaySurface_gl_get_attribute(VALUE self, VALUE attribute, VALUE value)
+{
+}
+
+/* I'll do this another day
+static VALUE displaySurface_gl_set_attribute(VALUE self, VALUE attribute, VALUE value)
+int SDL_GL_SetAttribute(SDL_GLattr attr, int value);
+int SDL_GL_GetAttribute(SDL_GLattr attr, int* value);
+*/
 
 ///////////////////////////////// INIT
 void initVideoDisplaySurfaceClasses()

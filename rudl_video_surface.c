@@ -951,6 +951,33 @@ static VALUE surface_array_get(VALUE self, VALUE x, VALUE y)
 	return rb_ary_new3(4, UINT2NUM(r), UINT2NUM(g), UINT2NUM(b), UINT2NUM(a));
 }
 
+/*
+=begin
+--- Surface#pixels
+--- Surface#pixels=( pixeldata )
+These methods get and set all image data at once.
+The transport medium is a string with binary data in it.
+=end */
+static VALUE surface_pixels(VALUE self)
+{
+	GET_SURFACE;
+	return rb_str_new(surface->pixels, surface->w*surface->h);
+}
+
+static VALUE surface_set_pixels(VALUE self, VALUE pixels)
+{
+	int size;
+	GET_SURFACE;
+	size=surface->w*surface->h;
+	if(RSTRING(pixels)->len<size){
+		SDL_RAISE_S("Not enough data in string");
+		return Qnil;
+	}else{
+		memcpy(surface->pixels, RSTRING(pixels)->ptr, size);
+	}
+	return self;
+}
+
 ///////////////////////////////// INIT
 void initVideoSurfaceClasses()
 {
@@ -996,7 +1023,7 @@ void initVideoSurfaceClasses()
 
 	rb_define_method(classSurface, "palette", surface_palette, 0);
 	rb_define_method(classSurface, "set_palette", surface_set_palette, 2);
-	
+
 	rb_define_method(classSurface, "set_colorkey", surface_set_colorkey, -1);
 	rb_define_method(classSurface, "unset_colorkey", surface_unset_colorkey, 0);
 	rb_define_method(classSurface, "colorkey", surface_colorkey, 0);
@@ -1006,4 +1033,7 @@ void initVideoSurfaceClasses()
 	rb_define_method(classSurface, "get", surface_get, 1);
 	rb_define_method(classSurface, "[]", surface_array_get, 2);
 	rb_define_method(classSurface, "fill", surface_fill, -1);
+
+	rb_define_method(classSurface, "pixels", surface_pixels, 0);
+	rb_define_method(classSurface, "pixels=", surface_set_pixels, 1);
 }
