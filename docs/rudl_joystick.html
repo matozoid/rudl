@@ -1,0 +1,79 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html 
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>../rudl_joystick.c</title>
+</head>
+<body>
+<h1><a name="label:0" id="label:0">Joystick</a></h1><!-- RDLabel: "Joystick" -->
+<h2><a name="label:1" id="label:1">Class Methods</a></h2><!-- RDLabel: "Class Methods" -->
+<dl>
+<dt><a name="label:2" id="label:2"><code>Joystick.new( <var>id</var> )</code></a><!-- RDLabel: "Joystick.new" -->
+</dl>
+<p>Creates a new joystick object.
+<var>id</var> is a number smaller than <a href="#label:3">Joystick.count</a>.
+This will also start events for this joystick.</p>
+<dl>
+<dt><a name="label:3" id="label:3"><code>Joystick.count</code></a><!-- RDLabel: "Joystick.count" -->
+</dl>
+<p>Returns the amount of joysticks attached to the computer.</p>
+<h2><a name="label:4" id="label:4">Instance Methods</a></h2><!-- RDLabel: "Instance Methods" -->
+<dl>
+<dt><a name="label:5" id="label:5"><code>Joystick.id</code></a><!-- RDLabel: "Joystick.id" -->
+</dl>
+<p>Returns the id of the joystick as it was passed to <a href="#label:2">Joystick.new</a>.</p>
+<dl>
+<dt><a name="label:6" id="label:6"><code>Joystick.axes</code></a><!-- RDLabel: "Joystick.axes" -->
+</dl>
+<p>Returns the amount of axes the joystick has.</p>
+<dl>
+<dt><a name="label:7" id="label:7"><code>Joystick.balls</code></a><!-- RDLabel: "Joystick.balls" -->
+</dl>
+<p>Returns the amount of trackballs the joystick has.</p>
+<dl>
+<dt><a name="label:8" id="label:8"><code>Joystick.hats</code></a><!-- RDLabel: "Joystick.hats" -->
+</dl>
+<p>Returns the amount of hats the joystick has.</p>
+<dl>
+<dt><a name="label:9" id="label:9"><code>Joystick.buttons</code></a><!-- RDLabel: "Joystick.buttons" -->
+</dl>
+<p>Returns the amount of buttons the joystick has.</p>
+<dl>
+<dt><a name="label:10" id="label:10"><code>Joystick.axis( <var>nr</var> )</code></a><!-- RDLabel: "Joystick.axis" -->
+</dl>
+<p>Returns the state of axis <var>nr</var>, which is between -1 to 1.</p>
+<dl>
+<dt><a name="label:11" id="label:11"><code>Joystick.ball( <var>nr</var> )</code></a><!-- RDLabel: "Joystick.ball" -->
+</dl>
+<p>Returns the state of ball <var>nr</var>, which is an array of [dx, dy] where dx and dy are between -1 to 1.</p>
+<dl>
+<dt><a name="label:12" id="label:12"><code>Joystick.hat( <var>nr</var> )</code></a><!-- RDLabel: "Joystick.hat" -->
+</dl>
+<p>Returns the state of hat <var>nr</var>, which is an array of [dx, dy] where dx and dy can be -1, 0 or 1.</p>
+<dl>
+<dt><a name="label:13" id="label:13"><code>Joystick.button( <var>nr</var> )</code></a><!-- RDLabel: "Joystick.button" -->
+</dl>
+<p>Returns the boolean state of button <var>nr</var>.</p>
+<h1><a name="label:14" id="label:14">JoyAxisEvent</a></h1><!-- RDLabel: "JoyAxisEvent" -->
+<p>Contains <var>id</var> which is the joysticknumber,
+<var>value</var> which is the movement, ranging from -1 to 1 and
+<var>axis</var> which is the axis index.</p>
+<h1><a name="label:15" id="label:15">JoyBallEvent</a></h1><!-- RDLabel: "JoyBallEvent" -->
+<p>Contains <var>id</var> which is the joysticknumber,
+<var>ball</var> which is a trackball index and
+<var>rel</var> which is a movement array of [dx, dy].</p>
+<h1><a name="label:16" id="label:16">JoyHatEvent</a></h1><!-- RDLabel: "JoyHatEvent" -->
+<p>Contains <var>id</var> which is the joysticknumber,
+<var>hat</var> which is the hatnumber and
+a movement array of [dx, dy] called <var>value</var> where dx and dy can be -1, 0 or 1.</p>
+<h1><a name="label:17" id="label:17">JoyButtonUpEvent</a></h1><!-- RDLabel: "JoyButtonUpEvent" -->
+<p>Contains <var>id</var> which is the joysticknumber and
+<var>button</var> which is the button index.</p>
+<h1><a name="label:18" id="label:18">JoyButtonDownEvent</a></h1><!-- RDLabel: "JoyButtonDownEvent" -->
+<p>Contains <var>id</var> which is the joysticknumber and
+<var>button</var> which is the button index.</p>
+
+</body>
+</html>

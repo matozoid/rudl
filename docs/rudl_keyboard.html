@@ -1,0 +1,76 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html 
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>../rudl_keyboard.c</title>
+</head>
+<body>
+<h1><a name="label:0" id="label:0">Key</a></h1><!-- RDLabel: "Key" -->
+<h2><a name="label:1" id="label:1">Class Methods</a></h2><!-- RDLabel: "Class Methods" -->
+<dl>
+<dt><a name="label:2" id="label:2"><code>Key.focused?</code></a><!-- RDLabel: "Key.focused?" -->
+</dl>
+<p>Returns true when the application has the keyboard input focus.</p>
+<dl>
+<dt><a name="label:3" id="label:3"><code>Key.modifiers</code></a><!-- RDLabel: "Key.modifiers" -->
+</dl>
+<p>Returns the current modifier keys state.</p>
+<dl>
+<dt><a name="label:4" id="label:4"><code>Key.pressed?</code></a><!-- RDLabel: "Key.pressed?" -->
+</dl>
+<p>Returns a hash containing all keys that are set, set to true.
+So, if K_b is pressed, the hash will contain a key,value pair of K_b =&gt; true.</p>
+<dl>
+<dt><a name="label:5" id="label:5"><code>Key.name( <var>key</var> )</code></a><!-- RDLabel: "Key.name" -->
+</dl>
+<p>Returns a string describing constant <var>key</var></p>
+<dl>
+<dt><a name="label:6" id="label:6"><code>Key.modifiers=( <var>modifiers</var> )</code></a><!-- RDLabel: "Key.modifiers=" -->
+</dl>
+<p>Sets the keyboard modifier state.</p>
+<dl>
+<dt><a name="label:7" id="label:7"><code>Key.set_repeat( <var>delay</var>, <var>interval</var> )</code></a><!-- RDLabel: "Key.set_repeat" -->
+</dl>
+<p>Sets the keyboard to wait for <var>delay</var> milliseconds before starting repeat with 
+<var>interval</var> delay between repeats.
+Set both to zero to disable repeat.</p>
+<h1><a name="label:8" id="label:8">KeyUpEvent</a></h1><!-- RDLabel: "KeyUpEvent" -->
+<p>This event is posted when a key is released.</p>
+<dl>
+<dt><a name="label:9" id="label:9"><code>KeyUpEvent#key</code></a><!-- RDLabel: "KeyUpEvent#key" -->
+</dl>
+<p>The keycode for the released key.</p>
+<dl>
+<dt><a name="label:10" id="label:10"><code>KeyUpEvent#mod</code></a><!-- RDLabel: "KeyUpEvent#mod" -->
+</dl>
+<p>The modifier keys state.</p>
+<h1><a name="label:11" id="label:11">KeyDownEvent</a></h1><!-- RDLabel: "KeyDownEvent" -->
+<p>This event is posted (once) when a key is pressed.</p>
+<dl>
+<dt><a name="label:12" id="label:12"><code>KeyUpEvent#key</code></a><!-- RDLabel: "KeyUpEvent#key" -->
+</dl>
+<p>The keycode for the pressed key.</p>
+<dl>
+<dt><a name="label:13" id="label:13"><code>KeyUpEvent#mod</code></a><!-- RDLabel: "KeyUpEvent#mod" -->
+</dl>
+<p>The modifier keys state.</p>
+<h1><a name="label:14" id="label:14">Constants</a></h1><!-- RDLabel: "Constants" -->
+<p>Keycodes in one handy big mess:</p>
+<p>K_UNKNOWN, K_FIRST, K_BACKSPACE, K_TAB, K_CLEAR, K_RETURN, K_PAUSE, K_ESCAPE, K_SPACE, K_EXCLAIM, K_QUOTEDBL, 
+K_HASH, K_DOLLAR, K_AMPERSAND, K_QUOTE, K_LEFTPAREN, K_RIGHTPAREN, K_ASTERISK, K_PLUS, K_COMMA, 
+K_MINUS, K_PERIOD, K_SLASH, K_0, K_1, K_2, K_3, K_4, K_5, K_6, K_7, K_8, K_9, K_COLON, K_SEMICOLON, K_LESS, 
+K_EQUALS, K_GREATER, K_QUESTION, K_AT, K_LEFTBRACKET, K_BACKSLASH, K_RIGHTBRACKET, K_CARET, K_UNDERSCORE, 
+K_BACKQUOTE, K_a, K_b, K_c, K_d, K_e, K_f, K_g, K_h, K_i, K_j, K_k, K_l, K_m, K_n, K_o, K_p, K_q, K_r, K_s, K_t, 
+K_u, K_v, K_w, K_x, K_y, K_z, K_DELETE, K_KP0, K_KP1, K_KP2, K_KP3, K_KP4, K_KP5, K_KP6, K_KP7, K_KP8, K_KP9, 
+K_KP_PERIOD, K_KP_DIVIDE, K_KP_MULTIPLY, K_KP_MINUS, K_KP_PLUS, K_KP_ENTER, K_KP_EQUALS, K_UP, 
+K_DOWN, K_RIGHT, K_LEFT, K_INSERT, K_HOME, K_END, K_PAGEUP, K_PAGEDOWN, K_F1, K_F2, K_F3, K_F4, K_F5, 
+K_F6, K_F7, K_F8, K_F9, K_F10, K_F11, K_F12, K_F13, K_F14, K_F15, , K_NUMLOCK, K_CAPSLOCK, K_SCROLLOCK, 
+K_RSHIFT, K_LSHIFT, K_RCTRL, K_LCTRL, K_RALT, K_LALT, K_RMETA, K_LMETA, K_LSUPER, K_RSUPER, K_MODE, 
+K_HELP, K_PRINT, K_SYSREQ, K_BREAK, K_MENU, K_POWER, K_EURO, K_LAST, KMOD_NONE, KMOD_LSHIFT, KMOD_RSHIFT, 
+KMOD_LCTRL, KMOD_RCTRL, KMOD_LALT, KMOD_RALT, KMOD_LMETA, KMOD_RMETA, KMOD_NUM, KMOD_CAPS, KMOD_MODE, 
+KMOD_CTRL, KMOD_SHIFT, KMOD_ALT, KMOD_META</p>
+
+</body>
+</html>
