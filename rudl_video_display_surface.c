@@ -3,6 +3,9 @@ RUDL - a C library wrapping SDL for use in Ruby.
 Copyright (C) 2001, 2002, 2003  Danny van Bruggen
 
 $Log: rudl_video_display_surface.c,v $
+Revision 1.17  2003/12/01 22:36:49  rennex
+Fixed some typos in docs
+
 Revision 1.16  2003/12/01 19:14:24  rennex
 Added transparency support to set_icon
 
@@ -14,12 +17,6 @@ Did stuff
 
 Revision 1.13  2003/10/05 16:59:53  tsuihark
 Fixed a lot of documentation
-
-Revision 1.12  2003/09/26 23:06:13  tsuihark
-Fixed damn EOLs and added some headers
-
-Revision 1.11  2003/09/26 23:04:29  tsuihark
-Fixed damn EOLs and added some headers
 
 */
 #include "rudl_events.h"
@@ -442,8 +439,8 @@ static VALUE displaySurface_caption(VALUE self)
 
 /*
 =begin
---- DisplaySurface#set_icon( iconSurface )
---- DisplaySurface#set_icon( iconSurface, maskString )
+--- DisplaySurface#set_icon( icon_surface )
+--- DisplaySurface#set_icon( icon_surface, mask_string )
 Sets the icon for the display window.
 
 The SDL docs say this must be called before calling DisplaySurface.new, but
@@ -454,8 +451,8 @@ Win32 icons must be 32x32.
 
 If the icon has a colorkey set, that color will be transparent. (Since
 SDL currently handles that wrong, RUDL generates the mask instead, unless
-you supply nil for mask.)
-Alternatively, you can supply a mask string where each byte represents
+you supply nil for mask_string.)
+Alternatively, you can supply a mask_string where each byte represents
 the visibility of 8 pixels (MSB is the leftmost pixel, 0 means transparent).
 =end */
 static VALUE displaySurface_set_icon(int argc, VALUE* argv, VALUE self)
