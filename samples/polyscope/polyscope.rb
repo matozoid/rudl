@@ -8,15 +8,10 @@ include Constant
 $ScreenX = 800
 $ScreenY = 600
 
-$ShapeNames = Dir["*.png"]
 $ScreenSize = [$ScreenX, $ScreenY]
 $ScreenXMid = $ScreenX / 2
 $ScreenYMid = $ScreenY / 2
 $Clock = 0.0
-
-def getShapeName
-	$ShapeNames[rand($ShapeNames.size)]
-end
 
 class Font
 
@@ -35,17 +30,10 @@ class PolyElement
 
 	attr_accessor :angle, :dist, :surface
 	
-	def initialize(name)
-	    @angle = 0.0
-    	@dist = 0.0
-		loadImage(name)
-	end
-	
-	def loadImage(name)
-		@surface = Surface.load_new(name)
-		@offx = @surface.w / 2
-		@offy = @surface.h / 2
-		setColorKey([255,255,255])
+	def initialize(image)
+		@angle = 0.0
+		@dist = 0.0
+		loadImage(image)
 	end
 	
 	def getXY
@@ -70,12 +58,18 @@ class PolyElement
 		@surface.set_colorkey(color, RLEACCEL)
 	end
 	
+	def loadImage(surface)
+		@surface=surface
+		@offx = @surface.w / 2
+		@offy = @surface.h / 2
+		#@surface.set_ColorKey([0,0,0])
+	end
+	
 end
    
 class Poly
 
-	def initialize(name)
-		@name = name		 
+	def initialize
 		@elements = Array.new
 		@rotspeed = (rand * 0.002)# + 0.01
 		@rotspeed *= -1.0 if rand < 0.5
@@ -83,12 +77,13 @@ class Poly
 		@movespeed *= -1.0 if rand < 0.5
 		@rotamp = rand * 5.0 
 		@moveamp = (rand * 8.0) + 1.0
+		newImage
 #		@angleinc = rand 
 #		puts "Poly @rotspeed #{@rotspeed} @movespeed #{@movespeed}"
 	end						
 
 	def addElement
-		@elements.push(PolyElement.new(@name))
+		@elements.push(PolyElement.new(@surface))
 	end
 	
 	def blit(surface)
@@ -128,13 +123,20 @@ class Poly
 	end
 	
 	def changeImage
-		imageName = getShapeName
+		
 		@elements.each do |e|
-			e.loadImage(imageName)
+			e.loadImage(@surface)
 		end
 	end	
 
-
+	def newImage
+		size=rand(20)+5
+		@surface=Surface.new [size*2, size*2], SWSURFACE|SRCALPHA, 32
+		
+		@surface.filled_circle([size, size], size-1, [rand(255), rand(255), rand(255), rand(255)])
+		@surface.convert_alpha!
+		
+	end
 end
 
 class PolyScope
@@ -142,7 +144,7 @@ class PolyScope
 	def initialize(count)
 		@polys = Array.new
 		count.times do
-			@polys.push(Poly.new(getShapeName))
+			@polys.push(Poly.new)
 			@polys.last.addElements(rand(12) + 1)
 		end
 	end
@@ -159,7 +161,7 @@ class PolyScope
 	end
 	
 	def add
-		@polys.push(Poly.new(getShapeName))
+		@polys.push(Poly.new)
 		@polys.last.addElements(rand(20) + 1)
 	end
 	
