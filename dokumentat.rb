@@ -166,7 +166,7 @@ Use <code>@@method ClassName.method_name</code> for class methods.
 Use <code>@@method method_name</code> for instance methods.
 
 Use short return value descriptions.
-If you have more to say than "Array[w,h]" for example, 
+If you have more to say than "Array[w,h]" for example,
 then describe the return value in the following method text.
 
 Describe the whole range of possible return values as short as possible.
@@ -178,10 +178,10 @@ Explanations shouldn't go in the @@method line.
 
 # Just for testing.
 ARGV=[
-#	'--verbose',
+	'--verbose',
 	'--project-name=RUDL',
-	'D:/Rubyspul/rudl/rudl_*.c'
-	#'dokumentat.rb'
+	#'D:/Rubyspul/rudl/rudl_*.c'
+	'dokumentat.rb'
 ] if ARGV.empty?
 
 #ARGV=['--verbose', '--project-name=rudl', '--output-dir=docs', 'test.c']
@@ -312,11 +312,11 @@ SHEET
 	def Output.format_TOC_entry(target, name)
 		"<li><a href='#{target}'>#{name}</a></li>\n"
 	end
-	
+
 	def Output.format_start_of_normal_paragraph()
 		"\n<p>"
 	end
-	
+
 	def Output.format_end_of_normal_paragraph()
 		'</p>'
 	end
@@ -470,7 +470,7 @@ class FileEntry < Entry
 	def link
 		to_filename+'#'
 	end
-	
+
 	# The href used to define this entry.
 	def link_target
 		''
@@ -710,7 +710,7 @@ class Dokumentat
 		end
 	rescue SystemCallError => e
 		puts "Couldn't process #{file_name} #{e}"
-		
+
 	end
 
 	def write(output_path)
@@ -771,9 +771,9 @@ def main
 	dokumentat=Dokumentat.new(project_name)
 
 	ARGV.each do |path|
-		dokumentat.process_dir(path)
+		dokumentat.process_dir(path.dup)
 	end
-	
+
 	dokumentat.write(output_dir)
 end
 
