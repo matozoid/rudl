@@ -48,9 +48,9 @@ should appear, which method, which class, which file...
 The first line that is not a classification is the start of the documentation,
 which continues up to the end tag.
 
-The begin and end tags for C files are <b>/**</b> and <b>*/</b> like Javadoc.
-Lines are not supposed to start with <b>*</b> though.
-The begin and end tags for Ruby files are <b>=begin</b> and <b>=end</b>.
+The begin and end tags for C files are <code>/**</code> and <code>*/</code> like Javadoc.
+Lines are not supposed to start with <code>*</code> though.
+The begin and end tags for Ruby files are <code>=begin</code> and <code>=end</code>.
 Begin tags are expected to be at the start of a line. End tags may appear anywhere.
 =end
 
@@ -58,11 +58,11 @@ Begin tags are expected to be at the start of a line. End tags may appear anywhe
 @section 5. Classification
 Every Dokumentat tag starts with @@.
 If you need the @@ itself, double it: @@@@.
-These are the classification tags: <b>@@file</b>, <b>@@section</b>, <b>@@module</b>, <b>@@class</b> and <b>@@method</b>.
+These are the classification tags: <code>@@file</code>, <code>@@section</code>, <code>@@module</code>, <code>@@class</code> and <code>@@method</code>.
 
-<b>@@file</b> specifies in which output file the rest of the documentation in the input file should be stored.
+<code>@@file</code> specifies in which output file the rest of the documentation in the input file should be stored.
 Since it appears in the title of the output page, it should look good, like "@@file Documentation for dokumentat"
-You can use more than one <b>@@file</b> statement in one source file, and you can use the same <b>@@file</b>
+You can use more than one <code>@@file</code> statement in one source file, and you can use the same <code>@@file</code>
 statement in multiple source files (to get the documentation from multiple files to show up in one
 output file.)
 
@@ -70,12 +70,12 @@ Example:
 
 @@file Video stuff
 
-<b>@@module</b> and <b>@@class</b> tell Dokumentat for which module we will encounter documentation.
+<code>@@module</code> and <code>@@class</code> tell Dokumentat for which module we will encounter documentation.
 Specify modules and classes completely, they do not nest.
 
 Example: @@module RUDL, @@class RUDL::Audio
 
-<b>@@method</b> says that documentation for a method is coming up.
+<code>@@method</code> says that documentation for a method is coming up.
 Methods are pooled by name.
 This means that if multiple methods with the same name are encountered
 in a class, section or wherever, they are treated as the same thing, but
@@ -90,7 +90,7 @@ Example:
 
 @@method help(someone, reason) (this one will be pooled with help(someone) )
 
-<b>@@section</b> is a way to subdivide one of the previous classifications.
+<code>@@section</code> is a way to subdivide one of the previous classifications.
 You can have sections with groups of methods, or chapters like the documentation you are
 reading now, or whatever you like.
 
@@ -116,19 +116,30 @@ Not implemented yet.
 
 =begin
 @section 8. Parameters
-<b>--project-name</b> specifies the name of your project.
+<code>--project-name</code> specifies the name of your project.
 This documentation was generated with project name "dokumentat"
 It is used for the directory name.
 
-<b>--output-dir</b> specifies the root for all Dokumentat documentation,
+<code>--output-dir</code> specifies the root for all Dokumentat documentation,
 for all projects that use it.
 This keeps all documentation nicely in one place.
 
-<b>--verbose</b> makes Dokumentat noisy.
+<code>--verbose</code> makes Dokumentat noisy.
 
-<b>--extras-dir</b> specifies the directory that contains additional files that can not
+<code>--extras-dir</code> specifies the directory that contains additional files that can not
 be generated, like images.
 The contents will be copied over to the project output dir.
+=end
+
+=begin
+@section 9. Output
+Output is HTML with structural tags only. You should do visual formatting with CSS.
+<ul>
+<li>Class and module titles are put in &lt;h2&gt; blocks</li>
+<li>Section names are in &lt;h3&gt; blocks</li>
+<li>Method synopses are in &lt;h4&gt; blocks</li>
+<li>The actual documentation text is in &lt;p&gt; blocks</li>
+</ul>
 =end
 
 def stylesheet
@@ -177,6 +188,7 @@ def html_header(title)
     <link rel='stylesheet' title='Dokumentat' href='../dokumentat.css' media='screen,projection' />
 </head>
 <body>
+
 HEADER
 end
 
@@ -189,7 +201,7 @@ ARGV=[
     '--project-name=dokumentat',
     '--output-dir=docs',
     'dokumentat.rb'
-]
+] if ARGV.empty?
 #ARGV=['--verbose', '--project-name=rudl', '--output-dir=docs', 'test.c']
 =begin
 @file other crap
@@ -548,11 +560,12 @@ class Dokumentat
                 section_mode=true
                 text=""
                 lines.each do |line|
-                    if line[0]!=?@
+                    if section_mode and line[0]!=?@
                         section_mode=false
+                        text += "<p>"
                     end
                     if section_mode
-                        type, name=(line.match /@([^ ]*) (.*)/)[1..2]
+                        type, name=(line.match /@(\S+) +(.+)/)[1..2]
                         case type.downcase
                             when 'file'
                                 path.goto_file_level
@@ -574,13 +587,15 @@ class Dokumentat
                         end
                     else
                         if line.strip.length==0
-                            text+="\n<p>"
+                            text.chop! if text[-1] == ?\n
+                            text+="</p>\n<p>"
                         else
                             text+=line+"\n"
                         end
                     end
                 end
-                text.gsub! /([^@])@([\w?!=]*)/, '\1<b>\2</b>'
+                text += "</p>\n\n"
+                text.gsub! /([^@])@([\w?!=]+)/, '\1<b>\2</b>'
                 text.gsub! /@@/, '@'
                 path.deepest_node.add_text(text)
             end
