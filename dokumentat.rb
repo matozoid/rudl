@@ -138,17 +138,37 @@ They can contain wildcards, and anything else that means something to Ruby's Dir
 =begin
 @section 9. Output
 Output is HTML with structural tags only. You should do visual formatting with CSS.
-<ul>
+<ul>  *** Hey Renne, this is not definitive at all! ***
 <li>Class and module titles are put in &lt;h2&gt; blocks</li>
 <li>Section names are in &lt;h3&gt; blocks</li>
 <li>Method synopses are in &lt;h4&gt; blocks</li>
 <li>The actual documentation text is in &lt;p&gt; blocks</li>
 </ul>
+=end
+
+############################# START OF CODE
+
+ARGV=[
+	'--verbose',
+	'--project-name=dokumentat',
+	'--output-dir=docs',
+	'dokumentat.rb'
+] if ARGV.empty?
+
+#ARGV=['--verbose', '--project-name=rudl', '--output-dir=docs', 'test.c']
+
+STYLESHEET_FILENAME='dokumentat.css'
+
+$verbose=false
+$extras_dir=nil
+def say(text)
+	puts text if $verbose
+end
 
 =begin
 @file source
 @module Output
-This module contains
+This module contains all HTML formatting.
 =end
 module Output
 	def Output.stylesheet
@@ -194,7 +214,7 @@ SHEET
 <html>
 <head>
 	<title>#{title}</title>
-	<link rel='stylesheet' title='Dokumentat' href='../dokumentat.css' media='screen,projection' />
+	<link rel='stylesheet' title='Dokumentat' href='../#{STYLESHEET_FILENAME}' media='screen,projection' />
 </head>
 <body>
 
@@ -209,8 +229,20 @@ HEADER
 		"<a href='#{target}'>#{text}</a>"
 	end
 	
+	def Output.format_invalid_link(text)
+		"<b>#{text}</b>"
+	end
+	
 	def Output.format_class(class_name)
 		"<h2>#{class_name}</h2>\n"
+	end
+	
+	def Output.format_module(module_name)
+		"<h2>#{module_name}</h2>\n"
+	end
+	
+	def Output.format_section(section_name)
+		"<h3>#{section_name}</h3>\n"
 	end
 	
 	def Output.format_method(name, parameter_list)
@@ -218,21 +250,19 @@ HEADER
 	end
 
 	def Output.format_text(text)
-		"#{@text}"
+		if text
+			out_text=text.dup
+			# Not really optimal, but I can't figure out the regexp for "No @, no \w, rest is ok, even start of line" followed by "@[^@]"
+			out_text.gsub! /@@/, '_AT_SIGN_'
+			
+			# Crosslinks should be implemented here!
+			out_text.gsub! /\B@([^@ \t\n]\S*)/, Output::format_invalid_link('\1')
+			
+			out_text.gsub! /_AT_SIGN_/, '@'
+			"#{out_text}</p>\n\n"
+		end
 	end
 end
-
-ARGV=[
-	'--verbose',
-	'--project-name=dokumentat',
-	'--output-dir=docs',
-	'dokumentat.rb'
-] if ARGV.empty?
-
-#ARGV=['--verbose', '--project-name=rudl', '--output-dir=docs', 'test.c']
-
-$verbose=false
-$extras_dir=nil
 
 class Array
 	def remove_starting_at_class(cls)
@@ -249,7 +279,7 @@ class Array
 			idx+=1
 		end
 	end
-
+	
 	def contains_class?(cls)
 		each do |o|
 			if o.is_a? cls
@@ -300,10 +330,15 @@ class Entry
 	end
 
 	def add_text(text)
+		if text.strip.length==0
+			text+="</p>\n<p>"
+		else
+			text+="\n"
+		end
 		if @text
 			@text=@text+text
 		else
-			@text=text
+			@text="<p>#{text}"
 		end
 	end
 
@@ -350,7 +385,7 @@ end
 
 class ModuleEntry < Entry
 	def write(file)
-		file.write("<h2>#{@name}</h2>\n")
+		file.write(Output::format_module(@name))
 		file.write(Output::format_text(@text))
 		children.sort.each do |child|
 			child.write(file)
@@ -360,8 +395,8 @@ end
 
 class SectionEntry < Entry
 	def write(file)
-		file.write("<h3>#{@name}</h3>\n")
-		file.write("#{@text}")
+		file.write(Output::format_section(@name))
+		file.write(Output::format_text(@text))
 		children.sort.each do |child|
 			child.write(file)
 		end
@@ -498,7 +533,7 @@ class Dokumentat
 						section_mode=false
 					end
 					if section_mode
-						type, name=(line.match /@([^ ]*) (.*)/)[1..2]
+						type, x, name=(line.match /@([^ ]*)( (.*))?/)[1..3]
 						case type.downcase
 							when 'file'
 								path.goto_file_level
@@ -519,17 +554,9 @@ class Dokumentat
 								say "Unknown section: #{line}"
 						end
 					else
-						if line.strip.length==0
-							text+="\n<p>"
-						else
-							text+=line+"\n"
-						end
+						path.deepest_node.add_text(line)
 					end
 				end
-				text += "</p>\n\n"
-				text.gsub! /([^@])@([\w?!=]+)/, '\1<b>\2</b>'
-				text.gsub! /@@/, '@'
-				path.deepest_node.add_text(text)
 			end
 		end
 	end
@@ -539,13 +566,10 @@ class Dokumentat
 		File.makedirs(output_path)
 		pp @root
 		@root.write(output_path)	end
-
-	def say(text)
-		puts text if $verbose
-	end
 end
 
 =begin
+@class Object
 @method main
 The main method.
 =end
@@ -557,7 +581,7 @@ def main
 		["--extras-dir",	"-e",	   GetoptLong::REQUIRED_ARGUMENT]
 	)
 	project_name=nil
-	output_dir=nil
+	output_dir='docs'
 
 	options.each do |opt, arg|
 		case opt
@@ -575,6 +599,12 @@ def main
 	end
 
 	raise "No project name defined" if(!project_name)
+
+	if !File.exist?("#{output_dir}/#{STYLESHEET_FILENAME}")
+		File.open("#{output_dir}/#{STYLESHEET_FILENAME}", "w") do |file|
+			file.write(Output::stylesheet)
+		end
+	end
 
 	dokumentat=Dokumentat.new(project_name)
 
