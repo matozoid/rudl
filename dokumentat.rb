@@ -1,21 +1,23 @@
 require 'getoptlong'
 require 'ftools'
-require 'pp'
 
 # TODO:
 # Support @, . and # as link hierarchy seperators
 # Remove . and , from end of @link.
 # Handle classes that inherit correctly
+# Fix no output bug
+# Implement linking
+# Implement extra's dir (Renne?)
 
 =begin
 @file Dokumentat
-@section 1. Dokumentat
+@section A. Dokumentat
 Welcome to Dokumentat, the simple documenter for Ruby C extensions.
 Created by Danny van Bruggen and Renne Nissinen.
 =end
 
 =begin
-@section 2. Why another document system?
+@section B. Why another document system?
 After using rd2 for a while, we got annoyed by the oddness of the syntax,
 the slowness of the software and the low quality of the output.
 Low quality, because the generated html we used contained no markers to
@@ -36,7 +38,7 @@ and plain ugly with all the frames and listings.
 =end
 
 =begin
-@section 3. What do we promise?
+@section C. What do we promise?
 We promise to give you a system that makes documenting your C library,
 and optionally your Ruby source, easy.
 We mixed rd2 and javadoc, compromised a lot and came up with a simple system
@@ -44,7 +46,7 @@ for throwing your documentation together.
 =end
 
 =begin
-@section 4. The general idea
+@section D. The general idea
 You start Dokumentat by offering it all the files with documentation in them.
 They will be read, and everything starting with a start tag and ending with an end tag
 will be seen as a separate documentation block.
@@ -60,7 +62,7 @@ Begin tags are expected to be at the start of a line. End tags may appear anywhe
 =end
 
 =begin
-@section 5. Classification
+@section E. Classification
 Every Dokumentat tag starts with @@.
 If you need the @@ itself, double it: @@@@.
 These are the classification tags: <code>@@file</code>, <code>@@section</code>, <code>@@module</code>,
@@ -106,7 +108,7 @@ Everything that is contained will be sorted when Dokumentat starts writing the o
 =end
 
 =begin
-@section 6. The documentation itself.
+@section F. The documentation itself.
 The documentation starts after the classification lines,
 identified by the first line that doesn't start with @@.
 You can type anything you like here and it will be transfered literally to the
@@ -116,17 +118,17 @@ Any word starting with @@ is seen as a reference.
 =end
 
 =begin
-@section 7. Linking
+@section G. Linking
 Not implemented yet.
 =end
 
 =begin
-@section 7.1 Linking to difficult places
+@section H.1 Linking to difficult places
 *Describe what to do with links to things with spaces in them, maybe add a wildcard system?*
 =end
 
 =begin
-@section 8. Parameters
+@section I. Parameters
 <code>--project-name</code> specifies the name of your project.
 This documentation was generated with project name "dokumentat"
 It is used for the directory name.
@@ -147,7 +149,7 @@ They can contain wildcards, and anything else that means something to Ruby's Dir
 
 
 =begin
-@section 9. Output
+@section J. Output
 Output is HTML with structural tags only. You should do visual formatting with CSS.
 <ul>  *** Hey Renne, this is not definitive at all! ***
 <li>Class and module titles are put in &lt;h2&gt; blocks</li>
@@ -155,6 +157,21 @@ Output is HTML with structural tags only. You should do visual formatting with C
 <li>Method synopses are in &lt;h4&gt; blocks</li>
 <li>The actual documentation text is in &lt;p&gt; blocks</li>
 </ul>
+=end
+
+=begin
+@section K. Style Guide
+Use <code>@@method ClassName.method_name</code> for class methods.
+
+Use <code>@@method method_name</code> for instance methods.
+
+Use short return value descriptions.
+If you have more to say than "Array[w,h]" for example, 
+then describe the return value in the following method text.
+
+Describe the whole range of possible return values as short as possible.
+<code>@@method method_name -> String, 1, 2, 3 or nil</code>.
+Explanations shouldn't go in the @@method line.
 =end
 
 ############################# START OF CODE
@@ -700,6 +717,7 @@ class Dokumentat
 		say "Writing result to #{output_path}/"
 		File.makedirs(output_path)
 		if @root
+			require 'pp'
 			pp @root if $verbose
 			@root.write(output_path)
 		else
