@@ -100,6 +100,9 @@ VALUE sDLEvent2RubyEvent(SDL_Event* event)
 				UINT2NUM(event->resize.w), 
 				UINT2NUM(event->resize.h)));
 			break;
+		case SDL_VIDEOEXPOSE:
+			newEvent=rb_funcall(classVideoExposeEvent, id_new, 0);
+			break;
 		case RUDL_TIMEREVENT:
 			newEvent=rb_funcall(classTimerEvent, id_new, 0);
 			rb_iv_set(newEvent, "@id", INT2NUM(event->user.code));

@@ -3,6 +3,9 @@ RUDL - a C library wrapping SDL for use in Ruby.
 Copyright (C) 2001, 2002, 2003  Danny van Bruggen
 
 $Log: rudl_video_surface.c,v $
+Revision 1.23  2003/10/19 11:26:13  tsuihark
+Added VideoExposeEvent and removed an odd bug in rudl_video_surface.c
+
 Revision 1.22  2003/10/01 21:26:01  tsuihark
 Some 16 bit + alpha stuff
 
@@ -60,7 +63,7 @@ __inline__ void setMasksFromBPP(Uint32 bpp, boolean alphaWanted, Uint32* Rmask, 
 	*Amask = 0;
 	if(alphaWanted && (bpp==32||bpp==16)){
 		switch(bpp){
-			case 16: *Rmask=0xF<<12; *Gmask=0xF<<8; *Bmask=0xF<<4; *Amask=0xF;break
+			case 16: *Rmask=0xF<<12; *Gmask=0xF<<8; *Bmask=0xF<<4; *Amask=0xF;break;
 			case 32: *Rmask = 0xFF << 24; *Gmask = 0xFF << 16; *Bmask = 0xFF << 8; *Amask=0xFF; break;
 		}
 	}else{

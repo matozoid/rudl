@@ -20,6 +20,7 @@ VALUE classSurfacesLostException;
 
 VALUE classResizeEvent;
 VALUE classActiveEvent;
+VALUE classVideoExposeEvent;
 VALUE classQuitEvent;
 
 extern ID id_rect, id_atx, id_aty, id_atw, id_ath;

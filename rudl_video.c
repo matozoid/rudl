@@ -171,7 +171,13 @@ This is [w, h] the new size of the window.
 This event signals that the user or the program itself has requested to be terminated.
 =end */
 	classQuitEvent=rb_define_class_under(moduleRUDL, "QuitEvent", classEvent);
-
+/*
+=begin
+=== VideoExposeEvent
+A VideoExposeEvent event is triggered when the screen has been modified outside of the application, 
+usually by the window manager and needs to be redrawn.
+=end */
+	classVideoExposeEvent=rb_define_class_under(moduleRUDL, "VideoExposeEvent", classEvent);
 /*
 =begin
 == Constants
