@@ -1,4 +1,5 @@
 require 'RUDL'
+
 module Mappy
 	class Animation
 		
@@ -144,7 +145,7 @@ module Mappy
 				@animations.push(animation)
 			end
 		end
-		
+	
 		def read_alternate_graphics_chunk(chunk)
 			raise "not implemented"
 		end
@@ -267,3 +268,4 @@ d.set_palette(0, m.palette)
 m.draw(d)
 d.flip
 RUDL::Timer.delay(5000)
+

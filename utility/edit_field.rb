@@ -6,7 +6,6 @@ module RUDL
 		attr_accessor :foreground_color, :background_color
 		attr_reader :area, :enter_given, :escape_given
 
-
 		def initialize(area, foreground_color=[255,255,255], background_color=[0,0,0], transparant=true, max_length=nil)
 			@area=area
 			@max_length=max_length
@@ -148,7 +147,7 @@ module RUDL
 			surface.blit @text_surface, @area
 		end
 
-		private
+	private
 
 		def compute_string_length(string)
 			(string.length)*8
@@ -210,7 +209,7 @@ module RUDL
 			end
 		end 
 	end
-
+	
 	class TTFEditField < EditField
 		attr_accessor :font
 
@@ -247,7 +246,7 @@ module RUDL
 			@text_surface.line [x,0], [x,@font.h], @foreground_color if blinkstate
 		end
 	end
-
+	
 	class SFontEditField < EditField
 		attr_accessor :font
 
