@@ -81,7 +81,6 @@ def zipit(what)
             raise "Oh God please no!"
     end
 
-    filelist = '"' + files.join('" "') + '"'
     outfile = "#$destdir/rudl-#$version-#{what}.zip"
 
     Dir.mkdir($destdir) unless File.exists?($destdir)
@@ -89,7 +88,9 @@ def zipit(what)
 
     # I hope the command line doesn't get truncated :)
     puts "Zipping #{outfile}..."
-    `zip -9 -q #{outfile} #{filelist}`
+    files.each do |filename|
+    	system("zip -9 -q #{outfile} \"#{filename}\"")
+    end
 end
 
 main
