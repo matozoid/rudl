@@ -3,6 +3,9 @@ RUDL - a C library wrapping SDL for use in Ruby.
 Copyright (C) 2001, 2002, 2003  Danny van Bruggen 
 
 $Log: rudl_video_rect.c,v $
+Revision 1.10  2003/09/26 23:06:13  tsuihark
+Fixed damn EOLs and added some headers
+
 Revision 1.9  2003/09/26 23:04:29  tsuihark
 Fixed damn EOLs and added some headers
 
@@ -845,5 +848,3 @@ void initVideoRectClasses()
 	
 	rb_define_class_under(moduleRUDL, "Rect", rb_cArray);
 }
-
-

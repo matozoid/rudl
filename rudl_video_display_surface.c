@@ -3,6 +3,9 @@ RUDL - a C library wrapping SDL for use in Ruby.
 Copyright (C) 2001, 2002, 2003  Danny van Bruggen 
 
 $Log: rudl_video_display_surface.c,v $
+Revision 1.12  2003/09/26 23:06:13  tsuihark
+Fixed damn EOLs and added some headers
+
 Revision 1.11  2003/09/26 23:04:29  tsuihark
 Fixed damn EOLs and added some headers
 
@@ -670,4 +673,3 @@ void initVideoDisplaySurfaceClasses()
 			"end end											\n"
 	);
 }
-
