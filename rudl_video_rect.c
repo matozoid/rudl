@@ -3,6 +3,9 @@ RUDL - a C library wrapping SDL for use in Ruby.
 Copyright (C) 2001, 2002, 2003  Danny van Bruggen 
 
 $Log: rudl_video_rect.c,v $
+Revision 1.11  2004/01/06 18:01:39  tsuihark
+Removed a few warnings
+
 Revision 1.10  2003/09/26 23:06:13  tsuihark
 Fixed damn EOLs and added some headers
 
@@ -73,10 +76,10 @@ __inline__ void PARAMETER2CRECT(VALUE arg1, SDL_Rect* rect)
 
 __inline__ void RECT2CRECT(VALUE source, SDL_Rect* destination)
 {
-	destination->x=array_get_x(source);
-	destination->y=array_get_y(source);
-	destination->w=array_get_w(source);
-	destination->h=array_get_h(source);
+	destination->x=(Sint16)array_get_x(source);
+	destination->y=(Sint16)array_get_y(source);
+	destination->w=(Uint16)array_get_w(source);
+	destination->h=(Uint16)array_get_h(source);
 }
 
 __inline__ VALUE clone_array(VALUE array)

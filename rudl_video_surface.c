@@ -3,6 +3,9 @@ RUDL - a C library wrapping SDL for use in Ruby.
 Copyright (C) 2001, 2002, 2003  Danny van Bruggen
 
 $Log: rudl_video_surface.c,v $
+Revision 1.34  2004/01/06 18:01:39  tsuihark
+Removed a few warnings
+
 Revision 1.33  2003/12/30 01:02:41  rennex
 Added mirror_x.
 Fixed segfault when calling set_palette(0, nil).
@@ -1396,7 +1399,7 @@ static VALUE surface_mirror_x(VALUE self)
     int bpp = src->format->BytesPerPixel;
     int w = src->w, h = src->h;
     int x, y, b, srcextra, destpitch2;
-    Uint8 *srcline, *destline, *d;
+    Uint8 *srcline, *destline;
 
     /* create a new surface for the result */
     VALUE newargv[] = {rb_ary_new3(2, INT2FIX(w), INT2FIX(h)), self};

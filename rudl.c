@@ -10,6 +10,8 @@
 #include "rudl_timer.h"
 #include "rudl_ttf.h"
 #include "rudl_video.h"
+#include "rudl_flxplay.h"
+#include "rudl_net.h"
 
 // For getting versions:
 #ifdef HAVE_SDL_MIXER_H
