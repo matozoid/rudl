@@ -1,6 +1,9 @@
 #!/usr/local/bin/ruby
 
 # $Log: makedocs.rb,v $
+# Revision 1.8  2003/10/05 21:20:40  tsuihark
+# Tried a new layout
+#
 # Revision 1.7  2003/10/05 16:17:14  tsuihark
 # Improved the docs script a bit
 #
@@ -18,19 +21,6 @@ puts 'Use it on Windows.'
 
 sourcefiles=Dir['../rudl*.c']+Dir['*.rd2'].sort
 
-def adjust_level_to_level(current_level, wanted_level)
-	retval=''
-	while current_level<wanted_level
-		retval+='<ul>'
-		current_level+=1
-	end
-	while current_level>wanted_level
-		retval+='</ul>'
-		current_level-=1
-	end
-	retval
-end
-
 sourcefiles.each {|source|
 	basename=File.basename(source, '.c')
 	destination="#{basename}.html"
@@ -38,21 +28,27 @@ sourcefiles.each {|source|
 	contents=`rd2.bat #{source}` # Changing rd2.bat to rd2 will probably make it work on Unix.
 	if !contents.index('DONT_GENERATE_RD2_DOCS') && contents.index('label-0')
 		# Index creation
-		index="<h1>Index</h1>\n"
-		current_level=0
+		index="<h1>Index</h1>\n<p>"
+		last_level=0
 		last_label=''
 		contents.scan(/(<h(.?)>)?<a name="(label-\d+)" id="label-\d+">(.*)<\/a>(<\/h.?>)?/) { |blah, level, id, label|
-			label.gsub!(/>\w*?[#.]/, '>') # Take out all Music# and Sound. prefixes
+			if label.index('<code>')==0
+				label=label.scan(/[#.](.*?)[<(]/).to_s
+				label='[]' if label=='[ '
+			end
 			if label!=last_label
-				level='3' if !level
-				level=level.to_i
-				index+=adjust_level_to_level(current_level, level)+
-						"<li><a href='#{destination}##{id}'>#{label}</a>\n"
-				current_level=level
+				if level!=last_level
+					index+='<p>'
+				end
+				if level
+					index+="<a href='#{destination}##{id}'>#{label}</a>\n"
+				else
+					index+="&nbsp;<a href='#{destination}##{id}'>#{label}</a>\n"
+				end
 				last_label=label
+				last_level=level
 			end
 		}
-		index+=adjust_level_to_level(current_level, 0)
 		
 		#
 		contents.gsub! /<title>Untitled<\/title>/, "<title>#{basename}<\/title>"
