@@ -44,6 +44,10 @@ buffer.unset_colorkey
 #-- SDL_EventState(SDL_MOUSEMOTION,SDL_IGNORE);
 # EventQueue.blocked = MouseMotionEvent
 
+# Note: handling only one event every X milliseconds is bad practice, which is
+# why this sample has been modified to use EventQueue.get instead and handle
+# all pending events, eliminating this problem.
+
 x,y = 30,10
 oldx,oldy = x,y
 right,down = true,true
