@@ -1,13 +1,13 @@
 # package.rb
 # ----------
 
-# by Rennex on 1 Oct 2003
+# by Rennex
 
 
 # settings
-$destdir		= "rudl_packages"
-$version		= "0.7.1"
-$target_ruby	= "1.8-10"
+$destdir        = "rudl_packages"
+$version        = "0.7.1"
+$target_ruby    = "1.8-10"
 
 # print warning to fend off mugglers
 puts "This will create a RUDL package."
@@ -34,10 +34,10 @@ def main
             zipit("source")
 
         when /setup/i
-            zipit("setup")
+            zipit("setup-release")
 
         else
-            zipit("setup")
+            zipit("setup-release")
             zipit("source")
     end
 
@@ -85,65 +85,69 @@ end
 # create either the source or setup archive
 def zipit(what)
 
-	# which archive are we creating?
-	case what
-		when "source"
-			files = 
-				lsdir("docs") + 
-				lsdir("lib") +
-				lsdir("include") +
-				lsdir("samples") + 
-				lsdir("utility") +
-				Dir["*.{c,h,txt,rb}"] << "configure" << "make.bat"
-		
-		when "setup"
-			files = 
-				lsdir("dll") + 
-				lsdir("docs") +
-				lsdir("samples") + 
-				lsdir("utility") +
-				Dir["*.txt"] << "RUDL.so" << "install-on-windows.rb"
-		
-		else
-			raise "Oh God please no!"
-	end
-	
-	files.reject_list! [
-		/\.(obj|def|exp|pdb|lib)$/,
-		"makefile",
-		"mkmf.log",
-		/^package.*\.rb$/,
-		$destdir,
-		/^samples\/work\//,
-	]
+    # which archive are we creating?
+    case what
+        when "source"
+            files =
+                lsdir("docs") +
+                lsdir("lib") +
+                lsdir("include") +
+                lsdir("samples") +
+                lsdir("utility") +
+                Dir["*.{c,h,txt,rb}"] << "configure" << "make.bat"
 
-	if not $list
-		# zip em up! one at a time, to avoid truncated command lines
-		if what == "setup"
-			# Just guessing that we're doing a release build now
-			outfile = "#$destdir/rudl-#$version-for-ruby-#$target_ruby-setup-releasebuild.zip"
-			Dir.mkdir($destdir) unless File.exists?($destdir)
-			File.delete(outfile) if File.exists?(outfile)
-			
-			puts "Zipping #{outfile}..."
-			files.each do |filename|
-				system("zip -9 -q #{outfile} \"#{filename}\"")
-			end
-		else
-			outfile = "#$destdir/rudl-#$version-source.tar"
-		
-			puts "Tarring #{outfile}..."
-			system("tar -cf #{outfile} \"#{files.shift}\"")
-			files.each do |filename|
-				system("tar -rf #{outfile} \"#{filename}\"")
-			end
-			
-			puts "GZipping #{outfile}.gz..."
-			system("gzip -f9 #{outfile}")
-		end
-	else
-		puts files
-	end
+        when /setup/
+            files =
+                lsdir("dll") +
+                lsdir("docs") +
+                lsdir("samples") +
+                lsdir("utility") +
+                Dir["*.txt"] << "RUDL.so" << "install-on-windows.rb"
+
+        else
+            raise "Oh God please no!"
+    end
+
+    files.reject_list! [
+        /\.(obj|def|exp|pdb)$/,
+        "makefile",
+        "mkmf.log",
+        /^package.*\.rb$/,
+        $destdir,
+        /^samples\/work\//,
+    ]
+
+    if not $list
+        Dir.mkdir($destdir) unless File.exists?($destdir)
+        # zip em up! one at a time, to avoid truncated command lines
+        if what == "source"
+            outfile = "#$destdir/rudl-#$version-source.tar"
+
+            puts "Tarring #{outfile}..."
+            system("tar -cf #{outfile} \"#{files.shift}\"")
+            files.each do |filename|
+                system("tar -rf #{outfile} \"#{filename}\"")
+            end
+
+            puts "GZipping #{outfile}.gz..."
+            system("gzip -f9 #{outfile}")
+        else
+            if what == "setup-release"
+            else
+                raise "not yet implemented"
+            end
+            outfile = "#$destdir/rudl-#$version-for-ruby-#$target_ruby-#{what}build.zip"
+
+            File.delete(outfile) if File.exists?(outfile)
+
+            puts "Zipping #{outfile}..."
+            files.each do |filename|
+                system("zip -9 -q #{outfile} \"#{filename}\"")
+            end
+        end
+    else
+        puts files
+    end
 end
 
 main
