@@ -3,6 +3,9 @@ RUDL - a C library wrapping SDL for use in Ruby.
 Copyright (C) 2001, 2002, 2003  Danny van Bruggen
 
 $Log: rudl_video_surface.c,v $
+Revision 1.30  2003/12/26 22:41:14  rennex
+Combined Surface#get and Surface#[] into one method
+
 Revision 1.29  2003/12/16 01:04:15  rennex
 Added target coordinate for scale2x and reorganized that code a little
 
@@ -896,12 +899,16 @@ This has been moved to a Ruby file called utility/contained_images.rb
 
 /*
 =begin
+--- Surface#get( x, y )
 --- Surface#get( coordinate )
 --- Surface#[ x, y ]
+--- Surface#[ coordinate ]
 These methods read single pixels on a surface.
-((|get|)) or ((|[]|)) get the color of a pixel.
-These methods require the surface to be locked if neccesary.
-((|[]=|)) and ((|[]|)) are the only methods in RUDL that take a separate ((|x|)) and ((|y|)) coordinate.
+((|get|)) or ((|[]|)) get the color of a pixel. The coordinate can be given as an [x,y] array or two
+separate numbers. ((|get|)) is an alias for ((|[]|)).
+These methods require the surface to be locked if necessary.
+((|[]=|)) and ((|[]|)) are the only methods in RUDL that take separate x and y coordinates.
+See also: Surface#plot, Surface#[]=
 =end */
 __inline__ Uint32 internal_get(SDL_Surface* surface, Sint16 x, Sint16 y)
 {
@@ -983,25 +990,24 @@ __inline__ Uint32 internal_nonlocking_get(SDL_Surface* surface, Sint16 x, Sint16
     return color;
 }
 
-static VALUE surface_get(VALUE self, VALUE coordinate)
-{
-    SDL_Surface* surface=retrieveSurfacePointer(self);
-    Sint16 x,y;
-    Uint8 r, g, b, a;
 
-    PARAMETER2COORD(coordinate, &x, &y);
+static VALUE surface_get(int argc, VALUE* argv, VALUE self)
+{
+    SDL_Surface* surface = retrieveSurfacePointer(self);
+    Uint8 r, g, b, a;
+    Sint16 x, y;
+
+    /* did we get an [x,y] array or x,y separately? */
+    if (argc == 1) {
+        PARAMETER2COORD(argv[0], &x, &y);
+    } else if (argc == 2) {
+        x = NUM2Sint16(argv[0]);
+        y = NUM2Sint16(argv[1]);
+    } else {
+        rb_raise(rb_eArgError, "wrong number of arguments");
+    }
 
     SDL_GetRGBA(internal_get(surface, x, y), surface->format, &r, &g, &b, &a);
-
-    return rb_ary_new3(4, UINT2NUM(r), UINT2NUM(g), UINT2NUM(b), UINT2NUM(a));
-}
-
-static VALUE surface_array_get(VALUE self, VALUE x, VALUE y)
-{
-    SDL_Surface* surface=retrieveSurfacePointer(self);
-    Uint8 r, g, b, a;
-
-    SDL_GetRGBA(internal_get(surface, NUM2Sint16(x), NUM2Sint16(y)), surface->format, &r, &g, &b, &a);
 
     return rb_ary_new3(4, UINT2NUM(r), UINT2NUM(g), UINT2NUM(b), UINT2NUM(a));
 }
@@ -1368,8 +1374,8 @@ void initVideoSurfaceClasses()
     rb_define_method(classSurface, "share", surface_share, 1);
     rb_define_method(classSurface, "immodest_export", surface_immodest_export, 1);
 
-    rb_define_method(classSurface, "get", surface_get, 1);
-    rb_define_method(classSurface, "[]", surface_array_get, 2);
+    rb_define_method(classSurface, "[]", surface_get, -1);
+    rb_alias(classSurface, rb_intern("get"), rb_intern("[]"));
     rb_define_method(classSurface, "fill", surface_fill, -1);
 
     rb_define_method(classSurface, "pixels", surface_pixels, 0);
