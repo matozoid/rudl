@@ -1,8 +1,11 @@
-/* 
-RUDL - a C library wrapping SDL for use in Ruby. 
-Copyright (C) 2001, 2002, 2003  Danny van Bruggen 
+/*
+RUDL - a C library wrapping SDL for use in Ruby.
+Copyright (C) 2001, 2002, 2003  Danny van Bruggen
 
 $Log: rudl_video_sdl_gfx.c,v $
+Revision 1.12  2003/12/26 22:40:44  rennex
+Combined Surface#plot and Surface#[]= into one method
+
 Revision 1.11  2003/09/26 22:43:16  tsuihark
 Added CVS headers
 
@@ -37,7 +40,7 @@ bilinear interpolation will be applied, resulting in a smoother image.
 =end */
 static VALUE surface_rotozoom(VALUE self, VALUE angle, VALUE zoom, VALUE smooth)
 {
-	return createSurfaceObject(rotozoomSurface(retrieveSurfacePointer(self), NUM2DBL(angle), NUM2DBL(zoom), NUM2BOOL(smooth)));
+    return createSurfaceObject(rotozoomSurface(retrieveSurfacePointer(self), NUM2DBL(angle), NUM2DBL(zoom), NUM2BOOL(smooth)));
 }
 
 /*
@@ -53,7 +56,7 @@ bilinear interpolation will be applied, resulting in a smoother image.
 =end */
 static VALUE surface_zoom(VALUE self, VALUE zoom_x, VALUE zoom_y, VALUE smooth)
 {
-	return createSurfaceObject(zoomSurface(retrieveSurfacePointer(self), NUM2DBL(zoom_x), NUM2DBL(zoom_y), NUM2BOOL(smooth)));
+    return createSurfaceObject(zoomSurface(retrieveSurfacePointer(self), NUM2DBL(zoom_x), NUM2DBL(zoom_y), NUM2BOOL(smooth)));
 }
 #endif
 
@@ -63,41 +66,59 @@ static VALUE surface_zoom(VALUE self, VALUE zoom_x, VALUE zoom_y, VALUE smooth)
 =begin
 == SDL_gfx: SDL_gfxPrimitives
 For these methods, "antialiased" means that drawing is done with many shades of the
-requested color to simulate 
+requested color to simulate
+--- Surface#plot( x, y, color )
 --- Surface#plot( coordinate, color )
 --- Surface#[ x, y ]= color
+--- Surface#[ coordinate ]= color
 These methods access single pixels on a surface.
-((|plot|)) or ((|[]=|)) set a pixel to ((|color|)) at ((|coordinate|)).
-((|get|)) or ((|[]|)) get the color of a pixel.
-These methods require the surface to be locked if neccesary.
-((|[]=|)) and ((|[]|)) are the only methods in RUDL that take a seperate x and y coordinate.
+((|plot|)) or ((|[]=|)) set the color of a pixel. The coordinate can be given as an [x,y] array or two
+separate numbers. ((|plot|)) is an alias for ((|[]=|)).
+These methods require the surface to be locked if necessary.
+((|[]=|)) and ((|[]|)) are the only methods in RUDL that take separate x and y coordinates.
+See also: Surface#get, Surface#[]
 =end */
 
-static VALUE surface_plot(VALUE self, VALUE coordinate, VALUE color)
+static VALUE surface_plot(int argc, VALUE* argv, VALUE self)
 {
-	Sint16 x,y;
-	PARAMETER2COORD(coordinate, &x, &y);
-	if(pixelColor(retrieveSurfacePointer(self), x, y, VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
-	return self;
+    Sint16 x,y;
+    Uint32 color;
+
+    /* did we get a coordinate array? */
+    if (argc == 2) {
+        PARAMETER2COORD(argv[0], &x, &y);
+        color = VALUE2COLOR_NOMAP(argv[1]);
+    } else if (argc == 3) {
+        /* what about separate coordinates? */
+        x = NUM2Sint16(argv[0]);
+        y = NUM2Sint16(argv[1]);
+        color = VALUE2COLOR_NOMAP(argv[2]);
+    } else {
+        /* no, something else */
+        rb_raise(rb_eArgError, "wrong number of arguments");
+    }
+
+    if(pixelColor(retrieveSurfacePointer(self), x, y, color)) SDL_RAISE_S("failed");
+    return self;
 }
 
-
+/*
 static VALUE surface_array_plot(VALUE self, VALUE x, VALUE y, VALUE color)
 {
-	if(pixelColor(retrieveSurfacePointer(self), NUM2Sint16(x), NUM2Sint16(y), VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
-	return self;
+    if(pixelColor(retrieveSurfacePointer(self), NUM2Sint16(x), NUM2Sint16(y), VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
+    return self;
 }
-
+*/
 /*
 =begin
 --- Surface#horizontal_line( coord, endx, color )
 =end */
 static VALUE surface_horizontal_line(VALUE self, VALUE coord, VALUE endx, VALUE color)
 {
-	Sint16 x,y;
-	PARAMETER2COORD(coord, &x, &y);
-	if(hlineColor(retrieveSurfacePointer(self), x, NUM2Sint16(endx), y, VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
-	return self;
+    Sint16 x,y;
+    PARAMETER2COORD(coord, &x, &y);
+    if(hlineColor(retrieveSurfacePointer(self), x, NUM2Sint16(endx), y, VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
+    return self;
 }
 
 /*
@@ -106,10 +127,10 @@ static VALUE surface_horizontal_line(VALUE self, VALUE coord, VALUE endx, VALUE 
 =end */
 static VALUE surface_vertical_line(VALUE self, VALUE coord, VALUE endy, VALUE color)
 {
-	Sint16 x,y;
-	PARAMETER2COORD(coord, &x, &y);
-	if(vlineColor(retrieveSurfacePointer(self), x, y, NUM2Sint16(endy), VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
-	return self;
+    Sint16 x,y;
+    PARAMETER2COORD(coord, &x, &y);
+    if(vlineColor(retrieveSurfacePointer(self), x, y, NUM2Sint16(endy), VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
+    return self;
 }
 
 /*
@@ -118,10 +139,10 @@ static VALUE surface_vertical_line(VALUE self, VALUE coord, VALUE endy, VALUE co
 =end */
 static VALUE surface_rectangle(VALUE self, VALUE rectObject, VALUE color)
 {
-	SDL_Rect rect;
-	PARAMETER2CRECT(rectObject, &rect);
-	if(rectangleColor(retrieveSurfacePointer(self), rect.x, rect.y, (Sint16)(rect.x+rect.w-1), (Sint16)(rect.y+rect.h-1), VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
-	return self;
+    SDL_Rect rect;
+    PARAMETER2CRECT(rectObject, &rect);
+    if(rectangleColor(retrieveSurfacePointer(self), rect.x, rect.y, (Sint16)(rect.x+rect.w-1), (Sint16)(rect.y+rect.h-1), VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
+    return self;
 }
 
 /*
@@ -130,10 +151,10 @@ static VALUE surface_rectangle(VALUE self, VALUE rectObject, VALUE color)
 =end */
 static VALUE surface_filled_rectangle(VALUE self, VALUE rectObject, VALUE color)
 {
-	SDL_Rect rect;
-	PARAMETER2CRECT(rectObject, &rect);
-	if(boxColor(retrieveSurfacePointer(self), rect.x, rect.y, (Sint16)(rect.x+rect.w-1), (Sint16)(rect.y+rect.h-1), VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
-	return self;
+    SDL_Rect rect;
+    PARAMETER2CRECT(rectObject, &rect);
+    if(boxColor(retrieveSurfacePointer(self), rect.x, rect.y, (Sint16)(rect.x+rect.w-1), (Sint16)(rect.y+rect.h-1), VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
+    return self;
 }
 
 /*
@@ -142,11 +163,11 @@ static VALUE surface_filled_rectangle(VALUE self, VALUE rectObject, VALUE color)
 =end */
 static VALUE surface_line(VALUE self, VALUE coord1, VALUE coord2, VALUE color)
 {
-	Sint16 x1,y1,x2,y2;
-	PARAMETER2COORD(coord1, &x1, &y1);
-	PARAMETER2COORD(coord2, &x2, &y2);
-	if(lineColor(retrieveSurfacePointer(self), x1, y1, x2, y2, VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
-	return self;
+    Sint16 x1,y1,x2,y2;
+    PARAMETER2COORD(coord1, &x1, &y1);
+    PARAMETER2COORD(coord2, &x2, &y2);
+    if(lineColor(retrieveSurfacePointer(self), x1, y1, x2, y2, VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
+    return self;
 }
 
 /*
@@ -155,11 +176,11 @@ static VALUE surface_line(VALUE self, VALUE coord1, VALUE coord2, VALUE color)
 =end */
 static VALUE surface_antialiased_line(VALUE self, VALUE coord1, VALUE coord2, VALUE color)
 {
-	Sint16 x1,y1,x2,y2;
-	PARAMETER2COORD(coord1, &x1, &y1);
-	PARAMETER2COORD(coord2, &x2, &y2);
-	if(aalineColor(retrieveSurfacePointer(self), x1, y1, x2, y2, VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
-	return self;
+    Sint16 x1,y1,x2,y2;
+    PARAMETER2COORD(coord1, &x1, &y1);
+    PARAMETER2COORD(coord2, &x2, &y2);
+    if(aalineColor(retrieveSurfacePointer(self), x1, y1, x2, y2, VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
+    return self;
 }
 
 /*
@@ -168,10 +189,10 @@ static VALUE surface_antialiased_line(VALUE self, VALUE coord1, VALUE coord2, VA
 =end */
 static VALUE surface_circle(VALUE self, VALUE coord, VALUE r, VALUE color)
 {
-	Sint16 x,y;
-	PARAMETER2COORD(coord, &x, &y);
-	if(circleColor(retrieveSurfacePointer(self), x, y, NUM2Sint16(r), VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
-	return self;
+    Sint16 x,y;
+    PARAMETER2COORD(coord, &x, &y);
+    if(circleColor(retrieveSurfacePointer(self), x, y, NUM2Sint16(r), VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
+    return self;
 }
 
 /*
@@ -180,10 +201,10 @@ static VALUE surface_circle(VALUE self, VALUE coord, VALUE r, VALUE color)
 =end */
 static VALUE surface_filled_circle(VALUE self, VALUE coord, VALUE r, VALUE color)
 {
-	Sint16 x,y;
-	PARAMETER2COORD(coord, &x, &y);
-	if(filledCircleColor(retrieveSurfacePointer(self), x, y, NUM2Sint16(r), VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
-	return self;
+    Sint16 x,y;
+    PARAMETER2COORD(coord, &x, &y);
+    if(filledCircleColor(retrieveSurfacePointer(self), x, y, NUM2Sint16(r), VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
+    return self;
 }
 
 /*
@@ -192,10 +213,10 @@ static VALUE surface_filled_circle(VALUE self, VALUE coord, VALUE r, VALUE color
 =end */
 static VALUE surface_antialiased_circle(VALUE self, VALUE coord, VALUE r, VALUE color)
 {
-	Sint16 x,y;
-	PARAMETER2COORD(coord, &x, &y);
-	if(aacircleColor(retrieveSurfacePointer(self), x, y, NUM2Sint16(r), VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
-	return self;
+    Sint16 x,y;
+    PARAMETER2COORD(coord, &x, &y);
+    if(aacircleColor(retrieveSurfacePointer(self), x, y, NUM2Sint16(r), VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
+    return self;
 }
 
 /*
@@ -204,10 +225,10 @@ static VALUE surface_antialiased_circle(VALUE self, VALUE coord, VALUE r, VALUE 
 =end */
 static VALUE surface_filled_pie(VALUE self, VALUE coord, VALUE r, VALUE start, VALUE end, VALUE color)
 {
-	Sint16 x,y;
-	PARAMETER2COORD(coord, &x, &y);
-	if(filledpieColor(retrieveSurfacePointer(self), x, y, NUM2Sint16(r), NUM2Sint16(start), NUM2Sint16(end), VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
-	return self;
+    Sint16 x,y;
+    PARAMETER2COORD(coord, &x, &y);
+    if(filledpieColor(retrieveSurfacePointer(self), x, y, NUM2Sint16(r), NUM2Sint16(start), NUM2Sint16(end), VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
+    return self;
 }
 
 
@@ -217,10 +238,10 @@ static VALUE surface_filled_pie(VALUE self, VALUE coord, VALUE r, VALUE start, V
 =end */
 static VALUE surface_ellipse(VALUE self, VALUE coord, VALUE rx, VALUE ry, VALUE color)
 {
-	Sint16 x,y;
-	PARAMETER2COORD(coord, &x, &y);
-	if(ellipseColor(retrieveSurfacePointer(self), x, y, NUM2Sint16(rx), NUM2Sint16(ry), VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
-	return self;
+    Sint16 x,y;
+    PARAMETER2COORD(coord, &x, &y);
+    if(ellipseColor(retrieveSurfacePointer(self), x, y, NUM2Sint16(rx), NUM2Sint16(ry), VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
+    return self;
 }
 
 /*
@@ -229,10 +250,10 @@ static VALUE surface_ellipse(VALUE self, VALUE coord, VALUE rx, VALUE ry, VALUE 
 =end */
 static VALUE surface_antialiased_ellipse(VALUE self, VALUE coord, VALUE rx, VALUE ry, VALUE color)
 {
-	Sint16 x,y;
-	PARAMETER2COORD(coord, &x, &y);
-	if(aaellipseColor(retrieveSurfacePointer(self), x, y, NUM2Sint16(rx), NUM2Sint16(ry), VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
-	return self;
+    Sint16 x,y;
+    PARAMETER2COORD(coord, &x, &y);
+    if(aaellipseColor(retrieveSurfacePointer(self), x, y, NUM2Sint16(rx), NUM2Sint16(ry), VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
+    return self;
 }
 
 /*
@@ -245,10 +266,10 @@ choose whichever you like best.
 =end */
 static VALUE surface_filled_ellipse(VALUE self, VALUE coord, VALUE rx, VALUE ry, VALUE color)
 {
-	Sint16 x,y;
-	PARAMETER2COORD(coord, &x, &y);
-	if(filledEllipseColor(retrieveSurfacePointer(self), x, y, NUM2Sint16(rx), NUM2Sint16(ry), VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
-	return self;
+    Sint16 x,y;
+    PARAMETER2COORD(coord, &x, &y);
+    if(filledEllipseColor(retrieveSurfacePointer(self), x, y, NUM2Sint16(rx), NUM2Sint16(ry), VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
+    return self;
 }
 /*
 =begin
@@ -257,22 +278,22 @@ static VALUE surface_filled_ellipse(VALUE self, VALUE coord, VALUE rx, VALUE ry,
 
 static VALUE surface_polygon(VALUE self, VALUE coordlist, VALUE color)
 {
-	int numpoints=RARRAY(coordlist)->len;
-	Sint16 *x=malloc(sizeof(Sint16)*numpoints);
-	Sint16 *y=malloc(sizeof(Sint16)*numpoints);
-	int i;
-	VALUE tmp;
-	
-	for(i=0; i<numpoints; i++){
-		tmp=rb_ary_entry(rb_ary_entry(coordlist, i), 0);	x[i]=NUM2Sint16(tmp);
-		tmp=rb_ary_entry(rb_ary_entry(coordlist, i), 1);	y[i]=NUM2Sint16(tmp);
-	}
+    int numpoints=RARRAY(coordlist)->len;
+    Sint16 *x=malloc(sizeof(Sint16)*numpoints);
+    Sint16 *y=malloc(sizeof(Sint16)*numpoints);
+    int i;
+    VALUE tmp;
 
-	if(polygonColor(retrieveSurfacePointer(self), x, y, numpoints, VALUE2COLOR_NOMAP(color)))  SDL_RAISE_S("failed");
-	
-	free(x);
-	free(y);
-	return self;
+    for(i=0; i<numpoints; i++){
+        tmp=rb_ary_entry(rb_ary_entry(coordlist, i), 0);    x[i]=NUM2Sint16(tmp);
+        tmp=rb_ary_entry(rb_ary_entry(coordlist, i), 1);    y[i]=NUM2Sint16(tmp);
+    }
+
+    if(polygonColor(retrieveSurfacePointer(self), x, y, numpoints, VALUE2COLOR_NOMAP(color)))  SDL_RAISE_S("failed");
+
+    free(x);
+    free(y);
+    return self;
 }
 
 /*
@@ -281,22 +302,22 @@ static VALUE surface_polygon(VALUE self, VALUE coordlist, VALUE color)
 =end */
 static VALUE surface_filled_polygon(VALUE self, VALUE coordlist, VALUE color)
 {
-	int numpoints=RARRAY(coordlist)->len;
-	Sint16 *x=malloc(sizeof(Sint16)*numpoints);
-	Sint16 *y=malloc(sizeof(Sint16)*numpoints);
-	int i;
-	VALUE tmp;
-	
-	for(i=0; i<numpoints; i++){
-		tmp=rb_ary_entry(rb_ary_entry(coordlist, i), 0);	x[i]=NUM2Sint16(tmp);
-		tmp=rb_ary_entry(rb_ary_entry(coordlist, i), 1);	y[i]=NUM2Sint16(tmp);
-	}
+    int numpoints=RARRAY(coordlist)->len;
+    Sint16 *x=malloc(sizeof(Sint16)*numpoints);
+    Sint16 *y=malloc(sizeof(Sint16)*numpoints);
+    int i;
+    VALUE tmp;
 
-	if(filledPolygonColor(retrieveSurfacePointer(self), x, y, numpoints, VALUE2COLOR_NOMAP(color)))  SDL_RAISE_S("failed");
-	
-	free(x);
-	free(y);
-	return self;
+    for(i=0; i<numpoints; i++){
+        tmp=rb_ary_entry(rb_ary_entry(coordlist, i), 0);    x[i]=NUM2Sint16(tmp);
+        tmp=rb_ary_entry(rb_ary_entry(coordlist, i), 1);    y[i]=NUM2Sint16(tmp);
+    }
+
+    if(filledPolygonColor(retrieveSurfacePointer(self), x, y, numpoints, VALUE2COLOR_NOMAP(color)))  SDL_RAISE_S("failed");
+
+    free(x);
+    free(y);
+    return self;
 }
 
 /*
@@ -306,22 +327,22 @@ The polygon methods take an array of [x,y], like [[10,10],[40,60],[16,66]].
 =end */
 static VALUE surface_antialiased_polygon(VALUE self, VALUE coordlist, VALUE color)
 {
-	int numpoints=RARRAY(coordlist)->len;
-	Sint16 *x=malloc(sizeof(Sint16)*numpoints);
-	Sint16 *y=malloc(sizeof(Sint16)*numpoints);
-	int i;
-	VALUE tmp;
-	
-	for(i=0; i<numpoints; i++){
-		tmp=rb_ary_entry(rb_ary_entry(coordlist, i), 0);	x[i]=NUM2Sint16(tmp);
-		tmp=rb_ary_entry(rb_ary_entry(coordlist, i), 1);	y[i]=NUM2Sint16(tmp);
-	}
+    int numpoints=RARRAY(coordlist)->len;
+    Sint16 *x=malloc(sizeof(Sint16)*numpoints);
+    Sint16 *y=malloc(sizeof(Sint16)*numpoints);
+    int i;
+    VALUE tmp;
 
-	if(aapolygonColor(retrieveSurfacePointer(self), x, y, numpoints, VALUE2COLOR_NOMAP(color)))  SDL_RAISE_S("failed");
-	
-	free(x);
-	free(y);
-	return self;
+    for(i=0; i<numpoints; i++){
+        tmp=rb_ary_entry(rb_ary_entry(coordlist, i), 0);    x[i]=NUM2Sint16(tmp);
+        tmp=rb_ary_entry(rb_ary_entry(coordlist, i), 1);    y[i]=NUM2Sint16(tmp);
+    }
+
+    if(aapolygonColor(retrieveSurfacePointer(self), x, y, numpoints, VALUE2COLOR_NOMAP(color)))  SDL_RAISE_S("failed");
+
+    free(x);
+    free(y);
+    return self;
 }
 
 /*
@@ -331,10 +352,10 @@ Puts ((|text|)) on the surface in a monospaced 8x8 standard old ASCII font.
 =end */
 static VALUE surface_print(VALUE self, VALUE coord, VALUE text, VALUE color)
 {
-	Sint16 x,y;
-	PARAMETER2COORD(coord, &x, &y);
-	if(stringColor(retrieveSurfacePointer(self), x, y, STR2CSTR(text), VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
-	return self;
+    Sint16 x,y;
+    PARAMETER2COORD(coord, &x, &y);
+    if(stringColor(retrieveSurfacePointer(self), x, y, STR2CSTR(text), VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
+    return self;
 }
 #endif
 
@@ -416,32 +437,32 @@ int SDL_imageFilterSobelX(unsigned char *Src, unsigned char *Dest, int rows, int
 ///////////////////////////////// INIT
 void initVideoSDLGFXClasses()
 {
-	//classSurfaceArray=rb_define_class_under(moduleRUDL, "SurfaceArray", rb_cObject);
-	#ifdef HAVE_SDL_GFXPRIMITIVES_H
-	rb_define_method(classSurface, "plot", surface_plot, 2);
-	rb_define_method(classSurface, "[]=", surface_array_plot, 3);
-	rb_define_method(classSurface, "horizontal_line", surface_horizontal_line, 3);
-	rb_define_method(classSurface, "vertical_line", surface_vertical_line, 3);
-	rb_define_method(classSurface, "rectangle", surface_rectangle, 2);
-	rb_define_method(classSurface, "filled_rectangle", surface_filled_rectangle, 2);
-	rb_define_method(classSurface, "line", surface_line, 3);
-	rb_define_method(classSurface, "antialiased_line", surface_antialiased_line, 3);
-	rb_define_method(classSurface, "circle", surface_circle, 3);
-	rb_define_method(classSurface, "filled_circle", surface_filled_circle, 3);
-	rb_define_method(classSurface, "antialiased_circle", surface_antialiased_circle, 3);
-	rb_define_method(classSurface, "filled_pie", surface_filled_pie, 5);
-	rb_define_method(classSurface, "ellipse", surface_ellipse, 4);
-	rb_define_method(classSurface, "filled_ellipse", surface_filled_ellipse, 4);
-	rb_define_method(classSurface, "antialiased_ellipse", surface_antialiased_ellipse, 4);
-	rb_define_method(classSurface, "polygon", surface_polygon, 2);
-	rb_define_method(classSurface, "filled_polygon", surface_filled_polygon, 2);
-	rb_define_method(classSurface, "antialiased_polygon", surface_antialiased_polygon, 2);
-	rb_define_method(classSurface, "print", surface_print, 3);
-	#endif
-	#ifdef HAVE_SDL_ROTOZOOM_H
-	rb_define_method(classSurface, "rotozoom", surface_rotozoom, 3);
-	rb_define_method(classSurface, "zoom", surface_zoom, 3);
-	#endif
-	#ifdef HAVE_SDL_IMAGEFILTER_H
-	#endif
+    //classSurfaceArray=rb_define_class_under(moduleRUDL, "SurfaceArray", rb_cObject);
+    #ifdef HAVE_SDL_GFXPRIMITIVES_H
+    rb_define_method(classSurface, "[]=", surface_plot, -1);
+    rb_alias(classSurface, rb_intern("plot"), rb_intern("[]="));
+    rb_define_method(classSurface, "horizontal_line", surface_horizontal_line, 3);
+    rb_define_method(classSurface, "vertical_line", surface_vertical_line, 3);
+    rb_define_method(classSurface, "rectangle", surface_rectangle, 2);
+    rb_define_method(classSurface, "filled_rectangle", surface_filled_rectangle, 2);
+    rb_define_method(classSurface, "line", surface_line, 3);
+    rb_define_method(classSurface, "antialiased_line", surface_antialiased_line, 3);
+    rb_define_method(classSurface, "circle", surface_circle, 3);
+    rb_define_method(classSurface, "filled_circle", surface_filled_circle, 3);
+    rb_define_method(classSurface, "antialiased_circle", surface_antialiased_circle, 3);
+    rb_define_method(classSurface, "filled_pie", surface_filled_pie, 5);
+    rb_define_method(classSurface, "ellipse", surface_ellipse, 4);
+    rb_define_method(classSurface, "filled_ellipse", surface_filled_ellipse, 4);
+    rb_define_method(classSurface, "antialiased_ellipse", surface_antialiased_ellipse, 4);
+    rb_define_method(classSurface, "polygon", surface_polygon, 2);
+    rb_define_method(classSurface, "filled_polygon", surface_filled_polygon, 2);
+    rb_define_method(classSurface, "antialiased_polygon", surface_antialiased_polygon, 2);
+    rb_define_method(classSurface, "print", surface_print, 3);
+    #endif
+    #ifdef HAVE_SDL_ROTOZOOM_H
+    rb_define_method(classSurface, "rotozoom", surface_rotozoom, 3);
+    rb_define_method(classSurface, "zoom", surface_zoom, 3);
+    #endif
+    #ifdef HAVE_SDL_IMAGEFILTER_H
+    #endif
 }
