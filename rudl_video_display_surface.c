@@ -3,6 +3,9 @@ RUDL - a C library wrapping SDL for use in Ruby.
 Copyright (C) 2001, 2002, 2003  Danny van Bruggen
 
 $Log: rudl_video_display_surface.c,v $
+Revision 1.22  2004/01/21 22:55:10  tsuihark
+Converted to Dokumentat format.
+
 Revision 1.21  2004/01/04 19:48:45  rennex
 Added automatic fixing of window clipping after a resize.
 Changed default window title to "RUDL window"
@@ -40,34 +43,38 @@ Fixed a lot of documentation
 #endif
 
 ///////////////////////////////// DISPLAYSURFACE
-/*
-=begin
-<<< docs/head
-= DisplaySurface < Surface
+/**
+@file Video
+@class RUDL::DisplaySurface < RUDL::Surface
 The DisplaySurface is the surface that represents the window or the full screen that you
 will be drawing and blitting on.
 Since it is inherited from Surface, it can be used just like an ordinary surface.
 You will need to create a DisplaySurface to show anything on your screen.
-== Class Methods
---- DisplaySurface.new( [w,h] )
---- DisplaySurface.new( [w,h], flags )
---- DisplaySurface.new( [w,h], flags, depth )
-Return value: the new DisplaySurface object
-* ((|[w,h]|)) is the requested size for the new display.
-* ((|flags|)) is a combination of the following:
-  * SWSURFACE, to create the display in normal memory,
-  * HWSURFACE, to create the display in the memory of your video hardware, if possible,
-  * ASYNCBLIT, to (i quote) "enable the use of asynchronous to the display surface.
-    This will usually slow down blitting on single CPU machines, but may provide a speed increase on SMP systems."
-  * RESIZABLE, to make a resizable display (see events to find the event that it sends),
-  * HWPALETTE, to grab the system palette,
-  * DOUBLEBUF, to enable double buffered hardware pageflipping. Use ((|flip|)) with this.
-  * FULLSCREEN, attempts to grab all of the screen,
-  * NOFRAME, in RUDL 0.3 and up, leaves the frame off the window.
-  * OPENGL, to create an OpenGL window.
-* ((|depth|)) selects the bits per pixel value (8 is 256 colors, 16 is thousands of colors,
-  24 and 32 are millions of colors). If it is not supplied, a good one will be selected for you.
-=end */
+*/
+/**
+@section Initializers
+@method DisplaySurface.new( size ) => DisplaySurface
+@method DisplaySurface.new( size, flags ) => DisplaySurface
+@method DisplaySurface.new( size, flags, depth ) => DisplaySurface
+<ul>
+<li>@size is the requested size for the new display in [w,h] format.
+<li>@flags is a combination of the following:
+	<ul>
+	<li><code>SWSURFACE</code>, to create the display in normal memory,
+	<li><code>HWSURFACE</code>, to create the display in the memory of your video hardware, if possible,
+	<li><code>ASYNCBLIT</code>, to (i quote) "enable the use of asynchronous to the display surface.
+		This will usually slow down blitting on single CPU machines, but may provide a speed increase on SMP systems."
+	<li><code>RESIZABLE</code>, to make a resizable display (see events to find the event that it sends),
+	<li><code>HWPALETTE</code>, to grab the system palette,
+	<li><code>DOUBLEBUF</code>, to enable double buffered hardware pageflipping. Use ((|flip|)) with this.
+	<li><code>FULLSCREEN</code>, attempts to grab all of the screen,
+	<li><code>NOFRAME</code>, leaves the frame off the window.
+	<li><code>OPENGL</code>, to create an OpenGL window.
+	</ul>
+<li>@depth selects the bits per pixel value (8 is 256 colors, 16 is thousands of colors,
+	24 and 32 are millions of colors). If it is not supplied, a good one will be selected for you.
+</ul>
+*/
 static VALUE displaySurface_new(int argc, VALUE* argv, VALUE self)
 {
     SDL_Surface* surf;
@@ -127,12 +134,10 @@ static VALUE displaySurface_new(int argc, VALUE* argv, VALUE self)
     return currentDisplaySurface;
 }
 
-/*
-=begin
---- DisplaySurface.destroy
+/**
+@method DisplaySurface.destroy
 Destroys the display, removing the window or returning from fullscreen mode.
 Do not call methods on a destroyed DisplaySurface
-=end
 */
 static VALUE displaySurface_destroy(VALUE self)
 {
@@ -140,18 +145,17 @@ static VALUE displaySurface_destroy(VALUE self)
     return Qnil;
 }
 
-/*
-=begin
---- DisplaySurface.modes
---- DisplaySurface.modes( bitdepth )
---- DisplaySurface.modes( bitdepth, flags )
-Lists available modes for a certain ((|bitdepth|)) and optionally only those modes that
-can do ((|flags|)).
-Flags are like those in DisplaySurface.new.
-No flags is the same as passing FULLSCREEN.
-Returns an array with arrays of [w, h], or nil.
-nil means any mode is ok, an empty array means ((|no|)) mode is supported.
-=end */
+/**
+@section Video modes
+@method DisplaySurface.modes => Array[w,h] or nil
+@method DisplaySurface.modes( bitdepth ) => Array[w,h] or nil
+@method DisplaySurface.modes( bitdepth, flags ) => Array[w,h] or nil
+Lists available modes for a certain @bitdepth and optionally only those modes that
+can do @flags.
+Flags are like those in @DisplaySurface.new.
+No flags is the same as passing <code>FULLSCREEN</code>.
+Return value nil means any mode is ok, an empty array means <em>no</em> mode is supported.
+*/
 static VALUE displaySurface_modes(int argc, VALUE* argv, VALUE self)
 {
     SDL_PixelFormat format;
@@ -194,12 +198,11 @@ static VALUE displaySurface_modes(int argc, VALUE* argv, VALUE self)
 }
 
 
-/*
-=begin
---- DisplaySurface.mode_ok?
+/**
+@method DisplaySurface.mode_ok? => boolean
 Like DisplaySurface.new, but doesn't set the mode, only returns true if the mode can be set,
 and false if it can't.
-=end */
+*/
 static VALUE displaySurface_mode_ok_(int argc, VALUE* argv, VALUE self)
 {
     int flags=SDL_SWSURFACE, depth=0;
@@ -225,29 +228,32 @@ static VALUE displaySurface_mode_ok_(int argc, VALUE* argv, VALUE self)
     return UINT2NUM(SDL_VideoModeOK(w, h, depth, flags));
 }
 
-/*
-=begin
---- DisplaySurface.best_mode_info
+/**
+@method info
+See @DisplaySurface.best_mode_info
+*/
+/**
+@method DisplaySurface.best_mode_info
 This method returns a hash filled with information about the video hardware.
 
 These entries are true or false:
- * hardware surfaces available
- * window manager available
- * hardware to hardware blits accelerated
- * hardware to hardware colorkey blits accelerated
- * hardware to hardware alpha blits accelerated
- * software to hardware blits accelerated
- * software to hardware colorkey blits accelerated
- * software to hardware alpha blits accelerated
- * color fills accelerated
-This is in kilobytes:
- * video memory
+<ul>
+<li>hardware surfaces available
+<li>window manager available
+<li>hardware to hardware blits accelerated
+<li>hardware to hardware colorkey blits accelerated
+<li>hardware to hardware alpha blits accelerated
+<li>software to hardware blits accelerated
+<li>software to hardware colorkey blits accelerated
+<li>software to hardware alpha blits accelerated
+<li>color fills accelerated
+<li>video memory (in kilobytes)
+</ul>
 
-There is currently no difference between best_mode_info and info,
+There is currently no difference between @best_mode_info and @info,
 except that one is a class method and the other an instance method,
 but there may be differences in the future.
-=end */
-
+*/
 static VALUE get_video_info()
 {
     const SDL_VideoInfo* info=SDL_GetVideoInfo();
@@ -283,23 +289,23 @@ static VALUE displaySurface_info(VALUE self)
     return get_video_info();
 }
 
-/*
-=begin
---- DisplaySurface.gl_set_attribute( name, value )
+/**
+@section OpenGL
+RUDL supports setting up an OpenGL window in a cross platform way.
+Several other methods apply. See @flip and @new.
+*/
+/**
+@method VideoSurface.gl_set_attribute( name, value ) => self
 Set an attribute of the OpenGL subsystem before intialization.
-
-Returns self.
-=end */
-
+*/
 static VALUE displaySurface_gl_set_attribute(VALUE self, VALUE attribute, VALUE value)
 {
     SDL_VERIFY(SDL_GL_SetAttribute(NUM2INT(attribute), NUM2INT(value))==0);
     return self;
 }
 
-/*
-=begin
---- DisplaySurface.gl_get_attribute( name )
+/**
+@method VideoSurface.gl_get_attribute( name ) => Number
 From the SDL documentation:
 
 Get an attribute of the OpenGL subsystem from the windowing
@@ -309,7 +315,7 @@ stores the values you request before initialization.
 
 Developers should track the values they pass into SDL_GL_SetAttribute
 themselves if they want to retrieve these values.
-=end */
+*/
 static VALUE displaySurface_gl_get_attribute(VALUE self, VALUE attribute)
 {
     int buf;
@@ -318,14 +324,10 @@ static VALUE displaySurface_gl_get_attribute(VALUE self, VALUE attribute)
     return INT2NUM(buf);
 }
 
-/*
-=begin
-== Instance Methods
---- DisplaySurface#info
-See DisplaySurface.best_mode_info
---- DisplaySurface#driver
+/**@section Methods
+@method driver => String
 Returns the name of the videodriver that is being used.
-=end */
+*/
 static VALUE displaySurface_driver(VALUE self)
 {
     char buf[256];
@@ -336,18 +338,15 @@ static VALUE displaySurface_driver(VALUE self)
     return rb_str_new2(buf);
 }
 
-
-/*
-=begin
---- DisplaySurface#update
---- DisplaySurface#update( rect )
+/**
+@method update => self
+@method update( rect ) => self
 This call will update a section (or sections) of the display screen.
 You must update an area of your display when you change its contents.
-((|rect|)) is, starting from v0.4, an array of rectangles.
+@rect is an array of rectangles.
 If passed with no arguments, this will update the entire display surface.
 
-This call cannot be used on OPENGL displays, and will generate an exception.
-=end
+This call cannot be used on OpenGL displays, and will generate an exception.
 */
 static VALUE displaySurface_update(int argc, VALUE* argv, VALUE self)
 {
@@ -382,17 +381,16 @@ static VALUE displaySurface_update(int argc, VALUE* argv, VALUE self)
     return self;
 }
 
-/*
-=begin
---- DisplaySurface#flip
+/**
+@method flip => self
 This will update the contents of the entire display.
-If your display mode is using the flags HWSURFACE and DOUBLEBUF, this
+If your display mode is using the flags <code>HWSURFACE</code> and <code>DOUBLEBUF</code>, this
 will wait for a vertical retrace (if the video driver supports it)
 and swap the surfaces.
 If you are using a different type of display mode, it will simply update
 the entire contents of the surface.
-=end
-When using an OPENGL display mode this will perform a gl buffer swap.
+
+When using an OpenGL display mode this will perform a gl buffer swap.
 */
 static VALUE displaySurface_flip(VALUE self)
 {
@@ -405,26 +403,25 @@ static VALUE displaySurface_flip(VALUE self)
     return self;
 }
 
-/*
-=begin
---- DisplaySurface#active?
+/**
+@section Windowing system
+@method active?
 Returns true if the application is active (i.e. not minimized).
-=end */
+*/
 static VALUE displaySurface_active_(VALUE self)
 {
     return INT2BOOL((SDL_GetAppState()&SDL_APPACTIVE) != 0);
 }
 
-/*
-=begin
---- DisplaySurface#caption
---- DisplaySurface#set_caption( title )
---- DisplaySurface#set_caption( title, icontitle )
-caption= sets the title of the window (if the application runs in a window) to title.
-Sets the title of the icon that shows when the application is iconified to icontitle,
-or title if icontitle is not supplied.
-caption returns the title and icontitle of the window.
-=end */
+/**
+@method caption => Array[String, String]
+Returns the title and icontitle of the window.
+@method set_caption( title )
+@method set_caption( title, icontitle )
+Sets the title of the window (if the application runs in a window) to @title.
+Supplying @icontitle sets the title of the icon that shows when the application is iconified to @icontitle,
+or @title if @icontitle is not supplied.
+*/
 static VALUE displaySurface_set_caption(int argc, VALUE* argv, VALUE self)
 {
     VALUE titleObject, iconTitleObject;
@@ -457,10 +454,9 @@ static VALUE displaySurface_caption(VALUE self)
     return rb_ary_new3(2, rb_str_new2(""), rb_str_new2(""));
 }
 
-/*
-=begin
---- DisplaySurface#set_icon( icon_surface )
---- DisplaySurface#set_icon( icon_surface, mask_string )
+/**
+@method set_icon( icon_surface )
+@method set_icon( icon_surface, mask_string )
 Sets the icon for the display window.
 
 The SDL docs say this must be called before calling DisplaySurface.new, but
@@ -469,12 +465,12 @@ of DisplaySurface.
 
 Win32 icons must be 32x32 to work properly.
 
-If ((|icon_surface|)) has a colorkey set, that color will be transparent. (Since
+If @icon_surface has a colorkey set, that color will be transparent. (Since
 SDL currently handles that wrong, RUDL generates the mask instead, unless
 you supply nil for mask_string.)
-Alternatively, you can supply ((|mask_string|)) where each byte represents
+Alternatively, you can supply @mask_string where each byte represents
 the visibility of 8 pixels (MSB is the leftmost pixel, 0 means transparent).
-=end */
+*/
 static VALUE displaySurface_set_icon(int argc, VALUE* argv, VALUE self)
 {
     VALUE icon, mask;
@@ -524,24 +520,23 @@ static VALUE displaySurface_set_icon(int argc, VALUE* argv, VALUE self)
 
 
 
-/*
-=begin
---- DisplaySurface#iconify
+/**
+@method iconify => boolean
 Iconifies (minimizes) the application.
 Returns true if successful.
-=end */
+*/
 static VALUE displaySurface_iconify(VALUE self)
 {
     return INT2BOOL(SDL_WM_IconifyWindow()!=0);
 }
 
-/*
-=begin
---- DisplaySurface#gamma=( [r,g,b] )
---- DisplaySurface#gamma=( intensity )
+/**
+@section Methods
+@method gamma=( [r,g,b] )
+@method gamma=( intensity )
 Sets the gamma value for the display when this is supported.
-((|intensity|)) is a shortcut for values where r=g=b.
-=end */
+@intensity is a shortcut for values where r=g=b.
+*/
 static VALUE displaySurface_gamma_(VALUE self, VALUE color)
 {
     float r, g, b;
@@ -563,22 +558,21 @@ static VALUE displaySurface_gamma_(VALUE self, VALUE color)
     return INT2BOOL(SDL_SetGamma(r, g, b)==0);
 }
 
-/*
-=begin
---- DisplaySurface#toggle_fullscreen
+/**
+@method toggle_fullscreen
 Toggles between fullscreen and windowed mode.
 The code is experimental and is known to crash in some cases,
 please report problems if found.
 It might be better to not use this at all and use DisplaySurface.destroy to dispose
 of the current DisplaySurface and create a new one with DisplaySurface.new with the
 FULLSCREEN flag toggled.
-=end */
+*/
 /*
  * (This code may be considered public domain, and under no licensing
  *  restrictions. --rcg.)
  */
 
-/**
+/*
  * Attempt to flip the video surface to fullscreen or windowed mode.
  *  Attempts to maintain the surface's state, but makes no guarantee
  *  that pointers (i.e., the surface's pixels field) will be the same

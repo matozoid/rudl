@@ -3,6 +3,9 @@ RUDL - a C library wrapping SDL for use in Ruby.
 Copyright (C) 2001, 2002, 2003  Danny van Bruggen
 
 $Log: rudl_video_sdl_gfx.c,v $
+Revision 1.13  2004/01/21 22:55:10  tsuihark
+Converted to Dokumentat format.
+
 Revision 1.12  2003/12/26 22:40:44  rennex
 Combined Surface#plot and Surface#[]= into one method
 
@@ -23,37 +26,38 @@ Added CVS headers
 
 ///////////////////////////////// SDL_GFX: ROTOZOOM
 #ifdef HAVE_SDL_ROTOZOOM_H
-/*
-=begin
-<<< docs/head
-= SDL_gfx functions
-SDL_gfx was written by Andreas Schiffler.
-See ((<URL:http://de.ferzkopp.net/>))
-== SDL_gfx: SDL_rotozoom
---- Surface#rotozoom( angle, zoom, smooth )
-Returns a new surface that is rotated ((|angle|)) degrees and zoomed
-((|zoom|)) times (fractions are OK).
+/**
+@file Video
+@class RUDL::Surface
+@section Drawing
+Many of the methods here are from <a href='http://de.ferzkopp.net/'>SDL_gfx</a>.
+They were written by Andreas Schiffler.
+*/
+/**
+@section Scaling, Flipping and Rotating
+@method rotozoom( angle, zoom, smooth ) => Surface
+Returns a new surface that is rotated @angle degrees and zoomed
+@zoom times (fractions are OK).
 This method returns a 32 bit surface.
 Exception: for now it returns an 8 bit surface when fed an 8 bit surface.
-If ((|smooth|)) is true and the surface is not 8 bits,
+If @smooth is true and the surface is not 8 bits,
 bilinear interpolation will be applied, resulting in a smoother image.
-=end */
+*/
 static VALUE surface_rotozoom(VALUE self, VALUE angle, VALUE zoom, VALUE smooth)
 {
     return createSurfaceObject(rotozoomSurface(retrieveSurfacePointer(self), NUM2DBL(angle), NUM2DBL(zoom), NUM2BOOL(smooth)));
 }
 
-/*
-=begin
---- Surface#zoom( zoom_horizontal, zoom_vertical, smooth )
+/**
+@method zoom( zoom_horizontal, zoom_vertical, smooth ) => Surface
 Returns a new surface that is zoomed.
 1.0 doesn't zoom, bigger than 1.0 zooms in, smaller than 1.0 zooms out.
 This method returns a 32 bit surface.
 Exception: for now it returns an 8 bit surface when fed an 8 bit surface.
-If ((|smooth|)) is true and the surface is not 8 bits,
+If @smooth is true and the surface is not 8 bits,
 bilinear interpolation will be applied, resulting in a smoother image.
 (The last two methods are from Andreas Schiffler's SDL_rotozoom, aschiffler@home.com)
-=end */
+*/
 static VALUE surface_zoom(VALUE self, VALUE zoom_x, VALUE zoom_y, VALUE smooth)
 {
     return createSurfaceObject(zoomSurface(retrieveSurfacePointer(self), NUM2DBL(zoom_x), NUM2DBL(zoom_y), NUM2BOOL(smooth)));
@@ -62,23 +66,23 @@ static VALUE surface_zoom(VALUE self, VALUE zoom_x, VALUE zoom_y, VALUE smooth)
 
 ///////////////////////////////// SDL_GFX: GFXPRIMITIVES
 #ifdef HAVE_SDL_GFXPRIMITIVES_H
-/*
-=begin
-== SDL_gfx: SDL_gfxPrimitives
+/**
+@section Drawing
 For these methods, "antialiased" means that drawing is done with many shades of the
 requested color to simulate
---- Surface#plot( x, y, color )
---- Surface#plot( coordinate, color )
---- Surface#[ x, y ]= color
---- Surface#[ coordinate ]= color
+*/
+/**
+@method plot( x, y, color )
+@method plot( coordinate, color )
+@method [ x, y ]= color
+@method [ coordinate ]= color
 These methods access single pixels on a surface.
-((|plot|)) or ((|[]=|)) set the color of a pixel. The coordinate can be given as an [x,y] array or two
-separate numbers. ((|plot|)) is an alias for ((|[]=|)).
+@plot or @[]= set the color of a pixel. The coordinate can be given as an [x,y] array or two
+separate numbers. @plot is an alias for @[]=.
 These methods require the surface to be locked if necessary.
-((|[]=|)) and ((|[]|)) are the only methods in RUDL that take separate x and y coordinates.
-See also: Surface#get, Surface#[]
-=end */
-
+@[]= and @[] are the only methods in RUDL that take separate x and y coordinates.
+See also: @Surface.get, @Surface.[]
+*/
 static VALUE surface_plot(int argc, VALUE* argv, VALUE self)
 {
     Sint16 x,y;
@@ -109,10 +113,10 @@ static VALUE surface_array_plot(VALUE self, VALUE x, VALUE y, VALUE color)
     return self;
 }
 */
-/*
-=begin
---- Surface#horizontal_line( coord, endx, color )
-=end */
+/**
+@section Drawing: Straight stuff
+@method horizontal_line( coord, endx, color ) => self
+*/
 static VALUE surface_horizontal_line(VALUE self, VALUE coord, VALUE endx, VALUE color)
 {
     Sint16 x,y;
@@ -121,10 +125,7 @@ static VALUE surface_horizontal_line(VALUE self, VALUE coord, VALUE endx, VALUE 
     return self;
 }
 
-/*
-=begin
---- Surface#vertical_line( coord, endy, color )
-=end */
+/** @method vertical_line( coord, endy, color ) => self */
 static VALUE surface_vertical_line(VALUE self, VALUE coord, VALUE endy, VALUE color)
 {
     Sint16 x,y;
@@ -133,10 +134,7 @@ static VALUE surface_vertical_line(VALUE self, VALUE coord, VALUE endy, VALUE co
     return self;
 }
 
-/*
-=begin
---- Surface#rectangle( rect, color )
-=end */
+/** @method rectangle( rect, color ) => self */
 static VALUE surface_rectangle(VALUE self, VALUE rectObject, VALUE color)
 {
     SDL_Rect rect;
@@ -145,10 +143,12 @@ static VALUE surface_rectangle(VALUE self, VALUE rectObject, VALUE color)
     return self;
 }
 
-/*
-=begin
---- Surface#filled_rectangle( rect, color )
-=end */
+/** 
+@method filled_rectangle( rect, color ) => self 
+Filled_rectangle is a lot like @fill.
+Fill comes from SDL, filled_rectangle from SDL_gfx,
+choose whichever you like best.
+*/
 static VALUE surface_filled_rectangle(VALUE self, VALUE rectObject, VALUE color)
 {
     SDL_Rect rect;
@@ -157,10 +157,7 @@ static VALUE surface_filled_rectangle(VALUE self, VALUE rectObject, VALUE color)
     return self;
 }
 
-/*
-=begin
---- Surface#line( coord1, coord2, color )
-=end */
+/** @method line( coord1, coord2, color ) */
 static VALUE surface_line(VALUE self, VALUE coord1, VALUE coord2, VALUE color)
 {
     Sint16 x1,y1,x2,y2;
@@ -170,10 +167,7 @@ static VALUE surface_line(VALUE self, VALUE coord1, VALUE coord2, VALUE color)
     return self;
 }
 
-/*
-=begin
---- Surface#antialiased_line( coord1, coord2, color )
-=end */
+/** @method antialiased_line( coord1, coord2, color ) */
 static VALUE surface_antialiased_line(VALUE self, VALUE coord1, VALUE coord2, VALUE color)
 {
     Sint16 x1,y1,x2,y2;
@@ -183,10 +177,10 @@ static VALUE surface_antialiased_line(VALUE self, VALUE coord1, VALUE coord2, VA
     return self;
 }
 
-/*
-=begin
---- Surface#circle( coord, radius, color )
-=end */
+/** 
+@section Drawing: Circles
+@method circle( coord, radius, color ) 
+*/
 static VALUE surface_circle(VALUE self, VALUE coord, VALUE r, VALUE color)
 {
     Sint16 x,y;
@@ -195,10 +189,7 @@ static VALUE surface_circle(VALUE self, VALUE coord, VALUE r, VALUE color)
     return self;
 }
 
-/*
-=begin
---- Surface#filled_circle( coord, radius, color )
-=end */
+/** @method filled_circle( coord, radius, color ) */
 static VALUE surface_filled_circle(VALUE self, VALUE coord, VALUE r, VALUE color)
 {
     Sint16 x,y;
@@ -207,10 +198,7 @@ static VALUE surface_filled_circle(VALUE self, VALUE coord, VALUE r, VALUE color
     return self;
 }
 
-/*
-=begin
---- Surface#antialiased_circle( coord, radius, color )
-=end */
+/** @method antialiased_circle( coord, radius, color ) */
 static VALUE surface_antialiased_circle(VALUE self, VALUE coord, VALUE r, VALUE color)
 {
     Sint16 x,y;
@@ -219,10 +207,7 @@ static VALUE surface_antialiased_circle(VALUE self, VALUE coord, VALUE r, VALUE 
     return self;
 }
 
-/*
-=begin
---- Surface#filled_pie( coord, radius, start, end, color )
-=end */
+/** @method filled_pie( coord, radius, start, end, color ) */
 static VALUE surface_filled_pie(VALUE self, VALUE coord, VALUE r, VALUE start, VALUE end, VALUE color)
 {
     Sint16 x,y;
@@ -232,10 +217,7 @@ static VALUE surface_filled_pie(VALUE self, VALUE coord, VALUE r, VALUE start, V
 }
 
 
-/*
-=begin
---- Surface#ellipse( coord, radius_x, radius_y, color )
-=end */
+/** @method ellipse( coord, radius_x, radius_y, color ) */
 static VALUE surface_ellipse(VALUE self, VALUE coord, VALUE rx, VALUE ry, VALUE color)
 {
     Sint16 x,y;
@@ -244,10 +226,7 @@ static VALUE surface_ellipse(VALUE self, VALUE coord, VALUE rx, VALUE ry, VALUE 
     return self;
 }
 
-/*
-=begin
---- Surface#antialiased_ellipse( coord, radius_x, radius_y, color )
-=end */
+/** @method antialiased_ellipse( coord, radius_x, radius_y, color ) */
 static VALUE surface_antialiased_ellipse(VALUE self, VALUE coord, VALUE rx, VALUE ry, VALUE color)
 {
     Sint16 x,y;
@@ -256,14 +235,7 @@ static VALUE surface_antialiased_ellipse(VALUE self, VALUE coord, VALUE rx, VALU
     return self;
 }
 
-/*
-=begin
---- Surface#filled_ellipse( coord, radius_x, radius_y, color )
-These methods are thought to be self-explanatory.
-Filled_rectangle is a lot like fill.
-Fill comes from SDL, filled_rectangle from SDL_gfx,
-choose whichever you like best.
-=end */
+/** @method filled_ellipse( coord, radius_x, radius_y, color ) */
 static VALUE surface_filled_ellipse(VALUE self, VALUE coord, VALUE rx, VALUE ry, VALUE color)
 {
     Sint16 x,y;
@@ -271,11 +243,14 @@ static VALUE surface_filled_ellipse(VALUE self, VALUE coord, VALUE rx, VALUE ry,
     if(filledEllipseColor(retrieveSurfacePointer(self), x, y, NUM2Sint16(rx), NUM2Sint16(ry), VALUE2COLOR_NOMAP(color))) SDL_RAISE_S("failed");
     return self;
 }
-/*
-=begin
---- Surface#polygon( coord_list, color )
-=end */
 
+/** 
+@section Drawing: Polygons
+The polygon methods take an array of [x,y], like [[10,10],[40,60],[16,66]].
+*/
+/**
+@method polygon( coord_list, color ) 
+*/
 static VALUE surface_polygon(VALUE self, VALUE coordlist, VALUE color)
 {
     int numpoints=RARRAY(coordlist)->len;
@@ -296,10 +271,7 @@ static VALUE surface_polygon(VALUE self, VALUE coordlist, VALUE color)
     return self;
 }
 
-/*
-=begin
---- Surface#filled_polygon( coord_list, color )
-=end */
+/** @method filled_polygon( coord_list, color ) */
 static VALUE surface_filled_polygon(VALUE self, VALUE coordlist, VALUE color)
 {
     int numpoints=RARRAY(coordlist)->len;
@@ -320,11 +292,8 @@ static VALUE surface_filled_polygon(VALUE self, VALUE coordlist, VALUE color)
     return self;
 }
 
-/*
-=begin
---- Surface#antialiased_polygon( coord_list, color)
-The polygon methods take an array of [x,y], like [[10,10],[40,60],[16,66]].
-=end */
+/** @method antialiased_polygon( coord_list, color)
+*/
 static VALUE surface_antialiased_polygon(VALUE self, VALUE coordlist, VALUE color)
 {
     int numpoints=RARRAY(coordlist)->len;
@@ -345,11 +314,11 @@ static VALUE surface_antialiased_polygon(VALUE self, VALUE coordlist, VALUE colo
     return self;
 }
 
-/*
-=begin
---- Surface#print( coord, text, color )
-Puts ((|text|)) on the surface in a monospaced 8x8 standard old ASCII font.
-=end */
+/**
+@section Drawing
+@method print( coord, text, color )
+Puts @text on the surface in a monospaced 8x8 standard old ASCII font.
+*/
 static VALUE surface_print(VALUE self, VALUE coord, VALUE text, VALUE color)
 {
     Sint16 x,y;
