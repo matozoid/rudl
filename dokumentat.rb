@@ -296,7 +296,7 @@ SHEET
 	end
 	
 	def Output.format_end_of_normal_paragraph()
-		'<p>'
+		'</p>'
 	end
 
 	def Output.format_text(text)
@@ -526,10 +526,10 @@ class MethodEntry < Entry
 	end
 
 	def reenter(name)
-		@fullnames.push(name.gsub(/->/, '&rArr;'))
+		@fullnames.push(name.gsub(/[-=]>/, '&rArr;'))
 
 		# return the name, minus anything after "(", "?", "!" or "="
-		name.sub(/(\(|\?|\!|=).*/, "")
+		name.sub(/([(?!=\s]).*/, "")
 	end
 
 	def write(file)
