@@ -1,4 +1,12 @@
-/* RUDL - a C library wrapping SDL for use in Ruby. Copyright (C) 2001, 2002  Danny van Bruggen */
+/* 
+RUDL - a C library wrapping SDL for use in Ruby. 
+Copyright (C) 2001, 2002, 2003  Danny van Bruggen 
+
+$Log: rudl_video_rect.c,v $
+Revision 1.9  2003/09/26 23:04:29  tsuihark
+Fixed damn EOLs and added some headers
+
+*/
 #include "rudl_events.h"
 #include "rudl_video.h"
 
@@ -384,6 +392,7 @@ static VALUE rb_array_union_bang(VALUE self, VALUE other_rect)
 		GET_W();
 		GET_H();
 		double other_x=array_get_x(other_rect);
+
 		double other_y=array_get_y(other_rect);
 		double other_w=array_get_w(other_rect);
 		double other_h=array_get_h(other_rect);
@@ -822,6 +831,7 @@ void initVideoRectClasses()
 
 	rb_define_method(rb_cArray, "find_overlapping_rect", rb_array_find_overlapping_rect, 1);
 	rb_define_method(rb_cArray, "find_overlapping_rects", rb_array_find_overlapping_rects, 1);
+
 	
 	rb_define_method(rb_cArray, "clip", rb_array_clip, 1);
 	rb_define_method(rb_cArray, "clip!", rb_array_clip_bang, 1);
@@ -835,4 +845,5 @@ void initVideoRectClasses()
 	
 	rb_define_class_under(moduleRUDL, "Rect", rb_cArray);
 }
+
 

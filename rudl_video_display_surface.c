@@ -1,4 +1,12 @@
-/* RUDL - a C library wrapping SDL for use in Ruby. Copyright (C) 2001, 2002  Danny van Bruggen */
+/* 
+RUDL - a C library wrapping SDL for use in Ruby. 
+Copyright (C) 2001, 2002, 2003  Danny van Bruggen 
+
+$Log: rudl_video_display_surface.c,v $
+Revision 1.11  2003/09/26 23:04:29  tsuihark
+Fixed damn EOLs and added some headers
+
+*/
 #include "rudl_events.h"
 #include "rudl_video.h"
 
@@ -215,6 +223,7 @@ static VALUE get_video_info()
 	rb_hash_aset(retval, CSTR2STR("hardware surfaces available"), INT2BOOL(info->hw_available));
 	rb_hash_aset(retval, CSTR2STR("window manager available"), INT2BOOL(info->wm_available));
 	rb_hash_aset(retval, CSTR2STR("hardware to hardware blits accelerated"), INT2BOOL(info->blit_hw));
+
 	rb_hash_aset(retval, CSTR2STR("hardware to hardware colorkey blits accelerated"), INT2BOOL(info->blit_hw_CC));
 	rb_hash_aset(retval, CSTR2STR("hardware to hardware alpha blits accelerated"), INT2BOOL(info->blit_hw_A));
 	rb_hash_aset(retval, CSTR2STR("software to hardware blits accelerated"), INT2BOOL(info->blit_sw));
@@ -661,3 +670,4 @@ void initVideoDisplaySurfaceClasses()
 			"end end											\n"
 	);
 }
+
