@@ -10,95 +10,89 @@
 <body>
 <a href='index.html'>Back to index</a>
 <h1>Index</h1>
-<br><a href='rudl_audio.html#label-0'>Audio</a>
-<br><a href='rudl_audio.html#label-1'>Channel</a>
-<br><a href='rudl_audio.html#label-2'>Class Methods</a>
-<br><a href='rudl_audio.html#label-3'><code>Channel.new( <var>number</var> )</code></a>
-<br><a href='rudl_audio.html#label-4'>Instance Methods</a>
-<br><a href='rudl_audio.html#label-5'><code>Channel#fade_out( <var>milliseconds</var> )</code></a>
-<br><a href='rudl_audio.html#label-6'><code>Channel#volume</code></a>
-<br><a href='rudl_audio.html#label-7'><code>Channel#volume=( <var>loudness</var> )</code></a>
-<br><a href='rudl_audio.html#label-8'><code>Channel#busy</code></a>
-<br><a href='rudl_audio.html#label-9'><code>Channel#pause</code></a>
-<br><a href='rudl_audio.html#label-10'><code>Channel#unpause</code></a>
-<br><a href='rudl_audio.html#label-11'><code>Channel#play( <var>sound</var>, <var>loops</var>, <var>maxtime</var> )</code></a>
-<br><a href='rudl_audio.html#label-12'><code>Channel#play( <var>sound</var>, <var>loops</var> )</code></a>
-<br><a href='rudl_audio.html#label-13'><code>Channel#play( <var>sound</var> )</code></a>
-<br><a href='rudl_audio.html#label-14'><code>Channel#stop</code></a>
-<br><a href='rudl_audio.html#label-15'><code>Channel#set_panning( <var>left</var>, <var>right</var> )</code></a>
-<br><a href='rudl_audio.html#label-16'><code>Channel#set_position( <var>angle</var>, <var>distance</var> )</code></a>
-<br><a href='rudl_audio.html#label-17'><code>Channel#set_distance( <var>distance</var> )</code></a>
-<br><a href='rudl_audio.html#label-18'><code>Channel#reverse_stereo( <var>reverse</var> )</code></a>
-<br><a href='rudl_audio.html#label-19'>Sound</a>
-<br><a href='rudl_audio.html#label-20'>Class Methods</a>
-<br><a href='rudl_audio.html#label-21'><code>Sound.new</code></a>
-<br><a href='rudl_audio.html#label-22'><code>Sound.new( <var>filename</var> )</code></a>
-<br><a href='rudl_audio.html#label-23'><code>Sound.load_new( <var>filename</var> )</code></a>
-<br><a href='rudl_audio.html#label-24'><code>Sound.import( <var>sampledata</var> )</code></a>
-<br><a href='rudl_audio.html#label-25'><code>String.to_sound</code></a>
-<br><a href='rudl_audio.html#label-26'>Instance Methods</a>
-<br><a href='rudl_audio.html#label-27'><code>Sound#fade_out( <var>milliseconds</var> )</code></a>
-<br><a href='rudl_audio.html#label-28'><code>Sound#volume</code></a>
-<br><a href='rudl_audio.html#label-29'><code>Sound#volume=( <var>loudness</var> )</code></a>
-<br><a href='rudl_audio.html#label-30'><code>Sound#play( <var>loops</var>, <var>maxtime</var> )</code></a>
-<br><a href='rudl_audio.html#label-31'><code>Sound#stop</code></a>
-<br><a href='rudl_audio.html#label-32'><code>Sound#to_s</code></a>
-<br><a href='rudl_audio.html#label-33'><code>Sound.convert( <var>sample</var>, <var>source_format</var>, <var>destination_format</var> )</code></a>
-<br><a href='rudl_audio.html#label-34'><code>Sound#format</code></a>
-<br><a href='rudl_audio.html#label-35'>Mixer</a>
-<br><a href='rudl_audio.html#label-36'>Class and instance Methods</a>
-<br><a href='rudl_audio.html#label-37'><code>Mixer.new</code></a>
-<br><a href='rudl_audio.html#label-38'><code>Mixer.new( <var>frequency</var> )</code></a>
-<br><a href='rudl_audio.html#label-39'><code>Mixer.new( <var>frequency</var>, <var>format</var> )</code></a>
-<br><a href='rudl_audio.html#label-40'><code>Mixer.new( <var>frequency</var>, <var>format</var>, <var>stereo</var> )</code></a>
-<br><a href='rudl_audio.html#label-41'><code>Mixer.new( <var>frequency</var>, <var>format</var>, <var>stereo</var>, <var>buffersize</var> )</code></a>
-<br><a href='rudl_audio.html#label-42'><code>Mixer.destroy</code></a>
-<br><a href='rudl_audio.html#label-43'><code>Mixer#destroy</code></a>
-<br><a href='rudl_audio.html#label-44'><code>Mixer.fade_out( <var>millisecs</var> )</code></a>
-<br><a href='rudl_audio.html#label-45'><code>Mixer#fade_out( <var>millisecs</var> )</code></a>
-<br><a href='rudl_audio.html#label-46'><code>Mixer.find_free_channel</code></a>
-<br><a href='rudl_audio.html#label-47'><code>Mixer.find_oldest_channel</code></a>
-<br><a href='rudl_audio.html#label-48'><code>Mixer#find_free_channel</code></a>
-<br><a href='rudl_audio.html#label-49'><code>Mixer#find_oldest_channel</code></a>
-<br><a href='rudl_audio.html#label-50'><code>Mixer.busy?</code></a>
-<br><a href='rudl_audio.html#label-51'><code>Mixer#busy?</code></a>
-<br><a href='rudl_audio.html#label-52'><code>Mixer.num_channels</code></a>
-<br><a href='rudl_audio.html#label-53'><code>Mixer.num_channels=( <var>amount</var> )</code></a>
-<br><a href='rudl_audio.html#label-54'><code>Mixer#num_channels</code></a>
-<br><a href='rudl_audio.html#label-55'><code>Mixer#num_channels=( <var>amount</var> )</code></a>
-<br><a href='rudl_audio.html#label-56'><code>Mixer.pause</code></a>
-<br><a href='rudl_audio.html#label-57'><code>Mixer.unpause</code></a>
-<br><a href='rudl_audio.html#label-58'><code>Mixer.stop</code></a>
-<br><a href='rudl_audio.html#label-59'><code>Mixer#pause</code></a>
-<br><a href='rudl_audio.html#label-60'><code>Mixer#unpause</code></a>
-<br><a href='rudl_audio.html#label-61'><code>Mixer#stop</code></a>
-<br><a href='rudl_audio.html#label-62'><code>Mixer.reserved=( <var>amount</var> )</code></a>
-<br><a href='rudl_audio.html#label-63'><code>Mixer#reserved=( <var>amount</var> )</code></a>
-<br><a href='rudl_audio.html#label-64'><code>Mixer.driver</code></a>
-<br><a href='rudl_audio.html#label-65'><code>Mixer#driver</code></a>
-<br><a href='rudl_audio.html#label-66'><code>Mixer.format</code></a>
-<br><a href='rudl_audio.html#label-67'><code>Mixer#format</code></a>
-<br><a href='rudl_audio.html#label-68'>Music</a>
-<br><a href='rudl_audio.html#label-69'>Class Methods</a>
-<br><a href='rudl_audio.html#label-70'><code>Music.new( <var>filename</var> )</code></a>
-<br><a href='rudl_audio.html#label-71'>Instance Methods</a>
-<br><a href='rudl_audio.html#label-72'><code>Music#volume</code></a>
-<br><a href='rudl_audio.html#label-73'><code>Music#volume=( <var>loudness</var> )</code></a>
-<br><a href='rudl_audio.html#label-74'><code>Music#fade_out( <var>milliseconds</var> )</code></a>
-<br><a href='rudl_audio.html#label-75'><code>Music.play</code></a>
-<br><a href='rudl_audio.html#label-76'><code>Music.play( <var>loops</var> )</code></a>
-<br><a href='rudl_audio.html#label-77'><code>Music.stop</code></a>
-<br><a href='rudl_audio.html#label-78'><code>Music.pause</code></a>
-<br><a href='rudl_audio.html#label-79'><code>Music.unpause</code></a>
-<br><a href='rudl_audio.html#label-80'><code>Music.busy?</code></a>
-<br><a href='rudl_audio.html#label-81'><code>Music.restart</code></a>
-<br><a href='rudl_audio.html#label-82'><code>Music.post_end_event</code></a>
-<br><a href='rudl_audio.html#label-83'><code>Music.post_end_event=( <var>onOrOff</var> )</code></a>
-<br><a href='rudl_audio.html#label-84'><code>Music.destroy</code></a>
-<br><a href='rudl_audio.html#label-85'>Events</a>
-<br><a href='rudl_audio.html#label-86'>EndOfMusicEvent</a>
-<br><a href='rudl_audio.html#label-87'>Constants</a>
-
+<ul><li><a href='rudl_audio.html#label-0'>Audio</a>
+<li><a href='rudl_audio.html#label-1'>Channel</a>
+<ul><li><a href='rudl_audio.html#label-2'>Class Methods</a>
+<ul><li><a href='rudl_audio.html#label-3'><code>new( <var>number</var> )</code></a>
+</ul><li><a href='rudl_audio.html#label-4'>Instance Methods</a>
+<ul><li><a href='rudl_audio.html#label-5'><code>fade_out( <var>milliseconds</var> )</code></a>
+<li><a href='rudl_audio.html#label-6'><code>volume</code></a>
+<li><a href='rudl_audio.html#label-7'><code>volume=( <var>loudness</var> )</code></a>
+<li><a href='rudl_audio.html#label-8'><code>busy</code></a>
+<li><a href='rudl_audio.html#label-9'><code>pause</code></a>
+<li><a href='rudl_audio.html#label-10'><code>unpause</code></a>
+<li><a href='rudl_audio.html#label-11'><code>play( <var>sound</var>, <var>loops</var>, <var>maxtime</var> )</code></a>
+<li><a href='rudl_audio.html#label-12'><code>play( <var>sound</var>, <var>loops</var> )</code></a>
+<li><a href='rudl_audio.html#label-13'><code>play( <var>sound</var> )</code></a>
+<li><a href='rudl_audio.html#label-14'><code>stop</code></a>
+<li><a href='rudl_audio.html#label-15'><code>set_panning( <var>left</var>, <var>right</var> )</code></a>
+<li><a href='rudl_audio.html#label-16'><code>set_position( <var>angle</var>, <var>distance</var> )</code></a>
+<li><a href='rudl_audio.html#label-17'><code>set_distance( <var>distance</var> )</code></a>
+<li><a href='rudl_audio.html#label-18'><code>reverse_stereo( <var>reverse</var> )</code></a>
+</ul></ul><li><a href='rudl_audio.html#label-19'>Sound</a>
+<ul><li><a href='rudl_audio.html#label-20'>Class Methods</a>
+<ul><li><a href='rudl_audio.html#label-21'><code>new</code></a>
+<li><a href='rudl_audio.html#label-22'><code>new( <var>filename</var> )</code></a>
+<li><a href='rudl_audio.html#label-23'><code>load_new( <var>filename</var> )</code></a>
+<li><a href='rudl_audio.html#label-24'><code>import( <var>sampledata</var> )</code></a>
+<li><a href='rudl_audio.html#label-25'><code>convert( <var>sample</var>, <var>source_format</var>, <var>destination_format</var> )</code></a>
+<li><a href='rudl_audio.html#label-26'><code>to_sound</code></a>
+</ul><li><a href='rudl_audio.html#label-27'>Instance Methods</a>
+<ul><li><a href='rudl_audio.html#label-28'><code>fade_out( <var>milliseconds</var> )</code></a>
+<li><a href='rudl_audio.html#label-29'><code>volume</code></a>
+<li><a href='rudl_audio.html#label-30'><code>volume=( <var>loudness</var> )</code></a>
+<li><a href='rudl_audio.html#label-31'><code>play( <var>loops</var>, <var>maxtime</var> )</code></a>
+<li><a href='rudl_audio.html#label-32'><code>stop</code></a>
+<li><a href='rudl_audio.html#label-33'><code>to_s</code></a>
+<li><a href='rudl_audio.html#label-34'><code>format</code></a>
+</ul></ul><li><a href='rudl_audio.html#label-35'>Mixer</a>
+<ul><li><a href='rudl_audio.html#label-36'>Class and instance Methods</a>
+<ul><li><a href='rudl_audio.html#label-37'><code>new</code></a>
+<li><a href='rudl_audio.html#label-38'><code>new( <var>frequency</var> )</code></a>
+<li><a href='rudl_audio.html#label-39'><code>new( <var>frequency</var>, <var>format</var> )</code></a>
+<li><a href='rudl_audio.html#label-40'><code>new( <var>frequency</var>, <var>format</var>, <var>stereo</var> )</code></a>
+<li><a href='rudl_audio.html#label-41'><code>new( <var>frequency</var>, <var>format</var>, <var>stereo</var>, <var>buffersize</var> )</code></a>
+<li><a href='rudl_audio.html#label-42'><code>destroy</code></a>
+<li><a href='rudl_audio.html#label-44'><code>fade_out( <var>millisecs</var> )</code></a>
+<li><a href='rudl_audio.html#label-46'><code>find_free_channel</code></a>
+<li><a href='rudl_audio.html#label-47'><code>find_oldest_channel</code></a>
+<li><a href='rudl_audio.html#label-48'><code>find_free_channel</code></a>
+<li><a href='rudl_audio.html#label-49'><code>find_oldest_channel</code></a>
+<li><a href='rudl_audio.html#label-50'><code>busy?</code></a>
+<li><a href='rudl_audio.html#label-52'><code>num_channels</code></a>
+<li><a href='rudl_audio.html#label-53'><code>num_channels=( <var>amount</var> )</code></a>
+<li><a href='rudl_audio.html#label-54'><code>num_channels</code></a>
+<li><a href='rudl_audio.html#label-55'><code>num_channels=( <var>amount</var> )</code></a>
+<li><a href='rudl_audio.html#label-56'><code>pause</code></a>
+<li><a href='rudl_audio.html#label-57'><code>unpause</code></a>
+<li><a href='rudl_audio.html#label-58'><code>stop</code></a>
+<li><a href='rudl_audio.html#label-59'><code>pause</code></a>
+<li><a href='rudl_audio.html#label-60'><code>unpause</code></a>
+<li><a href='rudl_audio.html#label-61'><code>stop</code></a>
+<li><a href='rudl_audio.html#label-62'><code>reserved=( <var>amount</var> )</code></a>
+<li><a href='rudl_audio.html#label-64'><code>driver</code></a>
+<li><a href='rudl_audio.html#label-66'><code>format</code></a>
+</ul></ul><li><a href='rudl_audio.html#label-68'>Music</a>
+<ul><li><a href='rudl_audio.html#label-69'>Class Methods</a>
+<ul><li><a href='rudl_audio.html#label-70'><code>new( <var>filename</var> )</code></a>
+</ul><li><a href='rudl_audio.html#label-71'>Instance Methods</a>
+<ul><li><a href='rudl_audio.html#label-72'><code>volume</code></a>
+<li><a href='rudl_audio.html#label-73'><code>volume=( <var>loudness</var> )</code></a>
+<li><a href='rudl_audio.html#label-74'><code>fade_out( <var>milliseconds</var> )</code></a>
+<li><a href='rudl_audio.html#label-75'><code>play</code></a>
+<li><a href='rudl_audio.html#label-76'><code>play( <var>loops</var> )</code></a>
+<li><a href='rudl_audio.html#label-77'><code>stop</code></a>
+<li><a href='rudl_audio.html#label-78'><code>pause</code></a>
+<li><a href='rudl_audio.html#label-79'><code>unpause</code></a>
+<li><a href='rudl_audio.html#label-80'><code>busy?</code></a>
+<li><a href='rudl_audio.html#label-81'><code>restart</code></a>
+<li><a href='rudl_audio.html#label-82'><code>post_end_event</code></a>
+<li><a href='rudl_audio.html#label-83'><code>post_end_event=( <var>onOrOff</var> )</code></a>
+<li><a href='rudl_audio.html#label-84'><code>destroy</code></a>
+</ul></ul><li><a href='rudl_audio.html#label-85'>Events</a>
+<ul><li><a href='rudl_audio.html#label-86'>EndOfMusicEvent</a>
+</ul><li><a href='rudl_audio.html#label-87'>Constants</a>
+</ul>
 
 <h1><a name="label-0" id="label-0">Audio</a></h1><!-- RDLabel: "Audio" -->
 <p>On this page, there are various classes for sound output.
@@ -208,14 +202,21 @@ It is loaded from a WAV file.</p>
 <p>This method imports raw sampledata.
 If it is not in the Mixer's format, use <code>Mixer.convert</code> first.</p>
 <dl>
-<dt><a name="label-25" id="label-25"><code>String.to_sound</code></a></dt><!-- RDLabel: "String.to_sound" -->
+<dt><a name="label-25" id="label-25"><code>Sound.convert( <var>sample</var>, <var>source_format</var>, <var>destination_format</var> )</code></a></dt><!-- RDLabel: "Sound.convert" -->
+</dl>
+<p>Returns a string with the string <var>sample</var> with sampledata in it,
+assumed to be in <var>source_format</var>,
+converted to the <var>destination_format</var>.</p>
+<p>A format is an array with these contents: [frequency, format (like AUDIO_S8), channels].</p>
+<dl>
+<dt><a name="label-26" id="label-26"><code>String.to_sound</code></a></dt><!-- RDLabel: "String.to_sound" -->
 </dl>
 <p>Creates a new <code>Sound</code> object with the sound (in .WAV format) in the string.</p>
-<h2><a name="label-26" id="label-26">Instance Methods</a></h2><!-- RDLabel: "Instance Methods" -->
+<h2><a name="label-27" id="label-27">Instance Methods</a></h2><!-- RDLabel: "Instance Methods" -->
 <dl>
-<dt><a name="label-27" id="label-27"><code>Sound#fade_out( <var>milliseconds</var> )</code></a></dt><!-- RDLabel: "Sound#fade_out" -->
-<dt><a name="label-28" id="label-28"><code>Sound#volume</code></a></dt><!-- RDLabel: "Sound#volume" -->
-<dt><a name="label-29" id="label-29"><code>Sound#volume=( <var>loudness</var> )</code></a></dt><!-- RDLabel: "Sound#volume=" -->
+<dt><a name="label-28" id="label-28"><code>Sound#fade_out( <var>milliseconds</var> )</code></a></dt><!-- RDLabel: "Sound#fade_out" -->
+<dt><a name="label-29" id="label-29"><code>Sound#volume</code></a></dt><!-- RDLabel: "Sound#volume" -->
+<dt><a name="label-30" id="label-30"><code>Sound#volume=( <var>loudness</var> )</code></a></dt><!-- RDLabel: "Sound#volume=" -->
 </dl>
 <p>These are volume methods.
 fade_out fades all instances of this sound that are playing to silence in <var>milliseconds</var> milliseconds.
@@ -223,7 +224,7 @@ volume returns the current volume.
 volume= sets the volume to loudness.
 Volumes range from 0.0 to 1.0.</p>
 <dl>
-<dt><a name="label-30" id="label-30"><code>Sound#play( <var>loops</var>, <var>maxtime</var> )</code></a></dt><!-- RDLabel: "Sound#play" -->
+<dt><a name="label-31" id="label-31"><code>Sound#play( <var>loops</var>, <var>maxtime</var> )</code></a></dt><!-- RDLabel: "Sound#play" -->
 </dl>
 <p>Starts playing a song on an available channel.
 If no channels are available, it will not play and return <var>nil</var>.
@@ -234,20 +235,13 @@ It defaults to forever (-1).</p>
 <p>Returns a channel object for the channel that is selected to play the sound.</p>
 <p>Returns nil if for some reason no channel is found.</p>
 <dl>
-<dt><a name="label-31" id="label-31"><code>Sound#stop</code></a></dt><!-- RDLabel: "Sound#stop" -->
+<dt><a name="label-32" id="label-32"><code>Sound#stop</code></a></dt><!-- RDLabel: "Sound#stop" -->
 </dl>
 <p>Stops all channels playing this <code>Sound</code>.</p>
 <dl>
-<dt><a name="label-32" id="label-32"><code>Sound#to_s</code></a></dt><!-- RDLabel: "Sound#to_s" -->
+<dt><a name="label-33" id="label-33"><code>Sound#to_s</code></a></dt><!-- RDLabel: "Sound#to_s" -->
 </dl>
 <p>Returns a string with the sampledata.</p>
-<dl>
-<dt><a name="label-33" id="label-33"><code>Sound.convert( <var>sample</var>, <var>source_format</var>, <var>destination_format</var> )</code></a></dt><!-- RDLabel: "Sound.convert" -->
-</dl>
-<p>Returns a string with the string <var>sample</var> with sampledata in it,
-assumed to be in <var>source_format</var>,
-converted to the <var>destination_format</var>.</p>
-<p>A format is an array with these contents: [frequency, format (like AUDIO_S8), channels].</p>
 <dl>
 <dt><a name="label-34" id="label-34"><code>Sound#format</code></a></dt><!-- RDLabel: "Sound#format" -->
 </dl>
@@ -366,27 +360,27 @@ volume and volume= get and set the volume.
 Volume ranges from 0.0 to 1.0.
 These methods work on the currently playing music.</p>
 <dl>
-<dt><a name="label-75" id="label-75"><code>Music.play</code></a></dt><!-- RDLabel: "Music.play" -->
-<dt><a name="label-76" id="label-76"><code>Music.play( <var>loops</var> )</code></a></dt><!-- RDLabel: "Music.play" -->
+<dt><a name="label-75" id="label-75"><code>Music#play</code></a></dt><!-- RDLabel: "Music#play" -->
+<dt><a name="label-76" id="label-76"><code>Music#play( <var>loops</var> )</code></a></dt><!-- RDLabel: "Music#play" -->
 </dl>
 <p>Plays this piece of music, stopping the previously playing one.
 Plays the music one time, or loops+1 times if you pass loops.</p>
 <dl>
-<dt><a name="label-77" id="label-77"><code>Music.stop</code></a></dt><!-- RDLabel: "Music.stop" -->
-<dt><a name="label-78" id="label-78"><code>Music.pause</code></a></dt><!-- RDLabel: "Music.pause" -->
-<dt><a name="label-79" id="label-79"><code>Music.unpause</code></a></dt><!-- RDLabel: "Music.unpause" -->
-<dt><a name="label-80" id="label-80"><code>Music.busy?</code></a></dt><!-- RDLabel: "Music.busy?" -->
-<dt><a name="label-81" id="label-81"><code>Music.restart</code></a></dt><!-- RDLabel: "Music.restart" -->
+<dt><a name="label-77" id="label-77"><code>Music#stop</code></a></dt><!-- RDLabel: "Music#stop" -->
+<dt><a name="label-78" id="label-78"><code>Music#pause</code></a></dt><!-- RDLabel: "Music#pause" -->
+<dt><a name="label-79" id="label-79"><code>Music#unpause</code></a></dt><!-- RDLabel: "Music#unpause" -->
+<dt><a name="label-80" id="label-80"><code>Music#busy?</code></a></dt><!-- RDLabel: "Music#busy?" -->
+<dt><a name="label-81" id="label-81"><code>Music#restart</code></a></dt><!-- RDLabel: "Music#restart" -->
 </dl>
 <p>All pretty straight forward, except that they all act on the playing music, not the current one.</p>
 <dl>
-<dt><a name="label-82" id="label-82"><code>Music.post_end_event</code></a></dt><!-- RDLabel: "Music.post_end_event" -->
-<dt><a name="label-83" id="label-83"><code>Music.post_end_event=( <var>onOrOff</var> )</code></a></dt><!-- RDLabel: "Music.post_end_event=" -->
+<dt><a name="label-82" id="label-82"><code>Music#post_end_event</code></a></dt><!-- RDLabel: "Music#post_end_event" -->
+<dt><a name="label-83" id="label-83"><code>Music#post_end_event=( <var>onOrOff</var> )</code></a></dt><!-- RDLabel: "Music#post_end_event=" -->
 </dl>
 <p>Returns, or sets whether an EndOfMusicEvent will be posted when the current music stops playing.
 <var>onOrOff</var> is true or false.</p>
 <dl>
-<dt><a name="label-84" id="label-84"><code>Music.destroy</code></a></dt><!-- RDLabel: "Music.destroy" -->
+<dt><a name="label-84" id="label-84"><code>Music#destroy</code></a></dt><!-- RDLabel: "Music#destroy" -->
 </dl>
 <p>Frees the music from memory,
 thereby rendering the music instance useless.</p>

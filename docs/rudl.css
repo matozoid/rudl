@@ -1,11 +1,10 @@
 body, h1, h2, h3, h4, h5, h6, p { 
-	background-color:#ffffff; 
 	font-family: "Arial", "Helvetica", "sans-serif";
 }
 
 h1{ 
 	text-align: center;
-	border-top: solid, thick;
+	border-top: solid thick;
 }
 
 code {
@@ -13,6 +12,6 @@ code {
 }
 
 h2, dl {
-	border-top: solid, thin;
-	border-color: #c0c0c0;
+	border-top: solid thin;
+	border-top-style: dotted;
 }

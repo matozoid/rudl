@@ -10,27 +10,28 @@
 <body>
 <a href='index.html'>Back to index</a>
 <h1>Index</h1>
-<br><a href='rudl_cdrom.html#label-0'>CDROM</a>
-<br><a href='rudl_cdrom.html#label-1'>Class Methods</a>
-<br><a href='rudl_cdrom.html#label-2'><code>CDROM.new( <var>number</var> )</code></a>
-<br><a href='rudl_cdrom.html#label-3'><code>CDROM.destroy</code></a>
-<br><a href='rudl_cdrom.html#label-4'><code>CDROM.count</code></a>
-<br><a href='rudl_cdrom.html#label-5'><code>CDROM#eject</code></a>
-<br><a href='rudl_cdrom.html#label-6'><code>CDROM#pause</code></a>
-<br><a href='rudl_cdrom.html#label-7'><code>CDROM#play( <var>track_nr</var> )</code></a>
-<br><a href='rudl_cdrom.html#label-8'><code>CDROM#resume</code></a>
-<br><a href='rudl_cdrom.html#label-9'><code>CDROM#stop</code></a>
-<br><a href='rudl_cdrom.html#label-10'><code>CDROM#paused?</code></a>
-<br><a href='rudl_cdrom.html#label-11'><code>CDROM#empty?</code></a>
-<br><a href='rudl_cdrom.html#label-12'><code>CDROM#busy?</code></a>
-<br><a href='rudl_cdrom.html#label-13'><code>CDROM#current</code></a>
-<br><a href='rudl_cdrom.html#label-14'><code>CDROM#number</code></a>
-<br><a href='rudl_cdrom.html#label-15'><code>CDROM#name</code></a>
-<br><a href='rudl_cdrom.html#label-16'><code>CDROM#num_tracks</code></a>
-<br><a href='rudl_cdrom.html#label-17'><code>CDROM#audiotrack?( <var>track_nr</var> )</code></a>
-<br><a href='rudl_cdrom.html#label-18'><code>CDROM#track_length( <var>track_nr</var> )</code></a>
-<br><a href='rudl_cdrom.html#label-19'><code>CDROM#track_start( <var>track_nr</var> )</code></a>
-
+<ul><li><a href='rudl_cdrom.html#label-0'>CDROM</a>
+<ul><li><a href='rudl_cdrom.html#label-1'>Class Methods</a>
+<ul><li><a href='rudl_cdrom.html#label-2'><code>new( <var>number</var> )</code></a>
+<li><a href='rudl_cdrom.html#label-3'><code>destroy</code></a>
+<li><a href='rudl_cdrom.html#label-4'><code>count</code></a>
+</ul><li><a href='rudl_cdrom.html#label-5'>Instance methods</a>
+<ul><li><a href='rudl_cdrom.html#label-6'><code>eject</code></a>
+<li><a href='rudl_cdrom.html#label-7'><code>pause</code></a>
+<li><a href='rudl_cdrom.html#label-8'><code>play( <var>track_nr</var> )</code></a>
+<li><a href='rudl_cdrom.html#label-9'><code>resume</code></a>
+<li><a href='rudl_cdrom.html#label-10'><code>stop</code></a>
+<li><a href='rudl_cdrom.html#label-11'><code>paused?</code></a>
+<li><a href='rudl_cdrom.html#label-12'><code>empty?</code></a>
+<li><a href='rudl_cdrom.html#label-13'><code>busy?</code></a>
+<li><a href='rudl_cdrom.html#label-14'><code>current</code></a>
+<li><a href='rudl_cdrom.html#label-15'><code>number</code></a>
+<li><a href='rudl_cdrom.html#label-16'><code>name</code></a>
+<li><a href='rudl_cdrom.html#label-17'><code>num_tracks</code></a>
+<li><a href='rudl_cdrom.html#label-18'><code>audiotrack?( <var>track_nr</var> )</code></a>
+<li><a href='rudl_cdrom.html#label-19'><code>track_length( <var>track_nr</var> )</code></a>
+<li><a href='rudl_cdrom.html#label-20'><code>track_start( <var>track_nr</var> )</code></a>
+</ul></ul></ul>
 
 <h1><a name="label-0" id="label-0">CDROM</a></h1><!-- RDLabel: "CDROM" -->
 <p>A class for playing audio CD's.</p>
@@ -50,43 +51,44 @@ which is normally not necessary.</p>
 <dt><a name="label-4" id="label-4"><code>CDROM.count</code></a></dt><!-- RDLabel: "CDROM.count" -->
 </dl>
 <p>Returns the number of CDROMs installed.</p>
+<h2><a name="label-5" id="label-5">Instance methods</a></h2><!-- RDLabel: "Instance methods" -->
 <dl>
-<dt><a name="label-5" id="label-5"><code>CDROM#eject</code></a></dt><!-- RDLabel: "CDROM#eject" -->
-<dt><a name="label-6" id="label-6"><code>CDROM#pause</code></a></dt><!-- RDLabel: "CDROM#pause" -->
-<dt><a name="label-7" id="label-7"><code>CDROM#play( <var>track_nr</var> )</code></a></dt><!-- RDLabel: "CDROM#play" -->
-<dt><a name="label-8" id="label-8"><code>CDROM#resume</code></a></dt><!-- RDLabel: "CDROM#resume" -->
-<dt><a name="label-9" id="label-9"><code>CDROM#stop</code></a></dt><!-- RDLabel: "CDROM#stop" -->
-<dt><a name="label-10" id="label-10"><code>CDROM#paused?</code></a></dt><!-- RDLabel: "CDROM#paused?" -->
-<dt><a name="label-11" id="label-11"><code>CDROM#empty?</code></a></dt><!-- RDLabel: "CDROM#empty?" -->
-<dt><a name="label-12" id="label-12"><code>CDROM#busy?</code></a></dt><!-- RDLabel: "CDROM#busy?" -->
+<dt><a name="label-6" id="label-6"><code>CDROM#eject</code></a></dt><!-- RDLabel: "CDROM#eject" -->
+<dt><a name="label-7" id="label-7"><code>CDROM#pause</code></a></dt><!-- RDLabel: "CDROM#pause" -->
+<dt><a name="label-8" id="label-8"><code>CDROM#play( <var>track_nr</var> )</code></a></dt><!-- RDLabel: "CDROM#play" -->
+<dt><a name="label-9" id="label-9"><code>CDROM#resume</code></a></dt><!-- RDLabel: "CDROM#resume" -->
+<dt><a name="label-10" id="label-10"><code>CDROM#stop</code></a></dt><!-- RDLabel: "CDROM#stop" -->
+<dt><a name="label-11" id="label-11"><code>CDROM#paused?</code></a></dt><!-- RDLabel: "CDROM#paused?" -->
+<dt><a name="label-12" id="label-12"><code>CDROM#empty?</code></a></dt><!-- RDLabel: "CDROM#empty?" -->
+<dt><a name="label-13" id="label-13"><code>CDROM#busy?</code></a></dt><!-- RDLabel: "CDROM#busy?" -->
 </dl>
 <p>These are the you-know-what-they-do methods.</p>
 <dl>
-<dt><a name="label-13" id="label-13"><code>CDROM#current</code></a></dt><!-- RDLabel: "CDROM#current" -->
+<dt><a name="label-14" id="label-14"><code>CDROM#current</code></a></dt><!-- RDLabel: "CDROM#current" -->
 </dl>
 <dl>
-<dt><a name="label-14" id="label-14"><code>CDROM#number</code></a></dt><!-- RDLabel: "CDROM#number" -->
+<dt><a name="label-15" id="label-15"><code>CDROM#number</code></a></dt><!-- RDLabel: "CDROM#number" -->
 </dl>
 <p>Returns the unit number that was specified in <a href="#label-2">CDROM.new</a>.</p>
 <dl>
-<dt><a name="label-15" id="label-15"><code>CDROM#name</code></a></dt><!-- RDLabel: "CDROM#name" -->
+<dt><a name="label-16" id="label-16"><code>CDROM#name</code></a></dt><!-- RDLabel: "CDROM#name" -->
 </dl>
 <p>Returns a string describing the CDROM.</p>
 <dl>
-<dt><a name="label-16" id="label-16"><code>CDROM#num_tracks</code></a></dt><!-- RDLabel: "CDROM#num_tracks" -->
+<dt><a name="label-17" id="label-17"><code>CDROM#num_tracks</code></a></dt><!-- RDLabel: "CDROM#num_tracks" -->
 </dl>
 <p>Returns the number of tracks on the CD.</p>
 <dl>
-<dt><a name="label-17" id="label-17"><code>CDROM#audiotrack?( <var>track_nr</var> )</code></a></dt><!-- RDLabel: "CDROM#audiotrack?" -->
+<dt><a name="label-18" id="label-18"><code>CDROM#audiotrack?( <var>track_nr</var> )</code></a></dt><!-- RDLabel: "CDROM#audiotrack?" -->
 </dl>
 <p>Returns whether the specified track is an audiotrack.</p>
 <dl>
-<dt><a name="label-18" id="label-18"><code>CDROM#track_length( <var>track_nr</var> )</code></a></dt><!-- RDLabel: "CDROM#track_length" -->
+<dt><a name="label-19" id="label-19"><code>CDROM#track_length( <var>track_nr</var> )</code></a></dt><!-- RDLabel: "CDROM#track_length" -->
 </dl>
 <p>Returns the length of the track.</p>
 <p>Returns 0.0 when the track is not an audio track.</p>
 <dl>
-<dt><a name="label-19" id="label-19"><code>CDROM#track_start( <var>track_nr</var> )</code></a></dt><!-- RDLabel: "CDROM#track_start" -->
+<dt><a name="label-20" id="label-20"><code>CDROM#track_start( <var>track_nr</var> )</code></a></dt><!-- RDLabel: "CDROM#track_start" -->
 </dl>
 <p>Returns the starting time of the track.</p>
 

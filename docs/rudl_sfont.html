@@ -10,16 +10,14 @@
 <body>
 <a href='index.html'>Back to index</a>
 <h1>Index</h1>
-<br><a href='rudl_sfont.html#label-0'>BitmapFont</a>
-<br><a href='rudl_sfont.html#label-1'>Class Methods</a>
-<br><a href='rudl_sfont.html#label-2'><code>BitmapFont.new( <var>surface</var> )</code></a>
-<br><a href='rudl_sfont.html#label-3'>Instance Methods</a>
-<br><a href='rudl_sfont.html#label-4'><code>BitmapFont#print( <var>surface</var>, <var>coordinate</var>, <var>text</var> )</code></a>
-<br><a href='rudl_sfont.html#label-5'>Instance Methods</a>
-<br><a href='rudl_sfont.html#label-6'><code>BitmapFont#print_centered( <var>surface</var>, <var>y</var>, <var>text</var> )</code></a>
-<br><a href='rudl_sfont.html#label-7'>Instance Methods</a>
-<br><a href='rudl_sfont.html#label-8'><code>BitmapFont#size( <var>text</var> )</code></a>
-
+<ul><li><a href='rudl_sfont.html#label-0'>BitmapFont</a>
+<ul><li><a href='rudl_sfont.html#label-1'>Class Methods</a>
+<ul><li><a href='rudl_sfont.html#label-2'><code>new( <var>surface</var> )</code></a>
+</ul><li><a href='rudl_sfont.html#label-3'>Instance Methods</a>
+<ul><li><a href='rudl_sfont.html#label-4'><code>print( <var>surface</var>, <var>coordinate</var>, <var>text</var> )</code></a>
+<li><a href='rudl_sfont.html#label-5'><code>print_centered( <var>surface</var>, <var>y</var>, <var>text</var> )</code></a>
+<li><a href='rudl_sfont.html#label-6'><code>size( <var>text</var> )</code></a>
+</ul></ul></ul>
 
 <h1><a name="label-0" id="label-0">BitmapFont</a></h1><!-- RDLabel: "BitmapFont" -->
 <p>BitmapFont is made with the SFont library and prints text with bitmaps.
@@ -37,14 +35,12 @@ use Surface.load_new('fontfilename') as the argument to SFont.new.</p>
 <dt><a name="label-4" id="label-4"><code>BitmapFont#print( <var>surface</var>, <var>coordinate</var>, <var>text</var> )</code></a></dt><!-- RDLabel: "BitmapFont#print" -->
 </dl>
 <p>Puts <var>text</var> on <var>surface</var> at <var>coordinate</var> which is an array of [x, y].</p>
-<h2><a name="label-5" id="label-5">Instance Methods</a></h2><!-- RDLabel: "Instance Methods" -->
 <dl>
-<dt><a name="label-6" id="label-6"><code>BitmapFont#print_centered( <var>surface</var>, <var>y</var>, <var>text</var> )</code></a></dt><!-- RDLabel: "BitmapFont#print_centered" -->
+<dt><a name="label-5" id="label-5"><code>BitmapFont#print_centered( <var>surface</var>, <var>y</var>, <var>text</var> )</code></a></dt><!-- RDLabel: "BitmapFont#print_centered" -->
 </dl>
 <p>Puts <var>text</var> on <var>surface</var> at y-coordinate <var>y</var> in the horizontal center of the screen.</p>
-<h2><a name="label-7" id="label-7">Instance Methods</a></h2><!-- RDLabel: "Instance Methods" -->
 <dl>
-<dt><a name="label-8" id="label-8"><code>BitmapFont#size( <var>text</var> )</code></a></dt><!-- RDLabel: "BitmapFont#size" -->
+<dt><a name="label-6" id="label-6"><code>BitmapFont#size( <var>text</var> )</code></a></dt><!-- RDLabel: "BitmapFont#size" -->
 </dl>
 <p>Returns the size [width, heigth] in pixels that <var>text</var> will take when written.</p>
 
