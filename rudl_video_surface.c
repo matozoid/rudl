@@ -3,6 +3,9 @@ RUDL - a C library wrapping SDL for use in Ruby.
 Copyright (C) 2001, 2002, 2003  Danny van Bruggen
 
 $Log: rudl_video_surface.c,v $
+Revision 1.37  2004/08/21 23:25:31  tsuihark
+Fixed little documentation typo
+
 Revision 1.36  2004/08/04 23:03:47  tsuihark
 Updated all documentation to Dokumentat format.
 
@@ -1059,7 +1062,7 @@ __inline__ static void copy_surface_to_line(SDL_Surface* surface, int y, Uint8* 
     memcpy(data, get_line_pointer(surface, y), surface->w*surface->format->BytesPerPixel);
 }
 
-/**@section Bacth pixel access
+/**@section Batch pixel access
 These methods manipulate the pixels in the Surface.
 The transport medium is a string with binary data in it.
 The data is raw, no fancy color arrays here.
