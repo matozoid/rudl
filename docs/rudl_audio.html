@@ -10,7 +10,17 @@ D:\Rubyspul\rudl\docs>ruby c:\pad\rd2.rb ../rudl_audio.c
 </head>
 <body>
 
-<p>This page describes the various classes that access SDL_mixer.</p>
+<p>On this page, there are various classes for sound output.
+The system consists of a mixer that will mix several sounds,
+and one piece of music.</p>
+<p>The Sound class represents a particular sound sample. It can
+be played on any Channel of the Mixer.</p>
+<p>The Mixer has a certain amount of Channels.
+Channels can be told to play a certain Sound.
+It is not possible to play more Sounds at once than there are Channels.</p>
+<p>A separate Channel is kept by the Mixer for playing Music files.
+Since it's only one channel, only one song can play at a time.</p>
+<p>This is a wrapper around SDL_mixer.</p>
 <h1><a name="label-0" id="label-0">Channel</a></h1><!-- RDLabel: "Channel" -->
 <p>A Channel is an interface object to one of the mixer's channels.
 It can be used for manipulating sound on a particular channel.</p>
