@@ -37,7 +37,7 @@ __inline__ void setMasksFromBPP(Uint32 bpp, boolean alphaWanted, Uint32* Rmask, 
 	DEBUG_I(bpp);
 	DEBUG_I(alphaWanted);
 	if(alphaWanted && bpp==32){
-		*Rmask = 0xFF << 32; *Gmask = 0xFF << 16; *Bmask = 0xFF << 8; *Amask=0xFF;
+		*Rmask = 0xFF << 24; *Gmask = 0xFF << 16; *Bmask = 0xFF << 8; *Amask=0xFF;
 		DEBUG_S("alpha added");
 	}else{
 		switch(bpp){
@@ -69,18 +69,18 @@ If only ((|size|)) is supplied, the rest of the arguments will be set to reasona
 If a surface is supplied, it is used to copy the values from that aren't given.
 
 ((|flags|)) is, quoted from SDL's documentation:
-* SWSURFACE: SDL will create the surface in system memory. This improves the performance of 
-	pixel level access, however you may not be able to take advantage of some types of 
+* SWSURFACE: SDL will create the surface in system memory. This improves the performance of
+	pixel level access, however you may not be able to take advantage of some types of
 	hardware blitting.
-* HWSURFACE: SDL will attempt to create the surface in video memory. This will allow SDL 
+* HWSURFACE: SDL will attempt to create the surface in video memory. This will allow SDL
 	to take advantage of Video->Video blits (which are often accelerated).
-* SRCCOLORKEY: This flag turns on colourkeying for blits from this surface. If 
-	SDL_HWSURFACE is also specified and colourkeyed blits are hardware-accelerated, then 
-	SDL will attempt to place the surface in video memory. Use SDL_SetColorKey to set or 
+* SRCCOLORKEY: This flag turns on colourkeying for blits from this surface. If
+	SDL_HWSURFACE is also specified and colourkeyed blits are hardware-accelerated, then
+	SDL will attempt to place the surface in video memory. Use SDL_SetColorKey to set or
 	clear this flag after surface creation.
-* SRCALPHA: This flag turns on alpha-blending for blits from this surface. If SDL_HWSURFACE 
-	is also specified and alpha-blending blits are hardware-accelerated, then the surface 
-	will be placed in video memory if possible. Use SDL_SetAlpha to set or clear this flag 
+* SRCALPHA: This flag turns on alpha-blending for blits from this surface. If SDL_HWSURFACE
+	is also specified and alpha-blending blits are hardware-accelerated, then the surface
+	will be placed in video memory if possible. Use SDL_SetAlpha to set or clear this flag
 	after surface creation. For a 32 bitdepth surface, an alpha mask will automatically be
 	added, in other cases, you will have to specify a mask.
 
@@ -122,7 +122,7 @@ VALUE surface_new(int argc, VALUE* argv, VALUE self)
 	SDL_PixelFormat* pix=NULL;
 
 	initVideo();
-	
+
 	rb_scan_args(argc, argv, "13", &sizeObject, &surfaceOrFlagsObject, &surfaceOrDepthObject, &masksObject);
 
 	PARAMETER2COORD(sizeObject, &width, &height);
@@ -135,7 +135,7 @@ VALUE surface_new(int argc, VALUE* argv, VALUE self)
 			flags=PARAMETER2FLAGS(surfaceOrFlagsObject);
 
 			if(argc>2){ // got surface on pos 2, or depth
-			
+
 				if(rb_obj_is_kind_of(surfaceOrDepthObject, classSurface)){ // got Surface on pos 2
 					if(argc==3){
 						pix=retrieveSurfacePointer(surfaceOrDepthObject)->format;
@@ -193,16 +193,16 @@ VALUE surface_new(int argc, VALUE* argv, VALUE self)
 =begin
 --- Surface.load_new( filename )
 --- String.to_surface
-This creates a (({Surface})) with an image in it, 
+This creates a (({Surface})) with an image in it,
 loaded from disk from ((|filename|)) by using load_new
 
 or loaded by treating ((|String|)) as the image data when using to_surface.
 
-In the last case, the ((|string|)) should be in some supported format, 
+In the last case, the ((|string|)) should be in some supported format,
 
 just like the file for load_new should be.
 
-If the SDL_image library was found during RUDL's installation, 
+If the SDL_image library was found during RUDL's installation,
 
 it will load the following formats:
 
@@ -302,7 +302,7 @@ void dont_free(void*_)
 
 This method is two things:
 
-(1) a way to share the same bunch of data (width, height, bpp, pixeldata) 
+(1) a way to share the same bunch of data (width, height, bpp, pixeldata)
 
    between two Surface objects.
 
@@ -508,7 +508,7 @@ static VALUE surface_blit(int argc, VALUE* argv, VALUE self)
 
 	SDL_Rect src_rect, dest_rect;
 
-	
+
 
 	VALUE sourceSurfaceObject, coordinateObject, sourceRectObject;
 
@@ -562,7 +562,7 @@ static VALUE surface_blit(int argc, VALUE* argv, VALUE self)
 
 --- Surface#convert_alpha
 
-Creates a new version of the surface in the current display's format, 
+Creates a new version of the surface in the current display's format,
 
 making it faster to blit.
 
@@ -808,9 +808,9 @@ static VALUE surface_save_bmp(VALUE self, VALUE filename)
 
 These methods return the size of the surface.
 
-w returns width, 
+w returns width,
 
-h returns height, 
+h returns height,
 
 size returns [w, h] and rect returns an array of [0, 0, w, h].
 
@@ -838,7 +838,7 @@ static VALUE surface_rect(VALUE self)
 
 	SDL_Surface* surface=retrieveSurfacePointer(self);
 
-	
+
 
 	rect.x=0;
 
@@ -888,7 +888,7 @@ static VALUE surface_h(VALUE self)
 
 --- Surface#set_colorkey( color, flags )
 
-These methods control the color that will be completely transparent (it will not be copied 
+These methods control the color that will be completely transparent (it will not be copied
 
 to the destination surface.)
 
@@ -1140,13 +1140,13 @@ static VALUE surface_losses(VALUE self)
 
 	SDL_Surface* surface=retrieveSurfacePointer(self);
 
-	return rb_ary_new3(4, 
+	return rb_ary_new3(4,
 
-			UINT2NUM(surface->format->Rloss), 
+			UINT2NUM(surface->format->Rloss),
 
 			UINT2NUM(surface->format->Gloss),
 
-			UINT2NUM(surface->format->Bloss), 
+			UINT2NUM(surface->format->Bloss),
 
 			UINT2NUM(surface->format->Aloss));
 
@@ -1174,13 +1174,13 @@ static VALUE surface_shifts(VALUE self)
 
 	SDL_Surface* surface=retrieveSurfacePointer(self);
 
-	return rb_ary_new3(4, 
+	return rb_ary_new3(4,
 
-			UINT2NUM(surface->format->Rshift), 
+			UINT2NUM(surface->format->Rshift),
 
 			UINT2NUM(surface->format->Gshift),
 
-			UINT2NUM(surface->format->Bshift), 
+			UINT2NUM(surface->format->Bshift),
 
 			UINT2NUM(surface->format->Ashift));
 
@@ -1208,13 +1208,13 @@ static VALUE surface_masks(VALUE self)
 
 	SDL_Surface* surface=retrieveSurfacePointer(self);
 
-	return rb_ary_new3(4, 
+	return rb_ary_new3(4,
 
-			UINT2NUM(surface->format->Rmask), 
+			UINT2NUM(surface->format->Rmask),
 
 			UINT2NUM(surface->format->Gmask),
 
-			UINT2NUM(surface->format->Bmask), 
+			UINT2NUM(surface->format->Bmask),
 
 			UINT2NUM(surface->format->Amask));
 
@@ -1270,7 +1270,7 @@ static VALUE surface_palette(VALUE self)
 
 	for(i=0; i<256; i++){
 
-		color=rb_ary_new3(3, 
+		color=rb_ary_new3(3,
 
 			UINT2NUM(pal->colors[i].r),
 
@@ -1398,7 +1398,7 @@ static VALUE surface_set_alpha(int argc, VALUE* argv, VALUE self)
 
 	VALUE alphaObject, flagsObject;
 
-	
+
 
 	switch(rb_scan_args(argc, argv, "11", &alphaObject, &flagsObject)){
 
@@ -1416,7 +1416,7 @@ static VALUE surface_set_alpha(int argc, VALUE* argv, VALUE self)
 
 	if(SDL_SetAlpha(surface, flags, alpha) == -1) SDL_RAISE;
 
-	
+
 
 	return self;
 
@@ -1646,7 +1646,7 @@ static VALUE surface_contained_images(VALUE self)
 
 		if(SDL_BlitSurface(surface, &srcrect, tmp, &dstrect)!=0) SDL_RAISE;
 
-	
+
 
 		rb_ary_push(imageLine, createSurfaceObject(tmp));
 
@@ -2032,7 +2032,7 @@ These methods manipulate rows of pixels.
 
 ((|get_row|)) and ((|set_row|)) get and set a single such row.
 
-((|each_row|)) and ((|each_row!|)) iterate through the rows, 
+((|each_row|)) and ((|each_row!|)) iterate through the rows,
 
 passing each of them to the supplied codeblock.
 
@@ -2052,7 +2052,7 @@ static VALUE surface_get_row(VALUE self, VALUE y)
 
 	RUDL_ASSERT(NUM2INT(y)>=0, "y<0");
 
-	
+
 
 	return rb_str_new(get_line_pointer(surface, NUM2INT(y)), surface->w*surface->format->BytesPerPixel);
 
@@ -2168,7 +2168,7 @@ These methods manipulate columns of pixels.
 
 ((|get_column|)) and ((|set_column|)) get and set a single such column.
 
-((|each_column|)) and ((|each_column!|)) iterate through the columns, 
+((|each_column|)) and ((|each_column!|)) iterate through the columns,
 
 passing each of them to the supplied codeblock.
 
@@ -2198,13 +2198,13 @@ static VALUE surface_get_column(VALUE self, VALUE x)
 
 	RUDL_ASSERT(NUM2INT(x)>=0, "x<0");
 
-	
+
 
 	h=surface->h;
 
 	pixelsize=surface->format->BytesPerPixel;
 
-	
+
 
 	column=malloc(h*pixelsize);
 
@@ -2252,13 +2252,13 @@ static VALUE surface_set_column(VALUE self, VALUE x, VALUE pixels)
 
 	RUDL_ASSERT(NUM2INT(x)>=0, "x<0");
 
-	
+
 
 	h=surface->h;
 
 	pixelsize=surface->format->BytesPerPixel;
 
-	
+
 
 	dest=((Uint8*)surface->pixels)+(NUM2INT(x))*pixelsize;
 
@@ -2382,7 +2382,7 @@ static VALUE surface_pixels(VALUE self)
 
 	GET_SURFACE;
 
-	
+
 
 	image_size=surface->w*surface->h*surface->format->BytesPerPixel;
 
@@ -2442,7 +2442,7 @@ static VALUE surface_set_pixels(VALUE self, VALUE pixels)
 
 	pixelpointer=RSTRING(pixels)->ptr;
 
-	
+
 
 	RUDL_ASSERT(RSTRING(pixels)->len>=size, "Not enough data in string");
 
@@ -2502,7 +2502,7 @@ void initVideoSurfaceClasses()
 
 	rb_define_method(classSurface, "rect", surface_rect, 0);
 
-	
+
 
 	rb_define_method(classSurface, "blit", surface_blit, -1);
 
@@ -2520,7 +2520,7 @@ void initVideoSurfaceClasses()
 
 	rb_define_method(classSurface, "contained_images", surface_contained_images, 0);
 
-	
+
 
 	rb_define_method(classSurface, "lock", surface_lock, 0);
 
@@ -2554,7 +2554,7 @@ void initVideoSurfaceClasses()
 
 	rb_define_method(classSurface, "masks", surface_masks, 0);
 
-	
+
 
 	rb_define_method(classSurface, "clip", surface_clip, 0);
 
