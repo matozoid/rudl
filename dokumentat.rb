@@ -262,10 +262,14 @@ SHEET
 		"<h2><a name='#{target}'>#{section_name}</a></h2>\n"
 	end
 
-	def Output.format_method(target, names_list)
-		output = "<h4>" + names_list.shift
+	def Output.format_method(target, name)
+		"<a name='#{target}'>#{name}</a>"
+	end
+
+	def Output.format_methods(target, names_list)
+		output = "<h4>" + Output.format_method(target, names_list.shift)
 		names_list.each do |name|
-			output += "<br>\n<a href='#{target}'>#{name}</a>"
+			output += "<br>\n"+Output.format_method(target, name)
 		end
 		output += "</h4>\n"
 		output
@@ -529,7 +533,7 @@ class MethodEntry < Entry
 	end
 
 	def write(file)
-		file.write(Output::format_method(link_target, @fullnames))
+		file.write(Output::format_methods(link_target, @fullnames))
 		file.write(Output::format_text(@text))
 		children.sort.each do |child|
 			child.write(file)
@@ -682,8 +686,8 @@ class Dokumentat
 	def write(output_path)
 		say "Writing result to #{output_path}/"
 		File.makedirs(output_path)
-#	   pp @root
 		if @root
+			pp @root if $verbose
 			@root.write(output_path)
 		else
 			error("Didn't produce anything at all")
